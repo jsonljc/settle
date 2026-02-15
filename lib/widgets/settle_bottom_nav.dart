@@ -30,6 +30,7 @@ class SettleBottomNav extends StatelessWidget {
     _NavItem(label: 'Help Now', icon: Icons.favorite_outline, activeIcon: Icons.favorite_rounded),
     _NavItem(label: 'Sleep', icon: Icons.nightlight_outlined, activeIcon: Icons.nightlight_round),
     _NavItem(label: 'Progress', icon: Icons.trending_up_rounded, activeIcon: Icons.trending_up_rounded),
+    _NavItem(label: 'Tantrum', icon: Icons.psychology_outlined, activeIcon: Icons.psychology_rounded),
   ];
 
   @override

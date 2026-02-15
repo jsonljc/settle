@@ -1,0 +1,167 @@
+{
+  "meta": {
+    "schemaVersion": "tantrum_registry@1.0.0",
+    "updatedAt": "2026-02-15",
+    "status": "active"
+  },
+  "cards": [
+    {
+      "id": "crying_loud",
+      "title": "Crying / loud upset",
+      "say": "I hear you. I am here.",
+      "do": "Get low, soften your voice, and hold one clear boundary.",
+      "ifEscalates": "Use fewer words, stay close, and focus on safety.",
+      "lessonId": "lesson_co_regulation"
+    },
+    {
+      "id": "hitting_biting",
+      "title": "Hitting / biting",
+      "say": "I am here. I will help keep everyone safe.",
+      "do": "Move breakable items aside and give arm's-length space.",
+      "ifEscalates": "Give more space, use fewer words, and repeat one calm line.",
+      "lessonId": "lesson_safety_first"
+    },
+    {
+      "id": "public_meltdown",
+      "title": "Public tantrum",
+      "say": "You are safe. We can take a reset break.",
+      "do": "Move to a quieter nearby spot.",
+      "ifEscalates": "Leave this task for now and focus on calming first.",
+      "lessonId": "lesson_public"
+    },
+    {
+      "id": "refusal_wont",
+      "title": "Refusing to move",
+      "say": "You can feel upset. The boundary stays the same.",
+      "do": "Offer one small choice within the limit.",
+      "ifEscalates": "Repeat the limit once, then stay nearby and quiet.",
+      "lessonId": "lesson_boundaries"
+    },
+    {
+      "id": "unsafe_bolting",
+      "title": "Running off / unsafe",
+      "say": "Stop. I will help keep your body safe.",
+      "do": "Block exits and guide to a safer spot.",
+      "ifEscalates": "Keep your body between danger and child, then call a support person if needed.",
+      "lessonId": "lesson_safety_first"
+    },
+    {
+      "id": "parent_overwhelmed",
+      "title": "I feel overwhelmed",
+      "say": "I need thirty seconds to steady myself.",
+      "do": "Place child in a safe spot, take ten slow breaths, then return.",
+      "ifEscalates": "Pause the plan and lower expectations for this moment.",
+      "lessonId": "lesson_parent_calm"
+    },
+    {
+      "id": "transition_meltdown",
+      "title": "Transition overwhelm",
+      "say": "Transition time. I will help your body shift.",
+      "do": "Give one short cue, then guide the first step.",
+      "ifEscalates": "Return briefly to calm, then retry one small step.",
+      "lessonId": "lesson_transitions"
+    },
+    {
+      "id": "anger_words",
+      "title": "Big anger, no words yet",
+      "say": "Your body is full of big feelings.",
+      "do": "Stay close and name the feeling once: 'You're really angry.'",
+      "ifEscalates": "Stay quiet and present. Wait for the wave to pass.",
+      "lessonId": "lesson_co_regulation"
+    },
+    {
+      "id": "sibling_conflict",
+      "title": "Sibling conflict",
+      "say": "I won't let anyone get hurt. I'm here.",
+      "do": "Separate calmly, then hear each child briefly.",
+      "ifEscalates": "Focus on safety only. Sort the rest later.",
+      "lessonId": "lesson_boundaries"
+    },
+    {
+      "id": "screen_off",
+      "title": "Screen / device off",
+      "say": "Screen time is over. I'll help you shift.",
+      "do": "One clear warning, then follow through. Offer a small next step.",
+      "ifEscalates": "Hold the limit. Stay nearby without re-explaining.",
+      "lessonId": "lesson_transitions"
+    },
+    {
+      "id": "morning_rush",
+      "title": "Morning rush meltdown",
+      "say": "We have to go. I'll help you get there.",
+      "do": "One choice: 'Red shirt or blue?' Then move.",
+      "ifEscalates": "Gentle physical guidance. Fewer words.",
+      "lessonId": "lesson_transitions"
+    },
+    {
+      "id": "limit_testing",
+      "title": "Testing the limit",
+      "say": "The answer is no. I'm right here.",
+      "do": "State the limit once. Then wait with them.",
+      "ifEscalates": "Repeat the same line once. Don't negotiate.",
+      "lessonId": "lesson_boundaries"
+    },
+    {
+      "id": "sensory_overload",
+      "title": "Sensory overload",
+      "say": "It's loud (or bright) in here. We can find a quieter spot.",
+      "do": "Reduce input: dim, quiet, or move to calmer space.",
+      "ifEscalates": "Prioritize exit to calmer environment.",
+      "lessonId": "lesson_co_regulation"
+    },
+    {
+      "id": "disappointment",
+      "title": "Disappointment / didn't get it",
+      "say": "You wanted that so much. It's hard when we can't have it.",
+      "do": "Name the feeling. Sit with them. No fix required.",
+      "ifEscalates": "Stay present. 'I'm here. This feeling will pass.'",
+      "lessonId": "lesson_co_regulation"
+    },
+    {
+      "id": "fatigue_meltdown",
+      "title": "Too tired meltdown",
+      "say": "Your body is tired. I'll help you wind down.",
+      "do": "Lower demands. Offer rest or quiet activity.",
+      "ifEscalates": "Skip the task. Rest first.",
+      "lessonId": "lesson_transitions"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "lesson_co_regulation",
+      "title": "Why co-regulation works",
+      "body": "During a meltdown, the emotional system is online before executive control can catch up. Co-regulation—staying calm and present—helps the child's nervous system learn what safety feels like. You are not rewarding the tantrum; you are teaching regulation.",
+      "cardIds": ["crying_loud", "anger_words", "sensory_overload", "disappointment"]
+    },
+    {
+      "id": "lesson_safety_first",
+      "title": "Safety first, words second",
+      "body": "When there is hitting, throwing, or bolting, your first job is physical safety. Move breakables, block exits, give space. Use one short line. Save the conversation for when everyone is calm.",
+      "cardIds": ["hitting_biting", "unsafe_bolting"]
+    },
+    {
+      "id": "lesson_public",
+      "title": "Public tantrums",
+      "body": "Many children release big feelings in the safest relationship—often at home after holding it together elsewhere. In public, move to a quieter spot if you can. One calm line. Ignore judgment; focus on the child.",
+      "cardIds": ["public_meltdown"]
+    },
+    {
+      "id": "lesson_boundaries",
+      "title": "Holding boundaries with warmth",
+      "body": "You can acknowledge feelings and still hold the limit. 'You can feel upset. The boundary stays the same.' One clear line, then wait. Consistency over weeks matters more than any single moment.",
+      "cardIds": ["refusal_wont", "sibling_conflict", "limit_testing"]
+    },
+    {
+      "id": "lesson_parent_calm",
+      "title": "When you're overwhelmed",
+      "body": "It's okay to take a brief pause. Place the child in a safe spot, take ten slow breaths, then return. Your regulation supports theirs. You can't pour from an empty cup.",
+      "cardIds": ["parent_overwhelmed"]
+    },
+    {
+      "id": "lesson_transitions",
+      "title": "Making transitions easier",
+      "body": "Transitions are hard for developing brains. Give one short cue, then guide the first step. Offer a small choice when you can. When things escalate, return to calm before retrying.",
+      "cardIds": ["transition_meltdown", "screen_off", "morning_rush", "fatigue_meltdown"]
+    }
+  ]
+}

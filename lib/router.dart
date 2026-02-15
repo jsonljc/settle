@@ -19,6 +19,11 @@ import 'screens/sleep_tonight.dart';
 import 'screens/sos.dart';
 import 'screens/splash.dart';
 import 'screens/update_rhythm_screen.dart';
+import 'screens/tantrum/card_detail_screen.dart';
+import 'screens/tantrum/cards_library_screen.dart';
+import 'screens/tantrum/crisis_view_screen.dart';
+import 'screens/tantrum/tantrum_learn_screen.dart';
+import 'screens/tantrum/tantrum_now_screen.dart';
 import 'screens/today.dart';
 import 'widgets/release_surfaces.dart';
 
@@ -26,11 +31,13 @@ import 'widgets/release_surfaces.dart';
 const int _tabHelpNow = 0;
 const int _tabSleep = 1;
 const int _tabProgress = 2;
+const int _tabTantrum = 3;
 
 final _shellNavigatorKeys = [
   GlobalKey<NavigatorState>(debugLabel: 'helpNow'),
   GlobalKey<NavigatorState>(debugLabel: 'sleep'),
   GlobalKey<NavigatorState>(debugLabel: 'progress'),
+  GlobalKey<NavigatorState>(debugLabel: 'tantrum'),
 ];
 
 final router = GoRouter(
@@ -117,6 +124,49 @@ final router = GoRouter(
                   path: 'learn',
                   pageBuilder: (context, state) =>
                       _fade(state, const LearnScreen()),
+                ),
+              ],
+            ),
+          ],
+        ),
+        // Tab 3: Tantrum (NOW / CARDS / LEARN)
+        StatefulShellBranch(
+          navigatorKey: _shellNavigatorKeys[_tabTantrum],
+          routes: [
+            GoRoute(
+              path: '/tantrum',
+              redirect: (_, __) => '/tantrum/now',
+              routes: [
+                GoRoute(
+                  path: 'now',
+                  pageBuilder: (context, state) =>
+                      _fade(state, const TantrumNowScreen()),
+                ),
+                GoRoute(
+                  path: 'crisis',
+                  pageBuilder: (context, state) {
+                    final cardId = state.uri.queryParameters['cardId'];
+                    return _fade(state, CrisisViewScreen(cardId: cardId));
+                  },
+                ),
+                GoRoute(
+                  path: 'cards',
+                  pageBuilder: (context, state) =>
+                      _fade(state, const CardsLibraryScreen()),
+                  routes: [
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (context, state) {
+                        final id = state.pathParameters['id'] ?? '';
+                        return _fade(state, CardDetailScreen(cardId: id));
+                      },
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'learn',
+                  pageBuilder: (context, state) =>
+                      _fade(state, const TantrumLearnScreen()),
                 ),
               ],
             ),
