@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "schemaVersion": "plan_progress_guidance@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required"
+  },
+  "eligibility": {
+    "minSimilarEvents14d": 3,
+    "minSleepNights": 2
+  },
+  "recommendationRules": [
+    {
+      "id": "night_wakes",
+      "eventType": "ST_NIGHT_WAKE_LOGGED",
+      "minCount": 3,
+      "evidenceBindingKey": "night_wakes_after_bedtime",
+      "experimentBindingKey": "same_first_wake_step_3_nights",
+      "bottleneck": "Night wakes after bedtime",
+      "evidenceTemplate": "{count} wake events in last 14 days",
+      "experiment": "For 3 nights, run the same first-wake step before changing approach."
+    },
+    {
+      "id": "public_meltdowns",
+      "eventType": "HN_USED_PUBLIC",
+      "minCount": 3,
+      "evidenceBindingKey": "public_meltdowns",
+      "experimentBindingKey": "single_script_single_timer_week",
+      "bottleneck": "Hard moments in public",
+      "evidenceTemplate": "{count} public incidents in last 14 days",
+      "experiment": "Use one public exit script and reset routine every time this week."
+    },
+    {
+      "id": "refusal_loops",
+      "eventType": "HN_USED_REFUSAL",
+      "minCount": 3,
+      "evidenceBindingKey": "refusal_loops",
+      "experimentBindingKey": "constrained_choice_no_debate",
+      "bottleneck": "Stuck on no",
+      "evidenceTemplate": "{count} refusal incidents in last 14 days",
+      "experiment": "Offer one constrained choice, then hold boundary with no debate."
+    },
+    {
+      "id": "parent_overwhelm",
+      "eventType": "HN_USED_PARENT_OVERWHELM",
+      "minCount": 3,
+      "evidenceBindingKey": "parent_overwhelm_moments",
+      "experimentBindingKey": "thirty_second_parent_reset",
+      "bottleneck": "Parent capacity feels low",
+      "evidenceTemplate": "{count} overwhelm logs in last 14 days",
+      "experiment": "Run a 30-second parent reset before responding for 5 days."
+    }
+  ],
+  "fallback": {
+    "minAnySimilar": 3,
+    "bottleneck": "High-friction moments",
+    "evidenceTemplate": "{count} similar events ({eventType}) in last 14 days",
+    "experiment": "Pick one script and one timer, repeat exactly for one week."
+  }
+}

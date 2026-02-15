@@ -1,0 +1,356 @@
+{
+  "meta": {
+    "schemaVersion": "safety_legal_evidence_registry@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required",
+    "scope": "Safety redirection, liability boundaries, and privacy/regulatory guardrails",
+    "notes": "Safety/legal items require at least two independent source references per rule."
+  },
+  "policyBindings": {
+    "redFlagGates": {
+      "breathing_difficulty": [
+        "ev_medical_red_flag_redirect"
+      ],
+      "dehydration_signs": [
+        "ev_medical_red_flag_redirect"
+      ],
+      "repeated_vomiting": [
+        "ev_medical_red_flag_redirect"
+      ],
+      "severe_pain_indicators": [
+        "ev_medical_red_flag_redirect"
+      ],
+      "feeding_refusal_with_pain_signs": [
+        "ev_feeding_pain_redirect"
+      ],
+      "unsafe_sleep_environment": [
+        "ev_safe_sleep_environment_gate"
+      ]
+    },
+    "liabilityBoundaries": {
+      "behavioral_not_medical": [
+        "ev_behavioral_scope_disclaimer"
+      ],
+      "feeding_behavioral_scope_only": [
+        "ev_feeding_pain_redirect"
+      ],
+      "pause_and_seek_clinical_guidance": [
+        "ev_medical_red_flag_redirect"
+      ]
+    },
+    "privacyCompliance": {
+      "coppa_children_data": [
+        "ev_coppa_data_limits"
+      ],
+      "health_breach_notification": [
+        "ev_health_breach_notification"
+      ],
+      "hipaa_boundary_for_consumer_apps": [
+        "ev_hipaa_boundary_for_apps"
+      ]
+    },
+    "deviceScope": {
+      "general_wellness_positioning": [
+        "ev_fda_general_wellness_boundary"
+      ],
+      "clinical_decision_support_boundary": [
+        "ev_fda_cds_boundary"
+      ]
+    }
+  },
+  "evidenceItems": [
+    {
+      "id": "ev_safe_sleep_environment_gate",
+      "title": "Unsafe sleep setup must block behavioral plan execution",
+      "claim": "Sleep-plan execution should stop when safe sleep setup is not confirmed.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "red_flag.unsafe_sleep_environment"
+      ],
+      "contraindications": [
+        "unsafe_sleep_environment_flag=true"
+      ],
+      "redFlags": [
+        "unsafe_sleep_environment"
+      ],
+      "sourceRefs": [
+        {
+          "id": "aap_sleep_policy_2022",
+          "type": "clinical_guideline",
+          "citation": "Moon RY, Carlin RF, Hand I, et al. Sleep-Related Infant Deaths: Updated 2022 Recommendations for Reducing Infant Deaths in the Sleep Environment. Pediatrics. 2022;150(1):e2022057990.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2022,
+          "doi": "10.1542/peds.2022-057990",
+          "url": "https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022"
+        },
+        {
+          "id": "cdc_safe_sleep_2024",
+          "type": "public_health_guideline",
+          "citation": "CDC. Sleep Safely: Reducing the Risk of SUID and SIDS. Updated September 17, 2024.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/sudden-infant-death/sleep-safely/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_medical_red_flag_redirect",
+      "title": "Medical red-flag redirect",
+      "claim": "Breathing difficulty, dehydration signs, repeated vomiting, and severe pain indicators should trigger immediate medical guidance redirect rather than behavioral tactics.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "red_flag.breathing_difficulty",
+        "red_flag.dehydration_signs",
+        "red_flag.repeated_vomiting",
+        "red_flag.severe_pain_indicators"
+      ],
+      "contraindications": [
+        "breathing_difficulty=true",
+        "dehydration_signs=true",
+        "repeated_vomiting=true",
+        "severe_pain_indicators=true"
+      ],
+      "redFlags": [
+        "breathing_difficulty",
+        "dehydration_signs",
+        "repeated_vomiting",
+        "severe_pain_indicators"
+      ],
+      "sourceRefs": [
+        {
+          "id": "healthychildren_emergency_signs",
+          "type": "clinical_explainer",
+          "citation": "HealthyChildren.org. When Your Child Needs Emergency Medical Services.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2025,
+          "url": "https://www.healthychildren.org/English/health-issues/injuries-emergencies/Pages/When-Your-Child-Needs-Emergency-Medical-Services.aspx"
+        },
+        {
+          "id": "cdc_safe_sleep_2024",
+          "type": "public_health_guideline",
+          "citation": "CDC. Sleep Safely: Reducing the Risk of SUID and SIDS. Updated September 17, 2024.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/sudden-infant-death/sleep-safely/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_feeding_pain_redirect",
+      "title": "Feeding pain signs are out of behavioral scope",
+      "claim": "Feeding refusal with pain indicators should trigger clinical evaluation rather than behavior-only feeding tactics.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "red_flag.feeding_refusal_with_pain_signs",
+        "liability.feeding_behavioral_scope_only"
+      ],
+      "contraindications": [
+        "feeding_refusal_with_pain_signs=true"
+      ],
+      "redFlags": [
+        "feeding_refusal_with_pain_signs"
+      ],
+      "sourceRefs": [
+        {
+          "id": "healthychildren_emergency_signs",
+          "type": "clinical_explainer",
+          "citation": "HealthyChildren.org. When Your Child Needs Emergency Medical Services.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2025,
+          "url": "https://www.healthychildren.org/English/health-issues/injuries-emergencies/Pages/When-Your-Child-Needs-Emergency-Medical-Services.aspx"
+        },
+        {
+          "id": "hhs_health_app_boundary",
+          "type": "regulatory_guidance",
+          "citation": "HHS. Access Right, Health Apps, and APIs (HIPAA boundary guidance).",
+          "publisher": "U.S. Department of Health and Human Services",
+          "year": 2024,
+          "url": "https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/access-right-health-apps-apis/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_behavioral_scope_disclaimer",
+      "title": "Behavioral support positioning boundary",
+      "claim": "Product messaging should clearly position the app as behavioral support and not medical diagnosis or treatment.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "liability.behavioral_not_medical"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "fda_general_wellness_2026",
+          "type": "regulatory_guidance",
+          "citation": "FDA. General Wellness: Policy for Low Risk Devices. Updated January 2026.",
+          "publisher": "U.S. Food and Drug Administration",
+          "year": 2026,
+          "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/general-wellness-policy-low-risk-devices"
+        },
+        {
+          "id": "fda_cds_2026",
+          "type": "regulatory_guidance",
+          "citation": "FDA. Clinical Decision Support Software Guidance. Updated January 2026.",
+          "publisher": "U.S. Food and Drug Administration",
+          "year": 2026,
+          "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software"
+        }
+      ]
+    },
+    {
+      "id": "ev_coppa_data_limits",
+      "title": "Children's data handling limits",
+      "claim": "If product workflows involve children-related data, COPPA requirements and limits on monetization/data handling must be respected.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "privacy.coppa_children_data"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "ftc_coppa_2025",
+          "type": "regulatory_rule_update",
+          "citation": "FTC press release: FTC finalizes changes to the Children's Privacy Rule. January 16, 2025.",
+          "publisher": "U.S. Federal Trade Commission",
+          "year": 2025,
+          "url": "https://www.ftc.gov/news-events/news/press-releases/2025/01/ftc-finalizes-changes-childrens-privacy-rule-limiting-companies-ability-monetize-kids-data"
+        },
+        {
+          "id": "hhs_health_app_boundary",
+          "type": "regulatory_guidance",
+          "citation": "HHS. Access Right, Health Apps, and APIs (HIPAA boundary guidance).",
+          "publisher": "U.S. Department of Health and Human Services",
+          "year": 2024,
+          "url": "https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/access-right-health-apps-apis/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_health_breach_notification",
+      "title": "Consumer health breach notification obligations",
+      "claim": "Consumer-health data incidents can trigger FTC Health Breach Notification Rule obligations.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "privacy.health_breach_notification"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "ftc_hbnr_basics",
+          "type": "regulatory_guidance",
+          "citation": "FTC. Health Breach Notification Rule: The Basics for Business.",
+          "publisher": "U.S. Federal Trade Commission",
+          "year": 2024,
+          "url": "https://www.ftc.gov/business-guidance/resources/health-breach-notification-rule-basics-business"
+        },
+        {
+          "id": "hhs_health_app_boundary",
+          "type": "regulatory_guidance",
+          "citation": "HHS. Access Right, Health Apps, and APIs (HIPAA boundary guidance).",
+          "publisher": "U.S. Department of Health and Human Services",
+          "year": 2024,
+          "url": "https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/access-right-health-apps-apis/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_hipaa_boundary_for_apps",
+      "title": "HIPAA boundary for consumer parenting apps",
+      "claim": "Many consumer apps are outside HIPAA-covered entity scope; boundary language and data handling must be explicit.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "privacy.hipaa_boundary_for_consumer_apps"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "hhs_health_app_boundary",
+          "type": "regulatory_guidance",
+          "citation": "HHS. Access Right, Health Apps, and APIs (HIPAA boundary guidance).",
+          "publisher": "U.S. Department of Health and Human Services",
+          "year": 2024,
+          "url": "https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/access-right-health-apps-apis/index.html"
+        },
+        {
+          "id": "ftc_hbnr_basics",
+          "type": "regulatory_guidance",
+          "citation": "FTC. Health Breach Notification Rule: The Basics for Business.",
+          "publisher": "U.S. Federal Trade Commission",
+          "year": 2024,
+          "url": "https://www.ftc.gov/business-guidance/resources/health-breach-notification-rule-basics-business"
+        }
+      ]
+    },
+    {
+      "id": "ev_fda_general_wellness_boundary",
+      "title": "General wellness positioning boundary",
+      "claim": "Behavioral coaching product claims should stay in low-risk general wellness framing.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "device.general_wellness_positioning"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "fda_general_wellness_2026",
+          "type": "regulatory_guidance",
+          "citation": "FDA. General Wellness: Policy for Low Risk Devices. Updated January 2026.",
+          "publisher": "U.S. Food and Drug Administration",
+          "year": 2026,
+          "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/general-wellness-policy-low-risk-devices"
+        },
+        {
+          "id": "fda_cds_2026",
+          "type": "regulatory_guidance",
+          "citation": "FDA. Clinical Decision Support Software Guidance. Updated January 2026.",
+          "publisher": "U.S. Food and Drug Administration",
+          "year": 2026,
+          "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software"
+        }
+      ]
+    },
+    {
+      "id": "ev_fda_cds_boundary",
+      "title": "Clinical decision support boundary",
+      "claim": "Feature design should avoid crossing into regulated CDS functionality when positioned as behavioral support.",
+      "evidenceLevel": "review_required",
+      "classification": "safety_legal",
+      "appliesTo": [
+        "device.clinical_decision_support_boundary"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "fda_cds_2026",
+          "type": "regulatory_guidance",
+          "citation": "FDA. Clinical Decision Support Software Guidance. Updated January 2026.",
+          "publisher": "U.S. Food and Drug Administration",
+          "year": 2026,
+          "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software"
+        },
+        {
+          "id": "fda_general_wellness_2026",
+          "type": "regulatory_guidance",
+          "citation": "FDA. General Wellness: Policy for Low Risk Devices. Updated January 2026.",
+          "publisher": "U.S. Food and Drug Administration",
+          "year": 2026,
+          "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/general-wellness-policy-low-risk-devices"
+        }
+      ]
+    }
+  ]
+}

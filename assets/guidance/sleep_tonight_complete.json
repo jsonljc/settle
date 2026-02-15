@@ -1,0 +1,1911 @@
+{
+  "meta": {
+    "schemaVersion": "sleep_tonight_module@2.0.0",
+    "moduleVersion": "2.0.0",
+    "updatedAt": "2026-02-09",
+    "defaultLocale": "en-US",
+    "description": "Comprehensive sleep training guidance system with deterministic flows, safety checks, and adaptive support modes"
+  },
+
+  "stateManagement": {
+    "persistenceStrategy": "session_based",
+    "sessionTimeout": 28800,
+    "resetOnNewDay": true,
+    "resumeStrategy": "last_completed_step",
+    "metricsRetention": {
+      "caregiver_picked_up": { "persistAcrossSessions": false, "resetOnNewEpisode": true },
+      "caregiver_brought_to_bed": { "persistAcrossSessions": false, "resetOnNewEpisode": true },
+      "caregiver_stimulation_happened": { "persistAcrossSessions": false, "resetOnNewEpisode": true },
+      "caregiver_fed": { "persistAcrossSessions": false, "resetOnNewEpisode": true },
+      "caregiver_chose_comfort_now": { "persistAcrossSessions": false, "resetOnNewEpisode": false },
+      "wakes_count_so_far": { "persistAcrossSessions": true, "resetOnNewEpisode": false },
+      "time_since_last_feed_minutes": { "persistAcrossSessions": true, "resetOnNewEpisode": false }
+    }
+  },
+
+  "timeConfiguration": {
+    "minutesPerDay": 1440,
+    "overnightWrapAround": true,
+    "timezoneHandling": "device_local",
+    "dstAdjustmentStrategy": "gradual_shift",
+    "timeValidation": {
+      "bedtime_target_minutes": { "min": 0, "max": 1439 },
+      "desired_wake_minutes": { "min": 0, "max": 1439 },
+      "minSleepOpportunityMinutes": 480,
+      "maxSleepOpportunityMinutes": 840
+    }
+  },
+
+  "vocab": {
+    "methodIds": ["foundations_only", "check_console", "extinction", "fading_chair"],
+    "supportModeIds": ["none", "illness", "teething", "travel", "regression", "schedule_disruption", "caregiver_overwhelmed"],
+    "episodeTypes": ["bedtime", "false_start", "night_wake", "split_night", "early_wake"],
+    "predicateOps": ["eq", "neq", "gt", "gte", "lt", "lte", "in", "nin", "exists", "between"],
+    "metricIds": [
+      "age_months",
+      "training_allowed",
+      "support_mode",
+      "method_id",
+      "bedtime_target_minutes",
+      "desired_wake_minutes",
+      "now_minutes",
+      "time_since_last_sleep_onset_minutes",
+      "time_awake_current_episode_minutes",
+      "wakes_count_so_far",
+      "time_since_last_feed_minutes",
+      "feeding_policy_id",
+      "feed_allowed_now",
+      "caregiver_intends_feed",
+      "caregiver_fed",
+      "false_start_occurred",
+      "split_night_occurred",
+      "early_wake_occurred",
+      "late_nap_flag",
+      "daycare_constrained",
+      "caregiver_chose_comfort_now",
+      "caregiver_picked_up",
+      "caregiver_brought_to_bed",
+      "caregiver_stimulation_happened",
+      "unsafe_sleep_environment_flag",
+      "red_flag_health_flag",
+      "current_cycle_count",
+      "episode_duration_minutes",
+      "sleep_detected"
+    ]
+  },
+
+  "validation": {
+    "metrics": {
+      "age_months": {
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 36,
+        "errorKey": "sleep.validation.age_out_of_range"
+      },
+      "bedtime_target_minutes": {
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 1439,
+        "errorKey": "sleep.validation.bedtime_invalid"
+      },
+      "desired_wake_minutes": {
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 1439,
+        "errorKey": "sleep.validation.wake_time_invalid"
+      },
+      "time_since_last_feed_minutes": {
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "max": 720,
+        "errorKey": "sleep.validation.feed_time_invalid"
+      },
+      "method_id": {
+        "type": "enum",
+        "required": true,
+        "allowedValues": ["foundations_only", "check_console", "extinction", "fading_chair"],
+        "errorKey": "sleep.validation.method_invalid"
+      },
+      "support_mode": {
+        "type": "enum",
+        "required": false,
+        "allowedValues": ["none", "illness", "teething", "travel", "regression", "schedule_disruption", "caregiver_overwhelmed"],
+        "errorKey": "sleep.validation.support_mode_invalid"
+      }
+    },
+    "crossFieldRules": [
+      {
+        "id": "sleep_opportunity_minimum",
+        "rule": "sleep_opportunity_gte_minimum",
+        "errorKey": "sleep.validation.sleep_window_too_short"
+      },
+      {
+        "id": "age_method_compatibility",
+        "rule": "method_eligible_for_age",
+        "errorKey": "sleep.validation.method_not_age_appropriate"
+      }
+    ]
+  },
+
+  "safetyLimits": {
+    "maxCyclesPerEpisode": 20,
+    "maxEpisodeDurationMinutes": 180,
+    "maxWakesPerNight": 15,
+    "exceedActions": {
+      "maxCycles": {
+        "action": "suggest_comfort_mode",
+        "copyKey": "sleep.limit.max_cycles_reached"
+      },
+      "maxDuration": {
+        "action": "suggest_professional_consultation",
+        "copyKey": "sleep.limit.max_duration_reached"
+      },
+      "maxWakes": {
+        "action": "trigger_rescue_protocol",
+        "copyKey": "sleep.limit.max_wakes_reached"
+      }
+    }
+  },
+
+  "branchingConfiguration": {
+    "evaluationStrategy": "first_match",
+    "defaultBehavior": "use_default_next_step",
+    "conditionEvaluationOrder": "sequential"
+  },
+
+  "ageBands": [
+    {
+      "id": "0_4m",
+      "labelKey": "sleep.ageband.0_4m",
+      "minMonthsInclusive": 0,
+      "maxMonthsExclusive": 4,
+      "trainingAllowed": false,
+      "defaultMethodId": "foundations_only",
+      "defaultFeedingPolicyId": "feed_on_demand",
+      "developmentalNotes": "Focus on safe sleep foundations and responsive care"
+    },
+    {
+      "id": "4_6m",
+      "labelKey": "sleep.ageband.4_6m",
+      "minMonthsInclusive": 4,
+      "maxMonthsExclusive": 6,
+      "trainingAllowed": true,
+      "defaultMethodId": "check_console",
+      "defaultFeedingPolicyId": "feed_windows",
+      "developmentalNotes": "Many babies ready for gentle sleep training"
+    },
+    {
+      "id": "6_18m",
+      "labelKey": "sleep.ageband.6_18m",
+      "minMonthsInclusive": 6,
+      "maxMonthsExclusive": 18,
+      "trainingAllowed": true,
+      "defaultMethodId": "check_console",
+      "defaultFeedingPolicyId": "night_wean_in_progress",
+      "developmentalNotes": "Prime age for sleep training success"
+    },
+    {
+      "id": "18_36m",
+      "labelKey": "sleep.ageband.18_36m",
+      "minMonthsInclusive": 18,
+      "maxMonthsExclusive": 36,
+      "trainingAllowed": true,
+      "defaultMethodId": "fading_chair",
+      "defaultFeedingPolicyId": "night_wean_in_progress",
+      "developmentalNotes": "Toddler-appropriate methods with verbal reassurance"
+    }
+  ],
+
+  "safety": {
+    "persistentSafety": {
+      "bannerKey": "sleep.safety.banner",
+      "alwaysVisible": true,
+      "actions": [
+        {
+          "type": "call_emergency",
+          "labelKey": "sleep.safety.call_now",
+          "urgency": "critical"
+        },
+        {
+          "type": "safe_sleep_checklist",
+          "labelKey": "sleep.safety.checklist",
+          "urgency": "high"
+        },
+        {
+          "type": "professional_guidance",
+          "labelKey": "sleep.safety.consult_provider",
+          "urgency": "medium"
+        }
+      ]
+    },
+    "safeSleepChecklistKeys": [
+      "sleep.safety.item.back_sleep",
+      "sleep.safety.item.firm_flat",
+      "sleep.safety.item.no_loose_bedding",
+      "sleep.safety.item.room_share_ok",
+      "sleep.safety.item.no_couch_sleep",
+      "sleep.safety.item.temp_comfortable",
+      "sleep.safety.item.smoke_free"
+    ],
+    "stopRules": [
+      {
+        "id": "stop_if_red_flag",
+        "enabled": true,
+        "priority": 1,
+        "when": {
+          "allOf": [
+            { "metric": "red_flag_health_flag", "op": "eq", "value": true }
+          ]
+        },
+        "action": "pause_training",
+        "copyKey": "sleep.stop.red_flag"
+      },
+      {
+        "id": "stop_if_unsafe_sleep_env",
+        "enabled": true,
+        "priority": 2,
+        "when": {
+          "allOf": [
+            { "metric": "unsafe_sleep_environment_flag", "op": "eq", "value": true }
+          ]
+        },
+        "action": "pause_training",
+        "copyKey": "sleep.stop.unsafe_env"
+      },
+      {
+        "id": "stop_if_excessive_distress",
+        "enabled": true,
+        "priority": 3,
+        "when": {
+          "allOf": [
+            { "metric": "episode_duration_minutes", "op": "gte", "value": 180 }
+          ]
+        },
+        "action": "suggest_comfort",
+        "copyKey": "sleep.stop.excessive_distress"
+      }
+    ],
+    "redFlagIndicators": [
+      "sleep.safety.red_flag.breathing_difficulty",
+      "sleep.safety.red_flag.choking",
+      "sleep.safety.red_flag.unresponsive",
+      "sleep.safety.red_flag.seizure_like",
+      "sleep.safety.red_flag.extreme_lethargy",
+      "sleep.safety.red_flag.high_fever"
+    ]
+  },
+
+  "inputs": {
+    "sleepTonightEntry": {
+      "titleKey": "sleep.tonight.title",
+      "descriptionKey": "sleep.tonight.description",
+      "minimalQuestions": [
+        {
+          "id": "age_months",
+          "type": "number",
+          "required": true,
+          "labelKey": "sleep.input.age_months",
+          "validation": "age_months"
+        },
+        {
+          "id": "bedtime_target_minutes",
+          "type": "number",
+          "required": true,
+          "labelKey": "sleep.input.bedtime_target",
+          "validation": "bedtime_target_minutes",
+          "helpTextKey": "sleep.input.bedtime_help"
+        },
+        {
+          "id": "desired_wake_minutes",
+          "type": "number",
+          "required": true,
+          "labelKey": "sleep.input.desired_wake",
+          "validation": "desired_wake_minutes",
+          "helpTextKey": "sleep.input.wake_help"
+        },
+        {
+          "id": "method_id",
+          "type": "enum",
+          "required": false,
+          "defaultFromAgeBand": true,
+          "options": ["foundations_only", "check_console", "extinction", "fading_chair"],
+          "labelKey": "sleep.input.method",
+          "validation": "method_id"
+        },
+        {
+          "id": "support_mode",
+          "type": "enum",
+          "required": false,
+          "default": "none",
+          "options": ["none", "illness", "teething", "travel", "regression", "schedule_disruption", "caregiver_overwhelmed"],
+          "labelKey": "sleep.input.support_mode",
+          "validation": "support_mode"
+        },
+        {
+          "id": "feeding_policy_id",
+          "type": "enum",
+          "required": false,
+          "defaultFromAgeBand": true,
+          "options": ["feed_on_demand", "feed_windows", "night_wean_in_progress"],
+          "labelKey": "sleep.input.feeding_policy"
+        },
+        {
+          "id": "time_since_last_feed_minutes",
+          "type": "number",
+          "required": false,
+          "labelKey": "sleep.input.last_feed",
+          "validation": "time_since_last_feed_minutes"
+        },
+        {
+          "id": "late_nap_flag",
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "labelKey": "sleep.input.late_nap"
+        },
+        {
+          "id": "daycare_constrained",
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "labelKey": "sleep.input.daycare_constrained"
+        },
+        {
+          "id": "red_flag_health_flag",
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "labelKey": "sleep.input.health_concerns"
+        },
+        {
+          "id": "unsafe_sleep_environment_flag",
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "labelKey": "sleep.input.unsafe_environment"
+        }
+      ],
+      "fastActions": [
+        {
+          "id": "comfort_now",
+          "setsMetric": "caregiver_chose_comfort_now",
+          "value": true,
+          "labelKey": "sleep.fast.comfort_now",
+          "iconKey": "hug"
+        },
+        {
+          "id": "stay_consistent",
+          "setsMetric": "caregiver_chose_comfort_now",
+          "value": false,
+          "labelKey": "sleep.fast.stay_consistent",
+          "iconKey": "steady"
+        },
+        {
+          "id": "mark_sleep",
+          "setsMetric": "sleep_detected",
+          "value": true,
+          "labelKey": "sleep.fast.baby_asleep",
+          "iconKey": "sleep"
+        }
+      ]
+    }
+  },
+
+  "nightFeeding": {
+    "policies": [
+      {
+        "id": "feed_on_demand",
+        "labelKey": "sleep.feed.on_demand",
+        "descriptionKey": "sleep.feed.on_demand_desc",
+        "rules": {
+          "minMinutesBetweenFeeds": 0,
+          "maxFeedsPerNight": null,
+          "ageAppropriate": [0, 6]
+        }
+      },
+      {
+        "id": "feed_windows",
+        "labelKey": "sleep.feed.windows",
+        "descriptionKey": "sleep.feed.windows_desc",
+        "rules": {
+          "minMinutesBetweenFeeds": 180,
+          "maxFeedsPerNight": 3,
+          "ageAppropriate": [4, 18]
+        }
+      },
+      {
+        "id": "night_wean_in_progress",
+        "labelKey": "sleep.feed.wean",
+        "descriptionKey": "sleep.feed.wean_desc",
+        "rules": {
+          "minMinutesBetweenFeeds": 240,
+          "maxFeedsPerNight": 1,
+          "ageAppropriate": [6, 36]
+        }
+      }
+    ],
+    "feedDecisionRules": [
+      {
+        "id": "feed_allowed_on_demand",
+        "priority": 10,
+        "when": {
+          "allOf": [
+            { "metric": "feeding_policy_id", "op": "eq", "value": "feed_on_demand" }
+          ]
+        },
+        "setsMetric": "feed_allowed_now",
+        "value": true
+      },
+      {
+        "id": "feed_allowed_if_gap_met_windows",
+        "priority": 20,
+        "when": {
+          "allOf": [
+            { "metric": "feeding_policy_id", "op": "eq", "value": "feed_windows" },
+            { "metric": "time_since_last_feed_minutes", "op": "gte", "value": 180 }
+          ]
+        },
+        "setsMetric": "feed_allowed_now",
+        "value": true
+      },
+      {
+        "id": "feed_allowed_if_gap_met_wean",
+        "priority": 30,
+        "when": {
+          "allOf": [
+            { "metric": "feeding_policy_id", "op": "eq", "value": "night_wean_in_progress" },
+            { "metric": "time_since_last_feed_minutes", "op": "gte", "value": 240 }
+          ]
+        },
+        "setsMetric": "feed_allowed_now",
+        "value": true
+      },
+      {
+        "id": "feed_not_allowed_gap_not_met",
+        "priority": 40,
+        "when": {
+          "allOf": [
+            { "metric": "feeding_policy_id", "op": "in", "value": ["feed_windows", "night_wean_in_progress"] },
+            { "metric": "time_since_last_feed_minutes", "op": "exists", "value": true },
+            { "metric": "time_since_last_feed_minutes", "op": "lt", "value": 180 }
+          ]
+        },
+        "setsMetric": "feed_allowed_now",
+        "value": false
+      },
+      {
+        "id": "feed_status_unknown",
+        "priority": 999,
+        "when": {
+          "anyOf": [
+            { "metric": "time_since_last_feed_minutes", "op": "exists", "value": false },
+            { "metric": "feeding_policy_id", "op": "exists", "value": false }
+          ]
+        },
+        "setsMetric": "feed_allowed_now",
+        "value": null,
+        "noteKey": "sleep.feed.status_unknown"
+      }
+    ],
+    "copy": {
+      "feedAllowedKey": "sleep.feed.allowed",
+      "feedNotAllowedKey": "sleep.feed.not_allowed",
+      "feedUnknownKey": "sleep.feed.unknown"
+    }
+  },
+
+  "episodeClassifier": {
+    "thresholds": {
+      "falseStartMaxMinutesAfterSleepOnset": 60,
+      "falseStartMinMinutesAfterSleepOnset": 15,
+      "splitNightMinAwakeMinutes": 60,
+      "splitNightMaxHoursBefore": 5,
+      "earlyWakeWindowMinutesBeforeTargetWake": 90
+    },
+    "rules": [
+      {
+        "id": "classify_false_start",
+        "priority": 10,
+        "when": {
+          "allOf": [
+            { "metric": "false_start_occurred", "op": "eq", "value": true }
+          ]
+        },
+        "episodeType": "false_start",
+        "descriptionKey": "sleep.episode.false_start_desc"
+      },
+      {
+        "id": "classify_split_night",
+        "priority": 20,
+        "when": {
+          "allOf": [
+            { "metric": "split_night_occurred", "op": "eq", "value": true }
+          ]
+        },
+        "episodeType": "split_night",
+        "descriptionKey": "sleep.episode.split_night_desc"
+      },
+      {
+        "id": "classify_early_wake",
+        "priority": 30,
+        "when": {
+          "allOf": [
+            { "metric": "early_wake_occurred", "op": "eq", "value": true }
+          ]
+        },
+        "episodeType": "early_wake",
+        "descriptionKey": "sleep.episode.early_wake_desc"
+      },
+      {
+        "id": "classify_bedtime_if_no_sleep_onset",
+        "priority": 40,
+        "when": {
+          "allOf": [
+            { "metric": "time_since_last_sleep_onset_minutes", "op": "exists", "value": false }
+          ]
+        },
+        "episodeType": "bedtime",
+        "descriptionKey": "sleep.episode.bedtime_desc"
+      },
+      {
+        "id": "classify_night_wake_fallback",
+        "priority": 999,
+        "when": {
+          "anyOf": [
+            { "metric": "wakes_count_so_far", "op": "gte", "value": 1 }
+          ]
+        },
+        "episodeType": "night_wake",
+        "descriptionKey": "sleep.episode.night_wake_desc"
+      }
+    ]
+  },
+
+  "supportModes": [
+    {
+      "id": "none",
+      "labelKey": "sleep.support.none",
+      "overrides": {
+        "timerScalePercent": 0,
+        "minWaitSeconds": 30,
+        "maxWaitSeconds": 900,
+        "allowMoreComfort": false
+      }
+    },
+    {
+      "id": "illness",
+      "labelKey": "sleep.support.illness",
+      "descriptionKey": "sleep.support.illness_desc",
+      "overrides": {
+        "timerScalePercent": -50,
+        "minWaitSeconds": 20,
+        "maxWaitSeconds": 600,
+        "allowMoreComfort": true,
+        "supportScriptKey": "sleep.supportscript.illness"
+      },
+      "conflictStrategy": "most_permissive"
+    },
+    {
+      "id": "teething",
+      "labelKey": "sleep.support.teething",
+      "descriptionKey": "sleep.support.teething_desc",
+      "overrides": {
+        "timerScalePercent": -40,
+        "minWaitSeconds": 20,
+        "maxWaitSeconds": 600,
+        "allowMoreComfort": true,
+        "supportScriptKey": "sleep.supportscript.teething"
+      }
+    },
+    {
+      "id": "travel",
+      "labelKey": "sleep.support.travel",
+      "descriptionKey": "sleep.support.travel_desc",
+      "overrides": {
+        "timerScalePercent": -30,
+        "minWaitSeconds": 20,
+        "maxWaitSeconds": 600,
+        "allowMoreComfort": true,
+        "supportScriptKey": "sleep.supportscript.travel"
+      }
+    },
+    {
+      "id": "regression",
+      "labelKey": "sleep.support.regression",
+      "descriptionKey": "sleep.support.regression_desc",
+      "overrides": {
+        "timerScalePercent": -20,
+        "minWaitSeconds": 30,
+        "maxWaitSeconds": 900,
+        "allowMoreComfort": false,
+        "supportScriptKey": "sleep.supportscript.regression"
+      }
+    },
+    {
+      "id": "schedule_disruption",
+      "labelKey": "sleep.support.schedule_disruption",
+      "descriptionKey": "sleep.support.schedule_disruption_desc",
+      "overrides": {
+        "timerScalePercent": -15,
+        "minWaitSeconds": 30,
+        "maxWaitSeconds": 900,
+        "allowMoreComfort": false
+      }
+    },
+    {
+      "id": "caregiver_overwhelmed",
+      "labelKey": "sleep.support.caregiver_overwhelmed",
+      "descriptionKey": "sleep.support.caregiver_overwhelmed_desc",
+      "overrides": {
+        "timerScalePercent": -60,
+        "minWaitSeconds": 15,
+        "maxWaitSeconds": 420,
+        "allowMoreComfort": true,
+        "supportScriptKey": "sleep.supportscript.caregiver_overwhelmed"
+      },
+      "priorityOverOthers": true
+    }
+  ],
+
+  "methods": [
+    {
+      "id": "foundations_only",
+      "labelKey": "sleep.method.foundations",
+      "descriptionKey": "sleep.method.foundations_desc",
+      "eligibleAgeBandIds": ["0_4m"],
+      "timerProfiles": [
+        {
+          "id": "foundations_pause",
+          "type": "fixed",
+          "fixedSeconds": 30,
+          "scalable": false
+        }
+      ],
+      "flowsByEpisode": {
+        "bedtime": { "flowId": "foundations_bedtime" },
+        "false_start": { "flowId": "foundations_wake" },
+        "night_wake": { "flowId": "foundations_wake" },
+        "split_night": { "flowId": "foundations_split" },
+        "early_wake": { "flowId": "foundations_early" }
+      }
+    },
+    {
+      "id": "check_console",
+      "labelKey": "sleep.method.check_console",
+      "descriptionKey": "sleep.method.check_console_desc",
+      "eligibleAgeBandIds": ["4_6m", "6_18m"],
+      "timerProfiles": [
+        {
+          "id": "cc_wait_1",
+          "type": "graduated",
+          "sequenceSeconds": [60, 120, 300, 420, 600],
+          "repeatLast": true,
+          "scalable": true
+        },
+        {
+          "id": "cc_checkin",
+          "type": "fixed",
+          "fixedSeconds": 30,
+          "scalable": false
+        },
+        {
+          "id": "reset_pause",
+          "type": "fixed",
+          "fixedSeconds": 20,
+          "scalable": false
+        }
+      ],
+      "flowsByEpisode": {
+        "bedtime": { "flowId": "cc_bedtime" },
+        "false_start": { "flowId": "cc_false_start" },
+        "night_wake": { "flowId": "cc_night_wake" },
+        "split_night": { "flowId": "cc_split_night" },
+        "early_wake": { "flowId": "cc_early_wake" }
+      }
+    },
+    {
+      "id": "extinction",
+      "labelKey": "sleep.method.extinction",
+      "descriptionKey": "sleep.method.extinction_desc",
+      "eligibleAgeBandIds": ["4_6m", "6_18m", "18_36m"],
+      "timerProfiles": [
+        {
+          "id": "ext_wait",
+          "type": "fixed",
+          "fixedSeconds": 600,
+          "scalable": true
+        },
+        {
+          "id": "reset_pause",
+          "type": "fixed",
+          "fixedSeconds": 20,
+          "scalable": false
+        }
+      ],
+      "flowsByEpisode": {
+        "bedtime": { "flowId": "ext_bedtime" },
+        "false_start": { "flowId": "ext_wake" },
+        "night_wake": { "flowId": "ext_wake" },
+        "split_night": { "flowId": "ext_split" },
+        "early_wake": { "flowId": "ext_early" }
+      }
+    },
+    {
+      "id": "fading_chair",
+      "labelKey": "sleep.method.fading_chair",
+      "descriptionKey": "sleep.method.fading_chair_desc",
+      "eligibleAgeBandIds": ["18_36m"],
+      "timerProfiles": [
+        {
+          "id": "chair_interval",
+          "type": "fixed",
+          "fixedSeconds": 120,
+          "scalable": true
+        },
+        {
+          "id": "chair_response",
+          "type": "fixed",
+          "fixedSeconds": 15,
+          "scalable": false
+        },
+        {
+          "id": "reset_pause",
+          "type": "fixed",
+          "fixedSeconds": 20,
+          "scalable": false
+        }
+      ],
+      "flowsByEpisode": {
+        "bedtime": { "flowId": "chair_bedtime" },
+        "false_start": { "flowId": "chair_wake" },
+        "night_wake": { "flowId": "chair_wake" },
+        "split_night": { "flowId": "chair_split" },
+        "early_wake": { "flowId": "chair_early" }
+      }
+    }
+  ],
+
+  "flows": [
+    {
+      "id": "foundations_bedtime",
+      "steps": [
+        {
+          "id": "fnd_0",
+          "titleKey": "sleep.flow.foundations.title",
+          "doKeys": ["sleep.flow.foundations.do_1", "sleep.flow.foundations.do_2"],
+          "sayKeys": ["sleep.flow.foundations.say_1"],
+          "avoidKeys": ["sleep.flow.foundations.avoid_1"],
+          "timerProfileId": "foundations_pause",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "support_mode", "op": "eq", "value": "caregiver_overwhelmed" }
+                ]
+              },
+              "nextStepId": "fnd_support_script"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "fnd_1"
+        },
+        {
+          "id": "fnd_support_script",
+          "titleKey": "sleep.flow.common.support_script_title",
+          "doKeys": ["sleep.flow.common.support_script_do_1"],
+          "sayKeys": ["sleep.flow.common.support_script_say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "foundations_pause",
+          "defaultNextStepId": "fnd_1"
+        },
+        {
+          "id": "fnd_1",
+          "titleKey": "sleep.flow.foundations.settle_title",
+          "doKeys": ["sleep.flow.foundations.settle_do_1"],
+          "sayKeys": ["sleep.flow.foundations.settle_say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "foundations_pause",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "fnd_1"
+        }
+      ]
+    },
+    {
+      "id": "foundations_wake",
+      "steps": [
+        {
+          "id": "fnd_w_0",
+          "titleKey": "sleep.flow.foundations.wake_title",
+          "doKeys": ["sleep.flow.foundations.wake_do_1", "sleep.flow.foundations.wake_do_2"],
+          "sayKeys": ["sleep.flow.foundations.wake_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_lights"],
+          "timerProfileId": "foundations_pause",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_intends_feed", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "fnd_feed"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "fnd_w_1"
+        },
+        {
+          "id": "fnd_feed",
+          "titleKey": "sleep.flow.common.feed_gate.title",
+          "doKeys": ["sleep.flow.common.feed_gate.do_1", "sleep.flow.common.feed_gate.do_2"],
+          "sayKeys": ["sleep.flow.common.feed_gate.say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "foundations_pause",
+          "defaultNextStepId": "fnd_w_1"
+        },
+        {
+          "id": "fnd_w_1",
+          "titleKey": "sleep.flow.foundations.settle_title",
+          "doKeys": ["sleep.flow.foundations.settle_do_1"],
+          "sayKeys": ["sleep.flow.foundations.settle_say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "foundations_pause",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "fnd_w_1"
+        }
+      ]
+    },
+    {
+      "id": "foundations_split",
+      "steps": [
+        {
+          "id": "fnd_s_0",
+          "titleKey": "sleep.flow.foundations.split_title",
+          "doKeys": ["sleep.flow.foundations.split_do_1", "sleep.flow.foundations.split_do_2"],
+          "sayKeys": ["sleep.flow.foundations.split_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_playtime"],
+          "timerProfileId": "foundations_pause",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "fnd_w_1"
+        }
+      ]
+    },
+    {
+      "id": "foundations_early",
+      "steps": [
+        {
+          "id": "fnd_e_0",
+          "titleKey": "sleep.flow.foundations.early_title",
+          "doKeys": ["sleep.flow.foundations.early_do_1"],
+          "sayKeys": ["sleep.flow.foundations.early_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_start_day_too_early"],
+          "timerProfileId": "foundations_pause",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "fnd_w_1"
+        }
+      ]
+    },
+    {
+      "id": "cc_bedtime",
+      "steps": [
+        {
+          "id": "cc_bt_0",
+          "titleKey": "sleep.flow.cc.bedtime.start_title",
+          "doKeys": ["sleep.flow.cc.bedtime.start_do_1", "sleep.flow.cc.bedtime.start_do_2"],
+          "sayKeys": ["sleep.flow.cc.bedtime.start_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_long_talk"],
+          "timerProfileId": "cc_wait_1",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "cc_bt_1"
+        },
+        {
+          "id": "cc_bt_1",
+          "titleKey": "sleep.flow.cc.checkin_title",
+          "doKeys": ["sleep.flow.cc.checkin_do_1"],
+          "sayKeys": ["sleep.flow.cc.checkin_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_pickup_long"],
+          "timerProfileId": "cc_checkin",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_picked_up", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "repair_picked_up"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_brought_to_bed", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "repair_brought_to_bed"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_stimulation_happened", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "repair_stimulation"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_chose_comfort_now", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "comfort_mode"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "support_mode", "op": "neq", "value": "none" }
+                ]
+              },
+              "nextStepId": "support_script"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "cc_bt_0"
+        },
+        {
+          "id": "comfort_mode",
+          "titleKey": "sleep.flow.common.comfort_mode_title",
+          "doKeys": ["sleep.flow.common.comfort_mode_do_1", "sleep.flow.common.comfort_mode_do_2"],
+          "sayKeys": ["sleep.flow.common.comfort_mode_say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "cc_bt_0"
+        },
+        {
+          "id": "support_script",
+          "titleKey": "sleep.flow.common.support_script_title",
+          "doKeys": ["sleep.flow.common.support_script_do_1"],
+          "sayKeys": ["sleep.flow.common.support_script_say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "cc_bt_0"
+        },
+        {
+          "id": "repair_picked_up",
+          "titleKey": "sleep.repair.picked_up.title",
+          "doKeys": ["sleep.repair.picked_up.do_1", "sleep.repair.picked_up.do_2"],
+          "sayKeys": ["sleep.repair.picked_up.say_1"],
+          "avoidKeys": ["sleep.repair.common.avoid_new_game"],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "cc_bt_0"
+        },
+        {
+          "id": "repair_brought_to_bed",
+          "titleKey": "sleep.repair.brought_to_bed.title",
+          "doKeys": ["sleep.repair.brought_to_bed.do_1", "sleep.repair.brought_to_bed.do_2"],
+          "sayKeys": ["sleep.repair.brought_to_bed.say_1"],
+          "avoidKeys": ["sleep.repair.common.avoid_new_game"],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "cc_bt_0"
+        },
+        {
+          "id": "repair_stimulation",
+          "titleKey": "sleep.repair.stimulation.title",
+          "doKeys": ["sleep.repair.stimulation.do_1", "sleep.repair.stimulation.do_2"],
+          "sayKeys": ["sleep.repair.stimulation.say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "cc_bt_0"
+        }
+      ]
+    },
+    {
+      "id": "cc_night_wake",
+      "steps": [
+        {
+          "id": "cc_nw_0",
+          "titleKey": "sleep.flow.cc.night_wake.title",
+          "doKeys": ["sleep.flow.cc.night_wake.do_1", "sleep.flow.cc.night_wake.do_2"],
+          "sayKeys": ["sleep.flow.cc.night_wake.say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_lights"],
+          "timerProfileId": "cc_wait_1",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_intends_feed", "op": "eq", "value": true },
+                  { "metric": "feed_allowed_now", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "cc_feed_step"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_fed", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "repair_fed"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "cc_bt_1"
+        },
+        {
+          "id": "cc_feed_step",
+          "titleKey": "sleep.flow.common.feed_gate.title",
+          "doKeys": ["sleep.flow.common.feed_gate.do_1", "sleep.flow.common.feed_gate.do_2"],
+          "sayKeys": ["sleep.flow.common.feed_gate.say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_lights"],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "cc_bt_1"
+        },
+        {
+          "id": "repair_fed",
+          "titleKey": "sleep.repair.fed.title",
+          "doKeys": ["sleep.repair.fed.do_1"],
+          "sayKeys": ["sleep.repair.fed.say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "cc_bt_0"
+        }
+      ]
+    },
+    {
+      "id": "cc_false_start",
+      "steps": [
+        {
+          "id": "cc_fs_0",
+          "titleKey": "sleep.flow.cc.false_start.title",
+          "doKeys": ["sleep.flow.cc.false_start.do_1"],
+          "sayKeys": ["sleep.flow.cc.false_start.say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_reset_full_routine"],
+          "timerProfileId": "cc_wait_1",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "cc_bt_1"
+        }
+      ]
+    },
+    {
+      "id": "cc_split_night",
+      "steps": [
+        {
+          "id": "cc_sn_0",
+          "titleKey": "sleep.flow.cc.split_night.title",
+          "doKeys": ["sleep.flow.cc.split_night.do_1", "sleep.flow.cc.split_night.do_2"],
+          "sayKeys": ["sleep.flow.cc.split_night.say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_playtime"],
+          "timerProfileId": "cc_wait_1",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "cc_bt_1"
+        }
+      ]
+    },
+    {
+      "id": "cc_early_wake",
+      "steps": [
+        {
+          "id": "cc_ew_0",
+          "titleKey": "sleep.flow.cc.early_wake.title",
+          "doKeys": ["sleep.flow.cc.early_wake.do_1"],
+          "sayKeys": ["sleep.flow.cc.early_wake.say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_start_day_too_early"],
+          "timerProfileId": "cc_wait_1",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "cc_bt_1"
+        }
+      ]
+    },
+    {
+      "id": "ext_bedtime",
+      "steps": [
+        {
+          "id": "ext_bt_0",
+          "titleKey": "sleep.flow.ext.bedtime.start_title",
+          "doKeys": ["sleep.flow.ext.bedtime.start_do_1", "sleep.flow.ext.bedtime.start_do_2"],
+          "sayKeys": ["sleep.flow.ext.bedtime.start_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_long_talk"],
+          "timerProfileId": "ext_wait",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_chose_comfort_now", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "comfort_mode_ext"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "ext_bt_1"
+        },
+        {
+          "id": "ext_bt_1",
+          "titleKey": "sleep.flow.ext.check_title",
+          "doKeys": ["sleep.flow.ext.check_do_1"],
+          "sayKeys": [],
+          "avoidKeys": ["sleep.flow.ext.check_avoid_1"],
+          "timerProfileId": "ext_wait",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "ext_bt_1"
+        },
+        {
+          "id": "comfort_mode_ext",
+          "titleKey": "sleep.flow.common.comfort_mode_title",
+          "doKeys": ["sleep.flow.common.comfort_mode_do_1", "sleep.flow.common.comfort_mode_do_2"],
+          "sayKeys": ["sleep.flow.common.comfort_mode_say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "ext_bt_0"
+        }
+      ]
+    },
+    {
+      "id": "ext_wake",
+      "steps": [
+        {
+          "id": "ext_w_0",
+          "titleKey": "sleep.flow.ext.wake_title",
+          "doKeys": ["sleep.flow.ext.wake_do_1"],
+          "sayKeys": ["sleep.flow.ext.wake_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_lights"],
+          "timerProfileId": "ext_wait",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_intends_feed", "op": "eq", "value": true },
+                  { "metric": "feed_allowed_now", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "ext_feed"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_chose_comfort_now", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "comfort_mode_ext"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "ext_bt_1"
+        },
+        {
+          "id": "ext_feed",
+          "titleKey": "sleep.flow.common.feed_gate.title",
+          "doKeys": ["sleep.flow.common.feed_gate.do_1", "sleep.flow.common.feed_gate.do_2"],
+          "sayKeys": ["sleep.flow.common.feed_gate.say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "ext_bt_1"
+        }
+      ]
+    },
+    {
+      "id": "ext_split",
+      "steps": [
+        {
+          "id": "ext_s_0",
+          "titleKey": "sleep.flow.ext.split_title",
+          "doKeys": ["sleep.flow.ext.split_do_1", "sleep.flow.ext.split_do_2"],
+          "sayKeys": ["sleep.flow.ext.split_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_playtime"],
+          "timerProfileId": "ext_wait",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "ext_bt_1"
+        }
+      ]
+    },
+    {
+      "id": "ext_early",
+      "steps": [
+        {
+          "id": "ext_e_0",
+          "titleKey": "sleep.flow.ext.early_title",
+          "doKeys": ["sleep.flow.ext.early_do_1"],
+          "sayKeys": ["sleep.flow.ext.early_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_start_day_too_early"],
+          "timerProfileId": "ext_wait",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "ext_bt_1"
+        }
+      ]
+    },
+    {
+      "id": "chair_bedtime",
+      "steps": [
+        {
+          "id": "chair_bt_0",
+          "titleKey": "sleep.flow.chair.bedtime.start_title",
+          "doKeys": ["sleep.flow.chair.bedtime.start_do_1", "sleep.flow.chair.bedtime.start_do_2"],
+          "sayKeys": ["sleep.flow.chair.bedtime.start_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_long_talk"],
+          "timerProfileId": "chair_interval",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "chair_bt_1"
+        },
+        {
+          "id": "chair_bt_1",
+          "titleKey": "sleep.flow.chair.respond_title",
+          "doKeys": ["sleep.flow.chair.respond_do_1"],
+          "sayKeys": ["sleep.flow.chair.respond_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_pickup_long"],
+          "timerProfileId": "chair_response",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_chose_comfort_now", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "comfort_mode_chair"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "chair_bt_0"
+        },
+        {
+          "id": "comfort_mode_chair",
+          "titleKey": "sleep.flow.common.comfort_mode_title",
+          "doKeys": ["sleep.flow.common.comfort_mode_do_1", "sleep.flow.common.comfort_mode_do_2"],
+          "sayKeys": ["sleep.flow.common.comfort_mode_say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "chair_bt_0"
+        }
+      ]
+    },
+    {
+      "id": "chair_wake",
+      "steps": [
+        {
+          "id": "chair_w_0",
+          "titleKey": "sleep.flow.chair.wake_title",
+          "doKeys": ["sleep.flow.chair.wake_do_1", "sleep.flow.chair.wake_do_2"],
+          "sayKeys": ["sleep.flow.chair.wake_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_lights"],
+          "timerProfileId": "chair_interval",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "caregiver_intends_feed", "op": "eq", "value": true },
+                  { "metric": "feed_allowed_now", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "chair_feed"
+            },
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "chair_bt_1"
+        },
+        {
+          "id": "chair_feed",
+          "titleKey": "sleep.flow.common.feed_gate.title",
+          "doKeys": ["sleep.flow.common.feed_gate.do_1", "sleep.flow.common.feed_gate.do_2"],
+          "sayKeys": ["sleep.flow.common.feed_gate.say_1"],
+          "avoidKeys": [],
+          "timerProfileId": "reset_pause",
+          "defaultNextStepId": "chair_bt_1"
+        }
+      ]
+    },
+    {
+      "id": "chair_split",
+      "steps": [
+        {
+          "id": "chair_s_0",
+          "titleKey": "sleep.flow.chair.split_title",
+          "doKeys": ["sleep.flow.chair.split_do_1", "sleep.flow.chair.split_do_2"],
+          "sayKeys": ["sleep.flow.chair.split_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_playtime"],
+          "timerProfileId": "chair_interval",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "chair_bt_1"
+        }
+      ]
+    },
+    {
+      "id": "chair_early",
+      "steps": [
+        {
+          "id": "chair_e_0",
+          "titleKey": "sleep.flow.chair.early_title",
+          "doKeys": ["sleep.flow.chair.early_do_1"],
+          "sayKeys": ["sleep.flow.chair.early_say_1"],
+          "avoidKeys": ["sleep.flow.common.avoid_start_day_too_early"],
+          "timerProfileId": "chair_interval",
+          "branching": [
+            {
+              "when": {
+                "allOf": [
+                  { "metric": "sleep_detected", "op": "eq", "value": true }
+                ]
+              },
+              "nextStepId": "exit_success"
+            }
+          ],
+          "defaultNextStepId": "chair_bt_1"
+        }
+      ]
+    }
+  ],
+
+  "rescueProtocols": [
+    {
+      "id": "rescue_generic_night_wake",
+      "episodeType": "night_wake",
+      "priority": 999,
+      "tonight": {
+        "headlineKey": "sleep.rescue.generic.tonight.headline",
+        "doKeys": ["sleep.rescue.generic.tonight.do_1"]
+      },
+      "tomorrow": {
+        "headlineKey": "sleep.rescue.generic.tomorrow.headline",
+        "doKeys": ["sleep.rescue.generic.tomorrow.do_1"]
+      }
+    },
+    {
+      "id": "rescue_false_start",
+      "episodeType": "false_start",
+      "priority": 10,
+      "tonight": {
+        "headlineKey": "sleep.rescue.false_start.tonight.headline",
+        "doKeys": ["sleep.rescue.false_start.tonight.do_1", "sleep.rescue.false_start.tonight.do_2"]
+      },
+      "tomorrow": {
+        "headlineKey": "sleep.rescue.false_start.tomorrow.headline",
+        "doKeys": ["sleep.rescue.false_start.tomorrow.do_1"]
+      }
+    },
+    {
+      "id": "rescue_split_night",
+      "episodeType": "split_night",
+      "priority": 20,
+      "tonight": {
+        "headlineKey": "sleep.rescue.split.tonight.headline",
+        "doKeys": ["sleep.rescue.split.tonight.do_1", "sleep.rescue.split.tonight.do_2"]
+      },
+      "tomorrow": {
+        "headlineKey": "sleep.rescue.split.tomorrow.headline",
+        "doKeys": ["sleep.rescue.split.tomorrow.do_1"]
+      }
+    },
+    {
+      "id": "rescue_early_wake",
+      "episodeType": "early_wake",
+      "priority": 30,
+      "tonight": {
+        "headlineKey": "sleep.rescue.early.tonight.headline",
+        "doKeys": ["sleep.rescue.early.tonight.do_1"]
+      },
+      "tomorrow": {
+        "headlineKey": "sleep.rescue.early.tomorrow.headline",
+        "doKeys": ["sleep.rescue.early.tomorrow.do_1"]
+      }
+    }
+  ],
+
+  "triage": {
+    "issues": [
+      { "id": "bedtime_protest", "labelKey": "sleep.issue.bedtime_protest" },
+      { "id": "false_start", "labelKey": "sleep.issue.false_start" },
+      { "id": "frequent_wakes", "labelKey": "sleep.issue.frequent_wakes" },
+      { "id": "split_night", "labelKey": "sleep.issue.split_night" },
+      { "id": "early_wake", "labelKey": "sleep.issue.early_wake" }
+    ],
+    "rules": [
+      {
+        "id": "triage_false_start",
+        "priority": 10,
+        "when": {
+          "allOf": [
+            { "metric": "false_start_occurred", "op": "eq", "value": true }
+          ]
+        },
+        "issueId": "false_start",
+        "rescueProtocolId": "rescue_false_start"
+      },
+      {
+        "id": "triage_split_night",
+        "priority": 20,
+        "when": {
+          "allOf": [
+            { "metric": "split_night_occurred", "op": "eq", "value": true }
+          ]
+        },
+        "issueId": "split_night",
+        "rescueProtocolId": "rescue_split_night"
+      },
+      {
+        "id": "triage_early_wake",
+        "priority": 30,
+        "when": {
+          "allOf": [
+            { "metric": "early_wake_occurred", "op": "eq", "value": true }
+          ]
+        },
+        "issueId": "early_wake",
+        "rescueProtocolId": "rescue_early_wake"
+      }
+    ]
+  },
+
+  "copy": {
+    "strings": {
+      "sleep.tonight.title": { "text": "sleep tonight" },
+      "sleep.tonight.description": { "text": "Real-time sleep training guidance that adapts to your baby and your choices." },
+
+      "sleep.safety.banner": { "text": "If your child is choking, having trouble breathing, or you feel it's an emergency: call local emergency services now." },
+      "sleep.safety.call_now": { "text": "emergency" },
+      "sleep.safety.checklist": { "text": "safe sleep checklist" },
+      "sleep.safety.consult_provider": { "text": "consult your pediatrician" },
+      "sleep.safety.item.back_sleep": { "text": "Baby placed on their back to sleep." },
+      "sleep.safety.item.firm_flat": { "text": "Firm, flat sleep surface." },
+      "sleep.safety.item.no_loose_bedding": { "text": "No loose bedding or soft items." },
+      "sleep.safety.item.room_share_ok": { "text": "Room-sharing is okay if set up safely." },
+      "sleep.safety.item.no_couch_sleep": { "text": "Avoid couch/armchair sleep." },
+      "sleep.safety.item.temp_comfortable": { "text": "Room temperature 68-72°F (20-22°C)." },
+      "sleep.safety.item.smoke_free": { "text": "Smoke-free environment." },
+
+      "sleep.safety.red_flag.breathing_difficulty": { "text": "Labored, rapid, or irregular breathing" },
+      "sleep.safety.red_flag.choking": { "text": "Choking or gagging" },
+      "sleep.safety.red_flag.unresponsive": { "text": "Difficult to wake or unresponsive" },
+      "sleep.safety.red_flag.seizure_like": { "text": "Seizure-like movements" },
+      "sleep.safety.red_flag.extreme_lethargy": { "text": "Extreme lethargy or limpness" },
+      "sleep.safety.red_flag.high_fever": { "text": "Fever above 100.4°F (38°C) in infants under 3 months" },
+
+      "sleep.stop.red_flag": { "text": "Pause training tonight. Focus on comfort and consider medical guidance if you're worried." },
+      "sleep.stop.unsafe_env": { "text": "Fix the sleep setup first. We'll guide you once it's safe." },
+      "sleep.stop.excessive_distress": { "text": "It's been a long time. Consider comfort mode or ending for tonight." },
+
+      "sleep.limit.max_cycles_reached": { "text": "You've cycled through many check-ins. Consider switching to comfort mode." },
+      "sleep.limit.max_duration_reached": { "text": "This has been going on for a while. It might be time to consult your pediatrician about underlying issues." },
+      "sleep.limit.max_wakes_reached": { "text": "Exceptionally rough night. Let's look at what might be happening." },
+
+      "sleep.validation.age_out_of_range": { "text": "Age must be between 0 and 36 months." },
+      "sleep.validation.bedtime_invalid": { "text": "Bedtime must be a valid time (0-1439 minutes from midnight)." },
+      "sleep.validation.wake_time_invalid": { "text": "Wake time must be a valid time (0-1439 minutes from midnight)." },
+      "sleep.validation.feed_time_invalid": { "text": "Time since last feed must be between 0 and 12 hours (720 minutes)." },
+      "sleep.validation.method_invalid": { "text": "Please select a valid sleep training method." },
+      "sleep.validation.support_mode_invalid": { "text": "Please select a valid support mode." },
+      "sleep.validation.sleep_window_too_short": { "text": "Sleep opportunity should be at least 8 hours." },
+      "sleep.validation.method_not_age_appropriate": { "text": "This method is not recommended for your baby's age." },
+
+      "sleep.input.age_months": { "text": "Baby's age in months" },
+      "sleep.input.bedtime_target": { "text": "Target bedtime" },
+      "sleep.input.bedtime_help": { "text": "When you plan to put baby down" },
+      "sleep.input.desired_wake": { "text": "Desired wake time" },
+      "sleep.input.wake_help": { "text": "When you want baby to wake in the morning" },
+      "sleep.input.method": { "text": "Sleep training method" },
+      "sleep.input.support_mode": { "text": "Tonight's challenges" },
+      "sleep.input.feeding_policy": { "text": "Night feeding approach" },
+      "sleep.input.last_feed": { "text": "Minutes since last feed" },
+      "sleep.input.late_nap": { "text": "Late nap today" },
+      "sleep.input.daycare_constrained": { "text": "Daycare schedule constraints" },
+      "sleep.input.health_concerns": { "text": "Health or safety concerns" },
+      "sleep.input.unsafe_environment": { "text": "Sleep environment not yet safe" },
+
+      "sleep.fast.comfort_now": { "text": "comfort now" },
+      "sleep.fast.stay_consistent": { "text": "stay consistent" },
+      "sleep.fast.baby_asleep": { "text": "baby's asleep" },
+
+      "sleep.ageband.0_4m": { "text": "0–4 months" },
+      "sleep.ageband.4_6m": { "text": "4–6 months" },
+      "sleep.ageband.6_18m": { "text": "6–18 months" },
+      "sleep.ageband.18_36m": { "text": "18–36 months" },
+
+      "sleep.method.foundations": { "text": "newborn foundations" },
+      "sleep.method.foundations_desc": { "text": "Responsive care and safe sleep for 0-4 months" },
+      "sleep.method.check_console": { "text": "check & console" },
+      "sleep.method.check_console_desc": { "text": "Graduated intervals with brief check-ins" },
+      "sleep.method.extinction": { "text": "full extinction" },
+      "sleep.method.extinction_desc": { "text": "Minimal intervention with longer wait periods" },
+      "sleep.method.fading_chair": { "text": "fading chair" },
+      "sleep.method.fading_chair_desc": { "text": "Present in room with gradual distance increase" },
+
+      "sleep.support.none": { "text": "no support mode" },
+      "sleep.support.illness": { "text": "sick night" },
+      "sleep.support.illness_desc": { "text": "Baby is unwell - shorter intervals, more comfort" },
+      "sleep.support.teething": { "text": "teething" },
+      "sleep.support.teething_desc": { "text": "Teething discomfort - modified approach" },
+      "sleep.support.travel": { "text": "travel" },
+      "sleep.support.travel_desc": { "text": "New sleep environment - extra flexibility" },
+      "sleep.support.regression": { "text": "regression" },
+      "sleep.support.regression_desc": { "text": "Sleep regression - adjusted expectations" },
+      "sleep.support.schedule_disruption": { "text": "off-schedule day" },
+      "sleep.support.schedule_disruption_desc": { "text": "Unusual day schedule - minor adjustments" },
+      "sleep.support.caregiver_overwhelmed": { "text": "i'm overwhelmed" },
+      "sleep.support.caregiver_overwhelmed_desc": { "text": "You need support - significantly shorter intervals" },
+
+      "sleep.feed.on_demand": { "text": "feed on demand" },
+      "sleep.feed.on_demand_desc": { "text": "Feed whenever baby wakes - typical for young babies" },
+      "sleep.feed.windows": { "text": "feed windows" },
+      "sleep.feed.windows_desc": { "text": "Feed only if 3+ hours since last feed" },
+      "sleep.feed.wean": { "text": "night weaning" },
+      "sleep.feed.wean_desc": { "text": "Feed only if 4+ hours since last feed" },
+      "sleep.feed.allowed": { "text": "Feeding is okay now if you choose to." },
+      "sleep.feed.not_allowed": { "text": "If you can, try your method first. Feeding likely won't help right now." },
+      "sleep.feed.unknown": { "text": "Unable to determine if feeding recommended - trust your judgment." },
+
+      "sleep.episode.bedtime_desc": { "text": "Initial bedtime - no prior sleep tonight" },
+      "sleep.episode.false_start_desc": { "text": "Wake within 60 minutes of falling asleep" },
+      "sleep.episode.night_wake_desc": { "text": "Standard night wake" },
+      "sleep.episode.split_night_desc": { "text": "Extended wake period (60+ minutes)" },
+      "sleep.episode.early_wake_desc": { "text": "Wake within 90 minutes of target wake time" },
+
+      "sleep.supportscript.illness": { "text": "When baby is sick, comfort comes first. You can return to your plan when they're well." },
+      "sleep.supportscript.teething": { "text": "Teething pain is real. Offer appropriate pain relief and extra comfort tonight." },
+      "sleep.supportscript.travel": { "text": "New environments are hard. Give extra reassurance and adapt as needed." },
+      "sleep.supportscript.regression": { "text": "Regressions are temporary developmental leaps. Stay consistent but be patient." },
+      "sleep.supportscript.caregiver_overwhelmed": { "text": "You're doing hard work. Tonight, prioritize your own wellbeing. Shorter waits are okay." },
+
+      "sleep.flow.common.support_script_title": { "text": "support night" },
+      "sleep.flow.common.support_script_do_1": { "text": "Tonight is about comfort and calm, not perfect training." },
+      "sleep.flow.common.support_script_say_1": { "text": "You're having a hard time. I've got you." },
+
+      "sleep.flow.common.feed_gate.title": { "text": "feed, then return to plan" },
+      "sleep.flow.common.feed_gate.do_1": { "text": "Keep the room dark and the feed calm and short." },
+      "sleep.flow.common.feed_gate.do_2": { "text": "After, put them back down and return to the same plan." },
+      "sleep.flow.common.feed_gate.say_1": { "text": "All done. Back to sleep." },
+
+      "sleep.flow.foundations.title": { "text": "responsive settling" },
+      "sleep.flow.foundations.do_1": { "text": "Keep lights low and your voice quiet." },
+      "sleep.flow.foundations.do_2": { "text": "Use a simple repeatable pattern (hold → settle → place down)." },
+      "sleep.flow.foundations.say_1": { "text": "I'm here. You're safe." },
+      "sleep.flow.foundations.avoid_1": { "text": "Avoid long stimulation during the night." },
+      "sleep.flow.foundations.settle_title": { "text": "repeat the same calm pattern" },
+      "sleep.flow.foundations.settle_do_1": { "text": "Repeat the same steps in the same order. Keep it boring and calm." },
+      "sleep.flow.foundations.settle_say_1": { "text": "It's sleep time. I'm right here." },
+
+      "sleep.flow.foundations.wake_title": { "text": "night wake" },
+      "sleep.flow.foundations.wake_do_1": { "text": "Keep it dark and calm." },
+      "sleep.flow.foundations.wake_do_2": { "text": "Use your repeatable settling pattern." },
+      "sleep.flow.foundations.wake_say_1": { "text": "It's still sleep time. I'm here." },
+
+      "sleep.flow.foundations.split_title": { "text": "long wake" },
+      "sleep.flow.foundations.split_do_1": { "text": "Keep environment dark and boring." },
+      "sleep.flow.foundations.split_do_2": { "text": "Continue your settling pattern calmly." },
+      "sleep.flow.foundations.split_say_1": { "text": "Quiet body. Sleep time." },
+
+      "sleep.flow.foundations.early_title": { "text": "early wake" },
+      "sleep.flow.foundations.early_do_1": { "text": "Treat as a night wake until target wake time." },
+      "sleep.flow.foundations.early_say_1": { "text": "Not morning yet." },
+
+      "sleep.flow.cc.bedtime.start_title": { "text": "bedtime start" },
+      "sleep.flow.cc.bedtime.start_do_1": { "text": "Do your short routine. Place down awake." },
+      "sleep.flow.cc.bedtime.start_do_2": { "text": "Start the wait timer." },
+      "sleep.flow.cc.bedtime.start_say_1": { "text": "Goodnight. I'll see you in the morning." },
+
+      "sleep.flow.cc.checkin_title": { "text": "check-in" },
+      "sleep.flow.cc.checkin_do_1": { "text": "Keep the check-in under 30 seconds. Touch + voice, then leave." },
+      "sleep.flow.cc.checkin_say_1": { "text": "You're okay. It's time to sleep." },
+
+      "sleep.flow.cc.night_wake.title": { "text": "night wake" },
+      "sleep.flow.cc.night_wake.do_1": { "text": "Start with your method. Keep it dark and boring." },
+      "sleep.flow.cc.night_wake.do_2": { "text": "If you choose to feed, do it calmly and return to plan." },
+      "sleep.flow.cc.night_wake.say_1": { "text": "It's sleep time. I'm here." },
+
+      "sleep.flow.cc.false_start.title": { "text": "false start" },
+      "sleep.flow.cc.false_start.do_1": { "text": "Treat it like a normal wake. Same method, low light." },
+      "sleep.flow.cc.false_start.say_1": { "text": "It's still sleep time." },
+
+      "sleep.flow.cc.split_night.title": { "text": "split night" },
+      "sleep.flow.cc.split_night.do_1": { "text": "Keep it dark. Minimal interaction." },
+      "sleep.flow.cc.split_night.do_2": { "text": "No play, no snacks. Same method steps." },
+      "sleep.flow.cc.split_night.say_1": { "text": "Quiet body. Sleep time." },
+
+      "sleep.flow.cc.early_wake.title": { "text": "early wake" },
+      "sleep.flow.cc.early_wake.do_1": { "text": "Treat it like a night wake until your target wake time." },
+      "sleep.flow.cc.early_wake.say_1": { "text": "Not morning yet. Back to sleep." },
+
+      "sleep.flow.ext.bedtime.start_title": { "text": "bedtime - full extinction" },
+      "sleep.flow.ext.bedtime.start_do_1": { "text": "Complete routine. Place down awake." },
+      "sleep.flow.ext.bedtime.start_do_2": { "text": "Leave room. Do not return unless safety concern." },
+      "sleep.flow.ext.bedtime.start_say_1": { "text": "Goodnight. I love you." },
+
+      "sleep.flow.ext.check_title": { "text": "continue waiting" },
+      "sleep.flow.ext.check_do_1": { "text": "Listen from outside. Trust the process." },
+      "sleep.flow.ext.check_avoid_1": { "text": "Do not enter unless safety concern." },
+
+      "sleep.flow.ext.wake_title": { "text": "night wake - extinction" },
+      "sleep.flow.ext.wake_do_1": { "text": "Continue full extinction approach unless feeding." },
+      "sleep.flow.ext.wake_say_1": { "text": "Sleep time." },
+
+      "sleep.flow.ext.split_title": { "text": "split night - extinction" },
+      "sleep.flow.ext.split_do_1": { "text": "Maintain extinction. Keep environment boring." },
+      "sleep.flow.ext.split_do_2": { "text": "No lights, no interaction." },
+      "sleep.flow.ext.split_say_1": { "text": "Quiet time." },
+
+      "sleep.flow.ext.early_title": { "text": "early wake - extinction" },
+      "sleep.flow.ext.early_do_1": { "text": "Maintain approach until target wake time." },
+      "sleep.flow.ext.early_say_1": { "text": "Not morning." },
+
+      "sleep.flow.chair.bedtime.start_title": { "text": "bedtime - chair method" },
+      "sleep.flow.chair.bedtime.start_do_1": { "text": "Complete routine. Sit in chair next to crib." },
+      "sleep.flow.chair.bedtime.start_do_2": { "text": "Stay quiet and still. Minimal interaction." },
+      "sleep.flow.chair.bedtime.start_say_1": { "text": "Time to sleep. I'm right here." },
+
+      "sleep.flow.chair.respond_title": { "text": "respond from chair" },
+      "sleep.flow.chair.respond_do_1": { "text": "Verbal reassurance only. Stay in chair." },
+      "sleep.flow.chair.respond_say_1": { "text": "You're okay. Lie down." },
+
+      "sleep.flow.chair.wake_title": { "text": "night wake - chair" },
+      "sleep.flow.chair.wake_do_1": { "text": "Return to chair position." },
+      "sleep.flow.chair.wake_do_2": { "text": "Same calm presence as bedtime." },
+      "sleep.flow.chair.wake_say_1": { "text": "Sleep time. I'm here." },
+
+      "sleep.flow.chair.split_title": { "text": "split night - chair" },
+      "sleep.flow.chair.split_do_1": { "text": "Maintain chair position." },
+      "sleep.flow.chair.split_do_2": { "text": "Keep it boring. No play." },
+      "sleep.flow.chair.split_say_1": { "text": "Quiet body. Sleep." },
+
+      "sleep.flow.chair.early_title": { "text": "early wake - chair" },
+      "sleep.flow.chair.early_do_1": { "text": "Use chair method until target wake time." },
+      "sleep.flow.chair.early_say_1": { "text": "Not morning. Lie down." },
+
+      "sleep.flow.common.avoid_long_talk": { "text": "Avoid long talking or explaining." },
+      "sleep.flow.common.avoid_pickup_long": { "text": "Avoid long pickups unless you're in comfort mode." },
+      "sleep.flow.common.avoid_lights": { "text": "Avoid turning on bright lights." },
+      "sleep.flow.common.avoid_playtime": { "text": "Avoid play, snacks, or new stimulation." },
+      "sleep.flow.common.avoid_start_day_too_early": { "text": "Avoid starting the day early unless it's your target wake time." },
+      "sleep.flow.common.avoid_reset_full_routine": { "text": "Avoid restarting the full bedtime routine." },
+
+      "sleep.flow.common.comfort_mode_title": { "text": "comfort mode" },
+      "sleep.flow.common.comfort_mode_do_1": { "text": "Comfort briefly, then return to the same plan." },
+      "sleep.flow.common.comfort_mode_do_2": { "text": "Keep it calm, short, and repeatable." },
+      "sleep.flow.common.comfort_mode_say_1": { "text": "I'm here. It's still sleep time." },
+
+      "sleep.repair.common.avoid_new_game": { "text": "Avoid introducing a 'new game' (songs, toys, extra talking)." },
+
+      "sleep.repair.picked_up.title": { "text": "repair: picked up" },
+      "sleep.repair.picked_up.do_1": { "text": "If you picked up, that's okay. Put them back down once calm." },
+      "sleep.repair.picked_up.do_2": { "text": "Restart from the previous step and keep the next check-in short." },
+      "sleep.repair.picked_up.say_1": { "text": "I'm here. Back to sleep now." },
+
+      "sleep.repair.brought_to_bed.title": { "text": "repair: brought to bed" },
+      "sleep.repair.brought_to_bed.do_1": { "text": "If you brought them to bed, that's okay. Move them back to their safe sleep space when calm." },
+      "sleep.repair.brought_to_bed.do_2": { "text": "Then return to the same plan—keep it boring and consistent." },
+      "sleep.repair.brought_to_bed.say_1": { "text": "You're safe. Back to sleep now." },
+
+      "sleep.repair.stimulation.title": { "text": "repair: too much stimulation" },
+      "sleep.repair.stimulation.do_1": { "text": "Dim lights, reduce talking, and remove extra stimulation." },
+      "sleep.repair.stimulation.do_2": { "text": "Return to the plan with shorter, calmer check-ins." },
+      "sleep.repair.stimulation.say_1": { "text": "Quiet time. Back to sleep." },
+
+      "sleep.repair.fed.title": { "text": "repair: fed" },
+      "sleep.repair.fed.do_1": { "text": "After feeding, keep the room dark and return to the same plan." },
+      "sleep.repair.fed.say_1": { "text": "All done. Back to sleep." },
+
+      "sleep.issue.bedtime_protest": { "text": "bedtime protest" },
+      "sleep.issue.false_start": { "text": "false start" },
+      "sleep.issue.frequent_wakes": { "text": "frequent wakes" },
+      "sleep.issue.split_night": { "text": "split night" },
+      "sleep.issue.early_wake": { "text": "early wake" },
+
+      "sleep.rescue.generic.tonight.headline": { "text": "tonight: keep it simple" },
+      "sleep.rescue.generic.tonight.do_1": { "text": "Keep it dark. Use your method steps. If you deviated, use a repair step and return to plan." },
+      "sleep.rescue.generic.tomorrow.headline": { "text": "tomorrow: one small adjustment" },
+      "sleep.rescue.generic.tomorrow.do_1": { "text": "Stabilize wake time and avoid big schedule swings. Make one change only." },
+
+      "sleep.rescue.false_start.tonight.headline": { "text": "tonight: keep it boring" },
+      "sleep.rescue.false_start.tonight.do_1": { "text": "Treat it like a normal wake. Same method, low light." },
+      "sleep.rescue.false_start.tonight.do_2": { "text": "Avoid restarting bedtime from scratch." },
+      "sleep.rescue.false_start.tomorrow.headline": { "text": "tomorrow: adjust gently" },
+      "sleep.rescue.false_start.tomorrow.do_1": { "text": "Aim for a steadier bedtime window (avoid big shifts)." },
+
+      "sleep.rescue.split.tonight.headline": { "text": "tonight: quiet body" },
+      "sleep.rescue.split.tonight.do_1": { "text": "Keep it dark. Minimal interaction." },
+      "sleep.rescue.split.tonight.do_2": { "text": "No play, no snacks. Same method steps." },
+      "sleep.rescue.split.tomorrow.headline": { "text": "tomorrow: stabilize the day" },
+      "sleep.rescue.split.tomorrow.do_1": { "text": "Protect naps and avoid late-day sleep that pushes bedtime too far." },
+
+      "sleep.rescue.early.tonight.headline": { "text": "tonight: treat as night" },
+      "sleep.rescue.early.tonight.do_1": { "text": "Use your night-wake approach until target wake time." },
+      "sleep.rescue.early.tomorrow.headline": { "text": "tomorrow: anchor morning" },
+      "sleep.rescue.early.tomorrow.do_1": { "text": "Keep a consistent morning anchor time and avoid an early first nap." }
+    }
+  },
+
+  "successMetrics": {
+    "criteria": [
+      {
+        "id": "consistent_sleep_onset",
+        "description": "Baby falls asleep independently within 20 minutes",
+        "trackingPeriod": "7_days"
+      },
+      {
+        "id": "reduced_night_wakes",
+        "description": "0-1 night wakes per night (age appropriate)",
+        "trackingPeriod": "7_days"
+      },
+      {
+        "id": "appropriate_sleep_duration",
+        "description": "Age-appropriate total sleep hours",
+        "trackingPeriod": "7_days"
+      },
+      {
+        "id": "caregiver_confidence",
+        "description": "Caregiver reports increased confidence",
+        "trackingPeriod": "14_days"
+      }
+    ],
+    "graduationThreshold": 0.8
+  }
+}

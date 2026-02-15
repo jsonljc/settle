@@ -1,0 +1,297 @@
+{
+  "meta": {
+    "schemaVersion": "sleep_evidence_registry@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required",
+    "scope": "Behavioral sleep support only",
+    "notes": "This registry separates evidence and contraindications from runtime policy. Entries marked review_required must be clinically reviewed before production use."
+  },
+  "evidenceItems": [
+    {
+      "id": "ev_safe_sleep_foundations",
+      "title": "Safe sleep environment first",
+      "claim": "Sleep coaching should never proceed when the sleep environment is unsafe.",
+      "evidenceLevel": "review_required",
+      "appliesTo": [
+        "safety.stop_if_unsafe_sleep_env",
+        "checklists.safe_sleep"
+      ],
+      "contraindications": [
+        "unsafe_sleep_environment_flag=true"
+      ],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "aap_sleep_policy_2022",
+          "type": "clinical_guideline",
+          "citation": "Moon RY, Carlin RF, Hand I, et al. Sleep-Related Infant Deaths: Updated 2022 Recommendations for Reducing Infant Deaths in the Sleep Environment. Pediatrics. 2022;150(1):e2022057990.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2022,
+          "doi": "10.1542/peds.2022-057990",
+          "url": "https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022"
+        },
+        {
+          "id": "cdc_safe_sleep_2024",
+          "type": "public_health_guideline",
+          "citation": "CDC. Providing Care for Babies to Sleep Safely (SUID and SIDS). Updated September 17, 2024.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/sudden-infant-death/sleep-safely/index.html"
+        },
+        {
+          "id": "healthychildren_safe_sleep_explainer_2026",
+          "type": "aap_clinical_explainer",
+          "citation": "Moon RY. How to Keep Your Sleeping Baby Safe: AAP Policy Explained.",
+          "publisher": "HealthyChildren.org (American Academy of Pediatrics)",
+          "year": 2026,
+          "url": "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/A-Parents-Guide-to-Safe-Sleep.aspx"
+        }
+      ]
+    },
+    {
+      "id": "ev_young_infants_foundations_only",
+      "title": "No formal sleep training for very young infants",
+      "claim": "0-4 month guidance should focus on responsive care and foundations, not formal training intensity.",
+      "evidenceLevel": "review_required",
+      "appliesTo": [
+        "method.foundations_only",
+        "ageBand.0_4m"
+      ],
+      "contraindications": [
+        "age_months < 0",
+        "age_months > 36"
+      ],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "healthychildren_getting_baby_sleep_2024",
+          "type": "aap_clinical_explainer",
+          "citation": "AAP. Getting Your Baby to Sleep.",
+          "publisher": "HealthyChildren.org (American Academy of Pediatrics)",
+          "year": 2024,
+          "url": "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/getting-your-baby-to-sleep.aspx"
+        },
+        {
+          "id": "gradisar_pediatrics_2016",
+          "type": "randomized_controlled_trial",
+          "citation": "Gradisar M, Jackson K, Spurrier NJ, et al. Behavioral Interventions for Infant Sleep Problems: A Randomized Controlled Trial. Pediatrics. 2016;137(6):e20151486.",
+          "publisher": "Pediatrics",
+          "year": 2016,
+          "doi": "10.1542/peds.2015-1486",
+          "pmid": "27221288",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27221288/"
+        },
+        {
+          "id": "price_pediatrics_2012",
+          "type": "randomized_trial_follow_up",
+          "citation": "Price AMH, Wake M, Ukoumunne OC, Hiscock H. Five-year follow-up of harms and benefits of behavioral infant sleep intervention: randomized trial. Pediatrics. 2012;130(4):643-651.",
+          "publisher": "Pediatrics",
+          "year": 2012,
+          "doi": "10.1542/peds.2011-3467",
+          "pmid": "22966034",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22966034/"
+        }
+      ]
+    },
+    {
+      "id": "ev_consistency_reduces_variability",
+      "title": "Consistent response pattern",
+      "claim": "Within a selected behavioral plan, repeated consistent response patterns can improve predictability.",
+      "evidenceLevel": "review_required",
+      "appliesTo": [
+        "method.check_console",
+        "method.extinction",
+        "method.fading_chair"
+      ],
+      "contraindications": [
+        "red_flag_health_flag=true",
+        "unsafe_sleep_environment_flag=true"
+      ],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "mindell_sleep_2006_review",
+          "type": "systematic_review",
+          "citation": "Mindell JA, Kuhn B, Lewin DS, Meltzer LJ, Sadeh A. Behavioral treatment of bedtime problems and night wakings in infants and young children. Sleep. 2006;29(10):1263-1276.",
+          "publisher": "Sleep",
+          "year": 2006,
+          "pmid": "17068979",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/17068979/"
+        },
+        {
+          "id": "morgenthaler_sleep_2006_parameters",
+          "type": "practice_parameter",
+          "citation": "Morgenthaler TI, Owens J, Alessi C, et al. Practice parameters for behavioral treatment of bedtime problems and night wakings in infants and young children. Sleep. 2006;29(10):1277-1281.",
+          "publisher": "Sleep",
+          "year": 2006,
+          "pmid": "17068980",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/17068980/"
+        },
+        {
+          "id": "gradisar_pediatrics_2016",
+          "type": "randomized_controlled_trial",
+          "citation": "Gradisar M, Jackson K, Spurrier NJ, et al. Behavioral Interventions for Infant Sleep Problems: A Randomized Controlled Trial. Pediatrics. 2016;137(6):e20151486.",
+          "publisher": "Pediatrics",
+          "year": 2016,
+          "doi": "10.1542/peds.2015-1486",
+          "pmid": "27221288",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27221288/"
+        },
+        {
+          "id": "price_pediatrics_2012",
+          "type": "randomized_trial_follow_up",
+          "citation": "Price AMH, Wake M, Ukoumunne OC, Hiscock H. Five-year follow-up of harms and benefits of behavioral infant sleep intervention: randomized trial. Pediatrics. 2012;130(4):643-651.",
+          "publisher": "Pediatrics",
+          "year": 2012,
+          "doi": "10.1542/peds.2011-3467",
+          "pmid": "22966034",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22966034/"
+        }
+      ]
+    },
+    {
+      "id": "ev_night_feeding_behavioral_scope_only",
+      "title": "Night feeding guidance limited to behavioral scope",
+      "claim": "Night feeding recommendations in this app are behavioral and schedule-linked only.",
+      "evidenceLevel": "review_required",
+      "appliesTo": [
+        "feeding.feed_on_demand",
+        "feeding.feed_windows",
+        "feeding.night_wean_in_progress"
+      ],
+      "contraindications": [
+        "feeding_refusal_with_pain_signs=true",
+        "dehydration_signs=true",
+        "repeated_vomiting=true",
+        "severe_pain_indicators=true"
+      ],
+      "redFlags": [
+        "feeding_refusal_with_pain_signs",
+        "dehydration_signs",
+        "repeated_vomiting",
+        "severe_pain_indicators"
+      ],
+      "sourceRefs": [
+        {
+          "id": "cdc_mmwr_gastroenteritis_2003",
+          "type": "public_health_guideline",
+          "citation": "King CK, Glass R, Bresee JS, Duggan C. Managing Acute Gastroenteritis Among Children: Oral Rehydration, Maintenance, and Nutritional Therapy. MMWR Recomm Rep. 2003;52(RR-16):1-16.",
+          "publisher": "CDC MMWR",
+          "year": 2003,
+          "url": "https://www.cdc.gov/mmwr/preview/mmwrhtml/rr5216a1.htm"
+        },
+        {
+          "id": "healthychildren_dehydration_signs_2019",
+          "type": "aap_clinical_explainer",
+          "citation": "AAP. Signs of Dehydration in Infants & Children.",
+          "publisher": "HealthyChildren.org (American Academy of Pediatrics)",
+          "year": 2019,
+          "url": "https://www.healthychildren.org/English/health-issues/injuries-emergencies/Pages/dehydration.aspx"
+        },
+        {
+          "id": "clinical_practice_gastroenteritis_outpatient_2016",
+          "type": "clinical_practice_guideline",
+          "citation": "Florez ID, et al. Clinical Practice Guideline for the Treatment of Pediatric Acute Gastroenteritis in the Outpatient Setting. J Pediatr Health Care. 2016.",
+          "publisher": "Journal of Pediatric Health Care",
+          "year": 2016,
+          "pmid": "27268427",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27268427/"
+        }
+      ]
+    },
+    {
+      "id": "ev_medical_red_flag_redirect",
+      "title": "Medical red flags require immediate redirect",
+      "claim": "Breathing difficulty, dehydration, repeated vomiting, severe pain, and similar acute indicators should trigger immediate medical redirect and pause behavioral guidance.",
+      "evidenceLevel": "review_required",
+      "appliesTo": [
+        "safety.stop_if_red_flag",
+        "safety.stop_if_excessive_distress"
+      ],
+      "contraindications": [],
+      "redFlags": [
+        "breathing_difficulty",
+        "dehydration_signs",
+        "repeated_vomiting",
+        "severe_pain_indicators",
+        "feeding_refusal_with_pain_signs"
+      ],
+      "sourceRefs": [
+        {
+          "id": "cdc_mmwr_gastroenteritis_2003",
+          "type": "public_health_guideline",
+          "citation": "King CK, Glass R, Bresee JS, Duggan C. Managing Acute Gastroenteritis Among Children: Oral Rehydration, Maintenance, and Nutritional Therapy. MMWR Recomm Rep. 2003;52(RR-16):1-16.",
+          "publisher": "CDC MMWR",
+          "year": 2003,
+          "url": "https://www.cdc.gov/mmwr/preview/mmwrhtml/rr5216a1.htm"
+        },
+        {
+          "id": "healthychildren_vomiting_hydration_2023",
+          "type": "aap_clinical_explainer",
+          "citation": "Horn M, Waasdorp Hurtado C. Drinks to Prevent Dehydration When Your Child is Vomiting.",
+          "publisher": "HealthyChildren.org (American Academy of Pediatrics)",
+          "year": 2023,
+          "url": "https://www.healthychildren.org/English/health-issues/conditions/abdominal/pages/Drinks-to-Prevent-Dehydration-in-a-Vomiting-Child.aspx"
+        },
+        {
+          "id": "nice_gastroenteritis_red_flags",
+          "type": "clinical_guideline",
+          "citation": "NICE Guideline CG84. Diarrhoea and vomiting caused by gastroenteritis in under 5s: diagnosis and management (red-flag assessment and escalation criteria).",
+          "publisher": "National Institute for Health and Care Excellence",
+          "year": 2025,
+          "url": "https://www.nice.org.uk/guidance/cg084/chapter/recommendations"
+        }
+      ]
+    }
+  ],
+  "policyBindings": {
+    "methods": {
+      "foundations_only": [
+        "ev_safe_sleep_foundations",
+        "ev_young_infants_foundations_only"
+      ],
+      "check_console": [
+        "ev_safe_sleep_foundations",
+        "ev_consistency_reduces_variability"
+      ],
+      "extinction": [
+        "ev_safe_sleep_foundations",
+        "ev_consistency_reduces_variability"
+      ],
+      "fading_chair": [
+        "ev_safe_sleep_foundations",
+        "ev_consistency_reduces_variability"
+      ]
+    },
+    "stopRules": {
+      "stop_if_red_flag": [
+        "ev_medical_red_flag_redirect"
+      ],
+      "stop_if_unsafe_sleep_env": [
+        "ev_safe_sleep_foundations"
+      ],
+      "stop_if_excessive_distress": [
+        "ev_medical_red_flag_redirect"
+      ]
+    },
+    "feedingPolicies": {
+      "feed_on_demand": [
+        "ev_night_feeding_behavioral_scope_only"
+      ],
+      "feed_windows": [
+        "ev_night_feeding_behavioral_scope_only"
+      ],
+      "night_wean_in_progress": [
+        "ev_night_feeding_behavioral_scope_only"
+      ]
+    },
+    "dayPlannerRulesets": {
+      "rules_standard": [
+        "ev_consistency_reduces_variability"
+      ],
+      "rules_recovery": [
+        "ev_consistency_reduces_variability"
+      ]
+    }
+  }
+}

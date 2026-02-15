@@ -1,0 +1,1406 @@
+{
+  "meta": {
+    "schemaVersion": "sleep_day_planner_module@2.0.0",
+    "moduleVersion": "2.0.0",
+    "updatedAt": "2026-02-09",
+    "defaultLocale": "en-US",
+    "description": "Comprehensive day sleep planner with adaptive scheduling, constraint handling, and rescue protocols"
+  },
+
+  "stateManagement": {
+    "trackingWindow": "7_days",
+    "rollingAverageWindow": "3_days",
+    "patternDetectionMinimumDays": 2,
+    "napLogRetention": {
+      "duration_minutes": { "required": true, "trackDays": 7 },
+      "start_time_minutes": { "required": true, "trackDays": 7 },
+      "end_time_minutes": { "required": true, "trackDays": 7 },
+      "quality": { "required": false, "trackDays": 3 },
+      "location": { "required": false, "trackDays": 3 }
+    },
+    "nightDataIntegration": {
+      "bedtime_actual": { "trackDays": 7 },
+      "wake_time_actual": { "trackDays": 7 },
+      "night_wakes_count": { "trackDays": 7 },
+      "split_night_occurred": { "trackDays": 3 }
+    }
+  },
+
+  "timeConfiguration": {
+    "minutesPerDay": 1440,
+    "planGenerationWindow": "next_24_hours",
+    "realTimeAdjustment": true,
+    "timezoneHandling": "device_local"
+  },
+
+  "vocab": {
+    "ageBandIds": ["0_4m", "4_6m", "6_9m", "9_12m", "12_18m", "18_36m"],
+    "scheduleTemplateIds": [
+      "newborn_flexible",
+      "4_6m_3naps",
+      "6_9m_3to2_stable",
+      "6_9m_2naps_transitioning",
+      "9_12m_2naps",
+      "12_18m_2naps_stable",
+      "12_18m_1nap_transitioning",
+      "18_36m_1nap"
+    ],
+    "constraintIds": [
+      "daycare_fixed_naps",
+      "late_nap_today",
+      "travel_day",
+      "illness_support_day",
+      "schedule_disruption_day"
+    ],
+    "signalIds": [
+      "bedtime_resistance",
+      "early_wake_pattern",
+      "short_naps_pattern",
+      "split_night_pattern",
+      "overtired_signs",
+      "undertired_signs",
+      "nap_refusal",
+      "false_start_pattern",
+      "long_naps_pattern"
+    ],
+    "rescueProtocolIds": [
+      "nap_rescue_standard",
+      "nap_rescue_daycare",
+      "bedtime_rescue_late_nap",
+      "bridge_micro_nap",
+      "all_naps_failed",
+      "early_nap_wake",
+      "nap_extension_attempt"
+    ],
+    "actionTypes": [
+      "shift_bedtime_minutes",
+      "cap_nap_minutes",
+      "drop_last_nap",
+      "add_micro_nap",
+      "shorten_wake_window_percent",
+      "lengthen_wake_window_percent",
+      "enforce_morning_anchor",
+      "avoid_early_first_nap",
+      "set_nap_count_target",
+      "recommend_support_mode",
+      "cap_total_day_sleep",
+      "extend_nap_attempt",
+      "shift_nap_window_minutes"
+    ],
+    "metricIds": [
+      "age_months",
+      "age_band_id",
+      "wake_anchor_minutes",
+      "desired_wake_minutes",
+      "bedtime_target_minutes",
+      "day_start_minutes",
+      "now_minutes",
+      "daycare_constrained",
+      "late_nap_flag",
+      "support_mode",
+      "travel_flag",
+      "nap_count_target",
+      "nap_count_min",
+      "nap_count_max",
+      "nap_count_actual_today",
+      "last_nap_slot_id",
+      "last_nap_end_minutes",
+      "last_nap_duration_minutes",
+      "last_nap_start_minutes",
+      "total_day_sleep_minutes_today",
+      "total_day_sleep_minutes_average_3d",
+      "total_night_sleep_minutes_average_3d",
+      "early_wake_today",
+      "bedtime_resistance_today",
+      "short_naps_recent",
+      "split_night_recent",
+      "false_start_recent",
+      "overtired_signs_today",
+      "undertired_signs_today",
+      "long_naps_recent",
+      "minutes_until_bedtime",
+      "micro_nap_feasible",
+      "all_naps_failed_today",
+      "nap_transition_in_progress",
+      "schedule_consistency_score"
+    ],
+    "predicateOps": ["eq", "neq", "gt", "gte", "lt", "lte", "in", "nin", "exists", "between"]
+  },
+
+  "validation": {
+    "metrics": {
+      "age_months": {
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 36,
+        "errorKey": "day.validation.age_out_of_range"
+      },
+      "wake_anchor_minutes": {
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 1439,
+        "errorKey": "day.validation.wake_time_invalid"
+      },
+      "bedtime_target_minutes": {
+        "type": "number",
+        "required": true,
+        "min": 0,
+        "max": 1439,
+        "errorKey": "day.validation.bedtime_invalid"
+      },
+      "last_nap_duration_minutes": {
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "max": 240,
+        "errorKey": "day.validation.nap_duration_invalid"
+      }
+    },
+    "crossFieldRules": [
+      {
+        "id": "wake_before_bedtime_check",
+        "rule": "wake_anchor_not_equal_bedtime",
+        "errorKey": "day.validation.wake_bedtime_conflict"
+      },
+      {
+        "id": "sufficient_wake_opportunity",
+        "rule": "minimum_12_hours_between_wake_and_bedtime",
+        "errorKey": "day.validation.insufficient_wake_window"
+      }
+    ]
+  },
+
+  "safetyLimits": {
+    "maxTotalDaySleepByAge": [
+      { "ageBandId": "0_4m", "maxMinutes": 540 },
+      { "ageBandId": "4_6m", "maxMinutes": 360 },
+      { "ageBandId": "6_9m", "maxMinutes": 300 },
+      { "ageBandId": "9_12m", "maxMinutes": 270 },
+      { "ageBandId": "12_18m", "maxMinutes": 240 },
+      { "ageBandId": "18_36m", "maxMinutes": 210 }
+    ],
+    "minWakefulnessBeforeBedtime": 180,
+    "maxSingleNapDuration": 180,
+    "lateNapCutoffBeforeBedtime": 240
+  },
+
+  "ageBands": [
+    {
+      "id": "0_4m",
+      "labelKey": "day.age.0_4m",
+      "minMonthsInclusive": 0,
+      "maxMonthsExclusive": 4,
+      "developmentalNotes": "Flexible, cue-based scheduling. Building circadian rhythm."
+    },
+    {
+      "id": "4_6m",
+      "labelKey": "day.age.4_6m",
+      "minMonthsInclusive": 4,
+      "maxMonthsExclusive": 6,
+      "developmentalNotes": "Consolidating to 3 predictable naps"
+    },
+    {
+      "id": "6_9m",
+      "labelKey": "day.age.6_9m",
+      "minMonthsInclusive": 6,
+      "maxMonthsExclusive": 9,
+      "developmentalNotes": "Common 3→2 nap transition window"
+    },
+    {
+      "id": "9_12m",
+      "labelKey": "day.age.9_12m",
+      "minMonthsInclusive": 9,
+      "maxMonthsExclusive": 12,
+      "developmentalNotes": "Stable 2-nap schedule"
+    },
+    {
+      "id": "12_18m",
+      "labelKey": "day.age.12_18m",
+      "minMonthsInclusive": 12,
+      "maxMonthsExclusive": 18,
+      "developmentalNotes": "Common 2→1 nap transition window"
+    },
+    {
+      "id": "18_36m",
+      "labelKey": "day.age.18_36m",
+      "minMonthsInclusive": 18,
+      "maxMonthsExclusive": 36,
+      "developmentalNotes": "Stable 1-nap schedule, eventual nap drop preparation"
+    }
+  ],
+
+  "sleepNeeds": [
+    {
+      "ageBandId": "0_4m",
+      "totalSleepRangeMinutes": { "min": 840, "max": 1020 },
+      "daySleepRangeMinutes": { "min": 300, "max": 480 },
+      "nightSleepRangeMinutes": { "min": 480, "max": 600 },
+      "notesKey": "day.sleepneeds.0_4m"
+    },
+    {
+      "ageBandId": "4_6m",
+      "totalSleepRangeMinutes": { "min": 780, "max": 900 },
+      "daySleepRangeMinutes": { "min": 210, "max": 300 },
+      "nightSleepRangeMinutes": { "min": 540, "max": 660 },
+      "notesKey": "day.sleepneeds.4_6m"
+    },
+    {
+      "ageBandId": "6_9m",
+      "totalSleepRangeMinutes": { "min": 750, "max": 870 },
+      "daySleepRangeMinutes": { "min": 180, "max": 270 },
+      "nightSleepRangeMinutes": { "min": 540, "max": 660 },
+      "notesKey": "day.sleepneeds.6_9m"
+    },
+    {
+      "ageBandId": "9_12m",
+      "totalSleepRangeMinutes": { "min": 720, "max": 840 },
+      "daySleepRangeMinutes": { "min": 150, "max": 240 },
+      "nightSleepRangeMinutes": { "min": 540, "max": 660 },
+      "notesKey": "day.sleepneeds.9_12m"
+    },
+    {
+      "ageBandId": "12_18m",
+      "totalSleepRangeMinutes": { "min": 690, "max": 810 },
+      "daySleepRangeMinutes": { "min": 120, "max": 210 },
+      "nightSleepRangeMinutes": { "min": 540, "max": 660 },
+      "notesKey": "day.sleepneeds.12_18m"
+    },
+    {
+      "ageBandId": "18_36m",
+      "totalSleepRangeMinutes": { "min": 660, "max": 780 },
+      "daySleepRangeMinutes": { "min": 75, "max": 180 },
+      "nightSleepRangeMinutes": { "min": 540, "max": 660 },
+      "notesKey": "day.sleepneeds.18_36m"
+    }
+  ],
+
+  "wakeWindowProfiles": [
+    {
+      "id": "ww_0_4m",
+      "ageBandId": "0_4m",
+      "rule": "rolling",
+      "defaultWakeWindowMinutes": {
+        "targetMin": 50,
+        "targetMax": 75,
+        "hardMin": 45,
+        "hardMax": 90
+      },
+      "lateDayTightenPercent": 10,
+      "adjustmentIncrementMinutes": 5,
+      "notesKey": "day.ww.0_4m.notes"
+    },
+    {
+      "id": "ww_4_6m_3naps",
+      "ageBandId": "4_6m",
+      "rule": "by_slot",
+      "slots": [
+        {
+          "slotId": "nap1",
+          "wakeWindowMinutes": {
+            "targetMin": 95,
+            "targetMax": 110,
+            "hardMin": 90,
+            "hardMax": 120
+          }
+        },
+        {
+          "slotId": "nap2",
+          "wakeWindowMinutes": {
+            "targetMin": 110,
+            "targetMax": 125,
+            "hardMin": 105,
+            "hardMax": 135
+          }
+        },
+        {
+          "slotId": "nap3",
+          "wakeWindowMinutes": {
+            "targetMin": 125,
+            "targetMax": 140,
+            "hardMin": 120,
+            "hardMax": 150
+          }
+        },
+        {
+          "slotId": "bedtime",
+          "wakeWindowMinutes": {
+            "targetMin": 145,
+            "targetMax": 160,
+            "hardMin": 135,
+            "hardMax": 165
+          }
+        }
+      ],
+      "adjustmentIncrementMinutes": 5,
+      "notesKey": "day.ww.4_6m.notes"
+    },
+    {
+      "id": "ww_6_9m_3naps",
+      "ageBandId": "6_9m",
+      "rule": "by_slot",
+      "slots": [
+        {
+          "slotId": "nap1",
+          "wakeWindowMinutes": {
+            "targetMin": 130,
+            "targetMax": 145,
+            "hardMin": 120,
+            "hardMax": 150
+          }
+        },
+        {
+          "slotId": "nap2",
+          "wakeWindowMinutes": {
+            "targetMin": 145,
+            "targetMax": 160,
+            "hardMin": 135,
+            "hardMax": 165
+          }
+        },
+        {
+          "slotId": "nap3",
+          "wakeWindowMinutes": {
+            "targetMin": 160,
+            "targetMax": 175,
+            "hardMin": 150,
+            "hardMax": 180
+          }
+        },
+        {
+          "slotId": "bedtime",
+          "wakeWindowMinutes": {
+            "targetMin": 185,
+            "targetMax": 205,
+            "hardMin": 165,
+            "hardMax": 210
+          }
+        }
+      ],
+      "transitionNoteKey": "day.transition.6_9m_3naps",
+      "adjustmentIncrementMinutes": 5
+    },
+    {
+      "id": "ww_6_9m_2naps",
+      "ageBandId": "6_9m",
+      "rule": "by_slot",
+      "slots": [
+        {
+          "slotId": "nap1",
+          "wakeWindowMinutes": {
+            "targetMin": 150,
+            "targetMax": 165,
+            "hardMin": 135,
+            "hardMax": 180
+          }
+        },
+        {
+          "slotId": "nap2",
+          "wakeWindowMinutes": {
+            "targetMin": 175,
+            "targetMax": 195,
+            "hardMin": 165,
+            "hardMax": 210
+          }
+        },
+        {
+          "slotId": "bedtime",
+          "wakeWindowMinutes": {
+            "targetMin": 210,
+            "targetMax": 230,
+            "hardMin": 195,
+            "hardMax": 240
+          }
+        }
+      ],
+      "transitionNoteKey": "day.transition.6_9m_2naps",
+      "adjustmentIncrementMinutes": 5
+    },
+    {
+      "id": "ww_9_12m_2naps",
+      "ageBandId": "9_12m",
+      "rule": "by_slot",
+      "slots": [
+        {
+          "slotId": "nap1",
+          "wakeWindowMinutes": {
+            "targetMin": 165,
+            "targetMax": 180,
+            "hardMin": 150,
+            "hardMax": 195
+          }
+        },
+        {
+          "slotId": "nap2",
+          "wakeWindowMinutes": {
+            "targetMin": 190,
+            "targetMax": 210,
+            "hardMin": 180,
+            "hardMax": 225
+          }
+        },
+        {
+          "slotId": "bedtime",
+          "wakeWindowMinutes": {
+            "targetMin": 225,
+            "targetMax": 245,
+            "hardMin": 210,
+            "hardMax": 255
+          }
+        }
+      ],
+      "adjustmentIncrementMinutes": 5,
+      "notesKey": "day.ww.9_12m.notes"
+    },
+    {
+      "id": "ww_12_18m_2naps",
+      "ageBandId": "12_18m",
+      "rule": "by_slot",
+      "slots": [
+        {
+          "slotId": "nap1",
+          "wakeWindowMinutes": {
+            "targetMin": 210,
+            "targetMax": 235,
+            "hardMin": 195,
+            "hardMax": 255
+          }
+        },
+        {
+          "slotId": "nap2",
+          "wakeWindowMinutes": {
+            "targetMin": 240,
+            "targetMax": 265,
+            "hardMin": 225,
+            "hardMax": 285
+          }
+        },
+        {
+          "slotId": "bedtime",
+          "wakeWindowMinutes": {
+            "targetMin": 270,
+            "targetMax": 295,
+            "hardMin": 255,
+            "hardMax": 315
+          }
+        }
+      ],
+      "transitionNoteKey": "day.transition.12_18m_2naps",
+      "adjustmentIncrementMinutes": 10
+    },
+    {
+      "id": "ww_12_18m_1nap",
+      "ageBandId": "12_18m",
+      "rule": "by_slot",
+      "slots": [
+        {
+          "slotId": "nap1",
+          "wakeWindowMinutes": {
+            "targetMin": 300,
+            "targetMax": 330,
+            "hardMin": 270,
+            "hardMax": 360
+          }
+        },
+        {
+          "slotId": "bedtime",
+          "wakeWindowMinutes": {
+            "targetMin": 330,
+            "targetMax": 360,
+            "hardMin": 300,
+            "hardMax": 390
+          }
+        }
+      ],
+      "transitionNoteKey": "day.transition.12_18m_1nap",
+      "adjustmentIncrementMinutes": 10
+    },
+    {
+      "id": "ww_18_36m_1nap",
+      "ageBandId": "18_36m",
+      "rule": "by_slot",
+      "slots": [
+        {
+          "slotId": "nap1",
+          "wakeWindowMinutes": {
+            "targetMin": 330,
+            "targetMax": 360,
+            "hardMin": 300,
+            "hardMax": 390
+          }
+        },
+        {
+          "slotId": "bedtime",
+          "wakeWindowMinutes": {
+            "targetMin": 345,
+            "targetMax": 390,
+            "hardMin": 300,
+            "hardMax": 420
+          }
+        }
+      ],
+      "adjustmentIncrementMinutes": 15,
+      "notesKey": "day.ww.18_36m.notes"
+    }
+  ],
+
+  "scheduleTemplates": [
+    {
+      "id": "newborn_flexible",
+      "ageBandId": "0_4m",
+      "wakeWindowProfileId": "ww_0_4m",
+      "napCount": { "min": 4, "max": 6 },
+      "napDurationTargetMinutes": { "min": 30, "max": 120 },
+      "bedtimeWindowMinutesFromAnchor": { "earliest": 540, "latest": 720 },
+      "planStyle": "flexible_blocks",
+      "notesKey": "day.template.newborn.notes"
+    },
+    {
+      "id": "4_6m_3naps",
+      "ageBandId": "4_6m",
+      "wakeWindowProfileId": "ww_4_6m_3naps",
+      "napCount": { "min": 3, "max": 3 },
+      "napTargets": [
+        { "slotId": "nap1", "durationMinutes": { "min": 45, "max": 90 } },
+        { "slotId": "nap2", "durationMinutes": { "min": 45, "max": 90 } },
+        { "slotId": "nap3", "durationMinutes": { "min": 30, "max": 60 } }
+      ],
+      "bedtimeWindowMinutes": { "earliest": 1080, "latest": 1200 },
+      "rulesetId": "rules_standard",
+      "notesKey": "day.template.4_6m.notes"
+    },
+    {
+      "id": "6_9m_3to2_stable",
+      "ageBandId": "6_9m",
+      "wakeWindowProfileId": "ww_6_9m_3naps",
+      "napCount": { "min": 2, "max": 3 },
+      "napTargets": [
+        { "slotId": "nap1", "durationMinutes": { "min": 60, "max": 90 } },
+        { "slotId": "nap2", "durationMinutes": { "min": 60, "max": 90 } },
+        { "slotId": "nap3", "durationMinutes": { "min": 20, "max": 45 }, "optional": true }
+      ],
+      "bedtimeWindowMinutes": { "earliest": 1080, "latest": 1260 },
+      "rulesetId": "rules_standard",
+      "transitionReadinessChecks": ["nap3_consistently_refused", "nap3_pushes_bedtime_late"],
+      "notesKey": "day.template.6_9m_3naps.notes"
+    },
+    {
+      "id": "6_9m_2naps_transitioning",
+      "ageBandId": "6_9m",
+      "wakeWindowProfileId": "ww_6_9m_2naps",
+      "napCount": { "min": 2, "max": 2 },
+      "napTargets": [
+        { "slotId": "nap1", "durationMinutes": { "min": 60, "max": 90 } },
+        { "slotId": "nap2", "durationMinutes": { "min": 60, "max": 90 } }
+      ],
+      "bedtimeWindowMinutes": { "earliest": 1080, "latest": 1260 },
+      "rulesetId": "rules_transition",
+      "notesKey": "day.template.6_9m_2naps.notes"
+    },
+    {
+      "id": "9_12m_2naps",
+      "ageBandId": "9_12m",
+      "wakeWindowProfileId": "ww_9_12m_2naps",
+      "napCount": { "min": 2, "max": 2 },
+      "napTargets": [
+        { "slotId": "nap1", "durationMinutes": { "min": 60, "max": 90 } },
+        { "slotId": "nap2", "durationMinutes": { "min": 60, "max": 90 } }
+      ],
+      "bedtimeWindowMinutes": { "earliest": 1080, "latest": 1260 },
+      "rulesetId": "rules_standard",
+      "notesKey": "day.template.9_12m.notes"
+    },
+    {
+      "id": "12_18m_2naps_stable",
+      "ageBandId": "12_18m",
+      "wakeWindowProfileId": "ww_12_18m_2naps",
+      "napCount": { "min": 1, "max": 2 },
+      "napTargets": [
+        { "slotId": "nap1", "durationMinutes": { "min": 75, "max": 120 } },
+        { "slotId": "nap2", "durationMinutes": { "min": 30, "max": 60 }, "optional": true }
+      ],
+      "bedtimeWindowMinutes": { "earliest": 1110, "latest": 1290 },
+      "rulesetId": "rules_standard",
+      "transitionReadinessChecks": ["nap2_consistently_refused", "nap1_extends_naturally"],
+      "notesKey": "day.template.12_18m_2naps.notes"
+    },
+    {
+      "id": "12_18m_1nap_transitioning",
+      "ageBandId": "12_18m",
+      "wakeWindowProfileId": "ww_12_18m_1nap",
+      "napCount": { "min": 1, "max": 1 },
+      "napTargets": [
+        { "slotId": "nap1", "durationMinutes": { "min": 90, "max": 150 } }
+      ],
+      "bedtimeWindowMinutes": { "earliest": 1110, "latest": 1290 },
+      "rulesetId": "rules_transition",
+      "notesKey": "day.template.12_18m_1nap.notes"
+    },
+    {
+      "id": "18_36m_1nap",
+      "ageBandId": "18_36m",
+      "wakeWindowProfileId": "ww_18_36m_1nap",
+      "napCount": { "min": 1, "max": 1 },
+      "napTargets": [
+        { "slotId": "nap1", "durationMinutes": { "min": 90, "max": 150 } }
+      ],
+      "bedtimeWindowMinutes": { "earliest": 1140, "latest": 1320 },
+      "rulesetId": "rules_standard",
+      "notesKey": "day.template.18_36m.notes"
+    }
+  ],
+
+  "morningAnchorPolicy": {
+    "policyVersion": "anchor_v2",
+    "rules": [
+      {
+        "id": "anchor_rule_default",
+        "priority": 10,
+        "appliesToAgeBandIds": ["0_4m", "4_6m", "6_9m", "9_12m", "12_18m", "18_36m"],
+        "treatAsNightUntilDesiredWake": true,
+        "startDayIfWithinMinutesOfDesiredWake": 60,
+        "lightExposureRecommendationKey": "day.anchor.light_exposure",
+        "notesKey": "day.anchor.default.notes"
+      },
+      {
+        "id": "anchor_rule_chronic_early_wake",
+        "priority": 5,
+        "appliesToAgeBandIds": ["4_6m", "6_9m", "9_12m", "12_18m", "18_36m"],
+        "when": {
+          "allOf": [
+            { "metric": "early_wake_pattern", "op": "eq", "value": true }
+          ]
+        },
+        "treatAsNightUntilDesiredWake": true,
+        "startDayIfWithinMinutesOfDesiredWake": 30,
+        "forceAnchorStrictness": true,
+        "notesKey": "day.anchor.strict.notes"
+      }
+    ]
+  },
+
+  "bridgeDecisionRules": [
+    {
+      "id": "bridge_if_bedtime_far_and_feasible",
+      "priority": 10,
+      "when": {
+        "allOf": [
+          { "metric": "minutes_until_bedtime", "op": "gte", "value": 180 },
+          { "metric": "micro_nap_feasible", "op": "eq", "value": true },
+          { "metric": "age_band_id", "op": "in", "value": ["4_6m", "6_9m", "9_12m"] }
+        ]
+      },
+      "rescueProtocolId": "bridge_micro_nap",
+      "actions": [
+        { "type": "add_micro_nap", "minutesValue": 20 }
+      ],
+      "notesKey": "day.bridge.micro.notes"
+    },
+    {
+      "id": "early_bedtime_if_bridge_not_feasible",
+      "priority": 20,
+      "when": {
+        "allOf": [
+          { "metric": "minutes_until_bedtime", "op": "gte", "value": 120 },
+          { "metric": "minutes_until_bedtime", "op": "lt", "value": 180 },
+          { "metric": "micro_nap_feasible", "op": "eq", "value": false }
+        ]
+      },
+      "actions": [
+        { "type": "shift_bedtime_minutes", "minutesValue": -30 }
+      ],
+      "notesKey": "day.bridge.earlybed.notes"
+    },
+    {
+      "id": "very_early_bedtime_if_crisis",
+      "priority": 15,
+      "when": {
+        "allOf": [
+          { "metric": "all_naps_failed_today", "op": "eq", "value": true },
+          { "metric": "overtired_signs_today", "op": "eq", "value": true }
+        ]
+      },
+      "rescueProtocolId": "all_naps_failed",
+      "actions": [
+        { "type": "shift_bedtime_minutes", "minutesValue": -60 }
+      ],
+      "notesKey": "day.bridge.crisis.notes"
+    }
+  ],
+
+  "napOutcomeAdjustments": [
+    {
+      "id": "short_nap_shorten_next_window",
+      "priority": 10,
+      "when": {
+        "allOf": [
+          { "metric": "last_nap_duration_minutes", "op": "lt", "value": 30 },
+          { "metric": "last_nap_slot_id", "op": "in", "value": ["nap1", "nap2"] }
+        ]
+      },
+      "actions": [
+        { "type": "shorten_wake_window_percent", "percentValue": 10 }
+      ],
+      "notesKey": "day.napoutcome.short.notes"
+    },
+    {
+      "id": "very_short_nap_rescue",
+      "priority": 5,
+      "when": {
+        "allOf": [
+          { "metric": "last_nap_duration_minutes", "op": "lt", "value": 15 }
+        ]
+      },
+      "rescueProtocolId": "early_nap_wake",
+      "actions": [
+        { "type": "extend_nap_attempt", "windowMinutes": 20 },
+        { "type": "shorten_wake_window_percent", "percentValue": 15 }
+      ],
+      "notesKey": "day.napoutcome.very_short.notes"
+    },
+    {
+      "id": "long_nap_lengthen_next_window_and_cap_next",
+      "priority": 20,
+      "when": {
+        "allOf": [
+          { "metric": "last_nap_duration_minutes", "op": "gt", "value": 120 },
+          { "metric": "last_nap_slot_id", "op": "neq", "value": "nap1" }
+        ]
+      },
+      "actions": [
+        { "type": "lengthen_wake_window_percent", "percentValue": 10 },
+        { "type": "cap_nap_minutes", "slotId": "next", "minutesValue": 90 }
+      ],
+      "notesKey": "day.napoutcome.long.notes"
+    },
+    {
+      "id": "excessive_day_sleep_cap",
+      "priority": 15,
+      "when": {
+        "allOf": [
+          { "metric": "total_day_sleep_minutes_today", "op": "gte", "value": 240 },
+          { "metric": "age_band_id", "op": "in", "value": ["6_9m", "9_12m", "12_18m", "18_36m"] }
+        ]
+      },
+      "actions": [
+        { "type": "cap_total_day_sleep", "minutesValue": 240 },
+        { "type": "shift_bedtime_minutes", "minutesValue": 15 }
+      ],
+      "notesKey": "day.napoutcome.excessive.notes"
+    }
+  ],
+
+  "constraints": [
+    {
+      "id": "daycare_fixed_naps",
+      "labelKey": "day.constraint.daycare",
+      "priority": 5,
+      "when": {
+        "allOf": [
+          { "metric": "daycare_constrained", "op": "eq", "value": true }
+        ]
+      },
+      "fixedNapTimes": [
+        {
+          "slotId": "nap1",
+          "startWindowMinutes": { "earliest": 720, "latest": 780 },
+          "durationMinutes": { "min": 60, "max": 120 }
+        }
+      ],
+      "rescueProtocolId": "nap_rescue_daycare",
+      "notesKey": "day.constraint.daycare.notes"
+    },
+    {
+      "id": "late_nap_today",
+      "labelKey": "day.constraint.late_nap",
+      "priority": 10,
+      "when": {
+        "allOf": [
+          { "metric": "late_nap_flag", "op": "eq", "value": true }
+        ]
+      },
+      "effects": [
+        { "type": "cap_nap_minutes", "slotId": "nap3", "minutesValue": 30 },
+        { "type": "shift_bedtime_minutes", "minutesValue": 30 }
+      ],
+      "rescueProtocolId": "bedtime_rescue_late_nap",
+      "notesKey": "day.constraint.late_nap.notes"
+    },
+    {
+      "id": "travel_day",
+      "labelKey": "day.constraint.travel",
+      "priority": 15,
+      "when": {
+        "allOf": [
+          { "metric": "travel_flag", "op": "eq", "value": true }
+        ]
+      },
+      "effects": [
+        { "type": "shorten_wake_window_percent", "percentValue": 10 },
+        { "type": "recommend_support_mode", "supportModeId": "travel" }
+      ],
+      "notesKey": "day.constraint.travel.notes"
+    },
+    {
+      "id": "illness_support_day",
+      "labelKey": "day.constraint.illness",
+      "priority": 5,
+      "when": {
+        "allOf": [
+          { "metric": "support_mode", "op": "eq", "value": "illness" }
+        ]
+      },
+      "effects": [
+        { "type": "shorten_wake_window_percent", "percentValue": 15 }
+      ],
+      "notesKey": "day.constraint.illness.notes"
+    },
+    {
+      "id": "schedule_disruption_day",
+      "labelKey": "day.constraint.disruption",
+      "priority": 20,
+      "when": {
+        "allOf": [
+          { "metric": "support_mode", "op": "eq", "value": "schedule_disruption" }
+        ]
+      },
+      "effects": [
+        { "type": "shorten_wake_window_percent", "percentValue": 10 }
+      ],
+      "notesKey": "day.constraint.disruption.notes"
+    }
+  ],
+
+  "planRulesets": [
+    {
+      "id": "rules_standard",
+      "maxAdjustmentsPerDay": 1,
+      "evaluationStrategy": "highest_priority_first",
+      "rules": [
+        {
+          "id": "rule_early_wake_avoid_early_first_nap",
+          "priority": 10,
+          "when": {
+            "allOf": [
+              { "metric": "early_wake_today", "op": "eq", "value": true }
+            ]
+          },
+          "actions": [
+            { "type": "enforce_morning_anchor", "minutesValue": 0 },
+            { "type": "avoid_early_first_nap" }
+          ],
+          "notesKey": "day.rule.earlywake.notes"
+        },
+        {
+          "id": "rule_bedtime_resistance_reduce_last_window",
+          "priority": 20,
+          "when": {
+            "allOf": [
+              { "metric": "bedtime_resistance_today", "op": "eq", "value": true }
+            ]
+          },
+          "actions": [
+            { "type": "shorten_wake_window_percent", "percentValue": 10, "slotId": "bedtime" }
+          ],
+          "notesKey": "day.rule.bedtimeresist.notes"
+        },
+        {
+          "id": "rule_short_naps_overtired_shorten_windows",
+          "priority": 30,
+          "when": {
+            "allOf": [
+              { "metric": "short_naps_recent", "op": "eq", "value": true },
+              { "metric": "overtired_signs_today", "op": "eq", "value": true }
+            ]
+          },
+          "actions": [
+            { "type": "shorten_wake_window_percent", "percentValue": 10 }
+          ],
+          "notesKey": "day.rule.shortnaps_overtired.notes"
+        },
+        {
+          "id": "rule_undertired_lengthen_windows",
+          "priority": 40,
+          "when": {
+            "allOf": [
+              { "metric": "undertired_signs_today", "op": "eq", "value": true }
+            ]
+          },
+          "actions": [
+            { "type": "lengthen_wake_window_percent", "percentValue": 10 }
+          ],
+          "notesKey": "day.rule.undertired.notes"
+        },
+        {
+          "id": "rule_split_night_cap_day_sleep",
+          "priority": 50,
+          "when": {
+            "allOf": [
+              { "metric": "split_night_recent", "op": "eq", "value": true }
+            ]
+          },
+          "actions": [
+            { "type": "cap_nap_minutes", "slotId": "nap2", "minutesValue": 75 }
+          ],
+          "notesKey": "day.rule.splitnight.notes"
+        },
+        {
+          "id": "rule_false_starts_cap_last_nap",
+          "priority": 25,
+          "when": {
+            "allOf": [
+              { "metric": "false_start_recent", "op": "eq", "value": true }
+            ]
+          },
+          "actions": [
+            { "type": "cap_nap_minutes", "slotId": "last", "minutesValue": 45 },
+            { "type": "shift_nap_window_minutes", "slotId": "last", "minutesValue": -15 }
+          ],
+          "notesKey": "day.rule.falsestarts.notes"
+        },
+        {
+          "id": "rule_long_naps_reduce_total",
+          "priority": 35,
+          "when": {
+            "allOf": [
+              { "metric": "long_naps_recent", "op": "eq", "value": true },
+              { "metric": "bedtime_resistance_today", "op": "eq", "value": true }
+            ]
+          },
+          "actions": [
+            { "type": "cap_total_day_sleep", "minutesValue": 180 }
+          ],
+          "notesKey": "day.rule.longnaps.notes"
+        }
+      ]
+    },
+    {
+      "id": "rules_transition",
+      "maxAdjustmentsPerDay": 0,
+      "evaluationStrategy": "highest_priority_first",
+      "rules": [
+        {
+          "id": "transition_stabilize",
+          "priority": 5,
+          "when": {
+            "allOf": [
+              { "metric": "nap_transition_in_progress", "op": "eq", "value": true }
+            ]
+          },
+          "actions": [],
+          "notesKey": "day.rule.transition.notes"
+        }
+      ]
+    }
+  ],
+
+  "rescueProtocols": [
+    {
+      "id": "nap_rescue_standard",
+      "labelKey": "day.rescue.nap.standard",
+      "steps": [
+        {
+          "titleKey": "day.rescue.nap.step1.title",
+          "doKeys": ["day.rescue.nap.step1.do1", "day.rescue.nap.step1.do2"],
+          "durationMinutes": 30
+        },
+        {
+          "titleKey": "day.rescue.nap.step2.title",
+          "doKeys": ["day.rescue.nap.step2.do1"],
+          "durationMinutes": 15
+        },
+        {
+          "titleKey": "day.rescue.nap.step3.title",
+          "doKeys": ["day.rescue.nap.step3.do1"]
+        }
+      ]
+    },
+    {
+      "id": "nap_rescue_daycare",
+      "labelKey": "day.rescue.daycare",
+      "steps": [
+        {
+          "titleKey": "day.rescue.daycare.step1.title",
+          "doKeys": ["day.rescue.daycare.step1.do1", "day.rescue.daycare.step1.do2"]
+        },
+        {
+          "titleKey": "day.rescue.daycare.step2.title",
+          "doKeys": ["day.rescue.daycare.step2.do1"]
+        }
+      ]
+    },
+    {
+      "id": "bridge_micro_nap",
+      "labelKey": "day.rescue.micro_nap",
+      "steps": [
+        {
+          "titleKey": "day.rescue.micro.title",
+          "doKeys": ["day.rescue.micro.do1", "day.rescue.micro.do2"],
+          "maxDurationMinutes": 30
+        }
+      ]
+    },
+    {
+      "id": "bedtime_rescue_late_nap",
+      "labelKey": "day.rescue.late_nap",
+      "steps": [
+        {
+          "titleKey": "day.rescue.late.title",
+          "doKeys": ["day.rescue.late.do1", "day.rescue.late.do2"]
+        }
+      ]
+    },
+    {
+      "id": "all_naps_failed",
+      "labelKey": "day.rescue.all_failed",
+      "steps": [
+        {
+          "titleKey": "day.rescue.failed.step1.title",
+          "doKeys": ["day.rescue.failed.step1.do1", "day.rescue.failed.step1.do2"]
+        },
+        {
+          "titleKey": "day.rescue.failed.step2.title",
+          "doKeys": ["day.rescue.failed.step2.do1"]
+        }
+      ]
+    },
+    {
+      "id": "early_nap_wake",
+      "labelKey": "day.rescue.early_wake",
+      "steps": [
+        {
+          "titleKey": "day.rescue.early.step1.title",
+          "doKeys": ["day.rescue.early.step1.do1"],
+          "durationMinutes": 15
+        },
+        {
+          "titleKey": "day.rescue.early.step2.title",
+          "doKeys": ["day.rescue.early.step2.do1"]
+        }
+      ]
+    },
+    {
+      "id": "nap_extension_attempt",
+      "labelKey": "day.rescue.extension",
+      "steps": [
+        {
+          "titleKey": "day.rescue.extend.step1.title",
+          "doKeys": ["day.rescue.extend.step1.do1", "day.rescue.extend.step1.do2"],
+          "durationMinutes": 20
+        }
+      ]
+    }
+  ],
+
+  "signalDetection": {
+    "patterns": [
+      {
+        "signalId": "bedtime_resistance",
+        "detectionCriteria": {
+          "minOccurrences": 2,
+          "withinDays": 3,
+          "sourceMetric": "bedtime_resistance_today"
+        }
+      },
+      {
+        "signalId": "early_wake_pattern",
+        "detectionCriteria": {
+          "minOccurrences": 3,
+          "withinDays": 5,
+          "sourceMetric": "early_wake_today"
+        }
+      },
+      {
+        "signalId": "short_naps_pattern",
+        "detectionCriteria": {
+          "minOccurrences": 2,
+          "withinDays": 3,
+          "threshold": "average_nap_duration_lt_45"
+        }
+      },
+      {
+        "signalId": "split_night_pattern",
+        "detectionCriteria": {
+          "minOccurrences": 2,
+          "withinDays": 3,
+          "sourceMetric": "split_night_recent"
+        }
+      },
+      {
+        "signalId": "false_start_pattern",
+        "detectionCriteria": {
+          "minOccurrences": 3,
+          "withinDays": 5,
+          "sourceMetric": "false_start_recent"
+        }
+      },
+      {
+        "signalId": "long_naps_pattern",
+        "detectionCriteria": {
+          "minOccurrences": 2,
+          "withinDays": 3,
+          "threshold": "average_nap_duration_gt_120"
+        }
+      }
+    ]
+  },
+
+  "transitionGuidance": {
+    "napDropReadiness": [
+      {
+        "fromNapCount": 3,
+        "toNapCount": 2,
+        "ageBandIds": ["6_9m"],
+        "readinessSignals": [
+          "nap3_consistently_refused_3_days",
+          "nap3_pushes_bedtime_past_target",
+          "strong_2_nap_days_emerging"
+        ],
+        "transitionStrategy": {
+          "phase1": {
+            "durationDays": 3,
+            "approach": "offer_nap3_conditionally",
+            "notesKey": "day.transition.3to2.phase1"
+          },
+          "phase2": {
+            "durationDays": 4,
+            "approach": "drop_nap3_use_bridge_if_needed",
+            "notesKey": "day.transition.3to2.phase2"
+          },
+          "phase3": {
+            "durationDays": 7,
+            "approach": "stable_2nap_no_bridge",
+            "notesKey": "day.transition.3to2.phase3"
+          }
+        }
+      },
+      {
+        "fromNapCount": 2,
+        "toNapCount": 1,
+        "ageBandIds": ["12_18m"],
+        "readinessSignals": [
+          "nap2_consistently_refused_5_days",
+          "nap1_naturally_extends_to_90min",
+          "bedtime_resistance_with_2_naps"
+        ],
+        "transitionStrategy": {
+          "phase1": {
+            "durationDays": 5,
+            "approach": "alternate_1_and_2_nap_days",
+            "notesKey": "day.transition.2to1.phase1"
+          },
+          "phase2": {
+            "durationDays": 7,
+            "approach": "mostly_1_nap_with_occasional_2",
+            "notesKey": "day.transition.2to1.phase2"
+          },
+          "phase3": {
+            "durationDays": 14,
+            "approach": "stable_1nap",
+            "notesKey": "day.transition.2to1.phase3"
+          }
+        }
+      }
+    ]
+  },
+
+  "successMetrics": {
+    "criteria": [
+      {
+        "id": "consistent_nap_timing",
+        "description": "Naps occur within 30 minutes of planned windows",
+        "trackingPeriod": "5_days",
+        "threshold": 0.7
+      },
+      {
+        "id": "adequate_nap_duration",
+        "description": "At least 50% of naps meet minimum duration targets",
+        "trackingPeriod": "5_days",
+        "threshold": 0.5
+      },
+      {
+        "id": "predictable_bedtime",
+        "description": "Bedtime within 30 minutes of target",
+        "trackingPeriod": "5_days",
+        "threshold": 0.7
+      },
+      {
+        "id": "schedule_consistency",
+        "description": "Overall schedule variance under 45 minutes",
+        "trackingPeriod": "7_days",
+        "threshold": 0.6
+      },
+      {
+        "id": "total_sleep_in_range",
+        "description": "Total 24h sleep within age-appropriate range",
+        "trackingPeriod": "3_days",
+        "threshold": 0.65
+      }
+    ],
+    "overallSuccessThreshold": 0.6
+  },
+
+  "contracts": {
+    "todaySleepPlan": {
+      "fields": [
+        "dateISO",
+        "ageBandId",
+        "scheduleTemplateId",
+        "wakeAnchorMinutes",
+        "napWindows",
+        "bedtimeWindow",
+        "napCountTarget",
+        "appliedRuleIds",
+        "appliedConstraintIds",
+        "rescueProtocolIds",
+        "notesCopyKeys",
+        "totalDaySleepTarget",
+        "adjustmentsMade",
+        "transitionPhase"
+      ]
+    },
+    "napWindow": {
+      "fields": [
+        "slotId",
+        "startWindowMinutes",
+        "endWindowMinutes",
+        "targetDurationMinutes",
+        "optional"
+      ]
+    }
+  },
+
+  "copy": {
+    "strings": {
+      "day.age.0_4m": { "text": "0–4 months" },
+      "day.age.4_6m": { "text": "4–6 months" },
+      "day.age.6_9m": { "text": "6–9 months" },
+      "day.age.9_12m": { "text": "9–12 months" },
+      "day.age.12_18m": { "text": "12–18 months" },
+      "day.age.18_36m": { "text": "18–36 months" },
+
+      "day.validation.age_out_of_range": { "text": "Age must be between 0 and 36 months." },
+      "day.validation.wake_time_invalid": { "text": "Wake time must be a valid time." },
+      "day.validation.bedtime_invalid": { "text": "Bedtime must be a valid time." },
+      "day.validation.nap_duration_invalid": { "text": "Nap duration must be between 0 and 4 hours." },
+      "day.validation.wake_bedtime_conflict": { "text": "Wake time and bedtime cannot be the same." },
+      "day.validation.insufficient_wake_window": { "text": "There must be at least 12 hours between wake and bedtime." },
+
+      "day.sleepneeds.0_4m": { "text": "14-17 hours total, highly variable" },
+      "day.sleepneeds.4_6m": { "text": "13-15 hours total, consolidating" },
+      "day.sleepneeds.6_9m": { "text": "12.5-14.5 hours total, predictable" },
+      "day.sleepneeds.9_12m": { "text": "12-14 hours total, 2 solid naps" },
+      "day.sleepneeds.12_18m": { "text": "11.5-13.5 hours total, transitioning" },
+      "day.sleepneeds.18_36m": { "text": "11-13 hours total, one nap" },
+
+      "day.ww.0_4m.notes": { "text": "Very short, flexible wake windows. Watch for sleepy cues." },
+      "day.ww.4_6m.notes": { "text": "Wake windows gradually lengthen through the day." },
+      "day.ww.9_12m.notes": { "text": "Stable wake windows with predictable timing." },
+      "day.ww.18_36m.notes": { "text": "Long morning wake window, shorter afternoon to bedtime." },
+
+      "day.template.newborn.notes": { "text": "Newborn schedules are flexible. Focus on cues, safe sleep, and consistent light/dark signals." },
+      "day.template.4_6m.notes": { "text": "Three predictable naps emerging. Last nap is shorter." },
+      "day.template.6_9m_3naps.notes": { "text": "Still on 3 naps but third becoming optional bridge nap." },
+      "day.template.6_9m_2naps.notes": { "text": "Transitioned to 2 naps. Watch for overtiredness initially." },
+      "day.template.9_12m.notes": { "text": "Solid 2-nap schedule. Very predictable." },
+      "day.template.12_18m_2naps.notes": { "text": "Two naps but second becoming optional for some babies." },
+      "day.template.12_18m_1nap.notes": { "text": "One midday nap. May need earlier bedtime initially." },
+      "day.template.18_36m.notes": { "text": "Stable one nap, typically midday. Bedtime flexibility increases." },
+
+      "day.transition.6_9m_3naps": { "text": "Third nap is becoming optional. Some days you may need it, some days you won't." },
+      "day.transition.6_9m_2naps": { "text": "Recently dropped to 2 naps. This can take 2-3 weeks to stabilize." },
+      "day.transition.12_18m_2naps": { "text": "Some days may work better with one nap. Watch the signals." },
+      "day.transition.12_18m_1nap": { "text": "One nap is working but bedtime may need to be earlier for a few weeks." },
+
+      "day.transition.3to2.phase1": { "text": "Offer third nap only if needed. Start with shorter wake windows." },
+      "day.transition.3to2.phase2": { "text": "Drop third nap most days. Use micro-nap bridge if needed." },
+      "day.transition.3to2.phase3": { "text": "Stable 2-nap schedule. No more bridge needed." },
+
+      "day.transition.2to1.phase1": { "text": "Alternate between 1-nap and 2-nap days based on overnight sleep." },
+      "day.transition.2to1.phase2": { "text": "Mostly 1-nap days with occasional 2-nap day if needed." },
+      "day.transition.2to1.phase3": { "text": "Fully on 1 nap. Bedtime has stabilized." },
+
+      "day.anchor.default.notes": { "text": "If wake happens well before your desired wake time, treat it as night until the anchor. If it's within about an hour of the desired wake time, you can start the day." },
+      "day.anchor.strict.notes": { "text": "For chronic early waking, strict anchor enforcement helps reset the pattern. Treat anything before desired wake as night." },
+      "day.anchor.light_exposure": { "text": "Use bright light exposure at desired wake time to reinforce circadian rhythm." },
+
+      "day.bridge.micro.notes": { "text": "If bedtime is still far away, a short bridge nap can reduce overtiredness without pushing bedtime too late." },
+      "day.bridge.earlybed.notes": { "text": "If a bridge nap would push bedtime too late, choose an earlier bedtime instead." },
+      "day.bridge.crisis.notes": { "text": "When all naps fail and baby is overtired, significantly earlier bedtime is the best rescue." },
+
+      "day.napoutcome.short.notes": { "text": "After a short nap, the next wake window is often slightly shorter." },
+      "day.napoutcome.very_short.notes": { "text": "Very short nap (under 15 min) - try extending once, then adjust next window." },
+      "day.napoutcome.long.notes": { "text": "After a long nap, the next wake window can be slightly longer. If later naps run too long, consider capping." },
+      "day.napoutcome.excessive.notes": { "text": "Too much day sleep can interfere with night. Cap total to protect bedtime." },
+
+      "day.constraint.daycare": { "text": "daycare schedule" },
+      "day.constraint.daycare.notes": { "text": "If daycare nap is fixed, we build the rest of the day around it and protect bedtime consistency." },
+
+      "day.constraint.late_nap": { "text": "late nap today" },
+      "day.constraint.late_nap.notes": { "text": "Late nap needs to be capped to avoid pushing bedtime too far." },
+
+      "day.constraint.travel": { "text": "travel day" },
+      "day.constraint.travel.notes": { "text": "Travel days are about stability: shorter windows, easier naps, and fewer big changes." },
+
+      "day.constraint.illness": { "text": "sick day" },
+      "day.constraint.illness.notes": { "text": "When sick, comfort and rest come first. Keep expectations gentle." },
+
+      "day.constraint.disruption": { "text": "schedule disruption" },
+      "day.constraint.disruption.notes": { "text": "Off-schedule day. Shorter windows help compensate." },
+
+      "day.rule.earlywake.notes": { "text": "Anchor the morning and avoid an early first nap to prevent shifting the whole day earlier." },
+      "day.rule.bedtimeresist.notes": { "text": "Bedtime resistance often improves with a slightly shorter last wake window." },
+      "day.rule.shortnaps_overtired.notes": { "text": "Short naps + overtired signs usually means wake windows are slightly too long." },
+      "day.rule.undertired.notes": { "text": "If naps are consistently hard to start and bedtime is very easy, wake windows may be slightly short." },
+      "day.rule.splitnight.notes": { "text": "Split nights can improve when daytime sleep is slightly capped and bedtime stays consistent." },
+      "day.rule.falsestarts.notes": { "text": "False starts often improve by capping and shifting the last nap earlier." },
+      "day.rule.longnaps.notes": { "text": "Very long naps combined with bedtime resistance suggest too much day sleep." },
+      "day.rule.transition.notes": { "text": "During nap transitions, maintain stability rather than making additional adjustments." },
+
+      "day.rescue.nap.standard": { "text": "nap rescue" },
+      "day.rescue.nap.step1.title": { "text": "try for a nap" },
+      "day.rescue.nap.step1.do1": { "text": "Dark room, same short pre-nap routine, consistent cue phrase." },
+      "day.rescue.nap.step1.do2": { "text": "Give it 30 minutes, then stop the attempt." },
+      "day.rescue.nap.step2.title": { "text": "quiet reset" },
+      "day.rescue.nap.step2.do1": { "text": "Do a calm reset (feed/change if needed). Keep it low stimulation." },
+      "day.rescue.nap.step3.title": { "text": "bridge if needed" },
+      "day.rescue.nap.step3.do1": { "text": "If bedtime would be too far, use a short bridge nap or earlier bedtime." },
+
+      "day.rescue.daycare": { "text": "daycare nap rescue" },
+      "day.rescue.daycare.step1.title": { "text": "work with daycare schedule" },
+      "day.rescue.daycare.step1.do1": { "text": "Build home naps around daycare timing." },
+      "day.rescue.daycare.step1.do2": { "text": "Protect bedtime even if daycare nap was short." },
+      "day.rescue.daycare.step2.title": { "text": "weekend catch-up" },
+      "day.rescue.daycare.step2.do1": { "text": "Use weekends for ideal schedule to build sleep pressure baseline." },
+
+      "day.rescue.micro_nap": { "text": "bridge micro-nap" },
+      "day.rescue.micro.title": { "text": "short bridge nap" },
+      "day.rescue.micro.do1": { "text": "Offer a 15-20 minute nap to reduce overtiredness." },
+      "day.rescue.micro.do2": { "text": "Cap it strictly so bedtime stays within range." },
+
+      "day.rescue.late_nap": { "text": "late nap bedtime rescue" },
+      "day.rescue.late.title": { "text": "bedtime after a late nap" },
+      "day.rescue.late.do1": { "text": "Cap the late nap if possible. Keep the last window shorter." },
+      "day.rescue.late.do2": { "text": "Use a calmer bedtime routine and expect a slightly later bedtime." },
+
+      "day.rescue.all_failed": { "text": "all naps failed" },
+      "day.rescue.failed.step1.title": { "text": "very early bedtime" },
+      "day.rescue.failed.step1.do1": { "text": "Move bedtime 60-90 minutes earlier than usual." },
+      "day.rescue.failed.step1.do2": { "text": "This is temporary - back to normal schedule tomorrow." },
+      "day.rescue.failed.step2.title": { "text": "tomorrow's reset" },
+      "day.rescue.failed.step2.do1": { "text": "Start fresh with normal wake windows. Don't overcompensate." },
+
+      "day.rescue.early_wake": { "text": "early nap wake" },
+      "day.rescue.early.step1.title": { "text": "extension attempt" },
+      "day.rescue.early.step1.do1": { "text": "Wait 10-15 minutes to see if baby will resettle." },
+      "day.rescue.early.step2.title": { "text": "accept and adjust" },
+      "day.rescue.early.step2.do1": { "text": "If no resettle, accept the short nap and shorten next wake window." },
+
+      "day.rescue.extension": { "text": "nap extension attempt" },
+      "day.rescue.extend.step1.title": { "text": "help resettle" },
+      "day.rescue.extend.step1.do1": { "text": "Use minimal intervention to help baby connect cycles." },
+      "day.rescue.extend.step1.do2": { "text": "Give it 15-20 minutes max, then accept the nap as done." }
+    }
+  }
+}

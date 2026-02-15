@@ -1,0 +1,193 @@
+{
+  "meta": {
+    "schemaVersion": "family_rules_evidence_registry@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required",
+    "scope": "Caregiver consistency, rules synchronization, and conflict resolution",
+    "notes": "Supports governance flows for shared household rules and cross-caregiver consistency."
+  },
+  "policyBindings": {
+    "ruleIds": {
+      "boundary_public": [
+        "ev_consistent_boundary_language"
+      ],
+      "screens_default": [
+        "ev_shared_screen_defaults"
+      ],
+      "snacks_default": [
+        "ev_shared_meal_snack_boundaries"
+      ],
+      "bedtime_routine": [
+        "ev_shared_bedtime_sequence"
+      ]
+    },
+    "governance": {
+      "diff_created": [
+        "ev_coparenting_alignment"
+      ],
+      "diff_review_accept": [
+        "ev_coparenting_alignment"
+      ],
+      "conflict_choose_a_or_b": [
+        "ev_conflict_resolution_visibility"
+      ],
+      "change_feed_visibility": [
+        "ev_conflict_resolution_visibility"
+      ]
+    }
+  },
+  "evidenceItems": [
+    {
+      "id": "ev_coparenting_alignment",
+      "title": "Coparenting alignment and child outcomes",
+      "claim": "Better coparenting alignment is associated with better child socioemotional outcomes and lower family friction.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "governance.diff_created",
+        "governance.diff_review_accept"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "coparenting_meta_2022",
+          "type": "meta_analysis",
+          "citation": "Meta-analysis of coparenting and child adjustment (93 studies). PMID: 36011980.",
+          "publisher": "PubMed",
+          "year": 2022,
+          "pmid": "36011980",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/36011980/"
+        }
+      ]
+    },
+    {
+      "id": "ev_consistent_boundary_language",
+      "title": "Consistent boundary scripts",
+      "claim": "Predictable boundary language across caregivers reduces mixed signals and supports discipline effectiveness.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "rule.boundary_public"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "aap_effective_discipline_2018",
+          "type": "clinical_policy",
+          "citation": "Sege RD, Siegel BS. Effective Discipline to Raise Healthy Children. Pediatrics. 2018;142(6):e20183112.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2018,
+          "doi": "10.1542/peds.2018-3112",
+          "pmid": "30397164",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30397164/"
+        }
+      ]
+    },
+    {
+      "id": "ev_shared_screen_defaults",
+      "title": "Shared media defaults",
+      "claim": "Consistent household media boundaries are recommended to support healthy regulation in young children.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "rule.screens_default"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "aap_media_young_minds_2016",
+          "type": "clinical_policy",
+          "citation": "AAP. Media and Young Minds. Pediatrics. 2016;138(5):e20162591.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2016,
+          "url": "https://publications.aap.org/pediatrics/article-abstract/138/5/e20162591/60503/Media-and-Young-Minds"
+        }
+      ]
+    },
+    {
+      "id": "ev_shared_meal_snack_boundaries",
+      "title": "Shared meal/snack boundary defaults",
+      "claim": "Consistent meal and snack structure across caregivers can reduce mealtime struggle and grazing patterns.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "rule.snacks_default"
+      ],
+      "contraindications": [
+        "feeding_pain_signs=true"
+      ],
+      "redFlags": [
+        "feeding_refusal_with_pain_signs"
+      ],
+      "sourceRefs": [
+        {
+          "id": "cdc_picky_eaters",
+          "type": "public_health_guideline",
+          "citation": "CDC. Picky Eaters.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/infant-toddler-nutrition/foods-and-drinks/picky-eaters.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_shared_bedtime_sequence",
+      "title": "Shared bedtime routine sequence",
+      "claim": "A stable bedtime sequence across caregivers improves adherence and bedtime outcomes.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "rule.bedtime_routine"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "mindell_bedtime_routine_2025",
+          "type": "outcomes_study",
+          "citation": "Mindell JA, et al. Bedtime routine outcomes study. PMID: 40461397.",
+          "publisher": "PubMed",
+          "year": 2025,
+          "pmid": "40461397",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/40461397/"
+        }
+      ]
+    },
+    {
+      "id": "ev_conflict_resolution_visibility",
+      "title": "Visible conflict resolution and explicit rule ownership",
+      "claim": "Explicit agreement workflows reduce ambiguity and improve consistency in caregiver behavior.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "governance.conflict_choose_a_or_b",
+        "governance.change_feed_visibility"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "coparenting_meta_2022",
+          "type": "meta_analysis",
+          "citation": "Meta-analysis of coparenting and child adjustment (93 studies). PMID: 36011980.",
+          "publisher": "PubMed",
+          "year": 2022,
+          "pmid": "36011980",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/36011980/"
+        },
+        {
+          "id": "meta_parent_stress_child_outcomes_2024",
+          "type": "meta_analysis",
+          "citation": "Meta-analysis of parental stress and child emotional/behavioral outcomes. PMID: 38636551.",
+          "publisher": "PubMed",
+          "year": 2024,
+          "pmid": "38636551",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/38636551/"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "meta": {
+    "schemaVersion": "help_now_evidence_registry@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required",
+    "scope": "Behavioral crisis response only (non-medical)",
+    "notes": "Maps Help Now incident outputs to evidence-backed behavioral tactics."
+  },
+  "policyBindings": {
+    "incidents": {
+      "screaming_crying": [
+        "ev_coregulation_brief_scripts",
+        "ev_consistency_under_stress"
+      ],
+      "hitting_throwing": [
+        "ev_immediate_safety_then_limit",
+        "ev_parent_training_effectiveness"
+      ],
+      "unsafe_bolting": [
+        "ev_immediate_safety_then_limit"
+      ],
+      "refusal_wont": [
+        "ev_limit_setting_without_negotiation"
+      ],
+      "public_meltdown": [
+        "ev_public_reset_over_completion"
+      ],
+      "parent_overwhelmed": [
+        "ev_parent_self_regulation"
+      ],
+      "transition_meltdown": [
+        "ev_transition_preview_and_single_step"
+      ],
+      "bedtime_protest": [
+        "ev_night_routing_to_sleep_runner"
+      ]
+    },
+    "outcomes": {
+      "improved": [
+        "ev_measurement_improves_consistency"
+      ],
+      "unchanged": [
+        "ev_measurement_improves_consistency"
+      ],
+      "escalated": [
+        "ev_measurement_improves_consistency"
+      ],
+      "aborted": [
+        "ev_measurement_improves_consistency"
+      ]
+    }
+  },
+  "evidenceItems": [
+    {
+      "id": "ev_coregulation_brief_scripts",
+      "title": "Brief, calm scripts during child distress",
+      "claim": "Short, consistent language with calm caregiver affect supports de-escalation better than extended verbal negotiation under stress.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.screaming_crying",
+        "help_now.say_do_timer"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "aap_effective_discipline_2018",
+          "type": "clinical_policy",
+          "citation": "Sege RD, Siegel BS. Effective Discipline to Raise Healthy Children. Pediatrics. 2018;142(6):e20183112.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2018,
+          "doi": "10.1542/peds.2018-3112",
+          "pmid": "30397164",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30397164/"
+        },
+        {
+          "id": "cdc_essentials_parenting",
+          "type": "public_health_guideline",
+          "citation": "CDC. Essentials for Parenting Toddlers and Preschoolers.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/parents/essentials/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_consistency_under_stress",
+      "title": "Consistent caregiver response",
+      "claim": "Consistent response patterns are associated with better behavioral adjustment than variable responses.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.screaming_crying",
+        "incident.refusal_wont"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "cochrane_parent_training_cd003680",
+          "type": "systematic_review",
+          "citation": "Cochrane Review. Group-based parent training programmes for improving emotional and behavioural adjustment in young children. CD003680.",
+          "publisher": "Cochrane",
+          "year": 2023,
+          "url": "https://www.cochrane.org/evidence/CD003680_group-based-parent-training-programmes-improving-emotional-and-behavioural-adjustment-young-children"
+        }
+      ]
+    },
+    {
+      "id": "ev_immediate_safety_then_limit",
+      "title": "Safety-first intervention for aggression/unsafe behavior",
+      "claim": "Immediate safety actions (blocking danger, removing hazards) should precede coaching language during high-risk moments.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.hitting_throwing",
+        "incident.unsafe_bolting"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "aap_effective_discipline_2018",
+          "type": "clinical_policy",
+          "citation": "Sege RD, Siegel BS. Effective Discipline to Raise Healthy Children. Pediatrics. 2018;142(6):e20183112.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2018,
+          "doi": "10.1542/peds.2018-3112",
+          "pmid": "30397164",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30397164/"
+        }
+      ]
+    },
+    {
+      "id": "ev_parent_training_effectiveness",
+      "title": "Parent skills training improves child behavior",
+      "claim": "Behavioral parent training is effective for reducing disruptive behavior patterns in early childhood.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.hitting_throwing",
+        "incident.refusal_wont"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "cochrane_parent_training_cd003680",
+          "type": "systematic_review",
+          "citation": "Cochrane Review. Group-based parent training programmes for improving emotional and behavioural adjustment in young children. CD003680.",
+          "publisher": "Cochrane",
+          "year": 2023,
+          "url": "https://www.cochrane.org/evidence/CD003680_group-based-parent-training-programmes-improving-emotional-and-behavioural-adjustment-young-children"
+        }
+      ]
+    },
+    {
+      "id": "ev_limit_setting_without_negotiation",
+      "title": "Limit-setting without repeated debate",
+      "claim": "Clear limits with minimal repeated negotiation can reduce reinforcement of refusal cycles.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.refusal_wont"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "aap_effective_discipline_2018",
+          "type": "clinical_policy",
+          "citation": "Sege RD, Siegel BS. Effective Discipline to Raise Healthy Children. Pediatrics. 2018;142(6):e20183112.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2018,
+          "doi": "10.1542/peds.2018-3112",
+          "pmid": "30397164",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30397164/"
+        }
+      ]
+    },
+    {
+      "id": "ev_public_reset_over_completion",
+      "title": "Public reset routine",
+      "claim": "In high-arousal public episodes, reducing stimulation and exiting the environment can be more effective than pressing task completion.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.public_meltdown"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "cdc_essentials_parenting",
+          "type": "public_health_guideline",
+          "citation": "CDC. Essentials for Parenting Toddlers and Preschoolers.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/parents/essentials/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_parent_self_regulation",
+      "title": "Parent self-regulation before response",
+      "claim": "Parent stress and dysregulation are linked to poorer child emotional/behavioral outcomes; rapid caregiver reset is a protective tactic.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.parent_overwhelmed"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "meta_parent_stress_child_outcomes_2024",
+          "type": "meta_analysis",
+          "citation": "Meta-analysis of parental stress and child emotional/behavioral outcomes. PMID: 38636551.",
+          "publisher": "PubMed",
+          "year": 2024,
+          "pmid": "38636551",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/38636551/"
+        }
+      ]
+    },
+    {
+      "id": "ev_transition_preview_and_single_step",
+      "title": "Single-step transition support",
+      "claim": "Transition support is stronger when parents provide one clear next action and reduce competing instructions.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.transition_meltdown"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "cdc_essentials_parenting",
+          "type": "public_health_guideline",
+          "citation": "CDC. Essentials for Parenting Toddlers and Preschoolers.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/parents/essentials/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_night_routing_to_sleep_runner",
+      "title": "Night events route to sleep execution",
+      "claim": "Bedtime and night-wake incidents are better handled by a dedicated sleep plan runner than generic daytime scripts.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "incident.bedtime_protest",
+        "routing.night"
+      ],
+      "contraindications": [
+        "medical_red_flag=true"
+      ],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "mindell_behavioral_sleep_2006",
+          "type": "systematic_review",
+          "citation": "Mindell JA, Kuhn B, Lewin DS, Meltzer LJ, Sadeh A. Behavioral treatment of bedtime problems and night wakings in infants and young children. Sleep. 2006;29(10):1263-1276.",
+          "publisher": "Sleep",
+          "year": 2006,
+          "pmid": "17068979",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/17068979/"
+        }
+      ]
+    },
+    {
+      "id": "ev_measurement_improves_consistency",
+      "title": "Outcome logging enables iterative adjustment",
+      "claim": "Routine recording of response and outcome supports consistent care adjustment over time.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "help_now.outcome_logging"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "cochrane_parent_training_cd003680",
+          "type": "systematic_review",
+          "citation": "Cochrane Review. Group-based parent training programmes for improving emotional and behavioural adjustment in young children. CD003680.",
+          "publisher": "Cochrane",
+          "year": 2023,
+          "url": "https://www.cochrane.org/evidence/CD003680_group-based-parent-training-programmes-improving-emotional-and-behavioural-adjustment-young-children"
+        }
+      ]
+    }
+  ]
+}

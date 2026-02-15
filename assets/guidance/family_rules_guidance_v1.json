@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "schemaVersion": "family_rules_guidance@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required"
+  },
+  "rules": {
+    "boundary_public": {
+      "default": "I stay calm, one sentence, then hold line.",
+      "label": "boundary public"
+    },
+    "screens_default": {
+      "default": "No screens before breakfast or bedtime routine.",
+      "label": "screens default"
+    },
+    "snacks_default": {
+      "default": "Offer snack windows, no grazing all day.",
+      "label": "snacks default"
+    },
+    "bedtime_routine": {
+      "default": "Bath, books, bed. Same order nightly.",
+      "label": "bedtime routine"
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "schemaVersion": "help_now_guidance@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required"
+  },
+  "nightRouting": {
+    "startHour": 19,
+    "endHourExclusive": 6,
+    "sleepIncidentIds": [
+      "bedtime_protest"
+    ]
+  },
+  "incidents": [
+    {
+      "id": "screaming_crying",
+      "default": {
+        "say": "I hear you. I am here.",
+        "doStep": "Get low, soften your voice, and hold one clear boundary.",
+        "timerMinutes": 3,
+        "ifEscalates": "Use fewer words, stay close, and focus on safety."
+      },
+      "ageBandOverrides": {
+        "1-2": {
+          "timerMinutes": 2
+        }
+      }
+    },
+    {
+      "id": "hitting_throwing",
+      "default": {
+        "say": "I am here. I will help keep everyone safe.",
+        "doStep": "Move breakable items aside and give arm's-length space.",
+        "timerMinutes": 3,
+        "ifEscalates": "Give more space, use fewer words, and repeat one calm line."
+      }
+    },
+    {
+      "id": "unsafe_bolting",
+      "default": {
+        "say": "Stop. I will help keep your body safe.",
+        "doStep": "Block exits and guide to a safer spot.",
+        "timerMinutes": 2,
+        "ifEscalates": "Keep your body between danger and child, then call a support person if needed."
+      }
+    },
+    {
+      "id": "refusal_wont",
+      "default": {
+        "say": "You can feel upset. The boundary stays the same.",
+        "doStep": "Offer one small choice within the limit.",
+        "timerMinutes": 4,
+        "ifEscalates": "Repeat the limit once, then stay nearby and quiet."
+      }
+    },
+    {
+      "id": "public_meltdown",
+      "default": {
+        "say": "You are safe. We can take a reset break.",
+        "doStep": "Move to a quieter nearby spot.",
+        "timerMinutes": 3,
+        "ifEscalates": "Leave this task for now and focus on calming first."
+      }
+    },
+    {
+      "id": "parent_overwhelmed",
+      "default": {
+        "say": "I need thirty seconds to steady myself.",
+        "doStep": "Place child in a safe spot, take ten slow breaths, then return.",
+        "timerMinutes": 2,
+        "ifEscalates": "Pause the plan and lower expectations for this moment."
+      }
+    },
+    {
+      "id": "transition_meltdown",
+      "default": {
+        "say": "Transition time. I will help your body shift.",
+        "doStep": "Give one short cue, then guide the first step.",
+        "timerMinutes": 3,
+        "ifEscalates": "Return briefly to calm, then retry one small step."
+      }
+    },
+    {
+      "id": "bedtime_protest",
+      "default": {
+        "say": "Bedtime now, I will help you settle.",
+        "doStep": "Route to Sleep Tonight and start the runner.",
+        "timerMinutes": 2,
+        "ifEscalates": "Use sleep runner escalation rule only."
+      }
+    }
+  ]
+}

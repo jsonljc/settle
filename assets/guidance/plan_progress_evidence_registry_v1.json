@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "schemaVersion": "plan_progress_evidence_registry@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required",
+    "scope": "Weekly bottleneck + one-experiment planning (non-medical)",
+    "notes": "Supports evidence-gated strategic suggestions in Plan & Progress."
+  },
+  "policyBindings": {
+    "bottlenecks": {
+      "night_wakes_after_bedtime": [
+        "ev_sleep_consistency_for_night_wakes"
+      ],
+      "public_meltdowns": [
+        "ev_consistent_parent_training"
+      ],
+      "refusal_loops": [
+        "ev_limit_setting_with_consistency"
+      ],
+      "transition_battles": [
+        "ev_transition_structure"
+      ],
+      "parent_overwhelm_moments": [
+        "ev_parent_regulation_and_child_outcomes"
+      ]
+    },
+    "experiments": {
+      "same_first_wake_step_3_nights": [
+        "ev_sleep_consistency_for_night_wakes"
+      ],
+      "single_script_single_timer_week": [
+        "ev_consistent_parent_training"
+      ],
+      "thirty_second_parent_reset": [
+        "ev_parent_regulation_and_child_outcomes"
+      ],
+      "constrained_choice_no_debate": [
+        "ev_limit_setting_with_consistency"
+      ],
+      "public_exit_reset_routine": [
+        "ev_transition_structure"
+      ]
+    },
+    "rhythmBlocks": {
+      "wake": [
+        "ev_stable_sleep_timing"
+      ],
+      "nap": [
+        "ev_stable_sleep_timing"
+      ],
+      "meals": [
+        "ev_pressure_free_meal_rhythm"
+      ],
+      "milk": [
+        "ev_pressure_free_meal_rhythm"
+      ],
+      "bedtime_routine": [
+        "ev_bedtime_routine_effect"
+      ]
+    },
+    "eligibilityRules": {
+      "three_similar_events_in_14_days": [
+        "ev_evidence_thresholding"
+      ],
+      "two_logged_sleep_nights": [
+        "ev_evidence_thresholding"
+      ]
+    }
+  },
+  "evidenceItems": [
+    {
+      "id": "ev_sleep_consistency_for_night_wakes",
+      "title": "Consistent sleep response improves night-wake handling",
+      "claim": "Behavioral sleep interventions rely on consistent caregiver response across nights to reduce bedtime and night waking problems.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "bottleneck.night_wakes_after_bedtime",
+        "experiment.same_first_wake_step_3_nights"
+      ],
+      "contraindications": [
+        "medical_red_flag=true"
+      ],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "mindell_behavioral_sleep_2006",
+          "type": "systematic_review",
+          "citation": "Mindell JA, Kuhn B, Lewin DS, Meltzer LJ, Sadeh A. Behavioral treatment of bedtime problems and night wakings in infants and young children. Sleep. 2006;29(10):1263-1276.",
+          "publisher": "Sleep",
+          "year": 2006,
+          "pmid": "17068979",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/17068979/"
+        },
+        {
+          "id": "gradisar_pediatrics_2016",
+          "type": "randomized_controlled_trial",
+          "citation": "Gradisar M, Jackson K, Spurrier NJ, et al. Behavioral Interventions for Infant Sleep Problems: A Randomized Controlled Trial. Pediatrics. 2016;137(6):e20151486.",
+          "publisher": "Pediatrics",
+          "year": 2016,
+          "doi": "10.1542/peds.2015-1486",
+          "pmid": "27221288",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27221288/"
+        }
+      ]
+    },
+    {
+      "id": "ev_consistent_parent_training",
+      "title": "Single-change repetition supports behavior improvement",
+      "claim": "Parent training effects are stronger when caregivers repeatedly apply clear, stable behavior strategies.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "bottleneck.public_meltdowns",
+        "experiment.single_script_single_timer_week"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "cochrane_parent_training_cd003680",
+          "type": "systematic_review",
+          "citation": "Cochrane Review. Group-based parent training programmes for improving emotional and behavioural adjustment in young children. CD003680.",
+          "publisher": "Cochrane",
+          "year": 2023,
+          "url": "https://www.cochrane.org/evidence/CD003680_group-based-parent-training-programmes-improving-emotional-and-behavioural-adjustment-young-children"
+        }
+      ]
+    },
+    {
+      "id": "ev_limit_setting_with_consistency",
+      "title": "Consistent limit-setting in refusal loops",
+      "claim": "Clear boundaries and reduced repeated negotiation are part of effective discipline frameworks.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "bottleneck.refusal_loops",
+        "experiment.constrained_choice_no_debate"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "aap_effective_discipline_2018",
+          "type": "clinical_policy",
+          "citation": "Sege RD, Siegel BS. Effective Discipline to Raise Healthy Children. Pediatrics. 2018;142(6):e20183112.",
+          "publisher": "American Academy of Pediatrics",
+          "year": 2018,
+          "doi": "10.1542/peds.2018-3112",
+          "pmid": "30397164",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30397164/"
+        }
+      ]
+    },
+    {
+      "id": "ev_transition_structure",
+      "title": "Transition structure reduces conflict",
+      "claim": "Predictable transition routines and concise caregiver instructions are associated with better behavioral regulation in daily routines.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "bottleneck.transition_battles",
+        "experiment.public_exit_reset_routine"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "cdc_essentials_parenting",
+          "type": "public_health_guideline",
+          "citation": "CDC. Essentials for Parenting Toddlers and Preschoolers.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/parents/essentials/index.html"
+        }
+      ]
+    },
+    {
+      "id": "ev_parent_regulation_and_child_outcomes",
+      "title": "Parent regulation as leverage point",
+      "claim": "Parental stress patterns are linked with child emotional and behavioral outcomes; caregiver reset routines can be a strategic intervention point.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "bottleneck.parent_overwhelm_moments",
+        "experiment.thirty_second_parent_reset"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "meta_parent_stress_child_outcomes_2024",
+          "type": "meta_analysis",
+          "citation": "Meta-analysis of parental stress and child emotional/behavioral outcomes. PMID: 38636551.",
+          "publisher": "PubMed",
+          "year": 2024,
+          "pmid": "38636551",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/38636551/"
+        }
+      ]
+    },
+    {
+      "id": "ev_stable_sleep_timing",
+      "title": "Stable sleep-wake timing",
+      "claim": "Regular sleep timing and routines are associated with better sleep consolidation in young children.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "rhythm.wake",
+        "rhythm.nap"
+      ],
+      "contraindications": [
+        "medical_red_flag=true"
+      ],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "mindell_behavioral_sleep_2006",
+          "type": "systematic_review",
+          "citation": "Mindell JA, Kuhn B, Lewin DS, Meltzer LJ, Sadeh A. Behavioral treatment of bedtime problems and night wakings in infants and young children. Sleep. 2006;29(10):1263-1276.",
+          "publisher": "Sleep",
+          "year": 2006,
+          "pmid": "17068979",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/17068979/"
+        }
+      ]
+    },
+    {
+      "id": "ev_pressure_free_meal_rhythm",
+      "title": "Pressure-free meal rhythm",
+      "claim": "Consistent meal timing with low-pressure feeding supports appetite regulation and reduces mealtime conflict.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "rhythm.meals",
+        "rhythm.milk"
+      ],
+      "contraindications": [
+        "feeding_pain_signs=true"
+      ],
+      "redFlags": [
+        "feeding_refusal_with_pain_signs"
+      ],
+      "sourceRefs": [
+        {
+          "id": "cdc_picky_eaters",
+          "type": "public_health_guideline",
+          "citation": "CDC. Picky Eaters.",
+          "publisher": "Centers for Disease Control and Prevention",
+          "year": 2024,
+          "url": "https://www.cdc.gov/infant-toddler-nutrition/foods-and-drinks/picky-eaters.html"
+        },
+        {
+          "id": "who_complementary_feeding",
+          "type": "global_guideline",
+          "citation": "WHO. Complementary Feeding.",
+          "publisher": "World Health Organization",
+          "year": 2025,
+          "url": "https://www.who.int/health-topics/complementary-feeding"
+        }
+      ]
+    },
+    {
+      "id": "ev_bedtime_routine_effect",
+      "title": "Bedtime routine effectiveness",
+      "claim": "Predictable bedtime routines improve bedtime cooperation and sleep outcomes.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "rhythm.bedtime_routine"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "mindell_bedtime_routine_2025",
+          "type": "outcomes_study",
+          "citation": "Mindell JA, et al. Bedtime routine outcomes study. PMID: 40461397.",
+          "publisher": "PubMed",
+          "year": 2025,
+          "pmid": "40461397",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/40461397/"
+        }
+      ]
+    },
+    {
+      "id": "ev_evidence_thresholding",
+      "title": "Signal threshold before surfacing insights",
+      "claim": "Showing insights only after repeated signal reduces over-interpretation and supports trust in behavior recommendations.",
+      "evidenceLevel": "review_required",
+      "classification": "behavioral",
+      "appliesTo": [
+        "eligibility.three_similar_events_in_14_days",
+        "eligibility.two_logged_sleep_nights"
+      ],
+      "contraindications": [],
+      "redFlags": [],
+      "sourceRefs": [
+        {
+          "id": "cochrane_parent_training_cd003680",
+          "type": "systematic_review",
+          "citation": "Cochrane Review. Group-based parent training programmes for improving emotional and behavioural adjustment in young children. CD003680.",
+          "publisher": "Cochrane",
+          "year": 2023,
+          "url": "https://www.cochrane.org/evidence/CD003680_group-based-parent-training-programmes-improving-emotional-and-behavioural-adjustment-young-children"
+        }
+      ]
+    }
+  ]
+}

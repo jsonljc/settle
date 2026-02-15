@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "schemaVersion": "evidence_registry_catalog@1.0.0",
+    "updatedAt": "2026-02-13",
+    "status": "draft_review_required"
+  },
+  "registries": [
+    {
+      "id": "sleep",
+      "path": "assets/guidance/sleep_evidence_registry_v1.json",
+      "pillar": "SLEEP_TONIGHT"
+    },
+    {
+      "id": "help_now",
+      "path": "assets/guidance/help_now_evidence_registry_v1.json",
+      "pillar": "HELP_NOW"
+    },
+    {
+      "id": "plan_progress",
+      "path": "assets/guidance/plan_progress_evidence_registry_v1.json",
+      "pillar": "PLAN_PROGRESS"
+    },
+    {
+      "id": "family_rules",
+      "path": "assets/guidance/family_rules_evidence_registry_v1.json",
+      "pillar": "FAMILY_RULES"
+    },
+    {
+      "id": "safety_legal",
+      "path": "assets/guidance/safety_legal_evidence_registry_v1.json",
+      "pillar": "CROSS_PILLAR"
+    }
+  ]
+}
