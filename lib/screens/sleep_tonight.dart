@@ -288,6 +288,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
     final state = ref.watch(sleepTonightProvider);
     final activeEvidenceRefs = _evidenceRefsFromPlan(state.activePlan);
     final hasRedFlags = state.redFlagTriggered;
+    final showSafetyGate =
+        !state.hasActivePlan || !state.safeSleepConfirmed || hasRedFlags;
 
     if (profile == null) {
       return const ProfileRequiredView(title: 'Sleep Tonight');
@@ -321,6 +323,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                     spacing: 10,
                     runSpacing: 8,
                     children: [
+                      _ContextLink(
+                        label: 'Current rhythm',
+                        onTap: () => context.push('/sleep/rhythm'),
+                      ),
                       _ContextLink(
                         label: 'Take a breath',
                         onTap: () => context.push(
@@ -371,46 +377,48 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                 ),
                               ],
-                              _SafetyGate(
-                                breathingDifficulty: state.breathingDifficulty,
-                                dehydrationSigns: state.dehydrationSigns,
-                                repeatedVomiting: state.repeatedVomiting,
-                                severePainIndicators:
-                                    state.severePainIndicators,
-                                feedingRefusalWithPainSigns:
-                                    state.feedingRefusalWithPainSigns,
-                                safeSleepConfirmed: state.safeSleepConfirmed,
-                                onBreathingDifficultyChanged: (v) =>
-                                    _updateSafetyGate(
-                                      state: state,
-                                      breathingDifficulty: v,
-                                    ),
-                                onDehydrationSignsChanged: (v) =>
-                                    _updateSafetyGate(
-                                      state: state,
-                                      dehydrationSigns: v,
-                                    ),
-                                onRepeatedVomitingChanged: (v) =>
-                                    _updateSafetyGate(
-                                      state: state,
-                                      repeatedVomiting: v,
-                                    ),
-                                onSeverePainIndicatorsChanged: (v) =>
-                                    _updateSafetyGate(
-                                      state: state,
-                                      severePainIndicators: v,
-                                    ),
-                                onFeedingRefusalWithPainSignsChanged: (v) =>
-                                    _updateSafetyGate(
-                                      state: state,
-                                      feedingRefusalWithPainSigns: v,
-                                    ),
-                                onSafeSleepChanged: (v) => _updateSafetyGate(
-                                  state: state,
-                                  safeSleepConfirmed: v,
+                              if (showSafetyGate)
+                                _SafetyGate(
+                                  breathingDifficulty:
+                                      state.breathingDifficulty,
+                                  dehydrationSigns: state.dehydrationSigns,
+                                  repeatedVomiting: state.repeatedVomiting,
+                                  severePainIndicators:
+                                      state.severePainIndicators,
+                                  feedingRefusalWithPainSigns:
+                                      state.feedingRefusalWithPainSigns,
+                                  safeSleepConfirmed: state.safeSleepConfirmed,
+                                  onBreathingDifficultyChanged: (v) =>
+                                      _updateSafetyGate(
+                                        state: state,
+                                        breathingDifficulty: v,
+                                      ),
+                                  onDehydrationSignsChanged: (v) =>
+                                      _updateSafetyGate(
+                                        state: state,
+                                        dehydrationSigns: v,
+                                      ),
+                                  onRepeatedVomitingChanged: (v) =>
+                                      _updateSafetyGate(
+                                        state: state,
+                                        repeatedVomiting: v,
+                                      ),
+                                  onSeverePainIndicatorsChanged: (v) =>
+                                      _updateSafetyGate(
+                                        state: state,
+                                        severePainIndicators: v,
+                                      ),
+                                  onFeedingRefusalWithPainSignsChanged: (v) =>
+                                      _updateSafetyGate(
+                                        state: state,
+                                        feedingRefusalWithPainSigns: v,
+                                      ),
+                                  onSafeSleepChanged: (v) => _updateSafetyGate(
+                                    state: state,
+                                    safeSleepConfirmed: v,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 12),
+                              if (showSafetyGate) const SizedBox(height: 12),
                               if (hasRedFlags)
                                 GlassCardRose(
                                   child: Column(
@@ -946,6 +954,12 @@ class _NightWakeCard extends StatelessWidget {
                 'Stop rule: $stopRule',
                 style: T.type.body.copyWith(color: T.pal.textSecondary),
               ),
+              const SizedBox(height: 10),
+              _ActionChip(
+                label: 'Something feels off',
+                selected: somethingFeelsOff,
+                onTap: onSomethingFeelsOff,
+              ),
             ],
           ),
         ),
@@ -962,11 +976,6 @@ class _NightWakeCard extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   _ActionChip(label: 'Log wake', onTap: onLogWake),
-                  _ActionChip(
-                    label: 'Something feels off',
-                    selected: somethingFeelsOff,
-                    onTap: onSomethingFeelsOff,
-                  ),
                   _ActionChip(
                     label: 'Morning recap done',
                     onTap: onMorningReview,

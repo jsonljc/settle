@@ -139,6 +139,22 @@ void main() {
     );
   }
 
+  Widget buildActivePlanApp(_ActivePlanSleepTonightNotifier notifier) {
+    final router = GoRouter(
+      initialLocation: '/sleep-tonight',
+      routes: [
+        GoRoute(
+          path: '/sleep-tonight',
+          builder: (context, state) => const SleepTonightScreen(),
+        ),
+      ],
+    );
+    return ProviderScope(
+      overrides: [sleepTonightProvider.overrideWith((ref) => notifier)],
+      child: MaterialApp.router(routerConfig: router),
+    );
+  }
+
   testWidgets('Sleep Tonight runner executes core actions end-to-end', (
     tester,
   ) async {
@@ -171,6 +187,34 @@ void main() {
     await tapByText(tester, 'Morning recap done');
     expect(find.textContaining('Morning review captured.'), findsOneWidget);
   });
+
+  testWidgets(
+    'active plan shows wake guidance immediately and supports one-tap comfort fallback',
+    (tester) async {
+      final notifier = _ActivePlanSleepTonightNotifier();
+      setPhoneViewport(tester);
+      await tester.pumpWidget(buildActivePlanApp(notifier));
+      await settleUi(tester);
+
+      // Guidance should be available immediately for wake handling.
+      expect(find.text('Night Wake Card'), findsOneWidget);
+      expect(find.text('Do now'), findsOneWidget);
+      expect(find.text('Quick safety check'), findsNothing);
+      expect(find.text('Something feels off'), findsOneWidget);
+
+      await tapByText(tester, 'Something feels off');
+      await tester.pumpAndSettle();
+
+      expect(notifier.state.comfortMode, isTrue);
+      expect(notifier.state.somethingFeelsOff, isTrue);
+      expect(
+        find.textContaining(
+          'Stop rule: Pause training expectations tonight and stay comfort-first.',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('red flags block plan creation until cleared', (tester) async {
     setPhoneViewport(tester);
@@ -348,5 +392,71 @@ class _FlowSleepTonightNotifier extends SleepTonightNotifier {
     plan['is_active'] = false;
     plan['runner_hint'] = 'Plan paused.';
     state = state.copyWith(activePlan: plan);
+  }
+}
+
+class _ActivePlanSleepTonightNotifier extends SleepTonightNotifier {
+  _ActivePlanSleepTonightNotifier() {
+    state = SleepTonightState(
+      isLoading: false,
+      activePlan: {
+        'plan_id': 'active_plan_1',
+        'child_id': 'sleep-runner-child-1',
+        'date': '2026-02-13',
+        'is_active': true,
+        'safe_sleep_confirmed': true,
+        'comfort_mode': false,
+        'something_feels_off': false,
+        'training_paused': false,
+        'steps': const [
+          {
+            'title': 'Set boundary and script',
+            'script': 'Bedtime now. I will help you settle.',
+            'do_step': 'Keep response short and calm.',
+            'minutes': 3,
+          },
+          {
+            'title': 'One calm intervention',
+            'script': 'I keep this brief and steady.',
+            'do_step': 'Repeat script once and pause.',
+            'minutes': 3,
+          },
+        ],
+        'current_step': 0,
+        'wakes_logged': 0,
+        'early_wakes_logged': 0,
+        'escalation_rule': 'If escalation continues, reset to step 1.',
+        'morning_review_complete': false,
+        'runner_hint': '',
+      },
+      breathingDifficulty: false,
+      dehydrationSigns: false,
+      repeatedVomiting: false,
+      severePainIndicators: false,
+      feedingRefusalWithPainSigns: false,
+      safeSleepConfirmed: true,
+      comfortMode: false,
+      somethingFeelsOff: false,
+      lastError: null,
+    );
+  }
+
+  @override
+  Future<void> loadTonightPlan(String childId, {DateTime? now}) async {
+    state = state.copyWith(isLoading: false, lastError: null);
+  }
+
+  @override
+  Future<void> markSomethingFeelsOff() async {
+    final plan = Map<String, dynamic>.from(state.activePlan ?? const {});
+    plan['comfort_mode'] = true;
+    plan['something_feels_off'] = true;
+    plan['training_paused'] = true;
+    plan['runner_hint'] = 'Something feels off. Comfort first tonight.';
+    state = state.copyWith(
+      activePlan: plan,
+      comfortMode: true,
+      somethingFeelsOff: true,
+    );
   }
 }

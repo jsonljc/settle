@@ -14,6 +14,7 @@ import 'package:settle/router.dart';
 import 'package:settle/screens/family_rules.dart';
 import 'package:settle/screens/help_now.dart';
 
+import 'package:settle/screens/current_rhythm_screen.dart';
 import 'package:settle/screens/learn.dart';
 import 'package:settle/screens/onboarding/onboarding_screen.dart';
 import 'package:settle/screens/plan_progress.dart';
@@ -24,6 +25,7 @@ import 'package:settle/screens/settings.dart';
 import 'package:settle/screens/sleep_tonight.dart';
 import 'package:settle/screens/sos.dart';
 import 'package:settle/screens/splash.dart';
+import 'package:settle/screens/update_rhythm_screen.dart';
 import 'package:settle/screens/today.dart';
 import 'package:settle/widgets/release_surfaces.dart';
 
@@ -119,6 +121,11 @@ void main() {
         expectedTypes: [HelpNowScreen, SleepTonightScreen],
       ),
       _RouteCheck(path: '/sleep', expectedTypes: [SleepTonightScreen]),
+      _RouteCheck(path: '/sleep/rhythm', expectedTypes: [CurrentRhythmScreen]),
+      _RouteCheck(
+        path: '/sleep/update-rhythm',
+        expectedTypes: [UpdateRhythmScreen],
+      ),
       _RouteCheck(path: '/progress', expectedTypes: [PlanProgressScreen]),
       _RouteCheck(path: '/progress/logs', expectedTypes: [TodayScreen]),
       _RouteCheck(path: '/progress/learn', expectedTypes: [LearnScreen]),
@@ -133,6 +140,11 @@ void main() {
         expectedTypes: [HelpNowScreen, SleepTonightScreen],
       ),
       _RouteCheck(path: '/sleep-tonight', expectedTypes: [SleepTonightScreen]),
+      _RouteCheck(
+        path: '/current-rhythm',
+        expectedTypes: [CurrentRhythmScreen],
+      ),
+      _RouteCheck(path: '/update-rhythm', expectedTypes: [UpdateRhythmScreen]),
       _RouteCheck(path: '/plan-progress', expectedTypes: [PlanProgressScreen]),
       _RouteCheck(path: '/plan', expectedTypes: [PlanProgressScreen]),
       _RouteCheck(path: '/family-rules', expectedTypes: [FamilyRulesScreen]),

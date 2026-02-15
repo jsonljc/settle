@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'internal_tools_gate.dart';
 import 'services/spec_policy.dart';
 import 'screens/app_shell.dart';
+import 'screens/current_rhythm_screen.dart';
 import 'screens/family_rules.dart';
 import 'screens/help_now.dart';
 // home.dart retained for legacy — /home redirects to /now.
@@ -17,6 +18,7 @@ import 'screens/settings.dart';
 import 'screens/sleep_tonight.dart';
 import 'screens/sos.dart';
 import 'screens/splash.dart';
+import 'screens/update_rhythm_screen.dart';
 import 'screens/today.dart';
 import 'widgets/release_surfaces.dart';
 
@@ -82,6 +84,18 @@ final router = GoRouter(
               path: '/sleep',
               pageBuilder: (context, state) =>
                   _fade(state, const SleepTonightScreen()),
+              routes: [
+                GoRoute(
+                  path: 'rhythm',
+                  pageBuilder: (context, state) =>
+                      _fade(state, const CurrentRhythmScreen()),
+                ),
+                GoRoute(
+                  path: 'update-rhythm',
+                  pageBuilder: (context, state) =>
+                      _fade(state, const UpdateRhythmScreen()),
+                ),
+              ],
             ),
           ],
         ),
@@ -165,6 +179,11 @@ final router = GoRouter(
       ),
     ),
     GoRoute(path: '/sleep-tonight', redirect: (_, __) => '/sleep'),
+    GoRoute(path: '/current-rhythm', redirect: (_, __) => '/sleep/rhythm'),
+    GoRoute(
+      path: '/update-rhythm',
+      redirect: (_, __) => '/sleep/update-rhythm',
+    ),
     GoRoute(path: '/plan-progress', redirect: (_, __) => '/progress'),
     GoRoute(path: '/plan', redirect: (_, __) => '/progress'),
     GoRoute(

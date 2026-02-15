@@ -81,6 +81,12 @@ void main() {
     await goTo(tester, '/sleep');
     expectAnyTitle(['Tonight\'s Sleep', 'Sleep Tonight']);
 
+    await goTo(tester, '/sleep/rhythm');
+    expect(find.text('Current Rhythm'), findsWidgets);
+
+    await goTo(tester, '/sleep/update-rhythm');
+    expect(find.text('Update Rhythm'), findsWidgets);
+
     await goTo(tester, '/progress');
     expect(find.text('Progress'), findsWidgets);
 
@@ -92,6 +98,12 @@ void main() {
 
     await goTo(tester, '/sleep-tonight');
     expectAnyTitle(['Tonight\'s Sleep', 'Sleep Tonight']);
+
+    await goTo(tester, '/current-rhythm');
+    expect(find.text('Current Rhythm'), findsWidgets);
+
+    await goTo(tester, '/update-rhythm');
+    expect(find.text('Update Rhythm'), findsWidgets);
 
     await goTo(tester, '/plan-progress');
     expect(find.text('Progress'), findsWidgets);
