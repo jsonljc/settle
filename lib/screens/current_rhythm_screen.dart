@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../models/approach.dart';
 import '../models/rhythm_models.dart';
 import '../providers/profile_provider.dart';
+import '../providers/release_rollout_provider.dart';
 import '../providers/rhythm_provider.dart';
+import '../services/notification_service.dart';
+import '../services/sleep_ai_explainer_service.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
@@ -23,6 +26,8 @@ class CurrentRhythmScreen extends ConsumerStatefulWidget {
 class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
   String? _loadedChildId;
   bool _loadScheduled = false;
+  String? _lastWindDownSignature;
+  String? _lastDriftSignature;
 
   int _ageMonthsFor(AgeBracket age) {
     return switch (age) {
@@ -198,6 +203,84 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
     );
   }
 
+  DateTime? _targetDateTimeForBlock(RhythmScheduleBlock block, DateTime now) {
+    final target = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      block.windowStartMinutes ~/ 60,
+      block.windowStartMinutes % 60,
+    );
+    if (target.isAfter(now)) return target;
+    return null;
+  }
+
+  RhythmScheduleBlock? _nextWindDownBlock(
+    List<RhythmScheduleBlock> blocks,
+    DateTime now,
+  ) {
+    final candidates = blocks
+        .where((block) => block.id.startsWith('nap') || block.id == 'bedtime')
+        .map(
+          (block) =>
+              (block: block, target: _targetDateTimeForBlock(block, now)),
+        )
+        .where((entry) => entry.target != null)
+        .toList();
+
+    if (candidates.isEmpty) return null;
+    candidates.sort((a, b) => a.target!.compareTo(b.target!));
+    return candidates.first.block;
+  }
+
+  void _syncPhase5Notifications({
+    required String childName,
+    required DaySchedule schedule,
+    required RhythmShiftAssessment shift,
+    required bool windDownEnabled,
+    required bool driftEnabled,
+  }) {
+    final now = DateTime.now();
+    final nextBlock = _nextWindDownBlock(schedule.blocks, now);
+    final windDownSignature = [
+      windDownEnabled,
+      schedule.dateKey,
+      nextBlock?.id ?? 'none',
+      nextBlock?.windowStartMinutes ?? -1,
+    ].join(':');
+
+    if (_lastWindDownSignature != windDownSignature) {
+      _lastWindDownSignature = windDownSignature;
+      if (!windDownEnabled || nextBlock == null) {
+        NotificationService.cancelWindDownReminder();
+      } else {
+        final target = _targetDateTimeForBlock(nextBlock, now);
+        if (target != null) {
+          NotificationService.scheduleWindDownReminder(
+            targetTime: target,
+            babyName: childName,
+            bedtime: nextBlock.id == 'bedtime',
+            leadMinutes: 15,
+          );
+        }
+      }
+    }
+
+    final driftSignature = [
+      driftEnabled,
+      shift.shouldSuggestUpdate,
+      shift.softPromptOnly,
+    ].join(':');
+    if (_lastDriftSignature != driftSignature) {
+      _lastDriftSignature = driftSignature;
+      if (!driftEnabled || !shift.shouldSuggestUpdate) {
+        NotificationService.cancelScheduleDriftPrompt();
+      } else {
+        NotificationService.scheduleDriftDetectedPrompt(babyName: childName);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _scheduleLoadIfNeeded();
@@ -209,6 +292,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
 
     final childId = profile.createdAt;
     final state = ref.watch(rhythmProvider);
+    final rollout = ref.watch(releaseRolloutProvider);
     final rhythm = state.rhythm;
     final schedule = state.todaySchedule;
     final ageMonths = _ageMonthsFor(profile.ageBracket);
@@ -259,6 +343,21 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
       (b) => b.id == 'bedtime',
       orElse: () => blocks.last,
     );
+    final aiSummary = rollout.sleepBoundedAiEnabled
+        ? SleepAiExplainerService.instance.summarizeRhythm(
+            schedule: schedule,
+            shiftAssessment: shift,
+            recapHistory: state.recapHistory,
+            dailySignals: state.dailySignals,
+          )
+        : null;
+    _syncPhase5Notifications(
+      childName: profile.name,
+      schedule: schedule,
+      shift: shift,
+      windDownEnabled: rollout.windDownNotificationsEnabled,
+      driftEnabled: rollout.scheduleDriftNotificationsEnabled,
+    );
 
     return Scaffold(
       body: SettleBackground(
@@ -272,172 +371,280 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                   title: 'Current Rhythm',
                   subtitle: 'Repeat this for the next 1–2 weeks.',
                 ),
-                GlassCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Current Rhythm (this week)', style: T.type.h3),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Typical for $ageMonths months',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Confidence: ${schedule.confidence.label}',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Bedtime anchor: ${_formatClock(rhythm.bedtimeAnchorMinutes)}${rhythm.locks.bedtimeAnchorLocked ? ' (locked)' : ''}',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      _ChoiceWrap(
-                        options: const {
-                          'precise': 'Precise view',
-                          'relaxed': 'Relaxed view',
-                        },
-                        selected: state.preciseView ? 'precise' : 'relaxed',
-                        onChanged: (value) => ref
-                            .read(rhythmProvider.notifier)
-                            .setPreciseView(
-                              childId: childId,
-                              precise: value == 'precise',
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (shift.shouldSuggestUpdate) ...[
-                  const SizedBox(height: 10),
-                  GlassCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Update Rhythm suggested', style: T.type.h3),
-                        const SizedBox(height: 6),
-                        Text(shift.explanation, style: T.type.body),
-                        const SizedBox(height: 8),
-                        _ActionChip(
-                          label: 'Update Rhythm',
-                          selected: true,
-                          onTap: () => context.push('/sleep/update-rhythm'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 10),
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    child: GlassCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Today timeline', style: T.type.label),
-                          const SizedBox(height: 10),
-                          ...blocks.map((block) {
-                            final relaxed = _relaxedLabel(block);
-                            final center = _formatClock(
-                              block.centerlineMinutes,
-                            );
-                            final soft =
-                                '${_formatClock(block.windowStartMinutes)}–${_formatClock(block.windowEndMinutes)}';
-                            final duration =
-                                (block.expectedDurationMinMinutes != null &&
-                                    block.expectedDurationMaxMinutes != null)
-                                ? ' · ${block.expectedDurationMinMinutes}-${block.expectedDurationMaxMinutes}m'
-                                : '';
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    state.preciseView ? block.label : relaxed,
-                                    style: T.type.caption.copyWith(
-                                      color: T.pal.textSecondary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    state.preciseView
-                                        ? '$center (soft: $soft)$duration'
-                                        : '$relaxed$duration',
-                                    style: T.type.body,
-                                  ),
-                                ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GlassCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Current Rhythm (this week)',
+                                style: T.type.h3,
                               ),
-                            );
-                          }),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Typical for $ageMonths months',
+                                style: T.type.caption.copyWith(
+                                  color: T.pal.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Confidence: ${schedule.confidence.label}',
+                                style: T.type.caption.copyWith(
+                                  color: T.pal.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Confidence tracks log completeness + stability.',
+                                style: T.type.caption.copyWith(
+                                  color: T.pal.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Bedtime anchor: ${_formatClock(rhythm.bedtimeAnchorMinutes)}${rhythm.locks.bedtimeAnchorLocked ? ' (locked)' : ''}',
+                                style: T.type.caption.copyWith(
+                                  color: T.pal.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              _ChoiceWrap(
+                                options: const {
+                                  'precise': 'Precise view',
+                                  'relaxed': 'Relaxed view',
+                                },
+                                selected: state.preciseView
+                                    ? 'precise'
+                                    : 'relaxed',
+                                onChanged: (value) => ref
+                                    .read(rhythmProvider.notifier)
+                                    .setPreciseView(
+                                      childId: childId,
+                                      precise: value == 'precise',
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (shift.shouldSuggestUpdate) ...[
+                          const SizedBox(height: 10),
+                          GlassCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Update Rhythm suggested',
+                                  style: T.type.h3,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(shift.explanation, style: T.type.body),
+                                const SizedBox(height: 8),
+                                _ActionChip(
+                                  label: 'Update Rhythm',
+                                  selected: true,
+                                  onTap: () =>
+                                      context.push('/sleep/update-rhythm'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        if (aiSummary != null) ...[
+                          const SizedBox(height: 10),
+                          GlassCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(aiSummary.headline, style: T.type.h3),
+                                const SizedBox(height: 6),
+                                Text(aiSummary.whatChanged, style: T.type.body),
+                                const SizedBox(height: 6),
+                                Text(
+                                  aiSummary.why,
+                                  style: T.type.caption.copyWith(
+                                    color: T.pal.textSecondary,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  aiSummary.patternSummary,
+                                  style: T.type.caption.copyWith(
+                                    color: T.pal.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 10),
+                        GlassCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Today timeline', style: T.type.label),
+                              const SizedBox(height: 10),
+                              ...blocks.map((block) {
+                                final relaxed = _relaxedLabel(block);
+                                final center = _formatClock(
+                                  block.centerlineMinutes,
+                                );
+                                final soft =
+                                    '${_formatClock(block.windowStartMinutes)}–${_formatClock(block.windowEndMinutes)}';
+                                final duration =
+                                    (block.expectedDurationMinMinutes != null &&
+                                        block.expectedDurationMaxMinutes !=
+                                            null)
+                                    ? ' · ${block.expectedDurationMinMinutes}-${block.expectedDurationMaxMinutes}m'
+                                    : '';
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        state.preciseView
+                                            ? block.label
+                                            : relaxed,
+                                        style: T.type.caption.copyWith(
+                                          color: T.pal.textSecondary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        state.preciseView
+                                            ? '$center (soft: $soft)$duration'
+                                            : '$relaxed$duration',
+                                        style: T.type.body,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Bedtime window: ${_formatClock(bedtime.windowStartMinutes)}–${_formatClock(bedtime.windowEndMinutes)}',
+                                style: T.type.caption.copyWith(
+                                  color: T.pal.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Day taps (optional)',
+                          style: T.type.caption.copyWith(
+                            color: T.pal.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _ActionChip(
+                              label: 'Wake time was…',
+                              onTap: () =>
+                                  _pickWakeTime(childId, state.wakeTimeMinutes),
+                            ),
+                            _ActionChip(
+                              label: 'Short nap',
+                              onTap: () => ref
+                                  .read(rhythmProvider.notifier)
+                                  .markNapQualityTap(
+                                    childId: childId,
+                                    quality: NapQualityTap.short,
+                                  ),
+                            ),
+                            _ActionChip(
+                              label: 'OK nap',
+                              onTap: () => ref
+                                  .read(rhythmProvider.notifier)
+                                  .markNapQualityTap(
+                                    childId: childId,
+                                    quality: NapQualityTap.ok,
+                                  ),
+                            ),
+                            _ActionChip(
+                              label: 'Long nap',
+                              onTap: () => ref
+                                  .read(rhythmProvider.notifier)
+                                  .markNapQualityTap(
+                                    childId: childId,
+                                    quality: NapQualityTap.long,
+                                  ),
+                            ),
+                            _ActionChip(
+                              label: 'Skipped nap',
+                              onTap: () => ref
+                                  .read(rhythmProvider.notifier)
+                                  .markSkippedNap(childId: childId),
+                            ),
+                            _ActionChip(
+                              label: state.advancedDayLogging
+                                  ? 'Advanced mode: On'
+                                  : 'Advanced mode: Off',
+                              selected: state.advancedDayLogging,
+                              onTap: () => ref
+                                  .read(rhythmProvider.notifier)
+                                  .setAdvancedDayLogging(
+                                    childId: childId,
+                                    enabled: !state.advancedDayLogging,
+                                  ),
+                            ),
+                            if (state.advancedDayLogging)
+                              _ActionChip(
+                                label: 'Nap started',
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .markNapStarted(childId: childId),
+                              ),
+                            if (state.advancedDayLogging)
+                              _ActionChip(
+                                label: 'Nap ended',
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .markNapEnded(childId: childId),
+                              ),
+                            _ActionChip(
+                              label: 'Bedtime battle',
+                              onTap: () => ref
+                                  .read(rhythmProvider.notifier)
+                                  .markBedtimeResistance(childId: childId),
+                            ),
+                            _ActionChip(
+                              label: 'Morning recap',
+                              onTap: () => _openMorningRecapSheet(childId),
+                            ),
+                            _ActionChip(
+                              label: 'Recalculate schedule',
+                              onTap: () => ref
+                                  .read(rhythmProvider.notifier)
+                                  .recalculate(childId: childId),
+                            ),
+                          ],
+                        ),
+                        if (state.lastHint != null) ...[
                           const SizedBox(height: 8),
                           Text(
-                            'Bedtime window: ${_formatClock(bedtime.windowStartMinutes)}–${_formatClock(bedtime.windowEndMinutes)}',
+                            state.lastHint!,
                             style: T.type.caption.copyWith(
                               color: T.pal.textSecondary,
                             ),
                           ),
                         ],
-                      ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _ActionChip(
-                      label: 'Wake time was…',
-                      onTap: () =>
-                          _pickWakeTime(childId, state.wakeTimeMinutes),
-                    ),
-                    _ActionChip(
-                      label: 'Short nap',
-                      onTap: () => ref
-                          .read(rhythmProvider.notifier)
-                          .markShortNap(childId: childId),
-                    ),
-                    _ActionChip(
-                      label: 'Skipped nap',
-                      onTap: () => ref
-                          .read(rhythmProvider.notifier)
-                          .markSkippedNap(childId: childId),
-                    ),
-                    _ActionChip(
-                      label: 'Bedtime battle',
-                      onTap: () => ref
-                          .read(rhythmProvider.notifier)
-                          .markBedtimeResistance(childId: childId),
-                    ),
-                    _ActionChip(
-                      label: 'Morning recap',
-                      onTap: () => _openMorningRecapSheet(childId),
-                    ),
-                    _ActionChip(
-                      label: 'Recalculate schedule',
-                      onTap: () => ref
-                          .read(rhythmProvider.notifier)
-                          .recalculate(childId: childId),
-                    ),
-                  ],
-                ),
-                if (state.lastHint != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    state.lastHint!,
-                    style: T.type.caption.copyWith(color: T.pal.textSecondary),
-                  ),
-                ],
-                const SizedBox(height: 16),
               ],
             ),
           ),

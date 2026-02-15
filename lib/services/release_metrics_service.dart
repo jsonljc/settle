@@ -3,6 +3,11 @@ import 'event_bus_service.dart';
 class ReleaseMetricsSnapshot {
   const ReleaseMetricsSnapshot({
     required this.windowDays,
+    required this.sleepAdoptionRate,
+    required this.sleepActiveDays,
+    required this.sleepTimeToGuidanceMedianSeconds,
+    required this.sleepTimeToGuidanceSamples,
+    required this.sleepRecapCompletionRate,
     required this.helpNowMedianSeconds,
     required this.helpNowMedianSamples,
     required this.sleepStartMedianSeconds,
@@ -19,6 +24,11 @@ class ReleaseMetricsSnapshot {
   });
 
   final int windowDays;
+  final double? sleepAdoptionRate;
+  final int sleepActiveDays;
+  final double? sleepTimeToGuidanceMedianSeconds;
+  final int sleepTimeToGuidanceSamples;
+  final double? sleepRecapCompletionRate;
   final double? helpNowMedianSeconds;
   final int helpNowMedianSamples;
   final double? sleepStartMedianSeconds;
@@ -80,6 +90,11 @@ class ReleaseMetricsService {
     final morningReviews = recent
         .where((e) => e['type'] == EventTypes.stMorningReviewComplete)
         .toList();
+    final sleepActiveDays = recent
+        .where((e) => e['pillar'] == Pillars.sleepTonight)
+        .map(_dayKeyFor)
+        .whereType<String>()
+        .toSet();
 
     final planIdsStarted = sleepPlans
         .map(_planKeyFor)
@@ -110,9 +125,17 @@ class ReleaseMetricsService {
     final sleepMorningReviewRate = planIdsStarted.isEmpty
         ? null
         : planIdsReviewed.length / planIdsStarted.length;
+    final sleepAdoptionRate = sleepActiveDays.isEmpty
+        ? null
+        : sleepActiveDays.length / windowDays;
 
     return ReleaseMetricsSnapshot(
       windowDays: windowDays,
+      sleepAdoptionRate: sleepAdoptionRate,
+      sleepActiveDays: sleepActiveDays.length,
+      sleepTimeToGuidanceMedianSeconds: _median(sleepStartTimes),
+      sleepTimeToGuidanceSamples: sleepStartTimes.length,
+      sleepRecapCompletionRate: sleepMorningReviewRate,
       helpNowMedianSeconds: _median(helpNowTimes),
       helpNowMedianSamples: helpNowTimes.length,
       sleepStartMedianSeconds: _median(sleepStartTimes),

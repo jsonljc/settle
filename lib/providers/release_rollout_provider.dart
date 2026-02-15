@@ -14,6 +14,9 @@ class ReleaseRolloutState {
     required this.familyRulesEnabled,
     required this.metricsDashboardEnabled,
     required this.complianceChecklistEnabled,
+    required this.sleepBoundedAiEnabled,
+    required this.windDownNotificationsEnabled,
+    required this.scheduleDriftNotificationsEnabled,
   });
 
   final bool isLoading;
@@ -23,6 +26,9 @@ class ReleaseRolloutState {
   final bool familyRulesEnabled;
   final bool metricsDashboardEnabled;
   final bool complianceChecklistEnabled;
+  final bool sleepBoundedAiEnabled;
+  final bool windDownNotificationsEnabled;
+  final bool scheduleDriftNotificationsEnabled;
 
   static const initial = ReleaseRolloutState(
     isLoading: true,
@@ -32,6 +38,9 @@ class ReleaseRolloutState {
     familyRulesEnabled: true,
     metricsDashboardEnabled: true,
     complianceChecklistEnabled: true,
+    sleepBoundedAiEnabled: true,
+    windDownNotificationsEnabled: true,
+    scheduleDriftNotificationsEnabled: false,
   );
 
   ReleaseRolloutState copyWith({
@@ -42,6 +51,9 @@ class ReleaseRolloutState {
     bool? familyRulesEnabled,
     bool? metricsDashboardEnabled,
     bool? complianceChecklistEnabled,
+    bool? sleepBoundedAiEnabled,
+    bool? windDownNotificationsEnabled,
+    bool? scheduleDriftNotificationsEnabled,
   }) {
     return ReleaseRolloutState(
       isLoading: isLoading ?? this.isLoading,
@@ -53,6 +65,13 @@ class ReleaseRolloutState {
           metricsDashboardEnabled ?? this.metricsDashboardEnabled,
       complianceChecklistEnabled:
           complianceChecklistEnabled ?? this.complianceChecklistEnabled,
+      sleepBoundedAiEnabled:
+          sleepBoundedAiEnabled ?? this.sleepBoundedAiEnabled,
+      windDownNotificationsEnabled:
+          windDownNotificationsEnabled ?? this.windDownNotificationsEnabled,
+      scheduleDriftNotificationsEnabled:
+          scheduleDriftNotificationsEnabled ??
+          this.scheduleDriftNotificationsEnabled,
     );
   }
 }
@@ -113,6 +132,12 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
               raw['metrics_dashboard_enabled'] as bool? ?? true,
           complianceChecklistEnabled:
               raw['compliance_checklist_enabled'] as bool? ?? true,
+          sleepBoundedAiEnabled:
+              raw['sleep_bounded_ai_enabled'] as bool? ?? true,
+          windDownNotificationsEnabled:
+              raw['wind_down_notifications_enabled'] as bool? ?? true,
+          scheduleDriftNotificationsEnabled:
+              raw['schedule_drift_notifications_enabled'] as bool? ?? false,
         );
       } else {
         state = state.copyWith(isLoading: false);
@@ -135,6 +160,10 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
         'family_rules_enabled': next.familyRulesEnabled,
         'metrics_dashboard_enabled': next.metricsDashboardEnabled,
         'compliance_checklist_enabled': next.complianceChecklistEnabled,
+        'sleep_bounded_ai_enabled': next.sleepBoundedAiEnabled,
+        'wind_down_notifications_enabled': next.windDownNotificationsEnabled,
+        'schedule_drift_notifications_enabled':
+            next.scheduleDriftNotificationsEnabled,
       });
     } catch (_) {
       // Non-fatal in test contexts.
@@ -164,5 +193,17 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
 
   Future<void> setComplianceChecklistEnabled(bool value) async {
     await _persist(state.copyWith(complianceChecklistEnabled: value));
+  }
+
+  Future<void> setSleepBoundedAiEnabled(bool value) async {
+    await _persist(state.copyWith(sleepBoundedAiEnabled: value));
+  }
+
+  Future<void> setWindDownNotificationsEnabled(bool value) async {
+    await _persist(state.copyWith(windDownNotificationsEnabled: value));
+  }
+
+  Future<void> setScheduleDriftNotificationsEnabled(bool value) async {
+    await _persist(state.copyWith(scheduleDriftNotificationsEnabled: value));
   }
 }

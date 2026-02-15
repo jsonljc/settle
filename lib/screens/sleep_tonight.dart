@@ -7,6 +7,7 @@ import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
 import '../providers/sleep_tonight_provider.dart';
 import '../services/sleep_guidance_service.dart';
+import '../services/sleep_ai_explainer_service.dart';
 import '../services/spec_policy.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_tokens.dart';
@@ -450,6 +451,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 _NightWakeCard(
                                   plan: state.activePlan!,
                                   evidenceCount: activeEvidenceRefs.length,
+                                  boundedAiEnabled:
+                                      rollout.sleepBoundedAiEnabled,
                                   comfortMode: state.comfortMode,
                                   somethingFeelsOff: state.somethingFeelsOff,
                                   onViewEvidence: activeEvidenceRefs.isEmpty
@@ -815,6 +818,7 @@ class _NightWakeCard extends StatelessWidget {
   const _NightWakeCard({
     required this.plan,
     required this.evidenceCount,
+    required this.boundedAiEnabled,
     required this.onViewEvidence,
     required this.comfortMode,
     required this.somethingFeelsOff,
@@ -827,6 +831,7 @@ class _NightWakeCard extends StatelessWidget {
 
   final Map<String, dynamic> plan;
   final int evidenceCount;
+  final bool boundedAiEnabled;
   final VoidCallback? onViewEvidence;
   final bool comfortMode;
   final bool somethingFeelsOff;
@@ -870,6 +875,13 @@ class _NightWakeCard extends StatelessWidget {
             escalationRule,
             'Pause and switch to comfort mode if things escalate.',
           );
+    final aiExplanation = boundedAiEnabled
+        ? SleepAiExplainerService.instance.explainNightWake(
+            plan: plan,
+            comfortMode: comfortMode,
+            somethingFeelsOff: somethingFeelsOff,
+          )
+        : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -954,6 +966,25 @@ class _NightWakeCard extends StatelessWidget {
                 'Stop rule: $stopRule',
                 style: T.type.body.copyWith(color: T.pal.textSecondary),
               ),
+              if (aiExplanation != null) ...[
+                const SizedBox(height: 10),
+                Text('What changed and why', style: T.type.overline),
+                const SizedBox(height: 6),
+                Text(
+                  aiExplanation.whatChanged,
+                  style: T.type.caption.copyWith(color: T.pal.textSecondary),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  aiExplanation.why,
+                  style: T.type.caption.copyWith(color: T.pal.textSecondary),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  aiExplanation.patternSummary,
+                  style: T.type.caption.copyWith(color: T.pal.textSecondary),
+                ),
+              ],
               const SizedBox(height: 10),
               _ActionChip(
                 label: 'Something feels off',

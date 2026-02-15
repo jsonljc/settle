@@ -105,6 +105,11 @@ void main() {
       windowDays: 14,
     );
 
+    expect(snapshot.sleepAdoptionRate, closeTo(2 / 14, 0.0001));
+    expect(snapshot.sleepActiveDays, 2);
+    expect(snapshot.sleepTimeToGuidanceMedianSeconds, 50);
+    expect(snapshot.sleepTimeToGuidanceSamples, 2);
+    expect(snapshot.sleepRecapCompletionRate, 0.5);
     expect(snapshot.helpNowMedianSeconds, 10);
     expect(snapshot.helpNowMedianSamples, 2);
     expect(snapshot.sleepStartMedianSeconds, 50);

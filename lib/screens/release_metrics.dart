@@ -103,6 +103,33 @@ class _ReleaseMetricsScreenState extends ConsumerState<ReleaseMetricsScreen> {
                         physics: const BouncingScrollPhysics(),
                         children: [
                           _MetricCard(
+                            title: 'Sleep adoption (14d)',
+                            value: _pct(m.sleepAdoptionRate),
+                            target: 'steady growth',
+                            detail:
+                                '${m.sleepActiveDays}/${m.windowDays} day(s) with Sleep Tonight activity.',
+                          ),
+                          const SizedBox(height: 10),
+                          _MetricCard(
+                            title: 'Sleep time-to-guidance',
+                            value: _secs(m.sleepTimeToGuidanceMedianSeconds),
+                            target: '<60s',
+                            detail:
+                                'Median from ${m.sleepTimeToGuidanceSamples} plan starts.',
+                            pass: m.sleepTimeToGuidanceMedianSeconds == null
+                                ? null
+                                : m.sleepTimeToGuidanceMedianSeconds! < 60,
+                          ),
+                          const SizedBox(height: 10),
+                          _MetricCard(
+                            title: 'Sleep recap completion',
+                            value: _pct(m.sleepRecapCompletionRate),
+                            target: 'maximize',
+                            detail:
+                                '${m.sleepMorningReviews}/${m.sleepPlans} nights with recap complete.',
+                          ),
+                          const SizedBox(height: 16),
+                          _MetricCard(
                             title: 'Help Now time-to-output',
                             value: _secs(m.helpNowMedianSeconds),
                             target: '<10s',
@@ -114,7 +141,7 @@ class _ReleaseMetricsScreenState extends ConsumerState<ReleaseMetricsScreen> {
                           ),
                           const SizedBox(height: 10),
                           _MetricCard(
-                            title: 'Sleep Tonight time-to-start',
+                            title: 'Sleep Tonight time-to-start (legacy)',
                             value: _secs(m.sleepStartMedianSeconds),
                             target: '<60s',
                             detail:

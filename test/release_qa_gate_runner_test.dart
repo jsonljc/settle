@@ -5,6 +5,11 @@ import 'package:settle/services/safety_compliance_service.dart';
 
 void main() {
   ReleaseMetricsSnapshot metrics({
+    double? sleepAdoptionRate = 0.42,
+    int sleepActiveDays = 6,
+    double? sleepTimeToGuidanceMedianSeconds = 40,
+    int sleepTimeToGuidanceSamples = 2,
+    double? sleepRecapCompletionRate = 0.5,
     double? helpNowMedianSeconds = 8,
     int helpNowMedianSamples = 3,
     double? sleepStartMedianSeconds = 40,
@@ -22,6 +27,11 @@ void main() {
   }) {
     return ReleaseMetricsSnapshot(
       windowDays: windowDays,
+      sleepAdoptionRate: sleepAdoptionRate,
+      sleepActiveDays: sleepActiveDays,
+      sleepTimeToGuidanceMedianSeconds: sleepTimeToGuidanceMedianSeconds,
+      sleepTimeToGuidanceSamples: sleepTimeToGuidanceSamples,
+      sleepRecapCompletionRate: sleepRecapCompletionRate,
       helpNowMedianSeconds: helpNowMedianSeconds,
       helpNowMedianSamples: helpNowMedianSamples,
       sleepStartMedianSeconds: sleepStartMedianSeconds,

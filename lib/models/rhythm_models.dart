@@ -477,6 +477,10 @@ class RhythmDailySignal {
     required this.dateKey,
     required this.shortNapCount,
     required this.skippedNapCount,
+    this.okNapCount = 0,
+    this.longNapCount = 0,
+    this.advancedNapStartCount = 0,
+    this.advancedNapEndCount = 0,
     required this.earlyWakeLogged,
     required this.bedtimeResistance,
     required this.bedtimeDelayMinutes,
@@ -486,15 +490,31 @@ class RhythmDailySignal {
   final String dateKey;
   final int shortNapCount;
   final int skippedNapCount;
+  final int okNapCount;
+  final int longNapCount;
+  final int advancedNapStartCount;
+  final int advancedNapEndCount;
   final bool earlyWakeLogged;
   final bool bedtimeResistance;
   final int bedtimeDelayMinutes;
   final DateTime createdAt;
 
+  int get dayTapCount =>
+      shortNapCount +
+      skippedNapCount +
+      okNapCount +
+      longNapCount +
+      advancedNapStartCount +
+      advancedNapEndCount;
+
   RhythmDailySignal copyWith({
     String? dateKey,
     int? shortNapCount,
     int? skippedNapCount,
+    int? okNapCount,
+    int? longNapCount,
+    int? advancedNapStartCount,
+    int? advancedNapEndCount,
     bool? earlyWakeLogged,
     bool? bedtimeResistance,
     int? bedtimeDelayMinutes,
@@ -504,6 +524,11 @@ class RhythmDailySignal {
       dateKey: dateKey ?? this.dateKey,
       shortNapCount: shortNapCount ?? this.shortNapCount,
       skippedNapCount: skippedNapCount ?? this.skippedNapCount,
+      okNapCount: okNapCount ?? this.okNapCount,
+      longNapCount: longNapCount ?? this.longNapCount,
+      advancedNapStartCount:
+          advancedNapStartCount ?? this.advancedNapStartCount,
+      advancedNapEndCount: advancedNapEndCount ?? this.advancedNapEndCount,
       earlyWakeLogged: earlyWakeLogged ?? this.earlyWakeLogged,
       bedtimeResistance: bedtimeResistance ?? this.bedtimeResistance,
       bedtimeDelayMinutes: bedtimeDelayMinutes ?? this.bedtimeDelayMinutes,
@@ -516,6 +541,10 @@ class RhythmDailySignal {
       'date_key': dateKey,
       'short_nap_count': shortNapCount,
       'skipped_nap_count': skippedNapCount,
+      'ok_nap_count': okNapCount,
+      'long_nap_count': longNapCount,
+      'advanced_nap_start_count': advancedNapStartCount,
+      'advanced_nap_end_count': advancedNapEndCount,
       'early_wake_logged': earlyWakeLogged,
       'bedtime_resistance': bedtimeResistance,
       'bedtime_delay_minutes': bedtimeDelayMinutes,
@@ -528,6 +557,10 @@ class RhythmDailySignal {
       dateKey: raw['date_key']?.toString() ?? '',
       shortNapCount: raw['short_nap_count'] as int? ?? 0,
       skippedNapCount: raw['skipped_nap_count'] as int? ?? 0,
+      okNapCount: raw['ok_nap_count'] as int? ?? 0,
+      longNapCount: raw['long_nap_count'] as int? ?? 0,
+      advancedNapStartCount: raw['advanced_nap_start_count'] as int? ?? 0,
+      advancedNapEndCount: raw['advanced_nap_end_count'] as int? ?? 0,
       earlyWakeLogged: raw['early_wake_logged'] as bool? ?? false,
       bedtimeResistance: raw['bedtime_resistance'] as bool? ?? false,
       bedtimeDelayMinutes: raw['bedtime_delay_minutes'] as int? ?? 0,
@@ -624,3 +657,5 @@ class RhythmUpdatePlan {
   final List<String> changeSummary;
   final String whyNow;
 }
+
+enum NapQualityTap { short, ok, long }

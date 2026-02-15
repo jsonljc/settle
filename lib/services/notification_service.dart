@@ -7,6 +7,8 @@ import 'package:timezone/timezone.dart' as tz;
 /// Notification IDs — stable so we can cancel specific notifications.
 class _Ids {
   static const int wakeWindowNudge = 1;
+  static const int windDownReminder = 2;
+  static const int scheduleDriftPrompt = 3;
 }
 
 /// Handles all local notifications for Settle.
@@ -16,6 +18,10 @@ class _Ids {
 ///   Fires at [maxWakeWindow − 15] minutes, saying
 ///   "Nap window opening soon for [name]."
 ///   Cancelled automatically when a new sleep session starts.
+/// - **Wind-down reminder**: one high-signal reminder 10–20 minutes before
+///   the next nap/bedtime target.
+/// - **Schedule drift prompt**: optional one-shot prompt when rhythm drift is
+///   detected.
 class NotificationService {
   NotificationService._();
 
@@ -32,6 +38,16 @@ class NotificationService {
     description: 'Gentle reminder when the nap window is opening',
     importance: Importance.high,
   );
+
+  static const _sleepSignalChannel = AndroidNotificationChannel(
+    'settle_sleep_signal',
+    'Sleep high-signal reminders',
+    description: 'Wind-down and drift reminders',
+    importance: Importance.high,
+  );
+
+  static DateTime? _lastWindDownScheduledAt;
+  static DateTime? _lastDriftPromptScheduledAt;
 
   // ───────────────────────────────────────────
   //  Initialization
@@ -63,15 +79,24 @@ class NotificationService {
 
     // Create the Android notification channel.
     if (Platform.isAndroid) {
-      final androidPlugin =
-          _plugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+      final androidPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
       await androidPlugin?.createNotificationChannel(
         AndroidNotificationChannel(
           _androidChannel.id,
           _androidChannel.name,
           description: _androidChannel.description,
           importance: _androidChannel.importance,
+        ),
+      );
+      await androidPlugin?.createNotificationChannel(
+        AndroidNotificationChannel(
+          _sleepSignalChannel.id,
+          _sleepSignalChannel.name,
+          description: _sleepSignalChannel.description,
+          importance: _sleepSignalChannel.importance,
         ),
       );
       // Request exact alarm permission (Android 12+).
@@ -102,9 +127,9 @@ class NotificationService {
 
     // Fire 15 min before the max wake window.
     final delayMinutes = (maxWakeWindowMinutes - 15).clamp(5, 600);
-    final fireAt = tz.TZDateTime.now(tz.local).add(
-      Duration(minutes: delayMinutes),
-    );
+    final fireAt = tz.TZDateTime.now(
+      tz.local,
+    ).add(Duration(minutes: delayMinutes));
 
     await _plugin.zonedSchedule(
       _Ids.wakeWindowNudge,
@@ -131,6 +156,111 @@ class NotificationService {
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: null, // one-shot, not recurring
     );
+  }
+
+  static Future<void> scheduleWindDownReminder({
+    required DateTime targetTime,
+    required String babyName,
+    required bool bedtime,
+    int leadMinutes = 15,
+  }) async {
+    if (!_initialized) return;
+
+    final boundedLead = leadMinutes.clamp(10, 20);
+    final fireAtDateTime = targetTime.subtract(Duration(minutes: boundedLead));
+    final now = DateTime.now();
+
+    if (!fireAtDateTime.isAfter(now.add(const Duration(minutes: 1)))) {
+      return;
+    }
+
+    // High-signal only: avoid rapid re-scheduling.
+    final last = _lastWindDownScheduledAt;
+    if (last != null && now.difference(last).inMinutes < 30) {
+      return;
+    }
+    _lastWindDownScheduledAt = now;
+
+    final fireAt = tz.TZDateTime.from(fireAtDateTime, tz.local);
+    final body = bedtime
+        ? 'Bedtime wind-down starts in about $boundedLead minutes for $babyName.'
+        : 'Nap wind-down starts in about $boundedLead minutes for $babyName.';
+
+    await _plugin.zonedSchedule(
+      _Ids.windDownReminder,
+      bedtime ? 'Bedtime wind-down soon' : 'Nap wind-down soon',
+      body,
+      fireAt,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _sleepSignalChannel.id,
+          _sleepSignalChannel.name,
+          channelDescription: _sleepSignalChannel.description,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: null,
+    );
+  }
+
+  static Future<void> cancelWindDownReminder() async {
+    if (!_initialized) return;
+    await _plugin.cancel(_Ids.windDownReminder);
+  }
+
+  static Future<void> scheduleDriftDetectedPrompt({
+    required String babyName,
+  }) async {
+    if (!_initialized) return;
+
+    final now = DateTime.now();
+    final last = _lastDriftPromptScheduledAt;
+
+    // High-signal only: max one drift prompt in a 12h window.
+    if (last != null && now.difference(last).inHours < 12) {
+      return;
+    }
+    _lastDriftPromptScheduledAt = now;
+
+    final fireAt = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 2));
+    await _plugin.zonedSchedule(
+      _Ids.scheduleDriftPrompt,
+      'Schedule drift detected',
+      'Rhythm shifted for $babyName. Recalculate when ready.',
+      fireAt,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _sleepSignalChannel.id,
+          _sleepSignalChannel.name,
+          channelDescription: _sleepSignalChannel.description,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: null,
+    );
+  }
+
+  static Future<void> cancelScheduleDriftPrompt() async {
+    if (!_initialized) return;
+    await _plugin.cancel(_Ids.scheduleDriftPrompt);
   }
 
   /// Cancel any pending wake window nudge.

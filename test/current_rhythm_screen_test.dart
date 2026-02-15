@@ -15,6 +15,15 @@ import 'package:settle/providers/rhythm_provider.dart';
 import 'package:settle/screens/current_rhythm_screen.dart';
 
 void main() {
+  void setPhoneViewport(WidgetTester tester) {
+    tester.view.physicalSize = const Size(1179, 2556);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+  }
+
   Future<void> registerHiveAdapters() async {
     if (!Hive.isAdapterRegistered(0)) {
       Hive
@@ -77,6 +86,7 @@ void main() {
     tester,
   ) async {
     final fakeNotifier = _FakeRhythmNotifier();
+    setPhoneViewport(tester);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -91,13 +101,18 @@ void main() {
     expect(find.text('Precise view'), findsOneWidget);
     expect(find.text('Relaxed view'), findsOneWidget);
     expect(find.text('Recalculate schedule'), findsOneWidget);
+    expect(find.text('OK nap'), findsOneWidget);
+    expect(find.text('Long nap'), findsOneWidget);
+    expect(find.text('Advanced mode: Off'), findsOneWidget);
     expect(find.textContaining('Nap 1'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('Relaxed view'));
     await tester.tap(find.text('Relaxed view'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Late morning nap'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('Recalculate schedule'));
     await tester.tap(find.text('Recalculate schedule'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
@@ -176,6 +191,7 @@ class _FakeRhythmNotifier extends RhythmNotifier {
       shiftAssessment: RhythmShiftAssessment.none,
       lastUpdatePlan: null,
       lastRhythmUpdateAt: null,
+      advancedDayLogging: false,
       preciseView: true,
       wakeTimeMinutes: 420,
       wakeTimeKnown: true,

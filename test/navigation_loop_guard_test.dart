@@ -15,7 +15,6 @@ import 'package:settle/providers/release_rollout_provider.dart';
 import 'package:settle/screens/help_now.dart';
 import 'package:settle/screens/sleep_tonight.dart';
 
-
 class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
     implements ReleaseRolloutNotifier {
   _StaticRolloutNotifier(super.state);
@@ -49,6 +48,21 @@ class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
   Future<void> setComplianceChecklistEnabled(bool value) async {
     state = state.copyWith(complianceChecklistEnabled: value);
   }
+
+  @override
+  Future<void> setSleepBoundedAiEnabled(bool value) async {
+    state = state.copyWith(sleepBoundedAiEnabled: value);
+  }
+
+  @override
+  Future<void> setWindDownNotificationsEnabled(bool value) async {
+    state = state.copyWith(windDownNotificationsEnabled: value);
+  }
+
+  @override
+  Future<void> setScheduleDriftNotificationsEnabled(bool value) async {
+    state = state.copyWith(scheduleDriftNotificationsEnabled: value);
+  }
 }
 
 ReleaseRolloutState _rolloutState({
@@ -63,6 +77,9 @@ ReleaseRolloutState _rolloutState({
     familyRulesEnabled: true,
     metricsDashboardEnabled: true,
     complianceChecklistEnabled: true,
+    sleepBoundedAiEnabled: true,
+    windDownNotificationsEnabled: true,
+    scheduleDriftNotificationsEnabled: false,
   );
 }
 
@@ -209,43 +226,39 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Help Now paused fallback still routes to Sleep when available',
-    (tester) async {
-      final router = GoRouter(
-        initialLocation: '/help-now',
-        routes: [
-          GoRoute(
-            path: '/help-now',
-            builder: (context, state) =>
-                HelpNowScreen(now: () => DateTime(2026, 2, 13, 14)),
-          ),
-          GoRoute(
-            path: '/sleep',
-            builder: (context, state) =>
-                const Scaffold(body: Center(child: Text('SLEEP_SCREEN'))),
-          ),
-        ],
-      );
-
-      await _pumpWithRollout(
-        tester,
-        router: router,
-        rollout: _rolloutState(
-          helpNowEnabled: false,
-          sleepTonightEnabled: true,
+  testWidgets('Help Now paused fallback still routes to Sleep when available', (
+    tester,
+  ) async {
+    final router = GoRouter(
+      initialLocation: '/help-now',
+      routes: [
+        GoRoute(
+          path: '/help-now',
+          builder: (context, state) =>
+              HelpNowScreen(now: () => DateTime(2026, 2, 13, 14)),
         ),
-      );
+        GoRoute(
+          path: '/sleep',
+          builder: (context, state) =>
+              const Scaffold(body: Center(child: Text('SLEEP_SCREEN'))),
+        ),
+      ],
+    );
 
-      expect(find.text('Open Sleep Tonight'), findsOneWidget);
+    await _pumpWithRollout(
+      tester,
+      router: router,
+      rollout: _rolloutState(helpNowEnabled: false, sleepTonightEnabled: true),
+    );
 
-      await tester.tap(find.text('Open Sleep Tonight'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Open Sleep Tonight'), findsOneWidget);
 
-      expect(find.text('SLEEP_SCREEN'), findsOneWidget);
-    },
-  );
+    await tester.tap(find.text('Open Sleep Tonight'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('SLEEP_SCREEN'), findsOneWidget);
+  });
 
   testWidgets(
     'Sleep Tonight paused fallback still routes to Help Now when available',

@@ -18,6 +18,7 @@ class RhythmState {
     required this.shiftAssessment,
     required this.lastUpdatePlan,
     required this.lastRhythmUpdateAt,
+    required this.advancedDayLogging,
     required this.preciseView,
     required this.wakeTimeMinutes,
     required this.wakeTimeKnown,
@@ -33,6 +34,7 @@ class RhythmState {
   final RhythmShiftAssessment shiftAssessment;
   final RhythmUpdatePlan? lastUpdatePlan;
   final DateTime? lastRhythmUpdateAt;
+  final bool advancedDayLogging;
   final bool preciseView;
   final int wakeTimeMinutes;
   final bool wakeTimeKnown;
@@ -48,6 +50,7 @@ class RhythmState {
     shiftAssessment: RhythmShiftAssessment.none,
     lastUpdatePlan: null,
     lastRhythmUpdateAt: null,
+    advancedDayLogging: false,
     preciseView: true,
     wakeTimeMinutes: 7 * 60,
     wakeTimeKnown: false,
@@ -64,6 +67,7 @@ class RhythmState {
     RhythmShiftAssessment? shiftAssessment,
     Object? lastUpdatePlan = _noChange,
     Object? lastRhythmUpdateAt = _noChange,
+    bool? advancedDayLogging,
     bool? preciseView,
     int? wakeTimeMinutes,
     bool? wakeTimeKnown,
@@ -85,6 +89,7 @@ class RhythmState {
       lastRhythmUpdateAt: identical(lastRhythmUpdateAt, _noChange)
           ? this.lastRhythmUpdateAt
           : lastRhythmUpdateAt as DateTime?,
+      advancedDayLogging: advancedDayLogging ?? this.advancedDayLogging,
       preciseView: preciseView ?? this.preciseView,
       wakeTimeMinutes: wakeTimeMinutes ?? this.wakeTimeMinutes,
       wakeTimeKnown: wakeTimeKnown ?? this.wakeTimeKnown,
@@ -135,6 +140,7 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
     var recapHistory = <MorningRecapEntry>[];
     var dailySignals = <RhythmDailySignal>[];
     DateTime? lastRhythmUpdateAt;
+    var advancedDayLogging = state.advancedDayLogging;
 
     if (raw is Map) {
       final map = raw.cast<String, dynamic>();
@@ -158,6 +164,8 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
       wakeMinutes = map['wake_time_minutes'] as int? ?? wakeMinutes;
       wakeKnown = map['wake_time_known'] as bool? ?? wakeKnown;
       preciseView = map['precise_view'] as bool? ?? preciseView;
+      advancedDayLogging =
+          map['advanced_day_logging'] as bool? ?? advancedDayLogging;
       recapHistory = recapRaw;
       dailySignals = signalRaw;
       lastRhythmUpdateAt = DateTime.tryParse(
@@ -167,13 +175,19 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
       rhythm = _engine.defaultRhythmForAge(ageMonths: ageMonths, now: now);
     }
 
-    final schedule = _engine.buildDaySchedule(
+    final baseSchedule = _engine.buildDaySchedule(
       rhythm: rhythm,
       wakeTimeMinutes: wakeMinutes,
       wakeTimeKnown: wakeKnown,
       events: const [],
       previousSchedule: previousSchedule,
       now: now,
+    );
+    final schedule = _scheduleWithConfidence(
+      schedule: baseSchedule,
+      recapHistory: recapHistory,
+      dailySignals: dailySignals,
+      now: now ?? DateTime.now(),
     );
     final shiftAssessment = _computeShiftAssessment(
       ageMonths: rhythm.ageMonths,
@@ -195,6 +209,7 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
       shiftAssessment: shiftAssessment,
       lastUpdatePlan: null,
       lastRhythmUpdateAt: lastRhythmUpdateAt,
+      advancedDayLogging: advancedDayLogging,
       preciseView: preciseView,
       lastHint: null,
     );
@@ -206,6 +221,25 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
     required bool precise,
   }) async {
     state = state.copyWith(preciseView: precise);
+    await _persist(childId);
+  }
+
+  Future<void> setAdvancedDayLogging({
+    required String childId,
+    required bool enabled,
+  }) async {
+    final now = DateTime.now();
+    state = state.copyWith(
+      advancedDayLogging: enabled,
+      todaySchedule: _rescoreExistingSchedule(
+        recapHistory: state.recapHistory,
+        dailySignals: state.dailySignals,
+        now: now,
+      ),
+      lastHint: enabled
+          ? 'Advanced day logging is on.'
+          : 'Advanced day logging is off.',
+    );
     await _persist(childId);
   }
 
@@ -309,6 +343,129 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
     await recalculate(childId: childId);
   }
 
+  Future<void> markNapQualityTap({
+    required String childId,
+    required NapQualityTap quality,
+  }) async {
+    switch (quality) {
+      case NapQualityTap.short:
+        await markShortNap(childId: childId);
+        return;
+      case NapQualityTap.ok:
+        final signalNow = DateTime.now();
+        final dailySignals = _upsertDailySignal(
+          signals: state.dailySignals,
+          now: signalNow,
+          update: (current) =>
+              current.copyWith(okNapCount: current.okNapCount + 1),
+        );
+        final shiftAssessment = _computeShiftAssessment(
+          ageMonths: state.rhythm?.ageMonths ?? 6,
+          recapHistory: state.recapHistory,
+          dailySignals: dailySignals,
+          lastRhythmUpdateAt: state.lastRhythmUpdateAt,
+          now: signalNow,
+        );
+        state = state.copyWith(
+          dailySignals: dailySignals,
+          todaySchedule: _rescoreExistingSchedule(
+            recapHistory: state.recapHistory,
+            dailySignals: dailySignals,
+            now: signalNow,
+          ),
+          shiftAssessment: shiftAssessment,
+          lastHint: 'Still okay. Nap quality logged as OK.',
+        );
+        await _persist(childId);
+        return;
+      case NapQualityTap.long:
+        final signalNow = DateTime.now();
+        final dailySignals = _upsertDailySignal(
+          signals: state.dailySignals,
+          now: signalNow,
+          update: (current) =>
+              current.copyWith(longNapCount: current.longNapCount + 1),
+        );
+        final shiftAssessment = _computeShiftAssessment(
+          ageMonths: state.rhythm?.ageMonths ?? 6,
+          recapHistory: state.recapHistory,
+          dailySignals: dailySignals,
+          lastRhythmUpdateAt: state.lastRhythmUpdateAt,
+          now: signalNow,
+        );
+        state = state.copyWith(
+          dailySignals: dailySignals,
+          todaySchedule: _rescoreExistingSchedule(
+            recapHistory: state.recapHistory,
+            dailySignals: dailySignals,
+            now: signalNow,
+          ),
+          shiftAssessment: shiftAssessment,
+          lastHint: 'Still okay. Nap quality logged as long.',
+        );
+        await _persist(childId);
+        return;
+    }
+  }
+
+  Future<void> markNapStarted({required String childId}) async {
+    final signalNow = DateTime.now();
+    final dailySignals = _upsertDailySignal(
+      signals: state.dailySignals,
+      now: signalNow,
+      update: (current) => current.copyWith(
+        advancedNapStartCount: current.advancedNapStartCount + 1,
+      ),
+    );
+    final shiftAssessment = _computeShiftAssessment(
+      ageMonths: state.rhythm?.ageMonths ?? 6,
+      recapHistory: state.recapHistory,
+      dailySignals: dailySignals,
+      lastRhythmUpdateAt: state.lastRhythmUpdateAt,
+      now: signalNow,
+    );
+    state = state.copyWith(
+      dailySignals: dailySignals,
+      todaySchedule: _rescoreExistingSchedule(
+        recapHistory: state.recapHistory,
+        dailySignals: dailySignals,
+        now: signalNow,
+      ),
+      shiftAssessment: shiftAssessment,
+      lastHint: 'Nap start logged.',
+    );
+    await _persist(childId);
+  }
+
+  Future<void> markNapEnded({required String childId}) async {
+    final signalNow = DateTime.now();
+    final dailySignals = _upsertDailySignal(
+      signals: state.dailySignals,
+      now: signalNow,
+      update: (current) => current.copyWith(
+        advancedNapEndCount: current.advancedNapEndCount + 1,
+      ),
+    );
+    final shiftAssessment = _computeShiftAssessment(
+      ageMonths: state.rhythm?.ageMonths ?? 6,
+      recapHistory: state.recapHistory,
+      dailySignals: dailySignals,
+      lastRhythmUpdateAt: state.lastRhythmUpdateAt,
+      now: signalNow,
+    );
+    state = state.copyWith(
+      dailySignals: dailySignals,
+      todaySchedule: _rescoreExistingSchedule(
+        recapHistory: state.recapHistory,
+        dailySignals: dailySignals,
+        now: signalNow,
+      ),
+      shiftAssessment: shiftAssessment,
+      lastHint: 'Nap end logged.',
+    );
+    await _persist(childId);
+  }
+
   Future<void> markBedtimeResistance({
     required String childId,
     int delayMinutes = 25,
@@ -333,6 +490,11 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
     );
     state = state.copyWith(
       dailySignals: dailySignals,
+      todaySchedule: _rescoreExistingSchedule(
+        recapHistory: state.recapHistory,
+        dailySignals: dailySignals,
+        now: signalNow,
+      ),
       shiftAssessment: shiftAssessment,
       lastHint: 'Still okay. Bedtime resistance noted.',
     );
@@ -370,6 +532,11 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
     );
     state = state.copyWith(
       recapHistory: recapHistory,
+      todaySchedule: _rescoreExistingSchedule(
+        recapHistory: recapHistory,
+        dailySignals: state.dailySignals,
+        now: ts,
+      ),
       shiftAssessment: shiftAssessment,
       lastHint: 'Morning recap saved.',
     );
@@ -404,12 +571,18 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
       whyNow: whyNow,
       now: ts,
     );
-    final nextSchedule = _engine.buildDaySchedule(
+    final baseSchedule = _engine.buildDaySchedule(
       rhythm: plan.rhythm,
       wakeTimeMinutes: state.wakeTimeMinutes,
       wakeTimeKnown: state.wakeTimeKnown,
       events: const [],
       previousSchedule: state.todaySchedule,
+      now: ts,
+    );
+    final nextSchedule = _scheduleWithConfidence(
+      schedule: baseSchedule,
+      recapHistory: state.recapHistory,
+      dailySignals: state.dailySignals,
       now: ts,
     );
     final shiftAssessment = _computeShiftAssessment(
@@ -435,20 +608,27 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
     final rhythm = state.rhythm;
     if (rhythm == null) return;
 
-    final next = _engine.buildDaySchedule(
+    final now = DateTime.now();
+    final baseNext = _engine.buildDaySchedule(
       rhythm: rhythm,
       wakeTimeMinutes: state.wakeTimeMinutes,
       wakeTimeKnown: state.wakeTimeKnown,
       events: state.events,
       previousSchedule: state.todaySchedule,
-      now: DateTime.now(),
+      now: now,
+    );
+    final next = _scheduleWithConfidence(
+      schedule: baseNext,
+      recapHistory: state.recapHistory,
+      dailySignals: state.dailySignals,
+      now: now,
     );
     final shiftAssessment = _computeShiftAssessment(
       ageMonths: rhythm.ageMonths,
       recapHistory: state.recapHistory,
       dailySignals: state.dailySignals,
       lastRhythmUpdateAt: state.lastRhythmUpdateAt,
-      now: DateTime.now(),
+      now: now,
     );
 
     state = state.copyWith(
@@ -467,6 +647,100 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
       if (!seen.contains(i)) return i;
     }
     return napCountTarget;
+  }
+
+  DaySchedule _scheduleWithConfidence({
+    required DaySchedule schedule,
+    required List<MorningRecapEntry> recapHistory,
+    required List<RhythmDailySignal> dailySignals,
+    required DateTime now,
+  }) {
+    final confidence = _scorePhase4Confidence(
+      schedule: schedule,
+      recapHistory: recapHistory,
+      dailySignals: dailySignals,
+      now: now,
+    );
+    return schedule.copyWith(confidence: confidence);
+  }
+
+  DaySchedule? _rescoreExistingSchedule({
+    required List<MorningRecapEntry> recapHistory,
+    required List<RhythmDailySignal> dailySignals,
+    required DateTime now,
+  }) {
+    final schedule = state.todaySchedule;
+    if (schedule == null) return null;
+    return _scheduleWithConfidence(
+      schedule: schedule,
+      recapHistory: recapHistory,
+      dailySignals: dailySignals,
+      now: now,
+    );
+  }
+
+  RhythmConfidence _scorePhase4Confidence({
+    required DaySchedule schedule,
+    required List<MorningRecapEntry> recapHistory,
+    required List<RhythmDailySignal> dailySignals,
+    required DateTime now,
+  }) {
+    var score = 85;
+    if (!schedule.wakeTimeKnown) score -= 20;
+
+    final hasRecentRecap = recapHistory.any(
+      (recap) =>
+          now.difference(recap.createdAt).inHours.abs() <= 48 &&
+          recap.dateKey.isNotEmpty,
+    );
+    if (!hasRecentRecap) score -= 20;
+
+    final todayKey = _dateKey(now);
+    final todaySignal = dailySignals.firstWhere(
+      (signal) => signal.dateKey == todayKey,
+      orElse: () => RhythmDailySignal(
+        dateKey: todayKey,
+        shortNapCount: 0,
+        skippedNapCount: 0,
+        okNapCount: 0,
+        longNapCount: 0,
+        advancedNapStartCount: 0,
+        advancedNapEndCount: 0,
+        earlyWakeLogged: false,
+        bedtimeResistance: false,
+        bedtimeDelayMinutes: 0,
+        createdAt: now,
+      ),
+    );
+    if (todaySignal.dayTapCount == 0) {
+      score -= 15;
+    } else if (todaySignal.dayTapCount == 1) {
+      score -= 8;
+    }
+
+    final unstableDays = dailySignals
+        .take(5)
+        .where(
+          (signal) =>
+              signal.earlyWakeLogged ||
+              signal.bedtimeResistance ||
+              (signal.shortNapCount + signal.skippedNapCount) >= 2 ||
+              signal.bedtimeDelayMinutes >= 20,
+        )
+        .length;
+    if (unstableDays >= 4) {
+      score -= 20;
+    } else if (unstableDays >= 2) {
+      score -= 12;
+    } else {
+      score += 3;
+    }
+
+    if (schedule.appliedHysteresis) score += 5;
+
+    if (score >= 78) return RhythmConfidence.high;
+    if (score >= 55) return RhythmConfidence.medium;
+    return RhythmConfidence.low;
   }
 
   RhythmShiftAssessment _computeShiftAssessment({
@@ -506,6 +780,10 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
             dateKey: dateKey,
             shortNapCount: 0,
             skippedNapCount: 0,
+            okNapCount: 0,
+            longNapCount: 0,
+            advancedNapStartCount: 0,
+            advancedNapEndCount: 0,
             earlyWakeLogged: false,
             bedtimeResistance: false,
             bedtimeDelayMinutes: 0,
@@ -533,6 +811,7 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
       'recap_history': state.recapHistory.map((e) => e.toMap()).toList(),
       'daily_signals': state.dailySignals.map((e) => e.toMap()).toList(),
       'last_rhythm_update_at': state.lastRhythmUpdateAt?.toIso8601String(),
+      'advanced_day_logging': state.advancedDayLogging,
       'wake_time_minutes': state.wakeTimeMinutes,
       'wake_time_known': state.wakeTimeKnown,
       'precise_view': state.preciseView,

@@ -52,6 +52,21 @@ class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
   Future<void> setComplianceChecklistEnabled(bool value) async {
     state = state.copyWith(complianceChecklistEnabled: value);
   }
+
+  @override
+  Future<void> setSleepBoundedAiEnabled(bool value) async {
+    state = state.copyWith(sleepBoundedAiEnabled: value);
+  }
+
+  @override
+  Future<void> setWindDownNotificationsEnabled(bool value) async {
+    state = state.copyWith(windDownNotificationsEnabled: value);
+  }
+
+  @override
+  Future<void> setScheduleDriftNotificationsEnabled(bool value) async {
+    state = state.copyWith(scheduleDriftNotificationsEnabled: value);
+  }
 }
 
 void main() {
@@ -193,6 +208,9 @@ void main() {
       familyRulesEnabled: true,
       metricsDashboardEnabled: true,
       complianceChecklistEnabled: true,
+      sleepBoundedAiEnabled: true,
+      windDownNotificationsEnabled: true,
+      scheduleDriftNotificationsEnabled: false,
     );
 
     final router = GoRouter(

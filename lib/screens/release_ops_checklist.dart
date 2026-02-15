@@ -131,6 +131,28 @@ class _ReleaseOpsChecklistScreenState
                                       .read(releaseRolloutProvider.notifier)
                                       .setFamilyRulesEnabled(v),
                                 ),
+                                _RolloutSwitchRow(
+                                  label: 'Sleep bounded AI copy',
+                                  value: rollout.sleepBoundedAiEnabled,
+                                  onChanged: (v) => ref
+                                      .read(releaseRolloutProvider.notifier)
+                                      .setSleepBoundedAiEnabled(v),
+                                ),
+                                _RolloutSwitchRow(
+                                  label: 'Wind-down notifications',
+                                  value: rollout.windDownNotificationsEnabled,
+                                  onChanged: (v) => ref
+                                      .read(releaseRolloutProvider.notifier)
+                                      .setWindDownNotificationsEnabled(v),
+                                ),
+                                _RolloutSwitchRow(
+                                  label: 'Drift notifications',
+                                  value:
+                                      rollout.scheduleDriftNotificationsEnabled,
+                                  onChanged: (v) => ref
+                                      .read(releaseRolloutProvider.notifier)
+                                      .setScheduleDriftNotificationsEnabled(v),
+                                ),
                               ],
                             ),
                           ),

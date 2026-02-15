@@ -172,6 +172,7 @@ class _FakeUpdateRhythmNotifier extends RhythmNotifier {
       ),
       lastUpdatePlan: null,
       lastRhythmUpdateAt: null,
+      advancedDayLogging: false,
       preciseView: true,
       wakeTimeMinutes: 420,
       wakeTimeKnown: true,
