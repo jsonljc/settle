@@ -30,11 +30,22 @@ class EventTypes {
   static const stPlanAborted = 'ST_PLAN_ABORTED';
   static const stFeedTaperStep = 'ST_FEED_TAPER_STEP';
   static const stMorningReviewComplete = 'ST_MORNING_REVIEW_COMPLETE';
+  static const stTonightOpen = 'ST_TONIGHT_OPEN';
+  static const stFirstGuidanceRendered = 'ST_FIRST_GUIDANCE_RENDERED';
+  static const stMoreOptionsOpen = 'ST_MORE_OPTIONS_OPEN';
+  static const stScenarioChanged = 'ST_SCENARIO_CHANGED';
+  static const stNextStepTapped = 'ST_NEXT_STEP_TAPPED';
+  static const stRecapCompleted = 'ST_RECAP_COMPLETED';
+  static const stMethodChangeInitiated = 'ST_METHOD_CHANGE_INITIATED';
+  static const stMethodChanged = 'ST_METHOD_CHANGED';
+  static const stUpdateWizardCompleted = 'ST_UPDATE_WIZARD_COMPLETED';
 
   // Plan & Progress
   static const ppExperimentSet = 'PP_EXPERIMENT_SET';
   static const ppExperimentCompleted = 'PP_EXPERIMENT_COMPLETED';
   static const ppRhythmUpdated = 'PP_RHYTHM_UPDATED';
+  static const ppAppSessionStarted = 'PP_APP_SESSION_STARTED';
+  static const ppAppCrash = 'PP_APP_CRASH';
 
   // Family Rules
   static const frRuleUpdated = 'FR_RULE_UPDATED';
@@ -92,6 +103,15 @@ class EventMetadataKeys {
   static const author = 'author';
   static const diffId = 'diff_id';
   static const chosenDiffId = 'chosen_diff_id';
+  static const appVersion = 'app_version';
+  static const crashSource = 'crash_source';
+  static const timeToFirstGuidanceMs = 'time_to_first_guidance_ms';
+  static const timeBucket = 'time_bucket';
+  static const effectiveTiming = 'effective_timing';
+  static const reason = 'reason';
+  static const toApproach = 'to_approach';
+  static const durationMs = 'duration_ms';
+  static const outcome = 'outcome';
 }
 
 class EventBusService {
@@ -123,10 +143,21 @@ class EventBusService {
     EventTypes.stPlanAborted,
     EventTypes.stFeedTaperStep,
     EventTypes.stMorningReviewComplete,
+    EventTypes.stTonightOpen,
+    EventTypes.stFirstGuidanceRendered,
+    EventTypes.stMoreOptionsOpen,
+    EventTypes.stScenarioChanged,
+    EventTypes.stNextStepTapped,
+    EventTypes.stRecapCompleted,
+    EventTypes.stMethodChangeInitiated,
+    EventTypes.stMethodChanged,
+    EventTypes.stUpdateWizardCompleted,
     // Plan & Progress
     EventTypes.ppExperimentSet,
     EventTypes.ppExperimentCompleted,
     EventTypes.ppRhythmUpdated,
+    EventTypes.ppAppSessionStarted,
+    EventTypes.ppAppCrash,
     // Family Rules
     EventTypes.frRuleUpdated,
     EventTypes.frDiffReceived,
@@ -174,11 +205,22 @@ class EventBusService {
       EventTypes.stPlanAborted,
       EventTypes.stFeedTaperStep,
       EventTypes.stMorningReviewComplete,
+      EventTypes.stTonightOpen,
+      EventTypes.stFirstGuidanceRendered,
+      EventTypes.stMoreOptionsOpen,
+      EventTypes.stScenarioChanged,
+      EventTypes.stNextStepTapped,
+      EventTypes.stRecapCompleted,
+      EventTypes.stMethodChangeInitiated,
+      EventTypes.stMethodChanged,
+      EventTypes.stUpdateWizardCompleted,
     },
     Pillars.planProgress: {
       EventTypes.ppExperimentSet,
       EventTypes.ppExperimentCompleted,
       EventTypes.ppRhythmUpdated,
+      EventTypes.ppAppSessionStarted,
+      EventTypes.ppAppCrash,
     },
     Pillars.familyRules: {
       EventTypes.frRuleUpdated,
@@ -285,9 +327,33 @@ class EventBusService {
     EventTypes.stPlanAborted: <String>{},
     EventTypes.stFeedTaperStep: {EventMetadataKeys.feedMode},
     EventTypes.stMorningReviewComplete: {EventMetadataKeys.wakesLogged},
+    EventTypes.stTonightOpen: <String>{},
+    EventTypes.stFirstGuidanceRendered: {
+      EventMetadataKeys.timeToFirstGuidanceMs,
+      EventMetadataKeys.scenario,
+    },
+    EventTypes.stMoreOptionsOpen: <String>{},
+    EventTypes.stScenarioChanged: {EventMetadataKeys.scenario},
+    EventTypes.stNextStepTapped: <String>{},
+    EventTypes.stRecapCompleted: {
+      EventMetadataKeys.outcome,
+      EventMetadataKeys.timeBucket,
+    },
+    EventTypes.stMethodChangeInitiated: <String>{},
+    EventTypes.stMethodChanged: {
+      EventMetadataKeys.reason,
+      EventMetadataKeys.effectiveTiming,
+      EventMetadataKeys.toApproach,
+    },
+    EventTypes.stUpdateWizardCompleted: {EventMetadataKeys.durationMs},
     EventTypes.ppExperimentSet: {EventMetadataKeys.experiment},
     EventTypes.ppExperimentCompleted: {EventMetadataKeys.experiment},
     EventTypes.ppRhythmUpdated: {EventMetadataKeys.block},
+    EventTypes.ppAppSessionStarted: {EventMetadataKeys.appVersion},
+    EventTypes.ppAppCrash: {
+      EventMetadataKeys.appVersion,
+      EventMetadataKeys.crashSource,
+    },
     EventTypes.frRuleUpdated: {
       EventMetadataKeys.ruleId,
       EventMetadataKeys.author,
@@ -870,6 +936,40 @@ class EventBusService {
       pillar: Pillars.planProgress,
       type: EventTypes.ppRhythmUpdated,
       metadata: {EventMetadataKeys.block: block},
+    );
+  }
+
+  static Future<void> emitPlanAppSessionStarted({
+    required String childId,
+    String? appVersion,
+  }) {
+    return emit(
+      childId: childId,
+      pillar: Pillars.planProgress,
+      type: EventTypes.ppAppSessionStarted,
+      metadata: {
+        if (appVersion != null && appVersion.isNotEmpty)
+          EventMetadataKeys.appVersion: appVersion,
+      },
+    );
+  }
+
+  static Future<void> emitPlanAppCrash({
+    required String childId,
+    String? appVersion,
+    String? crashSource,
+  }) {
+    return emit(
+      childId: childId,
+      pillar: Pillars.planProgress,
+      type: EventTypes.ppAppCrash,
+      outcome: EventOutcomes.escalated,
+      metadata: {
+        if (appVersion != null && appVersion.isNotEmpty)
+          EventMetadataKeys.appVersion: appVersion,
+        if (crashSource != null && crashSource.isNotEmpty)
+          EventMetadataKeys.crashSource: crashSource,
+      },
     );
   }
 

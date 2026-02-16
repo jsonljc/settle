@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../models/tantrum_profile.dart';
 import '../services/prevention_engine.dart';
 import '../services/tantrum_engine.dart';
+import '../tantrum/services/tantrum_insights_service.dart';
 import 'profile_provider.dart';
 
 const _eventsBoxName = 'tantrum_events';
@@ -96,6 +97,16 @@ final tantrumInsightProvider = Provider<String>((ref) {
   return 'You logged ${pattern.totalEvents} hard moments this week. Keep tracking for a clearer pattern.';
 });
 
+final tantrumInsightsUnlockedProvider = Provider<bool>((ref) {
+  final events = ref.watch(tantrumEventsProvider);
+  return events.length >= TantrumInsightsService.unlockThreshold;
+});
+
+final tantrumInsightsLinesProvider = Provider<List<String>>((ref) {
+  final events = ref.watch(tantrumEventsProvider);
+  return TantrumInsightsService.buildInsights(events);
+});
+
 final hasTantrumFeatureProvider = Provider<bool>((ref) {
   final profile = ref.watch(profileProvider);
   if (profile == null) return false;
@@ -105,15 +116,31 @@ final hasTantrumFeatureProvider = Provider<bool>((ref) {
 });
 
 class TantrumEventsNotifier extends StateNotifier<List<TantrumEvent>> {
-  TantrumEventsNotifier() : super(const []) {
-    _load();
+  TantrumEventsNotifier({bool persist = true})
+    : _persist = persist,
+      super(const []) {
+    if (_persist) _load();
   }
 
+  final bool _persist;
   Box<TantrumEvent>? _box;
+  Future<Box<TantrumEvent>>? _boxFuture;
 
   Future<Box<TantrumEvent>> _ensureBox() async {
-    _box ??= await Hive.openBox<TantrumEvent>(_eventsBoxName);
-    return _box!;
+    final existing = _box;
+    if (existing != null) return existing;
+
+    _boxFuture ??= Hive.openBox<TantrumEvent>(_eventsBoxName).then((box) {
+      _box = box;
+      return box;
+    });
+
+    try {
+      return await _boxFuture!;
+    } catch (_) {
+      _boxFuture = null;
+      rethrow;
+    }
   }
 
   Future<void> _load() async {
@@ -124,6 +151,11 @@ class TantrumEventsNotifier extends StateNotifier<List<TantrumEvent>> {
   }
 
   Future<void> addEvent(TantrumEvent event) async {
+    if (!_persist) {
+      state = [event, ...state]
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      return;
+    }
     final box = await _ensureBox();
     await box.add(event);
     await _load();
@@ -148,7 +180,66 @@ class TantrumEventsNotifier extends StateNotifier<List<TantrumEvent>> {
     return addEvent(event);
   }
 
+  /// Quick-capture logging path for Tantrum Hub v2.
+  Future<String> addCapture({
+    required String trigger,
+    String? intensity,
+    String? location,
+    String? parentReaction,
+    String? selectedCardId,
+  }) async {
+    final event = TantrumEvent(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      timestamp: DateTime.now(),
+      trigger: _mapCaptureTrigger(trigger),
+      intensity: _mapCaptureIntensity(intensity),
+      whatHelped: const [],
+      flashcardUsed: false,
+      location: location,
+      parentReaction: parentReaction,
+      selectedCardId: selectedCardId,
+      captureTrigger: trigger,
+      captureIntensity: intensity,
+    );
+    await addEvent(event);
+    return event.id;
+  }
+
+  TriggerType _mapCaptureTrigger(String trigger) {
+    switch (trigger) {
+      case 'transition':
+        return TriggerType.transitions;
+      case 'no_limit':
+        return TriggerType.boundaries;
+      case 'tired_hungry':
+        return TriggerType.frustration;
+      case 'attention_conflict':
+        return TriggerType.frustration;
+      case 'sibling_conflict':
+        return TriggerType.boundaries;
+      case 'unknown':
+      default:
+        return TriggerType.unpredictable;
+    }
+  }
+
+  TantrumIntensity _mapCaptureIntensity(String? intensity) {
+    switch (intensity) {
+      case 'mild':
+        return TantrumIntensity.mild;
+      case 'intense':
+        return TantrumIntensity.intense;
+      case 'medium':
+      default:
+        return TantrumIntensity.moderate;
+    }
+  }
+
   Future<void> clear() async {
+    if (!_persist) {
+      state = const [];
+      return;
+    }
     final box = await _ensureBox();
     await box.clear();
     state = const [];

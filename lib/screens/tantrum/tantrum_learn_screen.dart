@@ -44,20 +44,17 @@ class TantrumLearnScreen extends ConsumerWidget {
                         return _LessonCard(
                           lesson: lesson,
                           onCardTap: (cardId) => context.push(
-                            '/tantrum/cards/${Uri.encodeComponent(cardId)}',
+                            '/tantrum/deck/${Uri.encodeComponent(cardId)}',
                           ),
                         );
                       },
                     ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (e, _) => Center(
                       child: Text(
                         'Could not load lessons.',
-                        style: T.type.body.copyWith(
-                          color: T.pal.textSecondary,
-                        ),
+                        style: T.type.body.copyWith(color: T.pal.textSecondary),
                       ),
                     ),
                   ),
@@ -72,10 +69,7 @@ class TantrumLearnScreen extends ConsumerWidget {
 }
 
 class _LessonCard extends StatelessWidget {
-  const _LessonCard({
-    required this.lesson,
-    required this.onCardTap,
-  });
+  const _LessonCard({required this.lesson, required this.onCardTap});
 
   final TantrumLesson lesson;
   final ValueChanged<String> onCardTap;
@@ -87,10 +81,7 @@ class _LessonCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            lesson.title,
-            style: T.type.h3,
-          ),
+          Text(lesson.title, style: T.type.h3),
           const SizedBox(height: 10),
           Text(
             lesson.body,
@@ -121,10 +112,7 @@ class _LessonCard extends StatelessWidget {
 }
 
 class _CardChip extends ConsumerWidget {
-  const _CardChip({
-    required this.cardId,
-    required this.onTap,
-  });
+  const _CardChip({required this.cardId, required this.onTap});
 
   final String cardId;
   final VoidCallback onTap;
@@ -157,11 +145,7 @@ class _CardChip extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(
-              Icons.arrow_forward_rounded,
-              size: 14,
-              color: T.pal.accent,
-            ),
+            Icon(Icons.arrow_forward_rounded, size: 14, color: T.pal.accent),
           ],
         ),
       ),

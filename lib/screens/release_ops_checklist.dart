@@ -139,6 +139,21 @@ class _ReleaseOpsChecklistScreenState
                                       .setSleepBoundedAiEnabled(v),
                                 ),
                                 _RolloutSwitchRow(
+                                  label: 'Sleep rhythm surfaces',
+                                  value: rollout.sleepRhythmSurfacesEnabled,
+                                  onChanged: (v) => ref
+                                      .read(releaseRolloutProvider.notifier)
+                                      .setSleepRhythmSurfacesEnabled(v),
+                                ),
+                                _RolloutSwitchRow(
+                                  label: 'Rhythm detector prompts',
+                                  value:
+                                      rollout.rhythmShiftDetectorPromptsEnabled,
+                                  onChanged: (v) => ref
+                                      .read(releaseRolloutProvider.notifier)
+                                      .setRhythmShiftDetectorPromptsEnabled(v),
+                                ),
+                                _RolloutSwitchRow(
                                   label: 'Wind-down notifications',
                                   value: rollout.windDownNotificationsEnabled,
                                   onChanged: (v) => ref

@@ -15,15 +15,17 @@ import 'screens/release_compliance_checklist.dart';
 import 'screens/release_metrics.dart';
 import 'screens/release_ops_checklist.dart';
 import 'screens/settings.dart';
+import 'screens/sleep_hub_screen.dart';
 import 'screens/sleep_tonight.dart';
 import 'screens/sos.dart';
 import 'screens/splash.dart';
 import 'screens/update_rhythm_screen.dart';
 import 'screens/tantrum/card_detail_screen.dart';
-import 'screens/tantrum/cards_library_screen.dart';
 import 'screens/tantrum/crisis_view_screen.dart';
-import 'screens/tantrum/tantrum_learn_screen.dart';
-import 'screens/tantrum/tantrum_now_screen.dart';
+import 'screens/tantrum/tantrum_card_output_screen.dart';
+import 'screens/tantrum/tantrum_capture_screen.dart';
+import 'screens/tantrum/tantrum_deck_screen.dart';
+import 'screens/tantrum/tantrum_insights_screen.dart';
 import 'screens/today.dart';
 import 'widgets/release_surfaces.dart';
 
@@ -63,10 +65,9 @@ final router = GoRouter(
         return AppShell(
           currentIndex: navigationShell.currentIndex,
           onTabTap: (index) {
-            navigationShell.goBranch(
-              index,
-              initialLocation: index == navigationShell.currentIndex,
-            );
+            final resetToBranchRoot =
+                index == _tabSleep || index == navigationShell.currentIndex;
+            navigationShell.goBranch(index, initialLocation: resetToBranchRoot);
           },
           child: navigationShell,
         );
@@ -90,15 +91,20 @@ final router = GoRouter(
             GoRoute(
               path: '/sleep',
               pageBuilder: (context, state) =>
-                  _fade(state, const SleepTonightScreen()),
+                  _fade(state, const SleepHubScreen()),
               routes: [
+                GoRoute(
+                  path: 'tonight',
+                  pageBuilder: (context, state) =>
+                      _fade(state, const SleepTonightScreen()),
+                ),
                 GoRoute(
                   path: 'rhythm',
                   pageBuilder: (context, state) =>
                       _fade(state, const CurrentRhythmScreen()),
                 ),
                 GoRoute(
-                  path: 'update-rhythm',
+                  path: 'update',
                   pageBuilder: (context, state) =>
                       _fade(state, const UpdateRhythmScreen()),
                 ),
@@ -129,18 +135,30 @@ final router = GoRouter(
             ),
           ],
         ),
-        // Tab 3: Tantrum (NOW / CARDS / LEARN)
+        // Tab 3: Tantrum (Capture / Card / Deck / Insights)
         StatefulShellBranch(
           navigatorKey: _shellNavigatorKeys[_tabTantrum],
           routes: [
             GoRoute(
               path: '/tantrum',
-              redirect: (_, __) => '/tantrum/now',
+              redirect: (_, state) =>
+                  state.uri.path == '/tantrum' ? '/tantrum/capture' : null,
               routes: [
                 GoRoute(
-                  path: 'now',
+                  path: 'capture',
                   pageBuilder: (context, state) =>
-                      _fade(state, const TantrumNowScreen()),
+                      _fade(state, const TantrumCaptureScreen()),
+                ),
+                GoRoute(path: 'now', redirect: (_, __) => '/tantrum/capture'),
+                GoRoute(
+                  path: 'card',
+                  pageBuilder: (context, state) {
+                    final cardId = state.uri.queryParameters['cardId'];
+                    return _fade(
+                      state,
+                      TantrumCardOutputScreen(cardId: cardId),
+                    );
+                  },
                 ),
                 GoRoute(
                   path: 'crisis',
@@ -150,9 +168,9 @@ final router = GoRouter(
                   },
                 ),
                 GoRoute(
-                  path: 'cards',
+                  path: 'deck',
                   pageBuilder: (context, state) =>
-                      _fade(state, const CardsLibraryScreen()),
+                      _fade(state, const TantrumDeckScreen()),
                   routes: [
                     GoRoute(
                       path: ':id',
@@ -164,9 +182,26 @@ final router = GoRouter(
                   ],
                 ),
                 GoRoute(
-                  path: 'learn',
+                  path: 'cards',
+                  redirect: (_, __) => '/tantrum/deck',
+                  routes: [
+                    GoRoute(
+                      path: ':id',
+                      redirect: (_, state) {
+                        final id = state.pathParameters['id'] ?? '';
+                        return '/tantrum/deck/$id';
+                      },
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'insights',
                   pageBuilder: (context, state) =>
-                      _fade(state, const TantrumLearnScreen()),
+                      _fade(state, const TantrumInsightsScreen()),
+                ),
+                GoRoute(
+                  path: 'learn',
+                  redirect: (_, __) => '/tantrum/insights',
                 ),
               ],
             ),
@@ -228,11 +263,25 @@ final router = GoRouter(
         extraQuery: const {SpecPolicy.nowModeParam: SpecPolicy.nowModeIncident},
       ),
     ),
-    GoRoute(path: '/sleep-tonight', redirect: (_, __) => '/sleep'),
-    GoRoute(path: '/current-rhythm', redirect: (_, __) => '/sleep/rhythm'),
+    GoRoute(
+      path: '/sleep-tonight',
+      redirect: (context, state) =>
+          _redirectWithMergedQuery(state, path: '/sleep/tonight'),
+    ),
+    GoRoute(
+      path: '/sleep/update-rhythm',
+      redirect: (context, state) =>
+          _redirectWithMergedQuery(state, path: '/sleep/update'),
+    ),
+    GoRoute(
+      path: '/current-rhythm',
+      redirect: (context, state) =>
+          _redirectWithMergedQuery(state, path: '/sleep/rhythm'),
+    ),
     GoRoute(
       path: '/update-rhythm',
-      redirect: (_, __) => '/sleep/update-rhythm',
+      redirect: (context, state) =>
+          _redirectWithMergedQuery(state, path: '/sleep/update'),
     ),
     GoRoute(path: '/plan-progress', redirect: (_, __) => '/progress'),
     GoRoute(path: '/plan', redirect: (_, __) => '/progress'),
@@ -244,12 +293,12 @@ final router = GoRouter(
     GoRoute(
       path: '/night-mode',
       redirect: (context, state) =>
-          _redirectWithMergedQuery(state, path: '/sleep'),
+          _redirectWithMergedQuery(state, path: '/sleep/tonight'),
     ),
     GoRoute(
       path: '/night',
       redirect: (context, state) =>
-          _redirectWithMergedQuery(state, path: '/sleep'),
+          _redirectWithMergedQuery(state, path: '/sleep/tonight'),
     ),
     GoRoute(path: '/today', redirect: (_, __) => '/progress/logs'),
     GoRoute(path: '/learn', redirect: (_, __) => '/progress/learn'),

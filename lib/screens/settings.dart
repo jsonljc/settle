@@ -279,21 +279,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(height: 12),
                           _SectionHeader(title: 'Approach'),
                           const SizedBox(height: 8),
-                          ...Approach.values.map((a) {
-                            final isSelected = profile?.approach == a;
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: _ApproachOption(
-                                approach: a,
-                                isSelected: isSelected,
-                                onTap: () {
-                                  ref
-                                      .read(profileProvider.notifier)
-                                      .updateApproach(a);
-                                },
-                              ),
-                            );
-                          }),
+                          if (profile != null)
+                            _ApproachOption(
+                              approach: profile.approach,
+                              isSelected: true,
+                              onTap: () => context.push('/sleep/tonight'),
+                            ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'To switch approach, use Tonight → More options → Change approach.',
+                            style: T.type.caption.copyWith(
+                              color: T.pal.textSecondary,
+                            ),
+                          ),
                           if (showInternalTools) ...[
                             const SizedBox(height: 12),
                             _SectionHeader(title: 'Internal tools'),

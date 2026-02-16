@@ -66,11 +66,12 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
     });
   }
 
-  String _formatClock(int minutes) {
+  String _formatClock(BuildContext context, int minutes) {
     final normalized = ((minutes % 1440) + 1440) % 1440;
-    final h = normalized ~/ 60;
-    final m = normalized % 60;
-    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+    return MaterialLocalizations.of(context).formatTimeOfDay(
+      TimeOfDay(hour: normalized ~/ 60, minute: normalized % 60),
+      alwaysUse24HourFormat: MediaQuery.of(context).alwaysUse24HourFormat,
+    );
   }
 
   String _relaxedLabel(RhythmScheduleBlock block) {
@@ -102,9 +103,9 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
   }
 
   Future<void> _openMorningRecapSheet(String childId) async {
-    var nightQuality = MorningRecapNightQuality.ok;
-    var wakesBucket = MorningRecapWakesBucket.oneToTwo;
-    var longestAwake = MorningRecapLongestAwakeBucket.tenTo30;
+    var outcome = 'settled';
+    String? timeBucket;
+    final noteController = TextEditingController();
 
     await showModalBottomSheet<void>(
       context: context,
@@ -126,68 +127,85 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('10-second morning recap', style: T.type.h3),
+                      Text('Quick recap', style: T.type.h3),
                       const SizedBox(height: 10),
-                      Text('Night quality', style: T.type.label),
+                      Text('Outcome', style: T.type.label),
                       const SizedBox(height: 8),
                       _ChoiceWrap(
                         options: const {
-                          'good': 'Good',
-                          'ok': 'OK',
-                          'rough': 'Rough',
+                          'settled': 'Settled',
+                          'needed_help': 'Needed help',
+                          'not_resolved': 'Not resolved',
                         },
-                        selected: nightQuality.wire,
+                        selected: outcome,
                         onChanged: (value) {
-                          setModalState(
-                            () => nightQuality =
-                                MorningRecapNightQualityWire.fromString(value),
-                          );
+                          setModalState(() => outcome = value);
                         },
                       ),
                       const SizedBox(height: 10),
-                      Text('Wakes', style: T.type.label),
-                      const SizedBox(height: 8),
-                      _ChoiceWrap(
-                        options: const {'0': '0', '1-2': '1–2', '3+': '3+'},
-                        selected: wakesBucket.wire,
-                        onChanged: (value) {
-                          setModalState(
-                            () => wakesBucket =
-                                MorningRecapWakesBucketWire.fromString(value),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Text('Longest awake', style: T.type.label),
+                      Text('Time to settle (optional)', style: T.type.label),
                       const SizedBox(height: 8),
                       _ChoiceWrap(
                         options: const {
-                          '<10': '<10m',
-                          '10-30': '10–30m',
+                          '<5': '<5m',
+                          '5-15': '5–15m',
+                          '15-30': '15–30m',
                           '30+': '30m+',
                         },
-                        selected: longestAwake.wire,
+                        selected: timeBucket ?? '',
                         onChanged: (value) {
-                          setModalState(
-                            () => longestAwake =
-                                MorningRecapLongestAwakeBucketWire.fromString(
-                                  value,
-                                ),
-                          );
+                          setModalState(() => timeBucket = value);
                         },
+                      ),
+                      const SizedBox(height: 10),
+                      TextField(
+                        controller: noteController,
+                        style: T.type.caption,
+                        decoration: InputDecoration(
+                          labelText: 'Note (optional)',
+                          labelStyle: T.type.caption.copyWith(
+                            color: T.pal.textTertiary,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(T.radius.md),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       _ActionChip(
                         label: 'Save recap',
                         selected: true,
                         onTap: () async {
+                          final mappedNight = switch (outcome) {
+                            'settled' => MorningRecapNightQuality.good,
+                            'needed_help' => MorningRecapNightQuality.ok,
+                            _ => MorningRecapNightQuality.rough,
+                          };
+                          final mappedWakes = switch (timeBucket) {
+                            '<5' => MorningRecapWakesBucket.zero,
+                            '30+' => MorningRecapWakesBucket.threePlus,
+                            _ =>
+                              outcome == 'not_resolved'
+                                  ? MorningRecapWakesBucket.threePlus
+                                  : MorningRecapWakesBucket.oneToTwo,
+                          };
+                          final mappedLongest = switch (timeBucket) {
+                            '<5' => MorningRecapLongestAwakeBucket.under10,
+                            '5-15' => MorningRecapLongestAwakeBucket.tenTo30,
+                            '15-30' => MorningRecapLongestAwakeBucket.tenTo30,
+                            '30+' => MorningRecapLongestAwakeBucket.over30,
+                            _ =>
+                              outcome == 'not_resolved'
+                                  ? MorningRecapLongestAwakeBucket.over30
+                                  : MorningRecapLongestAwakeBucket.tenTo30,
+                          };
                           await ref
                               .read(rhythmProvider.notifier)
                               .submitMorningRecap(
                                 childId: childId,
-                                nightQuality: nightQuality,
-                                wakesBucket: wakesBucket,
-                                longestAwakeBucket: longestAwake,
+                                nightQuality: mappedNight,
+                                wakesBucket: mappedWakes,
+                                longestAwakeBucket: mappedLongest,
                               );
                           if (context.mounted) Navigator.of(context).pop();
                         },
@@ -201,6 +219,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
         );
       },
     );
+    noteController.dispose();
   }
 
   DateTime? _targetDateTimeForBlock(RhythmScheduleBlock block, DateTime now) {
@@ -293,6 +312,9 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
     final childId = profile.createdAt;
     final state = ref.watch(rhythmProvider);
     final rollout = ref.watch(releaseRolloutProvider);
+    if (!rollout.isLoading && !rollout.sleepRhythmSurfacesEnabled) {
+      return const FeaturePausedView(title: 'Current Rhythm');
+    }
     final rhythm = state.rhythm;
     final schedule = state.todaySchedule;
     final ageMonths = _ageMonthsFor(profile.ageBracket);
@@ -343,6 +365,27 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
       (b) => b.id == 'bedtime',
       orElse: () => blocks.last,
     );
+    final wake = blocks.firstWhere(
+      (b) => b.id == 'wake',
+      orElse: () => blocks.first,
+    );
+    final firstNap = blocks.firstWhere(
+      (b) => b.id.startsWith('nap'),
+      orElse: () => blocks.first,
+    );
+    final nowMinutes = (DateTime.now().hour * 60) + DateTime.now().minute;
+    final nextUp = blocks
+        .where((b) => b.id != 'wake')
+        .where((b) => ((b.windowEndMinutes - nowMinutes + 1440) % 1440) <= 720)
+        .fold<RhythmScheduleBlock?>(null, (best, current) {
+          final bestDiff = best == null
+              ? 9999
+              : ((best.windowStartMinutes - nowMinutes + 1440) % 1440);
+          final currentDiff =
+              ((current.windowStartMinutes - nowMinutes + 1440) % 1440);
+          if (best == null || currentDiff < bestDiff) return current;
+          return best;
+        });
     final aiSummary = rollout.sleepBoundedAiEnabled
         ? SleepAiExplainerService.instance.summarizeRhythm(
             schedule: schedule,
@@ -356,7 +399,9 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
       schedule: schedule,
       shift: shift,
       windDownEnabled: rollout.windDownNotificationsEnabled,
-      driftEnabled: rollout.scheduleDriftNotificationsEnabled,
+      driftEnabled:
+          rollout.scheduleDriftNotificationsEnabled &&
+          rollout.rhythmShiftDetectorPromptsEnabled,
     );
 
     return Scaffold(
@@ -394,45 +439,30 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Confidence: ${schedule.confidence.label}',
+                                'Bedtime anchor: ${_formatClock(context, rhythm.bedtimeAnchorMinutes)}${rhythm.locks.bedtimeAnchorLocked ? ' (locked)' : ''}',
+                                style: T.type.caption.copyWith(
+                                  color: T.pal.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'How sure are we? ${schedule.confidence.label}',
                                 style: T.type.caption.copyWith(
                                   color: T.pal.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Confidence tracks log completeness + stability.',
+                                'Based on recent logging and pattern stability.',
                                 style: T.type.caption.copyWith(
                                   color: T.pal.textSecondary,
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Bedtime anchor: ${_formatClock(rhythm.bedtimeAnchorMinutes)}${rhythm.locks.bedtimeAnchorLocked ? ' (locked)' : ''}',
-                                style: T.type.caption.copyWith(
-                                  color: T.pal.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              _ChoiceWrap(
-                                options: const {
-                                  'precise': 'Precise view',
-                                  'relaxed': 'Relaxed view',
-                                },
-                                selected: state.preciseView
-                                    ? 'precise'
-                                    : 'relaxed',
-                                onChanged: (value) => ref
-                                    .read(rhythmProvider.notifier)
-                                    .setPreciseView(
-                                      childId: childId,
-                                      precise: value == 'precise',
-                                    ),
                               ),
                             ],
                           ),
                         ),
-                        if (shift.shouldSuggestUpdate) ...[
+                        if (rollout.rhythmShiftDetectorPromptsEnabled &&
+                            shift.shouldSuggestUpdate) ...[
                           const SizedBox(height: 10),
                           GlassCard(
                             child: Column(
@@ -448,14 +478,13 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                 _ActionChip(
                                   label: 'Update Rhythm',
                                   selected: true,
-                                  onTap: () =>
-                                      context.push('/sleep/update-rhythm'),
+                                  onTap: () => context.push('/sleep/update'),
                                 ),
                               ],
                             ),
                           ),
                         ],
-                        if (aiSummary != null) ...[
+                        if (state.preciseView && aiSummary != null) ...[
                           const SizedBox(height: 10),
                           GlassCard(
                             child: Column(
@@ -483,154 +512,243 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                           ),
                         ],
                         const SizedBox(height: 10),
-                        GlassCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Today timeline', style: T.type.label),
-                              const SizedBox(height: 10),
-                              ...blocks.map((block) {
-                                final relaxed = _relaxedLabel(block);
-                                final center = _formatClock(
-                                  block.centerlineMinutes,
-                                );
-                                final soft =
-                                    '${_formatClock(block.windowStartMinutes)}–${_formatClock(block.windowEndMinutes)}';
-                                final duration =
-                                    (block.expectedDurationMinMinutes != null &&
-                                        block.expectedDurationMaxMinutes !=
-                                            null)
-                                    ? ' · ${block.expectedDurationMinMinutes}-${block.expectedDurationMaxMinutes}m'
-                                    : '';
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        state.preciseView
-                                            ? block.label
-                                            : relaxed,
-                                        style: T.type.caption.copyWith(
-                                          color: T.pal.textSecondary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        state.preciseView
-                                            ? '$center (soft: $soft)$duration'
-                                            : '$relaxed$duration',
-                                        style: T.type.body,
-                                      ),
-                                    ],
+                        if (!state.preciseView)
+                          GlassCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Today at a glance', style: T.type.h3),
+                                const SizedBox(height: 10),
+                                _AnchorRow(
+                                  label: 'Wake',
+                                  value: _formatClock(
+                                    context,
+                                    wake.centerlineMinutes,
                                   ),
-                                );
-                              }),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Bedtime window: ${_formatClock(bedtime.windowStartMinutes)}–${_formatClock(bedtime.windowEndMinutes)}',
-                                style: T.type.caption.copyWith(
-                                  color: T.pal.textSecondary,
                                 ),
+                                const SizedBox(height: 6),
+                                _AnchorRow(
+                                  label: 'Nap',
+                                  value: _formatClock(
+                                    context,
+                                    firstNap.centerlineMinutes,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                _AnchorRow(
+                                  label: 'Bed',
+                                  value: _formatClock(
+                                    context,
+                                    bedtime.centerlineMinutes,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Next up: ${_relaxedLabel(nextUp ?? bedtime)} around ${_formatClock(context, (nextUp ?? bedtime).centerlineMinutes)}',
+                                  style: T.type.caption.copyWith(
+                                    color: T.pal.textSecondary,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                GlassCta(
+                                  label: 'Update rhythm',
+                                  onTap: () => context.push('/sleep/update'),
+                                  compact: true,
+                                ),
+                                const SizedBox(height: 8),
+                                OutlinedButton(
+                                  onPressed: () => ref
+                                      .read(rhythmProvider.notifier)
+                                      .recalculate(childId: childId),
+                                  style: OutlinedButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(44),
+                                    side: BorderSide(color: T.glass.border),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        T.radius.pill,
+                                      ),
+                                    ),
+                                  ),
+                                  child: const Text('Recalculate schedule'),
+                                ),
+                                const SizedBox(height: 6),
+                                TextButton(
+                                  onPressed: () =>
+                                      _openMorningRecapSheet(childId),
+                                  child: const Text('Morning recap'),
+                                ),
+                                const SizedBox(height: 2),
+                                TextButton(
+                                  onPressed: () => ref
+                                      .read(rhythmProvider.notifier)
+                                      .setPreciseView(
+                                        childId: childId,
+                                        precise: true,
+                                      ),
+                                  child: const Text('Advanced'),
+                                ),
+                              ],
+                            ),
+                          )
+                        else ...[
+                          GlassCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Today timeline', style: T.type.label),
+                                const SizedBox(height: 10),
+                                ...blocks.map((block) {
+                                  final center = _formatClock(
+                                    context,
+                                    block.centerlineMinutes,
+                                  );
+                                  final soft =
+                                      '${_formatClock(context, block.windowStartMinutes)}–${_formatClock(context, block.windowEndMinutes)}';
+                                  final duration =
+                                      (block.expectedDurationMinMinutes !=
+                                              null &&
+                                          block.expectedDurationMaxMinutes !=
+                                              null)
+                                      ? ' · ${block.expectedDurationMinMinutes}-${block.expectedDurationMaxMinutes}m'
+                                      : '';
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          block.label,
+                                          style: T.type.caption.copyWith(
+                                            color: T.pal.textSecondary,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          '$center (soft: $soft)$duration',
+                                          style: T.type.body,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Bedtime window: ${_formatClock(context, bedtime.windowStartMinutes)}–${_formatClock(context, bedtime.windowEndMinutes)}',
+                                  style: T.type.caption.copyWith(
+                                    color: T.pal.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Day taps (optional)',
+                            style: T.type.caption.copyWith(
+                              color: T.pal.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              _ActionChip(
+                                label: 'Wake time was…',
+                                onTap: () => _pickWakeTime(
+                                  childId,
+                                  state.wakeTimeMinutes,
+                                ),
+                              ),
+                              _ActionChip(
+                                label: 'Short nap',
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .markNapQualityTap(
+                                      childId: childId,
+                                      quality: NapQualityTap.short,
+                                    ),
+                              ),
+                              _ActionChip(
+                                label: 'OK nap',
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .markNapQualityTap(
+                                      childId: childId,
+                                      quality: NapQualityTap.ok,
+                                    ),
+                              ),
+                              _ActionChip(
+                                label: 'Long nap',
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .markNapQualityTap(
+                                      childId: childId,
+                                      quality: NapQualityTap.long,
+                                    ),
+                              ),
+                              _ActionChip(
+                                label: 'Skipped nap',
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .markSkippedNap(childId: childId),
+                              ),
+                              _ActionChip(
+                                label: state.advancedDayLogging
+                                    ? 'Advanced mode: On'
+                                    : 'Advanced mode: Off',
+                                selected: state.advancedDayLogging,
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .setAdvancedDayLogging(
+                                      childId: childId,
+                                      enabled: !state.advancedDayLogging,
+                                    ),
+                              ),
+                              if (state.advancedDayLogging)
+                                _ActionChip(
+                                  label: 'Nap started',
+                                  onTap: () => ref
+                                      .read(rhythmProvider.notifier)
+                                      .markNapStarted(childId: childId),
+                                ),
+                              if (state.advancedDayLogging)
+                                _ActionChip(
+                                  label: 'Nap ended',
+                                  onTap: () => ref
+                                      .read(rhythmProvider.notifier)
+                                      .markNapEnded(childId: childId),
+                                ),
+                              _ActionChip(
+                                label: 'Bedtime battle',
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .markBedtimeResistance(childId: childId),
+                              ),
+                              _ActionChip(
+                                label: 'Morning recap',
+                                onTap: () => _openMorningRecapSheet(childId),
+                              ),
+                              _ActionChip(
+                                label: 'Recalculate schedule',
+                                onTap: () => ref
+                                    .read(rhythmProvider.notifier)
+                                    .recalculate(childId: childId),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Day taps (optional)',
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textSecondary,
+                          const SizedBox(height: 6),
+                          TextButton(
+                            onPressed: () => ref
+                                .read(rhythmProvider.notifier)
+                                .setPreciseView(
+                                  childId: childId,
+                                  precise: false,
+                                ),
+                            child: const Text('Back to relaxed'),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            _ActionChip(
-                              label: 'Wake time was…',
-                              onTap: () =>
-                                  _pickWakeTime(childId, state.wakeTimeMinutes),
-                            ),
-                            _ActionChip(
-                              label: 'Short nap',
-                              onTap: () => ref
-                                  .read(rhythmProvider.notifier)
-                                  .markNapQualityTap(
-                                    childId: childId,
-                                    quality: NapQualityTap.short,
-                                  ),
-                            ),
-                            _ActionChip(
-                              label: 'OK nap',
-                              onTap: () => ref
-                                  .read(rhythmProvider.notifier)
-                                  .markNapQualityTap(
-                                    childId: childId,
-                                    quality: NapQualityTap.ok,
-                                  ),
-                            ),
-                            _ActionChip(
-                              label: 'Long nap',
-                              onTap: () => ref
-                                  .read(rhythmProvider.notifier)
-                                  .markNapQualityTap(
-                                    childId: childId,
-                                    quality: NapQualityTap.long,
-                                  ),
-                            ),
-                            _ActionChip(
-                              label: 'Skipped nap',
-                              onTap: () => ref
-                                  .read(rhythmProvider.notifier)
-                                  .markSkippedNap(childId: childId),
-                            ),
-                            _ActionChip(
-                              label: state.advancedDayLogging
-                                  ? 'Advanced mode: On'
-                                  : 'Advanced mode: Off',
-                              selected: state.advancedDayLogging,
-                              onTap: () => ref
-                                  .read(rhythmProvider.notifier)
-                                  .setAdvancedDayLogging(
-                                    childId: childId,
-                                    enabled: !state.advancedDayLogging,
-                                  ),
-                            ),
-                            if (state.advancedDayLogging)
-                              _ActionChip(
-                                label: 'Nap started',
-                                onTap: () => ref
-                                    .read(rhythmProvider.notifier)
-                                    .markNapStarted(childId: childId),
-                              ),
-                            if (state.advancedDayLogging)
-                              _ActionChip(
-                                label: 'Nap ended',
-                                onTap: () => ref
-                                    .read(rhythmProvider.notifier)
-                                    .markNapEnded(childId: childId),
-                              ),
-                            _ActionChip(
-                              label: 'Bedtime battle',
-                              onTap: () => ref
-                                  .read(rhythmProvider.notifier)
-                                  .markBedtimeResistance(childId: childId),
-                            ),
-                            _ActionChip(
-                              label: 'Morning recap',
-                              onTap: () => _openMorningRecapSheet(childId),
-                            ),
-                            _ActionChip(
-                              label: 'Recalculate schedule',
-                              onTap: () => ref
-                                  .read(rhythmProvider.notifier)
-                                  .recalculate(childId: childId),
-                            ),
-                          ],
-                        ),
+                        ],
                         if (state.lastHint != null) ...[
                           const SizedBox(height: 8),
                           Text(
@@ -713,6 +831,28 @@ class _ActionChip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AnchorRow extends StatelessWidget {
+  const _AnchorRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+          ),
+        ),
+        Text(value, style: T.type.label),
+      ],
     );
   }
 }

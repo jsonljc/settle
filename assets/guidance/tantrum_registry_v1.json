@@ -1,167 +1,509 @@
 {
   "meta": {
-    "schemaVersion": "tantrum_registry@1.0.0",
+    "schemaVersion": "tantrum_registry@2.0.0",
     "updatedAt": "2026-02-15",
-    "status": "active"
+    "status": "active",
+    "freeCardCount": 20,
+    "captureTaxonomy": {
+      "triggers": [
+        "transition",
+        "no_limit",
+        "tired_hungry",
+        "attention_conflict",
+        "sibling_conflict",
+        "unknown"
+      ],
+      "intensities": ["mild", "medium", "intense"],
+      "locations": ["home", "public", "car", "school", "other"],
+      "parentReactions": [
+        "stayed_calm",
+        "raised_voice",
+        "gave_in",
+        "walked_away",
+        "not_sure"
+      ]
+    }
   },
   "cards": [
     {
-      "id": "crying_loud",
-      "title": "Crying / loud upset",
-      "say": "I hear you. I am here.",
-      "do": "Get low, soften your voice, and hold one clear boundary.",
-      "ifEscalates": "Use fewer words, stay close, and focus on safety.",
-      "lessonId": "lesson_co_regulation"
+      "id": "transition_fallback",
+      "title": "Transitions are grief in disguise",
+      "remember": "Your child is not fighting you. They are feeling a loss.",
+      "say": "I know you wanted more time. It is hard to stop.",
+      "do": "Hold the boundary and guide one tiny next step.",
+      "ifEscalates": "Use fewer words and stay physically close.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_transitions",
+      "match": [{"trigger": "transition"}]
     },
     {
-      "id": "hitting_biting",
-      "title": "Hitting / biting",
-      "say": "I am here. I will help keep everyone safe.",
-      "do": "Move breakable items aside and give arm's-length space.",
-      "ifEscalates": "Give more space, use fewer words, and repeat one calm line.",
-      "lessonId": "lesson_safety_first"
+      "id": "transition_mild_calm",
+      "title": "Small protest, same need",
+      "remember": "Mild resistance still needs connection and clarity.",
+      "say": "You wanted one more minute. I hear you.",
+      "do": "Offer one small choice inside the transition.",
+      "ifEscalates": "Repeat one line and keep moving gently.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_transitions",
+      "match": [
+        {
+          "trigger": "transition",
+          "intensity": "mild",
+          "parentReaction": "stayed_calm"
+        }
+      ]
     },
     {
-      "id": "public_meltdown",
-      "title": "Public tantrum",
-      "say": "You are safe. We can take a reset break.",
-      "do": "Move to a quieter nearby spot.",
-      "ifEscalates": "Leave this task for now and focus on calming first.",
-      "lessonId": "lesson_public"
+      "id": "transition_medium_raised_voice",
+      "title": "Reset starts with your tone",
+      "remember": "A sharper moment does not erase safety.",
+      "say": "Let me try again. It is time to go, and I am with you.",
+      "do": "Lower your voice by one level and shorten the instruction.",
+      "ifEscalates": "Pause for one breath, then repeat one calm line.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_parent_reset",
+      "match": [
+        {
+          "trigger": "transition",
+          "intensity": "medium",
+          "parentReaction": "raised_voice"
+        }
+      ]
     },
     {
-      "id": "refusal_wont",
-      "title": "Refusing to move",
-      "say": "You can feel upset. The boundary stays the same.",
-      "do": "Offer one small choice within the limit.",
-      "ifEscalates": "Repeat the limit once, then stay nearby and quiet.",
-      "lessonId": "lesson_boundaries"
+      "id": "transition_intense_gave_in",
+      "title": "Connection first, then the limit",
+      "remember": "Giving in often means everyone was overloaded.",
+      "say": "This is hard. The plan is still to leave now.",
+      "do": "Name the feeling, then follow through with one clear action.",
+      "ifEscalates": "Drop extra language and prioritize calm movement.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_transitions",
+      "match": [
+        {
+          "trigger": "transition",
+          "intensity": "intense",
+          "parentReaction": "gave_in"
+        }
+      ]
     },
     {
-      "id": "unsafe_bolting",
-      "title": "Running off / unsafe",
-      "say": "Stop. I will help keep your body safe.",
-      "do": "Block exits and guide to a safer spot.",
-      "ifEscalates": "Keep your body between danger and child, then call a support person if needed.",
-      "lessonId": "lesson_safety_first"
+      "id": "no_limit_fallback",
+      "title": "Limits can feel like rejection",
+      "remember": "The feeling is real even when the answer is no.",
+      "say": "You can be upset. The answer is still no.",
+      "do": "State the limit once, then stay present.",
+      "ifEscalates": "Do not negotiate. Keep one steady line.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_boundaries",
+      "match": [{"trigger": "no_limit"}]
     },
     {
-      "id": "parent_overwhelmed",
-      "title": "I feel overwhelmed",
-      "say": "I need thirty seconds to steady myself.",
-      "do": "Place child in a safe spot, take ten slow breaths, then return.",
-      "ifEscalates": "Pause the plan and lower expectations for this moment.",
-      "lessonId": "lesson_parent_calm"
+      "id": "no_limit_mild_calm",
+      "title": "Warmth + boundary works",
+      "remember": "Calm consistency builds trust over time.",
+      "say": "I know you want it. Not today.",
+      "do": "Offer one acceptable alternative.",
+      "ifEscalates": "Return to the same line without adding more.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_boundaries",
+      "match": [
+        {
+          "trigger": "no_limit",
+          "intensity": "mild",
+          "parentReaction": "stayed_calm"
+        }
+      ]
     },
     {
-      "id": "transition_meltdown",
-      "title": "Transition overwhelm",
-      "say": "Transition time. I will help your body shift.",
-      "do": "Give one short cue, then guide the first step.",
-      "ifEscalates": "Return briefly to calm, then retry one small step.",
-      "lessonId": "lesson_transitions"
+      "id": "no_limit_medium_not_sure",
+      "title": "Clarity beats perfect words",
+      "remember": "Not knowing what to do is part of hard parenting moments.",
+      "say": "I am here. The answer stays no.",
+      "do": "Plant your feet, soften your face, and wait out the wave.",
+      "ifEscalates": "Focus on safety and fewer words.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_boundaries",
+      "match": [
+        {
+          "trigger": "no_limit",
+          "intensity": "medium",
+          "parentReaction": "not_sure"
+        }
+      ]
     },
     {
-      "id": "anger_words",
-      "title": "Big anger, no words yet",
-      "say": "Your body is full of big feelings.",
-      "do": "Stay close and name the feeling once: 'You're really angry.'",
-      "ifEscalates": "Stay quiet and present. Wait for the wave to pass.",
-      "lessonId": "lesson_co_regulation"
+      "id": "tired_hungry_fallback",
+      "title": "Body needs look like behavior",
+      "remember": "A dysregulated body cannot cooperate on demand.",
+      "say": "Your body is tired or hungry. I will help.",
+      "do": "Lower expectations and meet the body need first.",
+      "ifEscalates": "Skip non-essential tasks until regulated.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_body_needs",
+      "match": [{"trigger": "tired_hungry"}]
     },
     {
-      "id": "sibling_conflict",
-      "title": "Sibling conflict",
-      "say": "I won't let anyone get hurt. I'm here.",
-      "do": "Separate calmly, then hear each child briefly.",
-      "ifEscalates": "Focus on safety only. Sort the rest later.",
-      "lessonId": "lesson_boundaries"
+      "id": "tired_hungry_mild_calm",
+      "title": "Catch it early",
+      "remember": "Early repair prevents bigger storms.",
+      "say": "Looks like your body needs a reset.",
+      "do": "Offer snack, water, or quiet rest before demands.",
+      "ifEscalates": "Move to a calmer environment immediately.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_body_needs",
+      "match": [
+        {
+          "trigger": "tired_hungry",
+          "intensity": "mild",
+          "parentReaction": "stayed_calm"
+        }
+      ]
     },
     {
-      "id": "screen_off",
-      "title": "Screen / device off",
-      "say": "Screen time is over. I'll help you shift.",
-      "do": "One clear warning, then follow through. Offer a small next step.",
-      "ifEscalates": "Hold the limit. Stay nearby without re-explaining.",
-      "lessonId": "lesson_transitions"
+      "id": "tired_hungry_intense_not_sure",
+      "title": "Regulation before reasoning",
+      "remember": "When intensity is high, teaching can wait.",
+      "say": "Big feelings. We are doing body calm first.",
+      "do": "Reduce stimulation and co-regulate with slow breath and presence.",
+      "ifEscalates": "Prioritize rest and postpone non-urgent plans.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_body_needs",
+      "match": [
+        {
+          "trigger": "tired_hungry",
+          "intensity": "intense",
+          "parentReaction": "not_sure"
+        }
+      ]
     },
     {
-      "id": "morning_rush",
-      "title": "Morning rush meltdown",
-      "say": "We have to go. I'll help you get there.",
-      "do": "One choice: 'Red shirt or blue?' Then move.",
-      "ifEscalates": "Gentle physical guidance. Fewer words.",
-      "lessonId": "lesson_transitions"
+      "id": "attention_conflict_fallback",
+      "title": "Need for connection under the behavior",
+      "remember": "Some eruptions are bids for proximity, not defiance.",
+      "say": "You wanted me right now. I hear that.",
+      "do": "Offer brief connection, then restate the boundary.",
+      "ifEscalates": "Keep the connection cue short and predictable.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_attention",
+      "match": [{"trigger": "attention_conflict"}]
     },
     {
-      "id": "limit_testing",
-      "title": "Testing the limit",
-      "say": "The answer is no. I'm right here.",
-      "do": "State the limit once. Then wait with them.",
-      "ifEscalates": "Repeat the same line once. Don't negotiate.",
-      "lessonId": "lesson_boundaries"
+      "id": "attention_conflict_mild_calm",
+      "title": "Micro-connection can defuse",
+      "remember": "A short moment of attunement can lower intensity fast.",
+      "say": "I can give you one minute of full attention.",
+      "do": "Connect briefly, then transition to the next step.",
+      "ifEscalates": "Repeat the plan with one visual cue.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_attention",
+      "match": [
+        {
+          "trigger": "attention_conflict",
+          "intensity": "mild",
+          "parentReaction": "stayed_calm"
+        }
+      ]
     },
     {
-      "id": "sensory_overload",
-      "title": "Sensory overload",
-      "say": "It's loud (or bright) in here. We can find a quieter spot.",
-      "do": "Reduce input: dim, quiet, or move to calmer space.",
-      "ifEscalates": "Prioritize exit to calmer environment.",
-      "lessonId": "lesson_co_regulation"
+      "id": "attention_conflict_medium_raised_voice",
+      "title": "Repair keeps trust intact",
+      "remember": "A quick repair restores connection after stress.",
+      "say": "I got loud. Let me try again. I am here.",
+      "do": "Return to a steady tone and set one clear expectation.",
+      "ifEscalates": "Drop to one sentence and stay grounded.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_parent_reset",
+      "match": [
+        {
+          "trigger": "attention_conflict",
+          "intensity": "medium",
+          "parentReaction": "raised_voice"
+        }
+      ]
     },
     {
-      "id": "disappointment",
-      "title": "Disappointment / didn't get it",
-      "say": "You wanted that so much. It's hard when we can't have it.",
-      "do": "Name the feeling. Sit with them. No fix required.",
-      "ifEscalates": "Stay present. 'I'm here. This feeling will pass.'",
-      "lessonId": "lesson_co_regulation"
+      "id": "sibling_conflict_fallback",
+      "title": "Safety first, fairness later",
+      "remember": "In sibling conflict, containment comes before problem solving.",
+      "say": "I will not let anyone get hurt.",
+      "do": "Separate calmly, regulate, then return to repair.",
+      "ifEscalates": "Keep bodies apart and keep language minimal.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_siblings",
+      "match": [{"trigger": "sibling_conflict"}]
     },
     {
-      "id": "fatigue_meltdown",
-      "title": "Too tired meltdown",
-      "say": "Your body is tired. I'll help you wind down.",
-      "do": "Lower demands. Offer rest or quiet activity.",
-      "ifEscalates": "Skip the task. Rest first.",
-      "lessonId": "lesson_transitions"
+      "id": "sibling_conflict_mild_calm",
+      "title": "Coach, do not court-room",
+      "remember": "Children learn repair faster than blame.",
+      "say": "Both of you are upset. We can solve this safely.",
+      "do": "Name each feeling in one line before problem solving.",
+      "ifEscalates": "Pause discussion and return to calming first.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_siblings",
+      "match": [
+        {
+          "trigger": "sibling_conflict",
+          "intensity": "mild",
+          "parentReaction": "stayed_calm"
+        }
+      ]
+    },
+    {
+      "id": "sibling_conflict_intense_raised_voice",
+      "title": "Containment before conversation",
+      "remember": "Escalated sibling moments need nervous-system reset first.",
+      "say": "I am resetting us. Safety first.",
+      "do": "Create physical space, lower volume, and stabilize both children.",
+      "ifEscalates": "End the discussion and do separate calm-down support.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_siblings",
+      "match": [
+        {
+          "trigger": "sibling_conflict",
+          "intensity": "intense",
+          "parentReaction": "raised_voice"
+        }
+      ]
+    },
+    {
+      "id": "unknown_fallback",
+      "title": "When the trigger is unclear",
+      "remember": "Unknown trigger does not mean no pattern.",
+      "say": "Something feels hard right now. I am here.",
+      "do": "Stabilize first, then log what you noticed.",
+      "ifEscalates": "Reduce stimulation and keep your line simple.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_unclear",
+      "match": [{"trigger": "unknown"}]
+    },
+    {
+      "id": "unknown_mild_calm",
+      "title": "Curiosity over control",
+      "remember": "Calm observation now builds insight later.",
+      "say": "I am with you. We will figure this out together.",
+      "do": "Track context after the moment without over-analyzing.",
+      "ifEscalates": "Shift to co-regulation and pause interpretation.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_unclear",
+      "match": [
+        {
+          "trigger": "unknown",
+          "intensity": "mild",
+          "parentReaction": "stayed_calm"
+        }
+      ]
+    },
+    {
+      "id": "unknown_medium_not_sure",
+      "title": "Not sure is still data",
+      "remember": "Uncertainty is normal in the middle of stress.",
+      "say": "I do not need all the answers right now.",
+      "do": "Choose one stabilizing action and stay with it.",
+      "ifEscalates": "Keep safety and closeness as the only goals.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_unclear",
+      "match": [
+        {
+          "trigger": "unknown",
+          "intensity": "medium",
+          "parentReaction": "not_sure"
+        }
+      ]
+    },
+    {
+      "id": "unknown_intense_walked_away",
+      "title": "Pause, then return",
+      "remember": "A brief reset can prevent bigger escalation.",
+      "say": "I am taking one breath and coming right back.",
+      "do": "Ensure safety, reset your nervous system, and reconnect quickly.",
+      "ifEscalates": "Call in support and reduce demands.",
+      "packId": "base",
+      "tier": "free",
+      "lessonId": "lesson_parent_reset",
+      "match": [
+        {
+          "trigger": "unknown",
+          "intensity": "intense",
+          "parentReaction": "walked_away"
+        }
+      ]
+    },
+    {
+      "id": "transition_public_pack",
+      "title": "Public transition, private safety",
+      "remember": "Public pressure can raise both your stress systems.",
+      "say": "We are stepping to a quieter spot together.",
+      "do": "Relocate, co-regulate, then continue with one-step guidance.",
+      "ifEscalates": "Exit the setting and preserve calm over completion.",
+      "packId": "public_meltdown_pack",
+      "tier": "premium",
+      "lessonId": "lesson_public",
+      "match": [
+        {
+          "trigger": "transition",
+          "intensity": "intense",
+          "parentReaction": "stayed_calm"
+        }
+      ]
+    },
+    {
+      "id": "no_limit_walked_away_pack",
+      "title": "Boundary with reconnection",
+      "remember": "Stepping away briefly can help when done intentionally.",
+      "say": "I am right here when your body is ready.",
+      "do": "Hold the no, stay available, and rejoin with a calm cue.",
+      "ifEscalates": "Return to proximity without reopening negotiation.",
+      "packId": "boundaries_pack",
+      "tier": "premium",
+      "lessonId": "lesson_boundaries",
+      "match": [
+        {
+          "trigger": "no_limit",
+          "intensity": "intense",
+          "parentReaction": "walked_away"
+        }
+      ]
+    },
+    {
+      "id": "sibling_medium_not_sure_pack",
+      "title": "Two kids, one calm anchor",
+      "remember": "You do not need perfect fairness in the first minute.",
+      "say": "I am helping both of you calm first.",
+      "do": "Anchor one child with calm voice while setting distance for both.",
+      "ifEscalates": "Use short scripts and delay full debrief.",
+      "packId": "sibling_conflict_pack",
+      "tier": "premium",
+      "lessonId": "lesson_siblings",
+      "match": [
+        {
+          "trigger": "sibling_conflict",
+          "intensity": "medium",
+          "parentReaction": "not_sure"
+        }
+      ]
+    },
+    {
+      "id": "unknown_parent_regulation_pack",
+      "title": "Steadying yourself is care",
+      "remember": "Your regulation is an intervention, not a detour.",
+      "say": "I am calming my body so I can help yours.",
+      "do": "Slow exhale, relax shoulders, and keep one warm boundary.",
+      "ifEscalates": "Shrink the goal to safety and connection only.",
+      "packId": "emotional_regulation_pack",
+      "tier": "premium",
+      "lessonId": "lesson_parent_reset",
+      "match": [
+        {
+          "trigger": "unknown",
+          "intensity": "medium",
+          "parentReaction": "raised_voice"
+        }
+      ]
     }
   ],
   "lessons": [
     {
-      "id": "lesson_co_regulation",
-      "title": "Why co-regulation works",
-      "body": "During a meltdown, the emotional system is online before executive control can catch up. Co-regulation—staying calm and present—helps the child's nervous system learn what safety feels like. You are not rewarding the tantrum; you are teaching regulation.",
-      "cardIds": ["crying_loud", "anger_words", "sensory_overload", "disappointment"]
-    },
-    {
-      "id": "lesson_safety_first",
-      "title": "Safety first, words second",
-      "body": "When there is hitting, throwing, or bolting, your first job is physical safety. Move breakables, block exits, give space. Use one short line. Save the conversation for when everyone is calm.",
-      "cardIds": ["hitting_biting", "unsafe_bolting"]
-    },
-    {
-      "id": "lesson_public",
-      "title": "Public tantrums",
-      "body": "Many children release big feelings in the safest relationship—often at home after holding it together elsewhere. In public, move to a quieter spot if you can. One calm line. Ignore judgment; focus on the child.",
-      "cardIds": ["public_meltdown"]
+      "id": "lesson_transitions",
+      "title": "Transitions without power struggle",
+      "body": "You may notice transitions improve when you pair a warm acknowledgement with one concrete next step. Keep language short and predictable.",
+      "cardIds": [
+        "transition_fallback",
+        "transition_mild_calm",
+        "transition_medium_raised_voice",
+        "transition_intense_gave_in",
+        "transition_public_pack"
+      ]
     },
     {
       "id": "lesson_boundaries",
-      "title": "Holding boundaries with warmth",
-      "body": "You can acknowledge feelings and still hold the limit. 'You can feel upset. The boundary stays the same.' One clear line, then wait. Consistency over weeks matters more than any single moment.",
-      "cardIds": ["refusal_wont", "sibling_conflict", "limit_testing"]
+      "title": "Holding limits with warmth",
+      "body": "You may notice fewer escalations when the limit is stated once and your nervous system stays steady. Repetition and calm consistency do the work.",
+      "cardIds": [
+        "no_limit_fallback",
+        "no_limit_mild_calm",
+        "no_limit_medium_not_sure",
+        "no_limit_walked_away_pack"
+      ]
     },
     {
-      "id": "lesson_parent_calm",
-      "title": "When you're overwhelmed",
-      "body": "It's okay to take a brief pause. Place the child in a safe spot, take ten slow breaths, then return. Your regulation supports theirs. You can't pour from an empty cup.",
-      "cardIds": ["parent_overwhelmed"]
+      "id": "lesson_body_needs",
+      "title": "Body-state before behavior",
+      "body": "You may notice intensity drops faster when hunger, fatigue, and overstimulation are treated first. Regulation creates room for cooperation.",
+      "cardIds": [
+        "tired_hungry_fallback",
+        "tired_hungry_mild_calm",
+        "tired_hungry_intense_not_sure"
+      ]
     },
     {
-      "id": "lesson_transitions",
-      "title": "Making transitions easier",
-      "body": "Transitions are hard for developing brains. Give one short cue, then guide the first step. Offer a small choice when you can. When things escalate, return to calm before retrying.",
-      "cardIds": ["transition_meltdown", "screen_off", "morning_rush", "fatigue_meltdown"]
+      "id": "lesson_attention",
+      "title": "Attention conflicts",
+      "body": "You may notice that a brief, intentional connection moment can reduce protest more than repeated instruction.",
+      "cardIds": [
+        "attention_conflict_fallback",
+        "attention_conflict_mild_calm",
+        "attention_conflict_medium_raised_voice"
+      ]
+    },
+    {
+      "id": "lesson_siblings",
+      "title": "Sibling conflict repair",
+      "body": "You may notice sibling episodes shorten when safety and separation come first, and repair talk happens after regulation.",
+      "cardIds": [
+        "sibling_conflict_fallback",
+        "sibling_conflict_mild_calm",
+        "sibling_conflict_intense_raised_voice",
+        "sibling_medium_not_sure_pack"
+      ]
+    },
+    {
+      "id": "lesson_unclear",
+      "title": "When patterns are still forming",
+      "body": "You may notice trends emerge after a handful of quick logs. The goal is noticing, not perfect interpretation in the moment.",
+      "cardIds": [
+        "unknown_fallback",
+        "unknown_mild_calm",
+        "unknown_medium_not_sure",
+        "unknown_intense_walked_away"
+      ]
+    },
+    {
+      "id": "lesson_parent_reset",
+      "title": "Parent reset as an intervention",
+      "body": "You may notice outcomes improve when you repair quickly after a stress spike and return with one calm line.",
+      "cardIds": [
+        "transition_medium_raised_voice",
+        "attention_conflict_medium_raised_voice",
+        "unknown_intense_walked_away",
+        "unknown_parent_regulation_pack"
+      ]
+    },
+    {
+      "id": "lesson_public",
+      "title": "Public meltdown containment",
+      "body": "You may notice public moments de-escalate faster when you prioritize quiet relocation over explanation.",
+      "cardIds": ["transition_public_pack"]
     }
   ]
 }

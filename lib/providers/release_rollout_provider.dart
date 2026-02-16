@@ -3,7 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 const _rolloutBox = 'release_rollout_v1';
 const _rolloutKey = 'state';
-const _rolloutSchemaVersion = 1;
+const _rolloutSchemaVersion = 2;
 
 class ReleaseRolloutState {
   const ReleaseRolloutState({
@@ -15,6 +15,8 @@ class ReleaseRolloutState {
     required this.metricsDashboardEnabled,
     required this.complianceChecklistEnabled,
     required this.sleepBoundedAiEnabled,
+    required this.sleepRhythmSurfacesEnabled,
+    required this.rhythmShiftDetectorPromptsEnabled,
     required this.windDownNotificationsEnabled,
     required this.scheduleDriftNotificationsEnabled,
   });
@@ -27,6 +29,8 @@ class ReleaseRolloutState {
   final bool metricsDashboardEnabled;
   final bool complianceChecklistEnabled;
   final bool sleepBoundedAiEnabled;
+  final bool sleepRhythmSurfacesEnabled;
+  final bool rhythmShiftDetectorPromptsEnabled;
   final bool windDownNotificationsEnabled;
   final bool scheduleDriftNotificationsEnabled;
 
@@ -39,6 +43,8 @@ class ReleaseRolloutState {
     metricsDashboardEnabled: true,
     complianceChecklistEnabled: true,
     sleepBoundedAiEnabled: true,
+    sleepRhythmSurfacesEnabled: true,
+    rhythmShiftDetectorPromptsEnabled: true,
     windDownNotificationsEnabled: true,
     scheduleDriftNotificationsEnabled: false,
   );
@@ -52,6 +58,8 @@ class ReleaseRolloutState {
     bool? metricsDashboardEnabled,
     bool? complianceChecklistEnabled,
     bool? sleepBoundedAiEnabled,
+    bool? sleepRhythmSurfacesEnabled,
+    bool? rhythmShiftDetectorPromptsEnabled,
     bool? windDownNotificationsEnabled,
     bool? scheduleDriftNotificationsEnabled,
   }) {
@@ -67,6 +75,11 @@ class ReleaseRolloutState {
           complianceChecklistEnabled ?? this.complianceChecklistEnabled,
       sleepBoundedAiEnabled:
           sleepBoundedAiEnabled ?? this.sleepBoundedAiEnabled,
+      sleepRhythmSurfacesEnabled:
+          sleepRhythmSurfacesEnabled ?? this.sleepRhythmSurfacesEnabled,
+      rhythmShiftDetectorPromptsEnabled:
+          rhythmShiftDetectorPromptsEnabled ??
+          this.rhythmShiftDetectorPromptsEnabled,
       windDownNotificationsEnabled:
           windDownNotificationsEnabled ?? this.windDownNotificationsEnabled,
       scheduleDriftNotificationsEnabled:
@@ -122,7 +135,11 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
       final box = await _ensureBox();
       final raw = box.get(_rolloutKey);
       if (raw is Map) {
-        state = state.copyWith(
+        final schemaVersion =
+            raw['schema_version'] as int? ??
+            int.tryParse(raw['schema_version']?.toString() ?? '') ??
+            1;
+        final next = state.copyWith(
           isLoading: false,
           helpNowEnabled: raw['help_now_enabled'] as bool? ?? true,
           sleepTonightEnabled: raw['sleep_tonight_enabled'] as bool? ?? true,
@@ -134,11 +151,20 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
               raw['compliance_checklist_enabled'] as bool? ?? true,
           sleepBoundedAiEnabled:
               raw['sleep_bounded_ai_enabled'] as bool? ?? true,
+          sleepRhythmSurfacesEnabled:
+              raw['sleep_rhythm_surfaces_enabled'] as bool? ?? true,
+          rhythmShiftDetectorPromptsEnabled:
+              raw['rhythm_shift_detector_prompts_enabled'] as bool? ?? true,
           windDownNotificationsEnabled:
               raw['wind_down_notifications_enabled'] as bool? ?? true,
           scheduleDriftNotificationsEnabled:
               raw['schedule_drift_notifications_enabled'] as bool? ?? false,
         );
+        if (schemaVersion < _rolloutSchemaVersion) {
+          await _persist(next);
+        } else {
+          state = next;
+        }
       } else {
         state = state.copyWith(isLoading: false);
         await _persist(state);
@@ -161,6 +187,9 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
         'metrics_dashboard_enabled': next.metricsDashboardEnabled,
         'compliance_checklist_enabled': next.complianceChecklistEnabled,
         'sleep_bounded_ai_enabled': next.sleepBoundedAiEnabled,
+        'sleep_rhythm_surfaces_enabled': next.sleepRhythmSurfacesEnabled,
+        'rhythm_shift_detector_prompts_enabled':
+            next.rhythmShiftDetectorPromptsEnabled,
         'wind_down_notifications_enabled': next.windDownNotificationsEnabled,
         'schedule_drift_notifications_enabled':
             next.scheduleDriftNotificationsEnabled,
@@ -197,6 +226,14 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
 
   Future<void> setSleepBoundedAiEnabled(bool value) async {
     await _persist(state.copyWith(sleepBoundedAiEnabled: value));
+  }
+
+  Future<void> setSleepRhythmSurfacesEnabled(bool value) async {
+    await _persist(state.copyWith(sleepRhythmSurfacesEnabled: value));
+  }
+
+  Future<void> setRhythmShiftDetectorPromptsEnabled(bool value) async {
+    await _persist(state.copyWith(rhythmShiftDetectorPromptsEnabled: value));
   }
 
   Future<void> setWindDownNotificationsEnabled(bool value) async {

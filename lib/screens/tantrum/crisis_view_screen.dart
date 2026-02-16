@@ -12,10 +12,7 @@ import '../../widgets/screen_header.dart';
 /// Crisis View: big SAY line, DO, IF ESCALATES, Audio button (stub), Repeat line mode.
 /// Shown after 2 taps from NOW (e.g. pick card or Use protocol).
 class CrisisViewScreen extends ConsumerStatefulWidget {
-  const CrisisViewScreen({
-    super.key,
-    this.cardId,
-  });
+  const CrisisViewScreen({super.key, this.cardId});
 
   /// If null, first protocol card or first registry card is used.
   final String? cardId;
@@ -56,17 +53,17 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
                     children: [
                       const ScreenHeader(
                         title: 'Crisis View',
-                        fallbackRoute: '/tantrum/now',
+                        fallbackRoute: '/tantrum/capture',
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'No card selected. Add cards to your Protocol from CARDS.',
+                        'No card selected. Add and pin cards from Deck first.',
                         style: T.type.body.copyWith(color: T.pal.textSecondary),
                       ),
                       const SizedBox(height: 16),
                       GlassCta(
                         label: 'Back to Now',
-                        onTap: () => context.go('/tantrum/now'),
+                        onTap: () => context.go('/tantrum/capture'),
                       ),
                     ],
                   );
@@ -87,7 +84,7 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
                 children: [
                   const ScreenHeader(
                     title: 'Crisis View',
-                    fallbackRoute: '/tantrum/now',
+                    fallbackRoute: '/tantrum/capture',
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -97,7 +94,7 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
                   const SizedBox(height: 16),
                   GlassCta(
                     label: 'Back to Now',
-                    onTap: () => context.go('/tantrum/now'),
+                    onTap: () => context.go('/tantrum/capture'),
                   ),
                 ],
               ),
@@ -136,7 +133,7 @@ class _CrisisContent extends StatelessWidget {
         const ScreenHeader(
           title: 'Crisis View',
           subtitle: 'One step at a time',
-          fallbackRoute: '/tantrum/now',
+          fallbackRoute: '/tantrum/capture',
           trailing: _AudioStubButton(),
         ),
         const SizedBox(height: 24),
@@ -162,12 +159,7 @@ class _CrisisContent extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Expanded(
-                  child: Text(
-                    sayLine,
-                    style: T.type.h2,
-                  ),
-                ),
+                Expanded(child: Text(sayLine, style: T.type.h2)),
                 IconButton(
                   onPressed: onAudioStub,
                   icon: const Icon(Icons.volume_up_rounded),
@@ -216,10 +208,7 @@ class _CrisisContent extends StatelessWidget {
             onTap: () => onStepChange(step + 1),
           )
         else
-          GlassCta(
-            label: 'Done',
-            onTap: () => context.go('/tantrum/now'),
-          ),
+          GlassCta(label: 'Done', onTap: () => context.go('/tantrum/capture')),
       ],
     );
   }
@@ -249,8 +238,8 @@ class _StepDot extends StatelessWidget {
             color: active
                 ? T.pal.accent
                 : done
-                    ? T.pal.accent.withValues(alpha: 0.5)
-                    : T.glass.fill,
+                ? T.pal.accent.withValues(alpha: 0.5)
+                : T.glass.fill,
           ),
         ),
         const SizedBox(width: 6),
@@ -282,7 +271,11 @@ class _AudioStubButton extends ConsumerWidget {
           ),
         );
       },
-      icon: Icon(Icons.volume_up_outlined, size: 22, color: T.pal.textSecondary),
+      icon: Icon(
+        Icons.volume_up_outlined,
+        size: 22,
+        color: T.pal.textSecondary,
+      ),
     );
   }
 }

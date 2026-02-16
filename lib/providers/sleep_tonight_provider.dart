@@ -6,6 +6,31 @@ import '../services/sleep_guidance_service.dart';
 
 const _sleepTonightBox = 'sleep_tonight_v1';
 
+enum SleepRecapOutcome { settled, neededHelp, notResolved }
+
+extension SleepRecapOutcomeWire on SleepRecapOutcome {
+  String get wire => switch (this) {
+    SleepRecapOutcome.settled => 'settled',
+    SleepRecapOutcome.neededHelp => 'needed_help',
+    SleepRecapOutcome.notResolved => 'not_resolved',
+  };
+
+  String get label => switch (this) {
+    SleepRecapOutcome.settled => 'Settled',
+    SleepRecapOutcome.neededHelp => 'Needed help',
+    SleepRecapOutcome.notResolved => 'Not resolved',
+  };
+
+  static SleepRecapOutcome fromString(String raw) {
+    return switch (raw) {
+      'settled' => SleepRecapOutcome.settled,
+      'needed_help' => SleepRecapOutcome.neededHelp,
+      'not_resolved' => SleepRecapOutcome.notResolved,
+      _ => SleepRecapOutcome.settled,
+    };
+  }
+}
+
 class SleepTonightState {
   const SleepTonightState({
     required this.isLoading,
@@ -18,6 +43,22 @@ class SleepTonightState {
     required this.safeSleepConfirmed,
     required this.comfortMode,
     required this.somethingFeelsOff,
+    this.selectedApproachId = '',
+    this.commitmentStartDate,
+    this.commitmentNightsDefault = 3,
+    this.switchHistory = const [],
+    this.pendingApproachId,
+    this.pendingEffectiveDate,
+    this.pendingSwitchReason,
+    this.hasSleepSetup = false,
+    this.sharedRoom = false,
+    this.caregiverConsistency = 'unsure',
+    this.cryingTolerance = 'med',
+    this.canLeaveRoom = true,
+    this.nightFeedsExpected = true,
+    this.quickDoneEnabled = false,
+    this.lastRecapOutcome,
+    this.lastTimeToSettleBucket,
     required this.lastError,
   });
 
@@ -31,6 +72,24 @@ class SleepTonightState {
   final bool safeSleepConfirmed;
   final bool comfortMode;
   final bool somethingFeelsOff;
+
+  final String selectedApproachId;
+  final DateTime? commitmentStartDate;
+  final int commitmentNightsDefault;
+  final List<Map<String, dynamic>> switchHistory;
+  final String? pendingApproachId;
+  final DateTime? pendingEffectiveDate;
+  final String? pendingSwitchReason;
+  final bool hasSleepSetup;
+  final bool sharedRoom;
+  final String caregiverConsistency;
+  final String cryingTolerance;
+  final bool canLeaveRoom;
+  final bool nightFeedsExpected;
+  final bool quickDoneEnabled;
+  final SleepRecapOutcome? lastRecapOutcome;
+  final String? lastTimeToSettleBucket;
+
   final String? lastError;
 
   bool get hasActivePlan =>
@@ -43,6 +102,19 @@ class SleepTonightState {
       severePainIndicators ||
       feedingRefusalWithPainSigns;
 
+  int get commitmentNight {
+    final start = commitmentStartDate;
+    if (start == null) return 1;
+    final startDate = DateTime(start.year, start.month, start.day);
+    final now = DateTime.now();
+    final nowDate = DateTime(now.year, now.month, now.day);
+    final raw = nowDate.difference(startDate).inDays + 1;
+    final bounded = raw < 1 ? 1 : raw;
+    return bounded > commitmentNightsDefault
+        ? commitmentNightsDefault
+        : bounded;
+  }
+
   static const initial = SleepTonightState(
     isLoading: true,
     activePlan: null,
@@ -51,9 +123,25 @@ class SleepTonightState {
     repeatedVomiting: false,
     severePainIndicators: false,
     feedingRefusalWithPainSigns: false,
-    safeSleepConfirmed: false,
+    safeSleepConfirmed: true,
     comfortMode: false,
     somethingFeelsOff: false,
+    selectedApproachId: '',
+    commitmentStartDate: null,
+    commitmentNightsDefault: 3,
+    switchHistory: [],
+    pendingApproachId: null,
+    pendingEffectiveDate: null,
+    pendingSwitchReason: null,
+    hasSleepSetup: false,
+    sharedRoom: false,
+    caregiverConsistency: 'unsure',
+    cryingTolerance: 'med',
+    canLeaveRoom: true,
+    nightFeedsExpected: true,
+    quickDoneEnabled: false,
+    lastRecapOutcome: null,
+    lastTimeToSettleBucket: null,
     lastError: null,
   );
 
@@ -68,6 +156,22 @@ class SleepTonightState {
     bool? safeSleepConfirmed,
     bool? comfortMode,
     bool? somethingFeelsOff,
+    String? selectedApproachId,
+    Object? commitmentStartDate = _noChange,
+    int? commitmentNightsDefault,
+    List<Map<String, dynamic>>? switchHistory,
+    Object? pendingApproachId = _noChange,
+    Object? pendingEffectiveDate = _noChange,
+    Object? pendingSwitchReason = _noChange,
+    bool? hasSleepSetup,
+    bool? sharedRoom,
+    String? caregiverConsistency,
+    String? cryingTolerance,
+    bool? canLeaveRoom,
+    bool? nightFeedsExpected,
+    bool? quickDoneEnabled,
+    Object? lastRecapOutcome = _noChange,
+    Object? lastTimeToSettleBucket = _noChange,
     Object? lastError = _noChange,
   }) {
     return SleepTonightState(
@@ -84,6 +188,35 @@ class SleepTonightState {
       safeSleepConfirmed: safeSleepConfirmed ?? this.safeSleepConfirmed,
       comfortMode: comfortMode ?? this.comfortMode,
       somethingFeelsOff: somethingFeelsOff ?? this.somethingFeelsOff,
+      selectedApproachId: selectedApproachId ?? this.selectedApproachId,
+      commitmentStartDate: identical(commitmentStartDate, _noChange)
+          ? this.commitmentStartDate
+          : commitmentStartDate as DateTime?,
+      commitmentNightsDefault:
+          commitmentNightsDefault ?? this.commitmentNightsDefault,
+      switchHistory: switchHistory ?? this.switchHistory,
+      pendingApproachId: identical(pendingApproachId, _noChange)
+          ? this.pendingApproachId
+          : pendingApproachId as String?,
+      pendingEffectiveDate: identical(pendingEffectiveDate, _noChange)
+          ? this.pendingEffectiveDate
+          : pendingEffectiveDate as DateTime?,
+      pendingSwitchReason: identical(pendingSwitchReason, _noChange)
+          ? this.pendingSwitchReason
+          : pendingSwitchReason as String?,
+      hasSleepSetup: hasSleepSetup ?? this.hasSleepSetup,
+      sharedRoom: sharedRoom ?? this.sharedRoom,
+      caregiverConsistency: caregiverConsistency ?? this.caregiverConsistency,
+      cryingTolerance: cryingTolerance ?? this.cryingTolerance,
+      canLeaveRoom: canLeaveRoom ?? this.canLeaveRoom,
+      nightFeedsExpected: nightFeedsExpected ?? this.nightFeedsExpected,
+      quickDoneEnabled: quickDoneEnabled ?? this.quickDoneEnabled,
+      lastRecapOutcome: identical(lastRecapOutcome, _noChange)
+          ? this.lastRecapOutcome
+          : lastRecapOutcome as SleepRecapOutcome?,
+      lastTimeToSettleBucket: identical(lastTimeToSettleBucket, _noChange)
+          ? this.lastTimeToSettleBucket
+          : lastTimeToSettleBucket as String?,
       lastError: identical(lastError, _noChange)
           ? this.lastError
           : lastError as String?,
@@ -117,10 +250,212 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
     return dateOnly;
   }
 
+  String _dateKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   String _keyFor(String childId, DateTime date) {
-    final dayKey =
-        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-    return '$childId:$dayKey';
+    return '$childId:${_dateKey(date)}';
+  }
+
+  String _metaKeyFor(String childId) => 'meta:$childId';
+
+  Map<String, dynamic> _defaultMeta({String? selectedApproachId}) {
+    return {
+      'selected_approach_id': selectedApproachId ?? '',
+      'commitment_start_date': DateTime.now().toIso8601String(),
+      'commitment_nights_default': 3,
+      'switch_history': <Map<String, dynamic>>[],
+      'pending_approach_id': null,
+      'pending_effective_date': null,
+      'pending_switch_reason': null,
+      'home_context_set': false,
+      'shared_room': false,
+      'caregiver_consistency': 'unsure',
+      'crying_tolerance': 'med',
+      'can_leave_room': true,
+      'night_feeds_expected': true,
+      'quick_done_enabled': false,
+      'last_recap_outcome': null,
+      'last_recap_time_bucket': null,
+    };
+  }
+
+  DateTime _effectiveDateFor(String timing, DateTime now) {
+    final anchor = _nightAnchorDate(now);
+    if (timing == 'tomorrow') {
+      return anchor.add(const Duration(days: 1));
+    }
+    return anchor;
+  }
+
+  Future<Map<String, dynamic>> _readMeta(
+    String childId, {
+    String? selectedApproachId,
+  }) async {
+    final box = await _ensureBox();
+    final raw = box.get(_metaKeyFor(childId));
+    final meta = raw is Map
+        ? Map<String, dynamic>.from(raw)
+        : _defaultMeta(selectedApproachId: selectedApproachId);
+
+    if ((meta['selected_approach_id']?.toString() ?? '').isEmpty &&
+        selectedApproachId != null &&
+        selectedApproachId.isNotEmpty) {
+      meta['selected_approach_id'] = selectedApproachId;
+    }
+
+    return meta;
+  }
+
+  Future<void> _persistMeta(String childId, Map<String, dynamic> meta) async {
+    final box = await _ensureBox();
+    await box.put(_metaKeyFor(childId), meta);
+  }
+
+  void _syncStateFromMeta(Map<String, dynamic> meta) {
+    final switchHistoryRaw = (meta['switch_history'] as List? ?? const [])
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+
+    state = state.copyWith(
+      selectedApproachId: meta['selected_approach_id']?.toString() ?? '',
+      commitmentStartDate: DateTime.tryParse(
+        meta['commitment_start_date']?.toString() ?? '',
+      ),
+      commitmentNightsDefault: meta['commitment_nights_default'] as int? ?? 3,
+      switchHistory: switchHistoryRaw,
+      pendingApproachId: meta['pending_approach_id']?.toString(),
+      pendingEffectiveDate: DateTime.tryParse(
+        meta['pending_effective_date']?.toString() ?? '',
+      ),
+      pendingSwitchReason: meta['pending_switch_reason']?.toString(),
+      hasSleepSetup: meta['home_context_set'] as bool? ?? false,
+      sharedRoom: meta['shared_room'] as bool? ?? false,
+      caregiverConsistency:
+          meta['caregiver_consistency']?.toString() ?? 'unsure',
+      cryingTolerance: meta['crying_tolerance']?.toString() ?? 'med',
+      canLeaveRoom: meta['can_leave_room'] as bool? ?? true,
+      nightFeedsExpected: meta['night_feeds_expected'] as bool? ?? true,
+      quickDoneEnabled: meta['quick_done_enabled'] as bool? ?? false,
+      lastRecapOutcome: meta['last_recap_outcome'] == null
+          ? null
+          : SleepRecapOutcomeWire.fromString(
+              meta['last_recap_outcome']?.toString() ?? '',
+            ),
+      lastTimeToSettleBucket: meta['last_recap_time_bucket']?.toString(),
+    );
+  }
+
+  bool _applyPendingSwitchIfDue({
+    required Map<String, dynamic> meta,
+    required DateTime nightDate,
+  }) {
+    final pendingApproach = meta['pending_approach_id']?.toString() ?? '';
+    final pendingDate = DateTime.tryParse(
+      meta['pending_effective_date']?.toString() ?? '',
+    );
+    if (pendingApproach.isEmpty || pendingDate == null) {
+      return false;
+    }
+    if (_nightAnchorDate(nightDate).isBefore(_nightAnchorDate(pendingDate))) {
+      return false;
+    }
+    meta['selected_approach_id'] = pendingApproach;
+    meta['commitment_start_date'] = nightDate.toIso8601String();
+    meta['pending_approach_id'] = null;
+    meta['pending_effective_date'] = null;
+    meta['pending_switch_reason'] = null;
+    return true;
+  }
+
+  Future<void> syncMethodSelection({
+    required String childId,
+    required String selectedApproachId,
+  }) async {
+    final meta = await _readMeta(
+      childId,
+      selectedApproachId: selectedApproachId,
+    );
+    final current = meta['selected_approach_id']?.toString() ?? '';
+    if (current.isEmpty) {
+      meta['selected_approach_id'] = selectedApproachId;
+      meta['commitment_start_date'] = DateTime.now().toIso8601String();
+      await _persistMeta(childId, meta);
+    }
+    _syncStateFromMeta(meta);
+  }
+
+  Future<void> changeApproachWithCommitment({
+    required String childId,
+    required String toApproachId,
+    required String reason,
+    required String effectiveTiming,
+    DateTime? now,
+  }) async {
+    final ts = now ?? DateTime.now();
+    final meta = await _readMeta(childId);
+    final from = meta['selected_approach_id']?.toString() ?? '';
+    final effectiveDate = _effectiveDateFor(effectiveTiming, ts);
+
+    final history = (meta['switch_history'] as List? ?? const [])
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    history.insert(0, {
+      'from_approach_id': from,
+      'to_approach_id': toApproachId,
+      'reason': reason,
+      'effective_timing': effectiveTiming,
+      'effective_date': effectiveDate.toIso8601String(),
+      'created_at': ts.toIso8601String(),
+    });
+
+    if (effectiveTiming == 'tonight') {
+      meta['selected_approach_id'] = toApproachId;
+      meta['commitment_start_date'] = ts.toIso8601String();
+      meta['pending_approach_id'] = null;
+      meta['pending_effective_date'] = null;
+      meta['pending_switch_reason'] = null;
+    } else {
+      meta['pending_approach_id'] = toApproachId;
+      meta['pending_effective_date'] = effectiveDate.toIso8601String();
+      meta['pending_switch_reason'] = reason;
+    }
+
+    meta['switch_history'] = history.take(20).toList();
+    await _persistMeta(childId, meta);
+    _syncStateFromMeta(meta);
+  }
+
+  Future<void> setQuickDoneEnabled({
+    required String childId,
+    required bool enabled,
+  }) async {
+    final meta = await _readMeta(childId);
+    meta['quick_done_enabled'] = enabled;
+    await _persistMeta(childId, meta);
+    _syncStateFromMeta(meta);
+  }
+
+  Future<void> setHomeContext({
+    required String childId,
+    required bool sharedRoom,
+    required String caregiverConsistency,
+    required String cryingTolerance,
+    required bool canLeaveRoom,
+    required bool nightFeedsExpected,
+  }) async {
+    final meta = await _readMeta(childId);
+    meta['home_context_set'] = true;
+    meta['shared_room'] = sharedRoom;
+    meta['caregiver_consistency'] = caregiverConsistency;
+    meta['crying_tolerance'] = cryingTolerance;
+    meta['can_leave_room'] = canLeaveRoom;
+    meta['night_feeds_expected'] = nightFeedsExpected;
+    await _persistMeta(childId, meta);
+    _syncStateFromMeta(meta);
   }
 
   Future<void> loadTonightPlan(String childId, {DateTime? now}) async {
@@ -128,8 +463,22 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
     try {
       final box = await _ensureBox();
       final ts = now ?? DateTime.now();
-      final key = _keyFor(childId, _nightAnchorDate(ts));
+      final nightDate = _nightAnchorDate(ts);
+      final key = _keyFor(childId, nightDate);
       final raw = box.get(key);
+
+      final meta = await _readMeta(
+        childId,
+        selectedApproachId: state.selectedApproachId.isEmpty
+            ? null
+            : state.selectedApproachId,
+      );
+      final metaMutated = _applyPendingSwitchIfDue(meta: meta, nightDate: ts);
+      if (metaMutated) {
+        await _persistMeta(childId, meta);
+      }
+      _syncStateFromMeta(meta);
+
       if (raw is Map) {
         state = state.copyWith(
           isLoading: false,
@@ -139,9 +488,10 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
           repeatedVomiting: false,
           severePainIndicators: false,
           feedingRefusalWithPainSigns: false,
-          safeSleepConfirmed: raw['safe_sleep_confirmed'] as bool? ?? false,
+          safeSleepConfirmed: raw['safe_sleep_confirmed'] as bool? ?? true,
           comfortMode: raw['comfort_mode'] as bool? ?? false,
           somethingFeelsOff: raw['something_feels_off'] as bool? ?? false,
+          lastError: null,
         );
       } else {
         state = state.copyWith(
@@ -152,7 +502,7 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
           repeatedVomiting: false,
           severePainIndicators: false,
           feedingRefusalWithPainSigns: false,
-          safeSleepConfirmed: false,
+          safeSleepConfirmed: true,
           comfortMode: false,
           somethingFeelsOff: false,
           lastError: null,
@@ -280,6 +630,37 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
     return base;
   }
 
+  int _adjustMinutesForHomeContext(int minutes) {
+    var adjusted = minutes;
+    if (state.cryingTolerance == 'low') {
+      adjusted = adjusted > 1 ? adjusted - 1 : adjusted;
+    }
+    if (state.sharedRoom) {
+      adjusted = adjusted > 2 ? adjusted - 1 : adjusted;
+    }
+    if (!state.canLeaveRoom) {
+      adjusted = adjusted > 3 ? 3 : adjusted;
+    }
+    if (state.caregiverConsistency == 'rotating') {
+      adjusted = adjusted > 4 ? 4 : adjusted;
+    }
+    if (state.caregiverConsistency == 'unsure') {
+      adjusted = adjusted > 5 ? 5 : adjusted;
+    }
+    return adjusted.clamp(1, 8);
+  }
+
+  List<Map<String, dynamic>> _applyHomeContextToSteps(
+    List<Map<String, dynamic>> steps,
+  ) {
+    return steps.map((raw) {
+      final step = Map<String, dynamic>.from(raw);
+      final minutes = step['minutes'] as int? ?? 3;
+      step['minutes'] = _adjustMinutesForHomeContext(minutes);
+      return step;
+    }).toList();
+  }
+
   Future<void> createTonightPlan({
     required String childId,
     required int ageMonths,
@@ -355,12 +736,12 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
         feedMode: feedMode,
       );
     }
+    steps = _applyHomeContextToSteps(steps);
 
     final plan = <String, dynamic>{
       'plan_id': planId,
       'child_id': childId,
-      'date':
-          '${nightDate.year}-${nightDate.month.toString().padLeft(2, '0')}-${nightDate.day.toString().padLeft(2, '0')}',
+      'date': _dateKey(nightDate),
       'scenario': scenario,
       'preference': preference,
       'method_id': methodId,
@@ -382,9 +763,12 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
       'is_active': true,
       'escalation_rule': escalationRule,
       'morning_review_complete': false,
+      'recap_outcome': null,
+      'recap_time_bucket': null,
+      'recap_note': null,
       'runner_hint': '',
-      'created_at': DateTime.now().toIso8601String(),
-      'last_updated_at': DateTime.now().toIso8601String(),
+      'created_at': date.toIso8601String(),
+      'last_updated_at': date.toIso8601String(),
     };
 
     final box = await _ensureBox();
@@ -556,19 +940,47 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
     );
   }
 
-  Future<void> completeMorningReview() async {
+  Future<void> completeWithRecap({
+    required String childId,
+    required SleepRecapOutcome outcome,
+    String? timeToSettleBucket,
+    String? note,
+  }) async {
     final plan = state.activePlan;
     if (plan == null) return;
 
+    if ((plan['scenario']?.toString() ?? '') == 'early_wakes') {
+      await logEarlyWake();
+    }
+
     plan['morning_review_complete'] = true;
-    plan['runner_hint'] = 'Morning review captured.';
+    plan['recap_outcome'] = outcome.wire;
+    plan['recap_time_bucket'] = timeToSettleBucket;
+    plan['recap_note'] = note?.trim();
+    plan['runner_hint'] = 'Recap saved.';
     plan['last_updated_at'] = DateTime.now().toIso8601String();
     await _persistPlan(plan);
+
+    final meta = await _readMeta(childId);
+    meta['last_recap_outcome'] = outcome.wire;
+    meta['last_recap_time_bucket'] = timeToSettleBucket;
+    await _persistMeta(childId, meta);
+    _syncStateFromMeta(meta);
 
     await EventBusService.emitSleepMorningReviewComplete(
       childId: plan['child_id'] as String,
       linkedPlanId: plan['plan_id'] as String,
       wakesLogged: plan['wakes_logged'] as int? ?? 0,
+    );
+  }
+
+  Future<void> completeMorningReview() async {
+    final plan = state.activePlan;
+    if (plan == null) return;
+    await completeWithRecap(
+      childId: plan['child_id'] as String,
+      outcome: SleepRecapOutcome.settled,
+      timeToSettleBucket: state.lastTimeToSettleBucket,
     );
   }
 }

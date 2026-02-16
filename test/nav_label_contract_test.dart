@@ -59,6 +59,16 @@ class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
   }
 
   @override
+  Future<void> setSleepRhythmSurfacesEnabled(bool value) async {
+    state = state.copyWith(sleepRhythmSurfacesEnabled: value);
+  }
+
+  @override
+  Future<void> setRhythmShiftDetectorPromptsEnabled(bool value) async {
+    state = state.copyWith(rhythmShiftDetectorPromptsEnabled: value);
+  }
+
+  @override
   Future<void> setWindDownNotificationsEnabled(bool value) async {
     state = state.copyWith(windDownNotificationsEnabled: value);
   }
@@ -209,6 +219,8 @@ void main() {
       metricsDashboardEnabled: true,
       complianceChecklistEnabled: true,
       sleepBoundedAiEnabled: true,
+      sleepRhythmSurfacesEnabled: true,
+      rhythmShiftDetectorPromptsEnabled: true,
       windDownNotificationsEnabled: true,
       scheduleDriftNotificationsEnabled: false,
     );

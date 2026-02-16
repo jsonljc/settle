@@ -23,6 +23,11 @@ void main() {
     int repeatUseActiveDays7d = 3,
     bool repeatUseMet = true,
     int familyDiffAccepted7d = 2,
+    int appSessions7d = 1000,
+    int appCrashes7d = 0,
+    double? crashFreeRate7d = 1,
+    bool crashFreeMet7d = true,
+    bool coreFunnelStable7d = true,
     int windowDays = 14,
   }) {
     return ReleaseMetricsSnapshot(
@@ -45,6 +50,11 @@ void main() {
       repeatUseActiveDays7d: repeatUseActiveDays7d,
       repeatUseMet: repeatUseMet,
       familyDiffAccepted7d: familyDiffAccepted7d,
+      appSessions7d: appSessions7d,
+      appCrashes7d: appCrashes7d,
+      crashFreeRate7d: crashFreeRate7d,
+      crashFreeMet7d: crashFreeMet7d,
+      coreFunnelStable7d: coreFunnelStable7d,
     );
   }
 
@@ -100,12 +110,14 @@ void main() {
         'g_required_help_now_latency',
         'g_required_sleep_latency',
         'g_required_compliance',
+        'g_required_crash_free_7d',
+        'g_required_core_funnel_stability_7d',
         'g_advisory_help_now_completion',
         'g_advisory_sleep_review',
         'g_advisory_repeat_use',
         'g_advisory_family_sync',
       ]);
-      expect(snapshot.requiredTotal, 3);
+      expect(snapshot.requiredTotal, 5);
       expect(snapshot.advisoryTotal, 4);
     },
   );
@@ -117,7 +129,7 @@ void main() {
     ).loadSnapshot(childId: 'child-1', windowDays: 14);
 
     expect(snapshot.rolloutReady, isFalse);
-    expect(snapshot.requiredPassCount, 2);
+    expect(snapshot.requiredPassCount, 4);
     expect(
       snapshot.gates
           .firstWhere((g) => g.id == 'g_required_help_now_latency')
@@ -133,7 +145,7 @@ void main() {
     ).loadSnapshot(childId: 'child-1', windowDays: 14);
 
     expect(snapshot.rolloutReady, isFalse);
-    expect(snapshot.requiredPassCount, 2);
+    expect(snapshot.requiredPassCount, 4);
     expect(
       snapshot.gates
           .firstWhere((g) => g.id == 'g_required_sleep_latency')
@@ -149,9 +161,46 @@ void main() {
     ).loadSnapshot(childId: 'child-1', windowDays: 14);
 
     expect(snapshot.rolloutReady, isFalse);
-    expect(snapshot.requiredPassCount, 2);
+    expect(snapshot.requiredPassCount, 4);
     expect(
       snapshot.gates.firstWhere((g) => g.id == 'g_required_compliance').passed,
+      isFalse,
+    );
+  });
+
+  test('rollout blocks when crash-free gate fails', () async {
+    final snapshot = await service(
+      metricsSnapshot: metrics(
+        appSessions7d: 1000,
+        appCrashes7d: 10,
+        crashFreeRate7d: 0.99,
+        crashFreeMet7d: false,
+      ),
+      complianceSnapshot: compliance(allPassed: true),
+    ).loadSnapshot(childId: 'child-1', windowDays: 14);
+
+    expect(snapshot.rolloutReady, isFalse);
+    expect(snapshot.requiredPassCount, 4);
+    expect(
+      snapshot.gates
+          .firstWhere((g) => g.id == 'g_required_crash_free_7d')
+          .passed,
+      isFalse,
+    );
+  });
+
+  test('rollout blocks when core funnel stability gate fails', () async {
+    final snapshot = await service(
+      metricsSnapshot: metrics(coreFunnelStable7d: false),
+      complianceSnapshot: compliance(allPassed: true),
+    ).loadSnapshot(childId: 'child-1', windowDays: 14);
+
+    expect(snapshot.rolloutReady, isFalse);
+    expect(snapshot.requiredPassCount, 4);
+    expect(
+      snapshot.gates
+          .firstWhere((g) => g.id == 'g_required_core_funnel_stability_7d')
+          .passed,
       isFalse,
     );
   });

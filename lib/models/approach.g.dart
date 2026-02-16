@@ -21,6 +21,8 @@ class ApproachAdapter extends TypeAdapter<Approach> {
         return Approach.cueBased;
       case 3:
         return Approach.rhythmFirst;
+      case 4:
+        return Approach.extinction;
       default:
         return Approach.stayAndSupport;
     }
@@ -40,6 +42,9 @@ class ApproachAdapter extends TypeAdapter<Approach> {
         break;
       case Approach.rhythmFirst:
         writer.writeByte(3);
+        break;
+      case Approach.extinction:
+        writer.writeByte(4);
         break;
     }
   }

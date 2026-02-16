@@ -93,6 +93,23 @@ class ReleaseOpsService {
         passed: compliancePass,
       ),
       ReleaseOpsGate(
+        id: 'g_required_crash_free_7d',
+        title: 'Crash-free stability (7d)',
+        detail:
+            '${_pct(metrics.crashFreeRate7d)} crash-free from ${metrics.appSessions7d} session(s), ${metrics.appCrashes7d} crash event(s).',
+        required: true,
+        passed: metrics.crashFreeMet7d,
+      ),
+      ReleaseOpsGate(
+        id: 'g_required_core_funnel_stability_7d',
+        title: 'Core funnel stability (7d)',
+        detail: metrics.coreFunnelStable7d
+            ? 'Latency and recap gates remained stable with repeat use in the last 7 days.'
+            : 'Core funnel metrics are not yet stable across the last 7 days.',
+        required: true,
+        passed: metrics.coreFunnelStable7d,
+      ),
+      ReleaseOpsGate(
         id: 'g_advisory_help_now_completion',
         title: 'Help Now outcome logging',
         detail:
@@ -155,5 +172,10 @@ class ReleaseOpsService {
   static String _secs(double? value) {
     if (value == null) return '—';
     return '${value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1)}s';
+  }
+
+  static String _pct(double? value) {
+    if (value == null) return '—';
+    return '${(value * 100).toStringAsFixed(1)}%';
   }
 }

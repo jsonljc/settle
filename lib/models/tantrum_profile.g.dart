@@ -67,14 +67,19 @@ class TantrumEventAdapter extends TypeAdapter<TantrumEvent> {
       trigger: fields[2] as TriggerType?,
       durationSeconds: fields[4] as int?,
       notes: fields[6] as String?,
-      flashcardUsed: fields[7] as bool,
+      flashcardUsed: fields[7] as bool? ?? false,
+      location: fields[8] as String?,
+      parentReaction: fields[9] as String?,
+      selectedCardId: fields[10] as String?,
+      captureTrigger: fields[11] as String?,
+      captureIntensity: fields[12] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TantrumEvent obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -90,7 +95,17 @@ class TantrumEventAdapter extends TypeAdapter<TantrumEvent> {
       ..writeByte(6)
       ..write(obj.notes)
       ..writeByte(7)
-      ..write(obj.flashcardUsed);
+      ..write(obj.flashcardUsed)
+      ..writeByte(8)
+      ..write(obj.location)
+      ..writeByte(9)
+      ..write(obj.parentReaction)
+      ..writeByte(10)
+      ..write(obj.selectedCardId)
+      ..writeByte(11)
+      ..write(obj.captureTrigger)
+      ..writeByte(12)
+      ..write(obj.captureIntensity);
   }
 
   @override

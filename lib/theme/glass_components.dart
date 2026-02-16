@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'settle_tokens.dart';
 
@@ -141,7 +142,7 @@ class GlassCardRose extends StatelessWidget {
 // ─────────────────────────────────────────────
 
 /// A pill-shaped CTA with glass morphism.
-class GlassPill extends StatelessWidget {
+class GlassPill extends StatefulWidget {
   const GlassPill({
     super.key,
     required this.label,
@@ -160,44 +161,132 @@ class GlassPill extends StatelessWidget {
   final IconData? icon;
 
   @override
+  State<GlassPill> createState() => _GlassPillState();
+}
+
+class _GlassPillState extends State<GlassPill> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed == value || !mounted) return;
+    setState(() => _pressed = value);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final baseFill = widget.fill ?? T.glass.fill;
+    final fill = _pressed
+        ? baseFill.withValues(alpha: (baseFill.a + 0.08).clamp(0.0, 1.0))
+        : baseFill;
+
     return Opacity(
-      opacity: enabled ? 1 : 0.5,
-      child: GestureDetector(
-        onTap: enabled ? onTap : null,
+      opacity: widget.enabled ? 1 : 0.55,
+      child: Semantics(
+        button: true,
+        enabled: widget.enabled,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(T.radius.pill),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: T.glass.sigma,
-              sigmaY: T.glass.sigma,
-            ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              decoration: BoxDecoration(
-                color: fill ?? T.glass.fill,
-                borderRadius: BorderRadius.circular(T.radius.pill),
-                border: Border.all(color: T.glass.border, width: 1),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, color: textColor ?? T.pal.textPrimary, size: 18),
-                    const SizedBox(width: 8),
-                  ],
-                  Flexible(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      style: T.type.label.copyWith(
-                        color: textColor ?? T.pal.textPrimary,
-                      ),
-                    ),
+          child: AnimatedScale(
+            duration: const Duration(milliseconds: 140),
+            curve: Curves.easeOutCubic,
+            scale: _pressed ? 0.985 : 1,
+            child: GestureDetector(
+              onTapDown: widget.enabled
+                  ? (_) {
+                      _setPressed(true);
+                      HapticFeedback.selectionClick();
+                    }
+                  : null,
+              onTapUp: widget.enabled ? (_) => _setPressed(false) : null,
+              onTapCancel: widget.enabled ? () => _setPressed(false) : null,
+              onTap: widget.enabled
+                  ? () {
+                      HapticFeedback.lightImpact();
+                      widget.onTap();
+                    }
+                  : null,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: T.glass.sigma + 2,
+                  sigmaY: T.glass.sigma + 2,
+                ),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 160),
+                  curve: Curves.easeOutCubic,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
                   ),
-                ],
+                  decoration: BoxDecoration(
+                    color: fill,
+                    borderRadius: BorderRadius.circular(T.radius.pill),
+                    border: Border.all(
+                      color: _pressed
+                          ? T.pal.textPrimary.withValues(alpha: 0.22)
+                          : T.glass.border.withValues(alpha: 0.65),
+                      width: 1,
+                    ),
+                    boxShadow: _pressed
+                        ? const []
+                        : [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.16),
+                              blurRadius: 18,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                T.radius.pill,
+                              ),
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.white.withValues(
+                                    alpha: _pressed ? 0.08 : 0.13,
+                                  ),
+                                  Colors.white.withValues(alpha: 0.0),
+                                ],
+                                stops: const [0, 0.48],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.icon != null) ...[
+                            Icon(
+                              widget.icon,
+                              color: widget.textColor ?? T.pal.textPrimary,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                          Flexible(
+                            child: Text(
+                              widget.label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: T.type.label.copyWith(
+                                color: widget.textColor ?? T.pal.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -212,35 +301,118 @@ class GlassPill extends StatelessWidget {
 // ─────────────────────────────────────────────
 
 /// A solid accent-filled CTA button with rounded corners.
-class GlassCta extends StatelessWidget {
+class GlassCta extends StatefulWidget {
   const GlassCta({
     super.key,
     required this.label,
     required this.onTap,
     this.expand = true,
     this.enabled = true,
+    this.alignment = Alignment.center,
+    this.compact = false,
   });
 
   final String label;
   final VoidCallback onTap;
   final bool expand;
   final bool enabled;
+  final AlignmentGeometry alignment;
+  final bool compact;
+
+  @override
+  State<GlassCta> createState() => _GlassCtaState();
+}
+
+class _GlassCtaState extends State<GlassCta> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed == value || !mounted) return;
+    setState(() => _pressed = value);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bg = enabled ? T.pal.accent : T.pal.accent.withValues(alpha: 0.45);
-    final fg = enabled ? T.pal.bgDeep : T.pal.bgDeep.withValues(alpha: 0.75);
-    return GestureDetector(
-      onTap: enabled ? onTap : null,
-      child: Container(
-        width: expand ? double.infinity : null,
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(T.radius.pill),
+    final radius = BorderRadius.circular(T.radius.pill);
+    final normalFill = widget.enabled
+        ? T.glass.fillAccent.withValues(alpha: 0.26)
+        : T.glass.fillAccent.withValues(alpha: 0.14);
+    final pressedFill = widget.enabled
+        ? T.glass.fillAccent.withValues(alpha: 0.34)
+        : normalFill;
+    final borderColor = widget.enabled
+        ? T.pal.accent.withValues(alpha: _pressed ? 0.40 : 0.22)
+        : T.glass.border.withValues(alpha: 0.4);
+    final fg = widget.enabled
+        ? T.pal.textPrimary
+        : T.pal.textPrimary.withValues(alpha: 0.7);
+
+    return Semantics(
+      button: true,
+      enabled: widget.enabled,
+      child: ClipRRect(
+        borderRadius: radius,
+        child: AnimatedScale(
+          duration: const Duration(milliseconds: 140),
+          curve: Curves.easeOutCubic,
+          scale: _pressed ? 0.986 : 1,
+          child: GestureDetector(
+            onTapDown: widget.enabled
+                ? (_) {
+                    _setPressed(true);
+                    HapticFeedback.lightImpact();
+                  }
+                : null,
+            onTapUp: widget.enabled ? (_) => _setPressed(false) : null,
+            onTapCancel: widget.enabled ? () => _setPressed(false) : null,
+            onTap: widget.enabled
+                ? () {
+                    widget.onTap();
+                  }
+                : null,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: T.glass.sigma + 2,
+                sigmaY: T.glass.sigma + 2,
+              ),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeOutCubic,
+                width: widget.expand ? double.infinity : null,
+                padding: widget.compact
+                    ? const EdgeInsets.symmetric(horizontal: 18, vertical: 11)
+                    : const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+                decoration: BoxDecoration(
+                  color: _pressed ? pressedFill : normalFill,
+                  borderRadius: radius,
+                  border: Border.all(color: borderColor, width: 1),
+                  boxShadow: _pressed
+                      ? [
+                          BoxShadow(
+                            color: T.pal.accent.withValues(alpha: 0.06),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : [
+                          BoxShadow(
+                            color: T.pal.accent.withValues(alpha: 0.06),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                ),
+                child: Align(
+                  alignment: widget.alignment,
+                  child: Text(
+                    widget.label,
+                    style: T.type.label.copyWith(color: fg),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
-        alignment: expand ? Alignment.center : null,
-        child: Text(label, style: T.type.label.copyWith(color: fg)),
       ),
     );
   }

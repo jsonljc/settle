@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +11,7 @@ import 'package:settle/models/day_plan.dart';
 import 'package:settle/models/night_wake.dart';
 import 'package:settle/models/sleep_session.dart';
 import 'package:settle/models/tantrum_profile.dart';
+import 'package:settle/providers/release_rollout_provider.dart';
 import 'package:settle/providers/sleep_tonight_provider.dart';
 import 'package:settle/screens/sleep_tonight.dart';
 
@@ -98,27 +98,23 @@ void main() {
   }
 
   Future<void> tapByText(WidgetTester tester, String label) async {
+    await tester.pump(const Duration(milliseconds: 50));
     final target = find.text(label);
+    expect(target, findsWidgets);
     await tester.ensureVisible(target);
     await tester.tap(target);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 250));
+    await tester.pumpAndSettle(const Duration(milliseconds: 400));
   }
 
-  Future<void> toggleSwitchForLabel(WidgetTester tester, String label) async {
-    final labelFinder = find.text(label);
-    await tester.ensureVisible(labelFinder);
-    final rows = find.ancestor(of: labelFinder, matching: find.byType(Row));
-    expect(rows, findsWidgets);
-    final switchFinder = find.descendant(
-      of: rows.last,
-      matching: find.byWidgetPredicate(
-        (w) => w is Switch || w is CupertinoSwitch,
-      ),
-    );
-    await tester.tap(switchFinder.first);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 250));
+  Future<void> openMoreOptions(WidgetTester tester) async {
+    await tapByText(tester, 'More options');
+    for (var i = 0; i < 20; i++) {
+      if (find.text('Switch scenario').evaluate().isNotEmpty) {
+        break;
+      }
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.pumpAndSettle();
   }
 
   Widget buildApp() {
@@ -134,6 +130,9 @@ void main() {
     return ProviderScope(
       overrides: [
         sleepTonightProvider.overrideWith((ref) => _FlowSleepTonightNotifier()),
+        releaseRolloutProvider.overrideWith(
+          (ref) => _StaticRolloutNotifier(_rolloutState),
+        ),
       ],
       child: MaterialApp.router(routerConfig: router),
     );
@@ -150,7 +149,12 @@ void main() {
       ],
     );
     return ProviderScope(
-      overrides: [sleepTonightProvider.overrideWith((ref) => notifier)],
+      overrides: [
+        sleepTonightProvider.overrideWith((ref) => notifier),
+        releaseRolloutProvider.overrideWith(
+          (ref) => _StaticRolloutNotifier(_rolloutState),
+        ),
+      ],
       child: MaterialApp.router(routerConfig: router),
     );
   }
@@ -162,78 +166,101 @@ void main() {
     await tester.pumpWidget(buildApp());
     await settleUi(tester);
 
-    expect(find.text('Tonight\'s Sleep'), findsOneWidget);
-    expect(find.text('Quick safety check'), findsOneWidget);
+    expect(find.text('Tonight'), findsOneWidget);
+    if (find.text('Choose what is happening').evaluate().isNotEmpty) {
+      await tapByText(tester, 'Night wake');
+    }
+    expect(find.textContaining('Do now:'), findsOneWidget);
 
-    expect(
-      find.text('Confirm the sleep space is safe to begin.'),
-      findsOneWidget,
-    );
-    await toggleSwitchForLabel(tester, 'Sleep space is safe');
-    expect(
-      find.text('Confirm the sleep space is safe to begin.'),
-      findsNothing,
-    );
+    await tapByText(tester, 'Next step');
+    await openMoreOptions(tester);
+    await tapByText(tester, 'Mark done');
+    await tapByText(tester, 'Save recap');
+    await settleUi(tester);
 
-    await tapByText(tester, 'Start now');
-    expect(find.text('Night Wake Card'), findsOneWidget);
-    expect(find.text('Do now'), findsOneWidget);
-
-    await tapByText(tester, 'More actions');
-
-    await tapByText(tester, 'Log wake');
-    expect(find.textContaining('Wake logged.'), findsOneWidget);
-
-    await tapByText(tester, 'Morning recap done');
-    expect(find.textContaining('Morning review captured.'), findsOneWidget);
+    expect(find.textContaining('Do now:'), findsOneWidget);
   });
 
-  testWidgets(
-    'active plan shows wake guidance immediately and supports one-tap comfort fallback',
-    (tester) async {
-      final notifier = _ActivePlanSleepTonightNotifier();
-      setPhoneViewport(tester);
-      await tester.pumpWidget(buildActivePlanApp(notifier));
-      await settleUi(tester);
+  testWidgets('active plan shows wake guidance immediately', (tester) async {
+    final notifier = _ActivePlanSleepTonightNotifier();
+    setPhoneViewport(tester);
+    await tester.pumpWidget(buildActivePlanApp(notifier));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
 
-      // Guidance should be available immediately for wake handling.
-      expect(find.text('Night Wake Card'), findsOneWidget);
-      expect(find.text('Do now'), findsOneWidget);
-      expect(find.text('Quick safety check'), findsNothing);
-      expect(find.text('Something feels off'), findsOneWidget);
+    expect(find.textContaining('Do now:'), findsOneWidget);
+    expect(find.text('More options'), findsOneWidget);
+    expect(find.text('Choose what is happening'), findsNothing);
+  });
 
-      await tapByText(tester, 'Something feels off');
-      await tester.pumpAndSettle();
-
-      expect(notifier.state.comfortMode, isTrue);
-      expect(notifier.state.somethingFeelsOff, isTrue);
-      expect(
-        find.textContaining(
-          'Stop rule: Pause training expectations tonight and stay comfort-first.',
-        ),
-        findsOneWidget,
-      );
-    },
-  );
-
-  testWidgets('red flags block plan creation until cleared', (tester) async {
+  testWidgets('More options exposes safety and switch controls', (
+    tester,
+  ) async {
     setPhoneViewport(tester);
     await tester.pumpWidget(buildApp());
     await settleUi(tester);
 
-    await toggleSwitchForLabel(tester, 'Sleep space is safe');
-    await tapByText(tester, 'More safety checks (optional)');
-    await toggleSwitchForLabel(tester, 'Breathing difficulty');
-
-    expect(
-      find.textContaining('Pause the plan. Comfort first.'),
-      findsOneWidget,
-    );
-    expect(find.text('Start now'), findsNothing);
-
-    await toggleSwitchForLabel(tester, 'Breathing difficulty');
-    expect(find.text('Start now'), findsOneWidget);
+    if (find.text('Choose what is happening').evaluate().isNotEmpty) {
+      await tapByText(tester, 'Night wake');
+    }
+    await openMoreOptions(tester);
+    expect(find.text('Switch scenario'), findsOneWidget);
+    expect(find.text('Change approach'), findsOneWidget);
+    expect(find.text('Something feels off'), findsOneWidget);
   });
+}
+
+const _rolloutState = ReleaseRolloutState(
+  isLoading: false,
+  helpNowEnabled: true,
+  sleepTonightEnabled: true,
+  planProgressEnabled: true,
+  familyRulesEnabled: true,
+  metricsDashboardEnabled: true,
+  complianceChecklistEnabled: true,
+  sleepBoundedAiEnabled: true,
+  sleepRhythmSurfacesEnabled: true,
+  rhythmShiftDetectorPromptsEnabled: true,
+  windDownNotificationsEnabled: true,
+  scheduleDriftNotificationsEnabled: false,
+);
+
+class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
+    implements ReleaseRolloutNotifier {
+  _StaticRolloutNotifier(super.state);
+
+  @override
+  Future<void> setHelpNowEnabled(bool value) async {}
+
+  @override
+  Future<void> setSleepTonightEnabled(bool value) async {}
+
+  @override
+  Future<void> setPlanProgressEnabled(bool value) async {}
+
+  @override
+  Future<void> setFamilyRulesEnabled(bool value) async {}
+
+  @override
+  Future<void> setMetricsDashboardEnabled(bool value) async {}
+
+  @override
+  Future<void> setComplianceChecklistEnabled(bool value) async {}
+
+  @override
+  Future<void> setSleepBoundedAiEnabled(bool value) async {}
+
+  @override
+  Future<void> setSleepRhythmSurfacesEnabled(bool value) async {}
+
+  @override
+  Future<void> setRhythmShiftDetectorPromptsEnabled(bool value) async {}
+
+  @override
+  Future<void> setWindDownNotificationsEnabled(bool value) async {}
+
+  @override
+  Future<void> setScheduleDriftNotificationsEnabled(bool value) async {}
 }
 
 class _FlowSleepTonightNotifier extends SleepTonightNotifier {

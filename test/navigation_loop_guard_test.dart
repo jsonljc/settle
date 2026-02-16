@@ -55,6 +55,16 @@ class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
   }
 
   @override
+  Future<void> setSleepRhythmSurfacesEnabled(bool value) async {
+    state = state.copyWith(sleepRhythmSurfacesEnabled: value);
+  }
+
+  @override
+  Future<void> setRhythmShiftDetectorPromptsEnabled(bool value) async {
+    state = state.copyWith(rhythmShiftDetectorPromptsEnabled: value);
+  }
+
+  @override
   Future<void> setWindDownNotificationsEnabled(bool value) async {
     state = state.copyWith(windDownNotificationsEnabled: value);
   }
@@ -78,6 +88,8 @@ ReleaseRolloutState _rolloutState({
     metricsDashboardEnabled: true,
     complianceChecklistEnabled: true,
     sleepBoundedAiEnabled: true,
+    sleepRhythmSurfacesEnabled: true,
+    rhythmShiftDetectorPromptsEnabled: true,
     windDownNotificationsEnabled: true,
     scheduleDriftNotificationsEnabled: false,
   );
@@ -214,7 +226,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Sleep Tonight'), findsOneWidget);
+      expect(find.text('Tonight'), findsOneWidget);
       expect(find.text('Go to Home'), findsOneWidget);
 
       await tester.tap(find.text('Go to Home'));
@@ -237,11 +249,11 @@ void main() {
           builder: (context, state) =>
               HelpNowScreen(now: () => DateTime(2026, 2, 13, 14)),
         ),
-        GoRoute(
-          path: '/sleep',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('SLEEP_SCREEN'))),
-        ),
+          GoRoute(
+            path: '/sleep/tonight',
+            builder: (context, state) =>
+                const Scaffold(body: Center(child: Text('SLEEP_SCREEN'))),
+          ),
       ],
     );
 

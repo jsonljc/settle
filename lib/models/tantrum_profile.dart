@@ -228,6 +228,22 @@ class TantrumEvent extends HiveObject {
   @HiveField(7)
   bool flashcardUsed;
 
+  /// Optional capture metadata used by the Tantrum Hub v2 flow.
+  @HiveField(8)
+  String? location;
+
+  @HiveField(9)
+  String? parentReaction;
+
+  @HiveField(10)
+  String? selectedCardId;
+
+  @HiveField(11)
+  String? captureTrigger;
+
+  @HiveField(12)
+  String? captureIntensity;
+
   TantrumEvent({
     required this.id,
     required this.timestamp,
@@ -237,6 +253,11 @@ class TantrumEvent extends HiveObject {
     this.durationSeconds,
     this.notes,
     this.flashcardUsed = false,
+    this.location,
+    this.parentReaction,
+    this.selectedCardId,
+    this.captureTrigger,
+    this.captureIntensity,
   });
 
   Duration? get duration =>

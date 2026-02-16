@@ -51,7 +51,7 @@ class RhythmState {
     lastUpdatePlan: null,
     lastRhythmUpdateAt: null,
     advancedDayLogging: false,
-    preciseView: true,
+    preciseView: false,
     wakeTimeMinutes: 7 * 60,
     wakeTimeKnown: false,
     lastHint: null,
@@ -551,12 +551,19 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
     required bool daycareMode,
     required int? napCountReality,
     required RhythmUpdateIssue issue,
+    int? napDurationHintMinutes,
     DateTime? now,
   }) async {
     final rhythm = state.rhythm;
     if (rhythm == null) return;
 
     final ts = now ?? DateTime.now();
+    final resolvedIssue =
+        napDurationHintMinutes != null &&
+            napDurationHintMinutes < 45 &&
+            issue == RhythmUpdateIssue.nightWakes
+        ? RhythmUpdateIssue.shortNaps
+        : issue;
     final whyNow = state.shiftAssessment.shouldSuggestUpdate
         ? state.shiftAssessment.explanation
         : 'Manual rhythm refresh requested.';
@@ -567,7 +574,7 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
       wakeRangeEndMinutes: wakeRangeEndMinutes,
       daycareMode: daycareMode,
       napCountReality: napCountReality,
-      issue: issue,
+      issue: resolvedIssue,
       whyNow: whyNow,
       now: ts,
     );
@@ -599,7 +606,9 @@ class RhythmNotifier extends StateNotifier<RhythmState> {
       lastUpdatePlan: plan,
       lastRhythmUpdateAt: ts,
       shiftAssessment: shiftAssessment,
-      lastHint: 'Rhythm updated. Run this for 7–14 days before replanning.',
+      lastHint: napDurationHintMinutes == null
+          ? 'Rhythm updated. Run this for 7–14 days before replanning.'
+          : 'Rhythm updated using your nap timing input. Run this for 7–14 days before replanning.',
     );
     await _persist(childId);
   }

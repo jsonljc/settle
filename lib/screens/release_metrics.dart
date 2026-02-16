@@ -113,12 +113,12 @@ class _ReleaseMetricsScreenState extends ConsumerState<ReleaseMetricsScreen> {
                           _MetricCard(
                             title: 'Sleep time-to-guidance',
                             value: _secs(m.sleepTimeToGuidanceMedianSeconds),
-                            target: '<60s',
+                            target: '<20s',
                             detail:
-                                'Median from ${m.sleepTimeToGuidanceSamples} plan starts.',
+                                'Median from ${m.sleepTimeToGuidanceSamples} first-guidance renders.',
                             pass: m.sleepTimeToGuidanceMedianSeconds == null
                                 ? null
-                                : m.sleepTimeToGuidanceMedianSeconds! < 60,
+                                : m.sleepTimeToGuidanceMedianSeconds! < 20,
                           ),
                           const SizedBox(height: 10),
                           _MetricCard(
@@ -127,6 +127,24 @@ class _ReleaseMetricsScreenState extends ConsumerState<ReleaseMetricsScreen> {
                             target: 'maximize',
                             detail:
                                 '${m.sleepMorningReviews}/${m.sleepPlans} nights with recap complete.',
+                          ),
+                          const SizedBox(height: 10),
+                          _MetricCard(
+                            title: 'Crash-free (7d)',
+                            value: _pct(m.crashFreeRate7d),
+                            target: '>=99.5%',
+                            detail:
+                                '${m.appSessions7d} session(s), ${m.appCrashes7d} crash event(s).',
+                            pass: m.crashFreeMet7d,
+                          ),
+                          const SizedBox(height: 10),
+                          _MetricCard(
+                            title: 'Core funnel stable (7d)',
+                            value: m.coreFunnelStable7d ? 'Stable' : 'Unstable',
+                            target: 'stable',
+                            detail:
+                                'Tracks latency + recap completion + repeat use consistency.',
+                            pass: m.coreFunnelStable7d,
                           ),
                           const SizedBox(height: 16),
                           _MetricCard(

@@ -76,10 +76,10 @@ void main() {
     await pumpApp(tester);
 
     await goTo(tester, '/now');
-    expectAnyTitle(['Help Now', 'Tonight\'s Sleep', 'Sleep Tonight']);
+    expectAnyTitle(['Help Now', 'Tonight', 'Sleep']);
 
     await goTo(tester, '/sleep');
-    expectAnyTitle(['Tonight\'s Sleep', 'Sleep Tonight']);
+    expectAnyTitle(['Sleep']);
 
     await goTo(tester, '/sleep/rhythm');
     expect(find.text('Current Rhythm'), findsWidgets);
@@ -94,10 +94,10 @@ void main() {
     expect(find.text('Family Rules'), findsWidgets);
 
     await goTo(tester, '/help-now');
-    expectAnyTitle(['Help Now', 'Tonight\'s Sleep', 'Sleep Tonight']);
+    expectAnyTitle(['Help Now', 'Tonight', 'Sleep']);
 
     await goTo(tester, '/sleep-tonight');
-    expectAnyTitle(['Tonight\'s Sleep', 'Sleep Tonight']);
+    expectAnyTitle(['Tonight']);
 
     await goTo(tester, '/current-rhythm');
     expect(find.text('Current Rhythm'), findsWidgets);
@@ -118,13 +118,13 @@ void main() {
     await pumpApp(tester);
 
     await goTo(tester, '/night');
-    expectAnyTitle(['Tonight\'s Sleep', 'Sleep Tonight']);
+    expectAnyTitle(['Tonight']);
 
     await goTo(tester, '/today');
     expect(find.text('Logs'), findsWidgets);
 
     await goTo(tester, '/sleep-tonight');
-    expectAnyTitle(['Tonight\'s Sleep', 'Sleep Tonight']);
+    expectAnyTitle(['Tonight']);
 
     await goTo(tester, '/legacy/today');
     expect(find.text('This page is unavailable'), findsOneWidget);

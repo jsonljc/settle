@@ -2,41 +2,71 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 part 'approach.g.dart';
 
-/// The four discrete settling approaches. NOT a spectrum — each is
-/// qualitatively different with its own cited research base.
+/// The discrete settling approaches used across sleep flows.
 @HiveType(typeId: 0)
 enum Approach {
-  /// Stay nearby throughout. Guided by presence.
+  /// Gentle check-ins with brief reassurance.
   @HiveField(0)
   stayAndSupport,
 
-  /// Timed check-ins with increasing intervals.
+  /// Gradual retreat (chair/camping out).
   @HiveField(1)
   checkAndReassure,
 
-  /// Read baby's cues — fussing vs crying distinction.
+  /// Pick up / put down cycles.
   @HiveField(2)
   cueBased,
 
-  /// Environmental and scheduling interventions first.
+  /// Bedtime fading / gentle schedule shift.
   @HiveField(3)
-  rhythmFirst;
+  rhythmFirst,
+
+  /// Extinction (firm, consistent limit-setting).
+  @HiveField(4)
+  extinction;
 
   String get label => switch (this) {
-    stayAndSupport => 'Stay & Support',
-    checkAndReassure => 'Check & Reassure',
-    cueBased => 'Cue-Based',
-    rhythmFirst => 'Rhythm First',
+    stayAndSupport => 'Gentle Check-ins',
+    checkAndReassure => 'Gradual Retreat',
+    cueBased => 'Pick Up / Put Down',
+    rhythmFirst => 'Bedtime fading',
+    extinction => 'Extinction',
   };
 
   String get description => switch (this) {
-    stayAndSupport => 'Stay nearby and offer comfort throughout settling.',
-    checkAndReassure =>
-      'Leave the room, return at timed intervals to reassure.',
-    cueBased => 'Respond based on the type of cry — fussing vs distress.',
-    rhythmFirst =>
-      'Focus on environment, timing, and routine before intervention.',
+    stayAndSupport => 'Short check-ins with calm reassurance each cycle.',
+    checkAndReassure => 'Stay nearby and slowly reduce your presence.',
+    cueBased => 'Brief pick-up/put-down repeats until calm returns.',
+    rhythmFirst => 'Shift bedtime timing gently until settling improves.',
+    extinction => 'Use a firm, consistent response with minimal intervention.',
   };
+
+  String get intensityTag => switch (this) {
+    stayAndSupport => 'Gentle',
+    checkAndReassure => 'Gentle',
+    cueBased => 'Moderate',
+    rhythmFirst => 'Moderate',
+    extinction => 'Firm',
+  };
+
+  String get id => switch (this) {
+    stayAndSupport => 'gentle_checkins',
+    checkAndReassure => 'gradual_retreat',
+    cueBased => 'pick_up_put_down',
+    rhythmFirst => 'bedtime_fading',
+    extinction => 'extinction',
+  };
+
+  static Approach fromId(String id) {
+    return switch (id) {
+      'gentle_checkins' => Approach.stayAndSupport,
+      'gradual_retreat' => Approach.checkAndReassure,
+      'pick_up_put_down' => Approach.cueBased,
+      'bedtime_fading' => Approach.rhythmFirst,
+      'extinction' => Approach.extinction,
+      _ => Approach.stayAndSupport,
+    };
+  }
 }
 
 /// Age brackets with research-backed nap counts and wake windows.

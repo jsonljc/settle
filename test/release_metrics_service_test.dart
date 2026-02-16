@@ -99,6 +99,14 @@ void main() {
       ruleId: 'snacks_default',
       diffId: 'd-2',
     );
+    await EventBusService.emitPlanAppSessionStarted(
+      childId: 'app_global',
+      appVersion: 'test',
+    );
+    await EventBusService.emitPlanAppSessionStarted(
+      childId: 'app_global',
+      appVersion: 'test',
+    );
 
     final snapshot = await const ReleaseMetricsService().loadSnapshot(
       childId: 'child-1',
@@ -110,6 +118,11 @@ void main() {
     expect(snapshot.sleepTimeToGuidanceMedianSeconds, 50);
     expect(snapshot.sleepTimeToGuidanceSamples, 2);
     expect(snapshot.sleepRecapCompletionRate, 0.5);
+    expect(snapshot.appSessions7d, 2);
+    expect(snapshot.appCrashes7d, 0);
+    expect(snapshot.crashFreeRate7d, 1);
+    expect(snapshot.crashFreeMet7d, isTrue);
+    expect(snapshot.coreFunnelStable7d, isTrue);
     expect(snapshot.helpNowMedianSeconds, 10);
     expect(snapshot.helpNowMedianSamples, 2);
     expect(snapshot.sleepStartMedianSeconds, 50);

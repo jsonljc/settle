@@ -25,8 +25,9 @@ class OptionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fill = selected ? T.glass.fillAccent : T.glass.fill;
-    final borderColor =
-        selected ? T.pal.accent.withValues(alpha: 0.4) : T.glass.border;
+    final borderColor = selected
+        ? T.pal.accent.withValues(alpha: 0.4)
+        : T.glass.border;
 
     return GestureDetector(
       onTap: onTap,
@@ -98,19 +99,22 @@ class OptionButtonCompact extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.dense = false,
     this.icon,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
+  final bool dense;
   final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     final fill = selected ? T.glass.fillAccent : T.glass.fill;
-    final borderColor =
-        selected ? T.pal.accent.withValues(alpha: 0.4) : T.glass.border;
+    final borderColor = selected
+        ? T.pal.accent.withValues(alpha: 0.4)
+        : T.glass.border;
 
     return GestureDetector(
       onTap: onTap,
@@ -123,7 +127,10 @@ class OptionButtonCompact extends StatelessWidget {
           ),
           child: AnimatedContainer(
             duration: T.anim.fast,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: dense ? 10 : 14,
+              vertical: dense ? 8 : 12,
+            ),
             decoration: BoxDecoration(
               color: fill,
               borderRadius: BorderRadius.circular(T.radius.md),
@@ -136,20 +143,21 @@ class OptionButtonCompact extends StatelessWidget {
                 if (icon != null) ...[
                   Icon(
                     icon,
-                    size: 18,
+                    size: dense ? 16 : 18,
                     color: selected ? T.pal.accent : T.pal.textSecondary,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: dense ? 6 : 8),
                 ],
                 Flexible(
                   child: Text(
                     label,
                     style: T.type.label.copyWith(
-                      fontSize: 14,
-                      color:
-                          selected ? T.pal.textPrimary : T.pal.textSecondary,
+                      fontSize: dense ? 13 : 14,
+                      color: selected ? T.pal.textPrimary : T.pal.textSecondary,
                     ),
                     textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

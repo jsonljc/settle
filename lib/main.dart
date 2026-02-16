@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,7 @@ import 'models/night_wake.dart';
 import 'models/day_plan.dart';
 import 'models/tantrum_profile.dart';
 import 'router.dart';
+import 'services/event_bus_service.dart';
 import 'services/notification_service.dart';
 import 'theme/settle_theme.dart';
 
@@ -43,6 +46,23 @@ Future<void> main() async {
 
   // Initialize local notifications (timezone, channels, permissions).
   await NotificationService.init();
+
+  const telemetryChildId = 'app_global';
+  await EventBusService.emitPlanAppSessionStarted(
+    childId: telemetryChildId,
+    appVersion: 'v1',
+  );
+
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    unawaited(
+      EventBusService.emitPlanAppCrash(
+        childId: telemetryChildId,
+        appVersion: 'v1',
+        crashSource: 'flutter_error',
+      ),
+    );
+  };
 
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),

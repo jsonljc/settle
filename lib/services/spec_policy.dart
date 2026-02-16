@@ -71,22 +71,22 @@ class SpecPolicy {
   }
 
   static String helpNowNightRouteUri() {
-    return '/sleep?source=help_now_night';
+    return '/sleep/tonight?source=help_now_night';
   }
 
   static String helpNowIncidentSleepRouteUri(String incidentId) {
-    return '/sleep?source=help_now&incident=$incidentId';
+    return '/sleep/tonight?source=help_now&incident=$incidentId';
   }
 
   static String sleepTonightEntryUri({String? source}) {
     if (source != null && source.isNotEmpty) {
-      return '/sleep?source=$source';
+      return '/sleep/tonight?source=$source';
     }
-    return '/sleep';
+    return '/sleep/tonight';
   }
 
   static String sleepTonightScenarioUri(String scenario, {String? source}) {
-    final buf = StringBuffer('/sleep?scenario=$scenario');
+    final buf = StringBuffer('/sleep/tonight?scenario=$scenario');
     if (source != null && source.isNotEmpty) {
       buf.write('&source=$source');
     }
@@ -106,9 +106,9 @@ class SpecPolicy {
 
   static String nowNightUri({String? source}) {
     if (source != null && source.isNotEmpty) {
-      return '/sleep?source=$source';
+      return '/sleep/tonight?source=$source';
     }
-    return '/sleep';
+    return '/sleep/tonight';
   }
 
   static String nowResetUri({String? source, String? returnMode}) {

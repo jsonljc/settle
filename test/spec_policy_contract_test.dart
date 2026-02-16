@@ -34,15 +34,18 @@ void main() {
       '/now?mode=incident',
     );
     expect(SpecPolicy.nowUri(mode: SpecPolicy.nowModeSleep), '/now?mode=sleep');
-    expect(SpecPolicy.helpNowNightRouteUri(), '/sleep?source=help_now_night');
+    expect(
+      SpecPolicy.helpNowNightRouteUri(),
+      '/sleep/tonight?source=help_now_night',
+    );
     expect(
       SpecPolicy.helpNowIncidentSleepRouteUri('bedtime_protest'),
-      '/sleep?source=help_now&incident=bedtime_protest',
+      '/sleep/tonight?source=help_now&incident=bedtime_protest',
     );
-    expect(SpecPolicy.nowNightUri(), '/sleep');
+    expect(SpecPolicy.nowNightUri(), '/sleep/tonight');
     expect(
       SpecPolicy.nowNightUri(source: 'home_night'),
-      '/sleep?source=home_night',
+      '/sleep/tonight?source=home_night',
     );
     expect(
       SpecPolicy.nowResetUri(

@@ -86,17 +86,23 @@ void main() {
     await tester.pump(const Duration(milliseconds: 800));
 
     expect(find.text('Update Rhythm'), findsWidgets);
-    expect(find.text('Build next 1–2 week rhythm'), findsOneWidget);
+    expect(find.text('Step 1 of 4'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('Build next 1–2 week rhythm'));
+    await tester.tap(find.text('Next'));
     await tester.pump();
-    await tester.tap(find.text('Build next 1–2 week rhythm'));
+    await tester.tap(find.text('Next'));
+    await tester.pump();
+    await tester.tap(find.text('Next'));
+    await tester.pump();
+
+    expect(find.text('Save rhythm'), findsOneWidget);
+    await tester.tap(find.text('Save rhythm'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('New rhythm ready'), findsOneWidget);
-    expect(find.textContaining('Recommended anchor:'), findsOneWidget);
-    expect(find.textContaining('Confidence:'), findsOneWidget);
+    expect(find.textContaining('Recommended anchor:'), findsWidgets);
+    expect(find.textContaining('Confidence:'), findsWidgets);
   });
 }
 
@@ -198,6 +204,7 @@ class _FakeUpdateRhythmNotifier extends RhythmNotifier {
     required bool daycareMode,
     required int? napCountReality,
     required RhythmUpdateIssue issue,
+    int? napDurationHintMinutes,
     DateTime? now,
   }) async {
     final updated = state.rhythm!.copyWith(

@@ -3,17 +3,18 @@ import 'package:go_router/go_router.dart';
 
 import '../theme/settle_tokens.dart';
 
-/// Sub-navigation for Tantrum tab: NOW | CARDS | LEARN.
-/// Use on TantrumNowScreen, CardsLibraryScreen, TantrumLearnScreen.
+/// Sub-navigation for Tantrum tab: CAPTURE | DECK | INSIGHTS.
+/// Use on capture/deck/insights surfaces.
 class TantrumSubNav extends StatelessWidget {
-  const TantrumSubNav({
-    super.key,
-    required this.currentSegment,
-  });
+  const TantrumSubNav({super.key, required this.currentSegment});
 
-  static const segmentNow = 'now';
+  static const segmentCapture = 'capture';
+  // Backward alias used by older callsites.
+  static const segmentNow = segmentCapture;
   static const segmentCards = 'cards';
-  static const segmentLearn = 'learn';
+  static const segmentInsights = 'insights';
+  // Backward alias used by older callsites.
+  static const segmentLearn = segmentInsights;
 
   final String currentSegment;
 
@@ -24,21 +25,21 @@ class TantrumSubNav extends StatelessWidget {
       child: Row(
         children: [
           _Segment(
-            label: 'NOW',
-            active: currentSegment == segmentNow,
-            onTap: () => context.go('/tantrum/now'),
+            label: 'CAPTURE',
+            active: currentSegment == segmentCapture,
+            onTap: () => context.go('/tantrum/capture'),
           ),
           const SizedBox(width: 8),
           _Segment(
-            label: 'CARDS',
+            label: 'DECK',
             active: currentSegment == segmentCards,
-            onTap: () => context.go('/tantrum/cards'),
+            onTap: () => context.go('/tantrum/deck'),
           ),
           const SizedBox(width: 8),
           _Segment(
-            label: 'LEARN',
-            active: currentSegment == segmentLearn,
-            onTap: () => context.go('/tantrum/learn'),
+            label: 'INSIGHTS',
+            active: currentSegment == segmentInsights,
+            onTap: () => context.go('/tantrum/insights'),
           ),
         ],
       ),
@@ -66,9 +67,7 @@ class _Segment extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? T.glass.fillAccent : T.glass.fill,
           borderRadius: BorderRadius.circular(T.radius.pill),
-          border: Border.all(
-            color: active ? T.pal.accent : T.glass.border,
-          ),
+          border: Border.all(color: active ? T.pal.accent : T.glass.border),
         ),
         child: Text(
           label,

@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../models/approach.dart';
 import '../models/rhythm_models.dart';
 import '../providers/profile_provider.dart';
+import '../providers/release_rollout_provider.dart';
 import '../providers/rhythm_provider.dart';
+import '../services/event_bus_service.dart';
+import '../services/rhythm_engine_service.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
@@ -23,11 +26,20 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
   String? _loadedChildId;
   bool _loadScheduled = false;
 
-  String _wakeRangeKey = '0630_0700';
-  bool _daycareMode = false;
-  int? _napCountReality;
-  RhythmUpdateIssue _issue = RhythmUpdateIssue.nightWakes;
+  int _step = 0;
+  DateTime? _startedAt;
   bool _isSubmitting = false;
+
+  TimeOfDay? _wakeTime;
+  bool _wakeAsRange = false;
+
+  String _napToday = 'not_sure';
+  TimeOfDay? _napStart;
+  TimeOfDay? _napEnd;
+  TimeOfDay? _typicalNap;
+  bool _daycareMode = false;
+
+  String _bedtimeTarget = 'same'; // earlier/same/later
 
   int _ageMonthsFor(AgeBracket age) {
     return switch (age) {
@@ -45,13 +57,36 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
     };
   }
 
-  (int, int) _wakeRangeMinutes(String key) {
-    return switch (key) {
-      '0600_0630' => (6 * 60, (6 * 60) + 30),
-      '0630_0700' => ((6 * 60) + 30, 7 * 60),
-      '0700_0730' => (7 * 60, (7 * 60) + 30),
-      _ => ((6 * 60) + 30, 7 * 60),
-    };
+  int _toMinutes(TimeOfDay t) => (t.hour * 60) + t.minute;
+
+  String _formatTime(BuildContext context, int minutes) {
+    final normalized = ((minutes % 1440) + 1440) % 1440;
+    return MaterialLocalizations.of(context).formatTimeOfDay(
+      TimeOfDay(hour: normalized ~/ 60, minute: normalized % 60),
+      alwaysUse24HourFormat: MediaQuery.of(context).alwaysUse24HourFormat,
+    );
+  }
+
+  Future<void> _pickWakeTime(BuildContext context) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _wakeTime ?? const TimeOfDay(hour: 6, minute: 45),
+    );
+    if (picked != null) {
+      setState(() => _wakeTime = picked);
+    }
+  }
+
+  Future<void> _pickTime(
+    BuildContext context, {
+    required TimeOfDay? current,
+    required ValueChanged<TimeOfDay> onPicked,
+  }) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: current ?? TimeOfDay.now(),
+    );
+    if (picked != null) onPicked(picked);
   }
 
   Future<void> _loadIfNeeded() async {
@@ -63,6 +98,13 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
     await ref
         .read(rhythmProvider.notifier)
         .load(childId: childId, ageMonths: _ageMonthsFor(profile.ageBracket));
+
+    final schedule = ref.read(rhythmProvider).todaySchedule;
+    if (schedule != null && _wakeTime == null) {
+      final m = schedule.wakeTimeMinutes;
+      _wakeTime = TimeOfDay(hour: m ~/ 60, minute: m % 60);
+    }
+    _startedAt ??= DateTime.now();
   }
 
   void _scheduleLoadIfNeeded() {
@@ -75,27 +117,115 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
     });
   }
 
-  Future<void> _buildUpdatedRhythm({
+  bool _canContinue() {
+    return switch (_step) {
+      0 => _wakeTime != null,
+      1 => _napToday != 'yes' || _napStart != null || _typicalNap != null,
+      2 => true,
+      _ => true,
+    };
+  }
+
+  int? _napDurationHintMinutes() {
+    if (_napStart == null || _napEnd == null) return null;
+    final start = _toMinutes(_napStart!);
+    final end = _toMinutes(_napEnd!);
+    if (end >= start) return end - start;
+    return (end + 1440) - start;
+  }
+
+  int? _napCountReality(int? currentNapTarget) {
+    return switch (_napToday) {
+      'yes' => currentNapTarget,
+      'no' =>
+        currentNapTarget == null ? null : (currentNapTarget - 1).clamp(1, 4),
+      _ => null,
+    };
+  }
+
+  RhythmUpdateIssue _issueFromAnswers({int? napDurationHintMinutes}) {
+    if (_napToday == 'no') return RhythmUpdateIssue.shortNaps;
+    if (napDurationHintMinutes != null && napDurationHintMinutes < 45) {
+      return RhythmUpdateIssue.shortNaps;
+    }
+    if (_bedtimeTarget == 'earlier') return RhythmUpdateIssue.earlyWakes;
+    if (_bedtimeTarget == 'later') return RhythmUpdateIssue.bedtimeBattles;
+    if (_typicalNap != null) {
+      final typical = _toMinutes(_typicalNap!);
+      if (typical >= (15 * 60) + 30) {
+        return RhythmUpdateIssue.bedtimeBattles;
+      }
+    }
+    return RhythmUpdateIssue.nightWakes;
+  }
+
+  RhythmUpdatePlan? _buildPreviewPlan({
+    required RhythmState state,
+    required int ageMonths,
+  }) {
+    if (_wakeTime == null || state.rhythm == null) return null;
+    final wake = _toMinutes(_wakeTime!);
+    final wakeStart = _wakeAsRange ? wake - 15 : wake;
+    final wakeEnd = _wakeAsRange ? wake + 15 : wake;
+    final napDurationHint = _napDurationHintMinutes();
+    final napReality = _napCountReality(state.rhythm?.napCountTarget);
+    final issue = _issueFromAnswers(napDurationHintMinutes: napDurationHint);
+    final whyNow = state.shiftAssessment.shouldSuggestUpdate
+        ? state.shiftAssessment.explanation
+        : 'Manual rhythm refresh requested.';
+
+    return RhythmEngineService.instance.buildUpdatedRhythm(
+      currentRhythm: state.rhythm!,
+      ageMonths: ageMonths,
+      wakeRangeStartMinutes: wakeStart,
+      wakeRangeEndMinutes: wakeEnd,
+      daycareMode: _daycareMode,
+      napCountReality: napReality,
+      issue: issue,
+      whyNow: whyNow,
+      now: DateTime.now(),
+    );
+  }
+
+  Future<void> _submit({
     required String childId,
     required int ageMonths,
   }) async {
-    if (_isSubmitting) return;
-    final range = _wakeRangeMinutes(_wakeRangeKey);
+    if (_isSubmitting || _wakeTime == null) return;
+
+    final wake = _toMinutes(_wakeTime!);
+    final wakeStart = _wakeAsRange ? wake - 15 : wake;
+    final wakeEnd = _wakeAsRange ? wake + 15 : wake;
+
+    final currentNapTarget = ref.read(rhythmProvider).rhythm?.napCountTarget;
+    final napReality = _napCountReality(currentNapTarget);
+    final napDurationHint = _napDurationHintMinutes();
+    final issue = _issueFromAnswers(napDurationHintMinutes: napDurationHint);
+
     setState(() => _isSubmitting = true);
     await ref
         .read(rhythmProvider.notifier)
         .applyRhythmUpdate(
           childId: childId,
           ageMonths: ageMonths,
-          wakeRangeStartMinutes: range.$1,
-          wakeRangeEndMinutes: range.$2,
+          wakeRangeStartMinutes: wakeStart,
+          wakeRangeEndMinutes: wakeEnd,
           daycareMode: _daycareMode,
-          napCountReality: _napCountReality,
-          issue: _issue,
+          napCountReality: napReality,
+          issue: issue,
+          napDurationHintMinutes: napDurationHint,
         );
-    if (mounted) {
-      setState(() => _isSubmitting = false);
+    final startedAt = _startedAt;
+    if (startedAt != null) {
+      final durationMs = DateTime.now().difference(startedAt).inMilliseconds;
+      await EventBusService.emit(
+        childId: childId,
+        pillar: 'SLEEP_TONIGHT',
+        type: 'ST_UPDATE_WIZARD_COMPLETED',
+        metadata: {'duration_ms': '$durationMs'},
+      );
     }
+    if (mounted) setState(() => _isSubmitting = false);
   }
 
   @override
@@ -107,14 +237,17 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
       return const ProfileRequiredView(title: 'Update Rhythm');
     }
 
+    final rollout = ref.watch(releaseRolloutProvider);
+    if (!rollout.isLoading && !rollout.sleepRhythmSurfacesEnabled) {
+      return const FeaturePausedView(title: 'Update Rhythm');
+    }
+
     final childId = profile.createdAt;
     final ageMonths = _ageMonthsFor(profile.ageBracket);
     final state = ref.watch(rhythmProvider);
     final rhythm = state.rhythm;
-    final shift = state.shiftAssessment;
     final updatePlan = state.lastUpdatePlan;
-
-    _napCountReality ??= rhythm?.napCountTarget;
+    final previewPlan = _buildPreviewPlan(state: state, ageMonths: ageMonths);
 
     if (state.isLoading) {
       return const Scaffold(
@@ -144,7 +277,7 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                   ),
                   GlassCard(
                     child: Text(
-                      'No rhythm is loaded yet. Return to Current Rhythm and try again.',
+                      'No rhythm loaded yet. Open Current Rhythm first.',
                       style: T.type.body,
                     ),
                   ),
@@ -166,7 +299,7 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
               children: [
                 const ScreenHeader(
                   title: 'Update Rhythm',
-                  subtitle: '2–5 taps, then hold for the next 1–2 weeks.',
+                  subtitle: '2–5 taps, then run it for 1–2 weeks.',
                 ),
                 Expanded(
                   child: SingleChildScrollView(
@@ -178,117 +311,221 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Why update now', style: T.type.h3),
-                              const SizedBox(height: 8),
                               Text(
-                                shift.shouldSuggestUpdate
-                                    ? shift.explanation
-                                    : 'Manual update. No forced trigger detected.',
-                                style: T.type.body,
+                                'Step ${_step + 1} of 4',
+                                style: T.type.caption,
                               ),
-                              if (shift.reasons.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              if (_step == 0) ...[
+                                Text('Wake time', style: T.type.h3),
                                 const SizedBox(height: 8),
-                                ...shift.reasons
-                                    .take(3)
-                                    .map(
-                                      (reason) => Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 4,
-                                        ),
-                                        child: Text(
-                                          '• ${reason.title}',
-                                          style: T.type.caption.copyWith(
-                                            color: T.pal.textSecondary,
-                                          ),
+                                OutlinedButton(
+                                  onPressed: () => _pickWakeTime(context),
+                                  child: Text(
+                                    _wakeTime == null
+                                        ? 'Pick wake time'
+                                        : 'Wake at ${_wakeTime!.format(context)}',
+                                  ),
+                                ),
+                                SwitchListTile.adaptive(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(
+                                    'Use a ±15 min range',
+                                    style: T.type.caption,
+                                  ),
+                                  value: _wakeAsRange,
+                                  onChanged: (v) =>
+                                      setState(() => _wakeAsRange = v),
+                                ),
+                              ],
+                              if (_step == 1) ...[
+                                Text('Nap today?', style: T.type.h3),
+                                const SizedBox(height: 8),
+                                _SegmentedString(
+                                  values: const ['yes', 'no', 'not_sure'],
+                                  selected: _napToday,
+                                  label: (v) => switch (v) {
+                                    'yes' => 'Yes',
+                                    'no' => 'No',
+                                    _ => 'Not sure',
+                                  },
+                                  onChanged: (v) =>
+                                      setState(() => _napToday = v),
+                                ),
+                                SwitchListTile.adaptive(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(
+                                    'Daycare mode',
+                                    style: T.type.caption,
+                                  ),
+                                  value: _daycareMode,
+                                  onChanged: (v) =>
+                                      setState(() => _daycareMode = v),
+                                ),
+                                if (_napToday == 'yes') ...[
+                                  const SizedBox(height: 8),
+                                  OutlinedButton(
+                                    onPressed: () => _pickTime(
+                                      context,
+                                      current: _napStart,
+                                      onPicked: (v) =>
+                                          setState(() => _napStart = v),
+                                    ),
+                                    child: Text(
+                                      _napStart == null
+                                          ? 'Nap start (optional)'
+                                          : 'Nap start ${_napStart!.format(context)}',
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  OutlinedButton(
+                                    onPressed: () => _pickTime(
+                                      context,
+                                      current: _napEnd,
+                                      onPicked: (v) =>
+                                          setState(() => _napEnd = v),
+                                    ),
+                                    child: Text(
+                                      _napEnd == null
+                                          ? 'Nap end (optional)'
+                                          : 'Nap end ${_napEnd!.format(context)}',
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  OutlinedButton(
+                                    onPressed: () => _pickTime(
+                                      context,
+                                      current: _typicalNap,
+                                      onPicked: (v) =>
+                                          setState(() => _typicalNap = v),
+                                    ),
+                                    child: Text(
+                                      _typicalNap == null
+                                          ? 'Typical nap time'
+                                          : 'Typical ${_typicalNap!.format(context)}',
+                                    ),
+                                  ),
+                                ],
+                              ],
+                              if (_step == 2) ...[
+                                Text('Bedtime target', style: T.type.h3),
+                                const SizedBox(height: 8),
+                                _SegmentedString(
+                                  values: const ['earlier', 'same', 'later'],
+                                  selected: _bedtimeTarget,
+                                  label: (v) => switch (v) {
+                                    'earlier' => 'Earlier',
+                                    'same' => 'Same',
+                                    _ => 'Later',
+                                  },
+                                  onChanged: (v) =>
+                                      setState(() => _bedtimeTarget = v),
+                                ),
+                              ],
+                              if (_step == 3) ...[
+                                Text('Review', style: T.type.h3),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Wake ${_wakeTime?.format(context) ?? '--'}${_wakeAsRange ? ' (±15m)' : ''}',
+                                  style: T.type.body,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Nap today: ${_napToday == 'yes'
+                                      ? 'Yes'
+                                      : _napToday == 'no'
+                                      ? 'No'
+                                      : 'Not sure'}',
+                                  style: T.type.body,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Bedtime target: ${_bedtimeTarget[0].toUpperCase()}${_bedtimeTarget.substring(1)}',
+                                  style: T.type.body,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Daycare mode: ${_daycareMode ? 'On' : 'Off'}',
+                                  style: T.type.body,
+                                ),
+                                if (_napDurationHintMinutes() != null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Nap duration hint: ${_napDurationHintMinutes()} min',
+                                    style: T.type.body,
+                                  ),
+                                ],
+                                if (previewPlan != null) ...[
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    'Confidence: ${previewPlan.confidence.label}',
+                                    style: T.type.caption.copyWith(
+                                      color: T.pal.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    previewPlan.whyNow,
+                                    style: T.type.caption.copyWith(
+                                      color: T.pal.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    previewPlan.anchorRecommendation,
+                                    style: T.type.caption.copyWith(
+                                      color: T.pal.textSecondary,
+                                    ),
+                                  ),
+                                  if (previewPlan.changeSummary.isNotEmpty) ...[
+                                    const SizedBox(height: 6),
+                                    ...previewPlan.changeSummary.map(
+                                      (line) => Text(
+                                        '• $line',
+                                        style: T.type.caption.copyWith(
+                                          color: T.pal.textSecondary,
                                         ),
                                       ),
                                     ),
+                                  ],
+                                ],
                               ],
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        GlassCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Wake time range', style: T.type.label),
-                              const SizedBox(height: 8),
-                              _ChoiceWrap(
-                                options: const {
-                                  '0600_0630': '06:00–06:30',
-                                  '0630_0700': '06:30–07:00',
-                                  '0700_0730': '07:00–07:30',
-                                },
-                                selected: _wakeRangeKey,
-                                onChanged: (value) {
-                                  setState(() => _wakeRangeKey = value);
-                                },
-                              ),
                               const SizedBox(height: 12),
-                              Text('Daycare', style: T.type.label),
-                              const SizedBox(height: 8),
-                              _ChoiceWrap(
-                                options: const {'no': 'No', 'yes': 'Yes'},
-                                selected: _daycareMode ? 'yes' : 'no',
-                                onChanged: (value) {
-                                  setState(() => _daycareMode = value == 'yes');
-                                },
-                              ),
-                              const SizedBox(height: 12),
-                              Text('Nap count reality', style: T.type.label),
-                              const SizedBox(height: 8),
-                              _ChoiceWrap(
-                                options: const {
-                                  '1': '1 nap',
-                                  '2': '2 naps',
-                                  '3': '3 naps',
-                                  '4': '4 naps',
-                                },
-                                selected: (_napCountReality ?? 2).toString(),
-                                onChanged: (value) {
-                                  setState(
-                                    () =>
-                                        _napCountReality = int.tryParse(value),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 12),
-                              Text('Biggest issue', style: T.type.label),
-                              const SizedBox(height: 8),
-                              _ChoiceWrap(
-                                options: const {
-                                  'early_wakes': 'Early wakes',
-                                  'night_wakes': 'Night wakes',
-                                  'short_naps': 'Short naps',
-                                  'bedtime_battles': 'Bedtime battles',
-                                },
-                                selected: _issue.wire,
-                                onChanged: (value) {
-                                  setState(
-                                    () => _issue =
-                                        RhythmUpdateIssueWire.fromString(value),
-                                  );
-                                },
+                              Row(
+                                children: [
+                                  if (_step > 0)
+                                    TextButton(
+                                      onPressed: () => setState(() => _step--),
+                                      child: const Text('Back'),
+                                    ),
+                                  const Spacer(),
+                                  GlassCta(
+                                    label: _step < 3
+                                        ? 'Next'
+                                        : _isSubmitting
+                                        ? 'Saving…'
+                                        : 'Save rhythm',
+                                    expand: false,
+                                    compact: true,
+                                    enabled: _canContinue() && !_isSubmitting,
+                                    onTap: () async {
+                                      if (_step < 3) {
+                                        setState(() => _step++);
+                                        return;
+                                      }
+                                      await _submit(
+                                        childId: childId,
+                                        ageMonths: ageMonths,
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        _ActionChip(
-                          label: _isSubmitting
-                              ? 'Building…'
-                              : 'Build next 1–2 week rhythm',
-                          onTap: _isSubmitting
-                              ? () {}
-                              : () => _buildUpdatedRhythm(
-                                  childId: childId,
-                                  ageMonths: ageMonths,
-                                ),
-                          selected: true,
                         ),
                         if (updatePlan != null) ...[
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10),
                           GlassCard(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,31 +533,20 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                 Text('New rhythm ready', style: T.type.h3),
                                 const SizedBox(height: 6),
                                 Text(
+                                  'Recommended anchor: ${_formatTime(context, updatePlan.rhythm.bedtimeAnchorMinutes)} (lock for 7–14 days).',
+                                  style: T.type.body,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
                                   'Confidence: ${updatePlan.confidence.label}',
                                   style: T.type.caption.copyWith(
                                     color: T.pal.textSecondary,
                                   ),
                                 ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  updatePlan.anchorRecommendation,
-                                  style: T.type.body,
-                                ),
-                                const SizedBox(height: 6),
-                                ...updatePlan.changeSummary.map(
-                                  (line) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 4),
-                                    child: Text(
-                                      '• $line',
-                                      style: T.type.caption.copyWith(
-                                        color: T.pal.textSecondary,
-                                      ),
-                                    ),
-                                  ),
-                                ),
                                 const SizedBox(height: 8),
-                                _ActionChip(
+                                GlassCta(
                                   label: 'Back to Current Rhythm',
+                                  compact: true,
                                   onTap: () => context.go('/sleep/rhythm'),
                                 ),
                               ],
@@ -341,15 +567,17 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
   }
 }
 
-class _ChoiceWrap extends StatelessWidget {
-  const _ChoiceWrap({
-    required this.options,
+class _SegmentedString extends StatelessWidget {
+  const _SegmentedString({
+    required this.values,
     required this.selected,
+    required this.label,
     required this.onChanged,
   });
 
-  final Map<String, String> options;
+  final List<String> values;
   final String selected;
+  final String Function(String value) label;
   final ValueChanged<String> onChanged;
 
   @override
@@ -357,49 +585,19 @@ class _ChoiceWrap extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: options.entries.map((entry) {
-        final isSelected = selected == entry.key;
-        return _ActionChip(
-          label: entry.value,
+      children: values.map((value) {
+        final isSelected = selected == value;
+        return ChoiceChip(
+          label: Text(label(value)),
           selected: isSelected,
-          onTap: () => onChanged(entry.key),
+          onSelected: (_) => onChanged(value),
+          selectedColor: T.glass.fillAccent,
+          labelStyle: T.type.caption.copyWith(
+            color: isSelected ? T.pal.accent : T.pal.textSecondary,
+          ),
+          side: BorderSide(color: T.glass.border),
         );
       }).toList(),
-    );
-  }
-}
-
-class _ActionChip extends StatelessWidget {
-  const _ActionChip({
-    required this.label,
-    required this.onTap,
-    this.selected = false,
-  });
-
-  final String label;
-  final VoidCallback onTap;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = selected ? T.pal.accent : T.pal.textSecondary;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? T.glass.fillAccent : T.glass.fill,
-          borderRadius: BorderRadius.circular(T.radius.pill),
-          border: Border.all(color: T.glass.border),
-        ),
-        child: Text(
-          label,
-          style: T.type.caption.copyWith(
-            color: color,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
     );
   }
 }

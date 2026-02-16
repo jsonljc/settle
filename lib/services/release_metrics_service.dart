@@ -21,6 +21,11 @@ class ReleaseMetricsSnapshot {
     required this.repeatUseActiveDays7d,
     required this.repeatUseMet,
     required this.familyDiffAccepted7d,
+    required this.appSessions7d,
+    required this.appCrashes7d,
+    required this.crashFreeRate7d,
+    required this.crashFreeMet7d,
+    required this.coreFunnelStable7d,
   });
 
   final int windowDays;
@@ -42,10 +47,17 @@ class ReleaseMetricsSnapshot {
   final int repeatUseActiveDays7d;
   final bool repeatUseMet;
   final int familyDiffAccepted7d;
+  final int appSessions7d;
+  final int appCrashes7d;
+  final double? crashFreeRate7d;
+  final bool crashFreeMet7d;
+  final bool coreFunnelStable7d;
 }
 
 class ReleaseMetricsService {
   const ReleaseMetricsService();
+
+  static const double _crashFreeTarget7d = 0.995;
 
   static const _helpNowIncidentTypes = {
     EventTypes.hnUsedTantrum,
@@ -68,6 +80,7 @@ class ReleaseMetricsService {
       days: 7,
       childId: childId,
     );
+    final weekGlobal = await EventBusService.eventsInLastDays(7);
 
     final helpNowSessions = recent
         .where((e) => _helpNowIncidentTypes.contains(e['type']))
@@ -87,6 +100,17 @@ class ReleaseMetricsService {
         .map((e) => _metadataInt(e, EventMetadataKeys.timeToStartSeconds))
         .whereType<int>()
         .toList();
+    final sleepFirstGuidanceTimesMs = recent
+        .where((e) => e['type'] == EventTypes.stFirstGuidanceRendered)
+        .map((e) => _metadataInt(e, EventMetadataKeys.timeToFirstGuidanceMs))
+        .whereType<int>()
+        .toList();
+    final sleepGuidanceMedianSeconds = sleepFirstGuidanceTimesMs.isNotEmpty
+        ? ((_median(sleepFirstGuidanceTimesMs) ?? 0) / 1000)
+        : _median(sleepStartTimes);
+    final sleepGuidanceSamples = sleepFirstGuidanceTimesMs.isNotEmpty
+        ? sleepFirstGuidanceTimesMs.length
+        : sleepStartTimes.length;
     final morningReviews = recent
         .where((e) => e['type'] == EventTypes.stMorningReviewComplete)
         .toList();
@@ -118,6 +142,12 @@ class ReleaseMetricsService {
     final acceptedDiffs = week
         .where((e) => e['type'] == EventTypes.frDiffAccepted)
         .length;
+    final appSessions7d = weekGlobal
+        .where((e) => e['type'] == EventTypes.ppAppSessionStarted)
+        .length;
+    final appCrashes7d = weekGlobal
+        .where((e) => e['type'] == EventTypes.ppAppCrash)
+        .length;
 
     final helpNowOutcomeRate = helpNowSessions.isEmpty
         ? null
@@ -128,13 +158,33 @@ class ReleaseMetricsService {
     final sleepAdoptionRate = sleepActiveDays.isEmpty
         ? null
         : sleepActiveDays.length / windowDays;
+    final crashFreeRate7d = appSessions7d == 0
+        ? null
+        : (appSessions7d - appCrashes7d).clamp(0, appSessions7d) /
+              appSessions7d;
+    final crashFreeMet7d =
+        crashFreeRate7d != null && crashFreeRate7d >= _crashFreeTarget7d;
+    final guidanceThresholdSeconds = sleepFirstGuidanceTimesMs.isNotEmpty
+        ? 20.0
+        : 60.0;
+    final coreFunnelStable7d =
+        helpNowTimes.isNotEmpty &&
+        sleepStartTimes.isNotEmpty &&
+        sleepMorningReviewRate != null &&
+        helpNowTimes.length >= 2 &&
+        sleepGuidanceSamples >= 2 &&
+        _median(helpNowTimes)! <= 10 &&
+        sleepGuidanceMedianSeconds != null &&
+        sleepGuidanceMedianSeconds <= guidanceThresholdSeconds &&
+        sleepMorningReviewRate >= 0.5 &&
+        activeDays.length >= 2;
 
     return ReleaseMetricsSnapshot(
       windowDays: windowDays,
       sleepAdoptionRate: sleepAdoptionRate,
       sleepActiveDays: sleepActiveDays.length,
-      sleepTimeToGuidanceMedianSeconds: _median(sleepStartTimes),
-      sleepTimeToGuidanceSamples: sleepStartTimes.length,
+      sleepTimeToGuidanceMedianSeconds: sleepGuidanceMedianSeconds,
+      sleepTimeToGuidanceSamples: sleepGuidanceSamples,
       sleepRecapCompletionRate: sleepMorningReviewRate,
       helpNowMedianSeconds: _median(helpNowTimes),
       helpNowMedianSamples: helpNowTimes.length,
@@ -149,6 +199,11 @@ class ReleaseMetricsService {
       repeatUseActiveDays7d: activeDays.length,
       repeatUseMet: activeDays.length >= 2,
       familyDiffAccepted7d: acceptedDiffs,
+      appSessions7d: appSessions7d,
+      appCrashes7d: appCrashes7d,
+      crashFreeRate7d: crashFreeRate7d,
+      crashFreeMet7d: crashFreeMet7d,
+      coreFunnelStable7d: coreFunnelStable7d,
     );
   }
 
