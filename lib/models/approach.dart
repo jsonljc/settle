@@ -166,13 +166,39 @@ enum FamilyStructure {
   @HiveField(2)
   withSupport, // grandparents, nanny, etc.
   @HiveField(3)
-  other;
+  other,
+  @HiveField(4)
+  coParent,
+  @HiveField(5)
+  blended;
 
   String get label => switch (this) {
     twoParents => 'Two parents',
     singleParent => 'Single parent',
     withSupport => 'With support',
     other => 'Other',
+    coParent => 'Co-parenting',
+    blended => 'Blended family',
+  };
+}
+
+/// Parent regulation check-in level used by v2 flows.
+@HiveType(typeId: 43)
+enum RegulationLevel {
+  @HiveField(0)
+  calm,
+  @HiveField(1)
+  stressed,
+  @HiveField(2)
+  anxious,
+  @HiveField(3)
+  angry;
+
+  String get label => switch (this) {
+    calm => 'Calm',
+    stressed => 'Stressed',
+    anxious => 'Anxious',
+    angry => 'Angry',
   };
 }
 

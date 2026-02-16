@@ -24,6 +24,10 @@ class BabyProfileAdapter extends TypeAdapter<BabyProfile> {
       primaryChallenge: fields[4] as PrimaryChallenge,
       feedingType: fields[5] as FeedingType,
       tantrumProfile: fields[7] as TantrumProfile?,
+      regulationLevel: fields[9] as RegulationLevel?,
+      preferredBedtime: fields[10] as String?,
+      ageMonths: fields[11] as int?,
+      sleepProfileComplete: fields[12] as bool?,
       focusMode: fields[8] as FocusMode?,
       createdAt: fields[6] as String?,
     );
@@ -32,7 +36,7 @@ class BabyProfileAdapter extends TypeAdapter<BabyProfile> {
   @override
   void write(BinaryWriter writer, BabyProfile obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -50,7 +54,15 @@ class BabyProfileAdapter extends TypeAdapter<BabyProfile> {
       ..writeByte(7)
       ..write(obj.tantrumProfile)
       ..writeByte(8)
-      ..write(obj.focusMode);
+      ..write(obj.focusMode)
+      ..writeByte(9)
+      ..write(obj.regulationLevel)
+      ..writeByte(10)
+      ..write(obj.preferredBedtime)
+      ..writeByte(11)
+      ..write(obj.ageMonths)
+      ..writeByte(12)
+      ..write(obj.sleepProfileComplete);
   }
 
   @override

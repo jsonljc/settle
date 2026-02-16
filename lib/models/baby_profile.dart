@@ -40,6 +40,22 @@ class BabyProfile extends HiveObject {
   @HiveField(8)
   FocusMode focusMode;
 
+  /// Parent self-reported regulation level used by v2 flows.
+  @HiveField(9)
+  RegulationLevel? regulationLevel;
+
+  /// Optional preferred bedtime in 24h local time, e.g. "19:00".
+  @HiveField(10)
+  String? preferredBedtime;
+
+  /// Child age in months for v2 onboarding precision.
+  @HiveField(11)
+  int? ageMonths;
+
+  /// Set false when v2 onboarding users still need sleep mini-onboarding.
+  @HiveField(12)
+  bool? sleepProfileComplete;
+
   BabyProfile({
     required this.name,
     required this.ageBracket,
@@ -48,6 +64,10 @@ class BabyProfile extends HiveObject {
     required this.primaryChallenge,
     required this.feedingType,
     this.tantrumProfile,
+    this.regulationLevel,
+    this.preferredBedtime,
+    this.ageMonths,
+    this.sleepProfileComplete,
     FocusMode? focusMode,
     String? createdAt,
   }) : createdAt = createdAt ?? DateTime.now().toIso8601String(),
@@ -75,6 +95,10 @@ class BabyProfile extends HiveObject {
     FeedingType? feedingType,
     Object? tantrumProfile = _noChange,
     FocusMode? focusMode,
+    RegulationLevel? regulationLevel,
+    String? preferredBedtime,
+    int? ageMonths,
+    bool? sleepProfileComplete,
   }) {
     return BabyProfile(
       name: name ?? this.name,
@@ -87,6 +111,10 @@ class BabyProfile extends HiveObject {
           ? this.tantrumProfile
           : tantrumProfile as TantrumProfile?,
       focusMode: focusMode ?? this.focusMode,
+      regulationLevel: regulationLevel ?? this.regulationLevel,
+      preferredBedtime: preferredBedtime ?? this.preferredBedtime,
+      ageMonths: ageMonths ?? this.ageMonths,
+      sleepProfileComplete: sleepProfileComplete ?? this.sleepProfileComplete,
       createdAt: createdAt,
     );
   }

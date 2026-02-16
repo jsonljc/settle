@@ -77,6 +77,51 @@ class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
   Future<void> setScheduleDriftNotificationsEnabled(bool value) async {
     state = state.copyWith(scheduleDriftNotificationsEnabled: value);
   }
+
+  @override
+  Future<void> setV2NavigationEnabled(bool value) async {
+    state = state.copyWith(v2NavigationEnabled: value);
+  }
+
+  @override
+  Future<void> setV2OnboardingEnabled(bool value) async {
+    state = state.copyWith(v2OnboardingEnabled: value);
+  }
+
+  @override
+  Future<void> setPlanTabEnabled(bool value) async {
+    state = state.copyWith(planTabEnabled: value);
+  }
+
+  @override
+  Future<void> setFamilyTabEnabled(bool value) async {
+    state = state.copyWith(familyTabEnabled: value);
+  }
+
+  @override
+  Future<void> setLibraryTabEnabled(bool value) async {
+    state = state.copyWith(libraryTabEnabled: value);
+  }
+
+  @override
+  Future<void> setPocketEnabled(bool value) async {
+    state = state.copyWith(pocketEnabled: value);
+  }
+
+  @override
+  Future<void> setRegulateEnabled(bool value) async {
+    state = state.copyWith(regulateEnabled: value);
+  }
+
+  @override
+  Future<void> setSmartNudgesEnabled(bool value) async {
+    state = state.copyWith(smartNudgesEnabled: value);
+  }
+
+  @override
+  Future<void> setPatternDetectionEnabled(bool value) async {
+    state = state.copyWith(patternDetectionEnabled: value);
+  }
 }
 
 void main() {

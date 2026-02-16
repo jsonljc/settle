@@ -1,9 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../models/user_card.dart';
+import '../router.dart';
+
 const _rolloutBox = 'release_rollout_v1';
 const _rolloutKey = 'state';
-const _rolloutSchemaVersion = 2;
+const _rolloutSchemaVersion = 3;
+
+const _v2DeckMigrationGuardKey = 'v2_tantrum_deck_migrated';
+const _tantrumDeckBoxName = 'tantrum_deck';
+const _tantrumDeckStateKey = 'deck_state_v2';
+const _userCardsBoxName = 'user_cards';
 
 class ReleaseRolloutState {
   const ReleaseRolloutState({
@@ -19,6 +29,15 @@ class ReleaseRolloutState {
     required this.rhythmShiftDetectorPromptsEnabled,
     required this.windDownNotificationsEnabled,
     required this.scheduleDriftNotificationsEnabled,
+    this.v2NavigationEnabled = false,
+    this.v2OnboardingEnabled = false,
+    this.planTabEnabled = false,
+    this.familyTabEnabled = false,
+    this.libraryTabEnabled = false,
+    this.pocketEnabled = false,
+    this.regulateEnabled = false,
+    this.smartNudgesEnabled = false,
+    this.patternDetectionEnabled = false,
   });
 
   final bool isLoading;
@@ -34,6 +53,16 @@ class ReleaseRolloutState {
   final bool windDownNotificationsEnabled;
   final bool scheduleDriftNotificationsEnabled;
 
+  final bool v2NavigationEnabled;
+  final bool v2OnboardingEnabled;
+  final bool planTabEnabled;
+  final bool familyTabEnabled;
+  final bool libraryTabEnabled;
+  final bool pocketEnabled;
+  final bool regulateEnabled;
+  final bool smartNudgesEnabled;
+  final bool patternDetectionEnabled;
+
   static const initial = ReleaseRolloutState(
     isLoading: true,
     helpNowEnabled: true,
@@ -47,6 +76,15 @@ class ReleaseRolloutState {
     rhythmShiftDetectorPromptsEnabled: true,
     windDownNotificationsEnabled: true,
     scheduleDriftNotificationsEnabled: false,
+    v2NavigationEnabled: false,
+    v2OnboardingEnabled: false,
+    planTabEnabled: false,
+    familyTabEnabled: false,
+    libraryTabEnabled: false,
+    pocketEnabled: false,
+    regulateEnabled: false,
+    smartNudgesEnabled: false,
+    patternDetectionEnabled: false,
   );
 
   ReleaseRolloutState copyWith({
@@ -62,6 +100,15 @@ class ReleaseRolloutState {
     bool? rhythmShiftDetectorPromptsEnabled,
     bool? windDownNotificationsEnabled,
     bool? scheduleDriftNotificationsEnabled,
+    bool? v2NavigationEnabled,
+    bool? v2OnboardingEnabled,
+    bool? planTabEnabled,
+    bool? familyTabEnabled,
+    bool? libraryTabEnabled,
+    bool? pocketEnabled,
+    bool? regulateEnabled,
+    bool? smartNudgesEnabled,
+    bool? patternDetectionEnabled,
   }) {
     return ReleaseRolloutState(
       isLoading: isLoading ?? this.isLoading,
@@ -85,6 +132,16 @@ class ReleaseRolloutState {
       scheduleDriftNotificationsEnabled:
           scheduleDriftNotificationsEnabled ??
           this.scheduleDriftNotificationsEnabled,
+      v2NavigationEnabled: v2NavigationEnabled ?? this.v2NavigationEnabled,
+      v2OnboardingEnabled: v2OnboardingEnabled ?? this.v2OnboardingEnabled,
+      planTabEnabled: planTabEnabled ?? this.planTabEnabled,
+      familyTabEnabled: familyTabEnabled ?? this.familyTabEnabled,
+      libraryTabEnabled: libraryTabEnabled ?? this.libraryTabEnabled,
+      pocketEnabled: pocketEnabled ?? this.pocketEnabled,
+      regulateEnabled: regulateEnabled ?? this.regulateEnabled,
+      smartNudgesEnabled: smartNudgesEnabled ?? this.smartNudgesEnabled,
+      patternDetectionEnabled:
+          patternDetectionEnabled ?? this.patternDetectionEnabled,
     );
   }
 }
@@ -159,7 +216,22 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
               raw['wind_down_notifications_enabled'] as bool? ?? true,
           scheduleDriftNotificationsEnabled:
               raw['schedule_drift_notifications_enabled'] as bool? ?? false,
+          v2NavigationEnabled: raw['v2_navigation_enabled'] as bool? ?? false,
+          v2OnboardingEnabled: raw['v2_onboarding_enabled'] as bool? ?? false,
+          planTabEnabled: raw['plan_tab_enabled'] as bool? ?? false,
+          familyTabEnabled: raw['family_tab_enabled'] as bool? ?? false,
+          libraryTabEnabled: raw['library_tab_enabled'] as bool? ?? false,
+          pocketEnabled: raw['pocket_enabled'] as bool? ?? false,
+          regulateEnabled: raw['regulate_enabled'] as bool? ?? false,
+          smartNudgesEnabled: raw['smart_nudges_enabled'] as bool? ?? false,
+          patternDetectionEnabled:
+              raw['pattern_detection_enabled'] as bool? ?? false,
         );
+
+        if (next.v2NavigationEnabled) {
+          await _migrateTantrumDeckIfNeeded();
+        }
+
         if (schemaVersion < _rolloutSchemaVersion) {
           await _persist(next);
         } else {
@@ -193,11 +265,98 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
         'wind_down_notifications_enabled': next.windDownNotificationsEnabled,
         'schedule_drift_notifications_enabled':
             next.scheduleDriftNotificationsEnabled,
+        'v2_navigation_enabled': next.v2NavigationEnabled,
+        'v2_onboarding_enabled': next.v2OnboardingEnabled,
+        'plan_tab_enabled': next.planTabEnabled,
+        'family_tab_enabled': next.familyTabEnabled,
+        'library_tab_enabled': next.libraryTabEnabled,
+        'pocket_enabled': next.pocketEnabled,
+        'regulate_enabled': next.regulateEnabled,
+        'smart_nudges_enabled': next.smartNudgesEnabled,
+        'pattern_detection_enabled': next.patternDetectionEnabled,
       });
     } catch (_) {
       // Non-fatal in test contexts.
     }
     state = next;
+  }
+
+  Future<void> _migrateTantrumDeckIfNeeded() async {
+    try {
+      final box = await _ensureBox();
+      final migrated = box.get(_v2DeckMigrationGuardKey) as bool? ?? false;
+      if (migrated) return;
+
+      await _migrateTantrumDeck();
+      await box.put(_v2DeckMigrationGuardKey, true);
+    } catch (_) {
+      // Non-fatal migration path.
+    }
+  }
+
+  Future<void> _migrateTantrumDeck() async {
+    final deckBox = await Hive.openBox<dynamic>(_tantrumDeckBoxName);
+    final rawDeck = deckBox.get(_tantrumDeckStateKey);
+    final deckState = _decodeDeckState(rawDeck);
+    if (deckState == null) return;
+
+    final savedIds = _readStringList(deckState['savedIds']);
+    final favoriteIds = _readStringList(deckState['favoriteIds']);
+    final pinnedIds = _readStringList(deckState['pinnedIds']);
+
+    final allIds = _unique([...savedIds, ...favoriteIds, ...pinnedIds]);
+    if (allIds.isEmpty) return;
+
+    final userCardsBox = await Hive.openBox<UserCard>(_userCardsBoxName);
+    final now = DateTime.now();
+
+    for (final cardId in allIds) {
+      final existing = userCardsBox.get(cardId);
+      final merged = (existing ?? UserCard(cardId: cardId, savedAt: now))
+          .copyWith(
+            pinned: (existing?.pinned ?? false) || pinnedIds.contains(cardId),
+            savedAt: existing?.savedAt ?? now,
+            usageCount: existing?.usageCount ?? 0,
+            lastUsed: existing?.lastUsed,
+          );
+      await userCardsBox.put(cardId, merged);
+    }
+  }
+
+  Map<String, dynamic>? _decodeDeckState(dynamic rawDeck) {
+    if (rawDeck is Map) {
+      return Map<String, dynamic>.from(rawDeck);
+    }
+
+    if (rawDeck is String && rawDeck.trim().isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawDeck);
+        if (decoded is Map) {
+          return Map<String, dynamic>.from(decoded);
+        }
+      } catch (_) {
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  List<String> _readStringList(dynamic raw) {
+    if (raw is! List) return const [];
+    return _unique(raw.map((e) => e.toString()));
+  }
+
+  List<String> _unique(Iterable<String> ids) {
+    final seen = <String>{};
+    final out = <String>[];
+    for (final id in ids) {
+      final trimmed = id.trim();
+      if (trimmed.isEmpty || seen.contains(trimmed)) continue;
+      seen.add(trimmed);
+      out.add(trimmed);
+    }
+    return out;
   }
 
   Future<void> setHelpNowEnabled(bool value) async {
@@ -242,5 +401,46 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
 
   Future<void> setScheduleDriftNotificationsEnabled(bool value) async {
     await _persist(state.copyWith(scheduleDriftNotificationsEnabled: value));
+  }
+
+  Future<void> setV2NavigationEnabled(bool value) async {
+    if (value && !state.v2NavigationEnabled) {
+      await _migrateTantrumDeckIfNeeded();
+    }
+    await _persist(state.copyWith(v2NavigationEnabled: value));
+    refreshRouterFromRollout();
+  }
+
+  Future<void> setV2OnboardingEnabled(bool value) async {
+    await _persist(state.copyWith(v2OnboardingEnabled: value));
+  }
+
+  Future<void> setPlanTabEnabled(bool value) async {
+    await _persist(state.copyWith(planTabEnabled: value));
+  }
+
+  Future<void> setFamilyTabEnabled(bool value) async {
+    await _persist(state.copyWith(familyTabEnabled: value));
+  }
+
+  Future<void> setLibraryTabEnabled(bool value) async {
+    await _persist(state.copyWith(libraryTabEnabled: value));
+  }
+
+  Future<void> setPocketEnabled(bool value) async {
+    await _persist(state.copyWith(pocketEnabled: value));
+  }
+
+  Future<void> setRegulateEnabled(bool value) async {
+    await _persist(state.copyWith(regulateEnabled: value));
+    refreshRouterFromRollout();
+  }
+
+  Future<void> setSmartNudgesEnabled(bool value) async {
+    await _persist(state.copyWith(smartNudgesEnabled: value));
+  }
+
+  Future<void> setPatternDetectionEnabled(bool value) async {
+    await _persist(state.copyWith(patternDetectionEnabled: value));
   }
 }

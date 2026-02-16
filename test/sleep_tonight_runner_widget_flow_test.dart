@@ -261,6 +261,33 @@ class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
 
   @override
   Future<void> setScheduleDriftNotificationsEnabled(bool value) async {}
+
+  @override
+  Future<void> setV2NavigationEnabled(bool value) async {}
+
+  @override
+  Future<void> setV2OnboardingEnabled(bool value) async {}
+
+  @override
+  Future<void> setPlanTabEnabled(bool value) async {}
+
+  @override
+  Future<void> setFamilyTabEnabled(bool value) async {}
+
+  @override
+  Future<void> setLibraryTabEnabled(bool value) async {}
+
+  @override
+  Future<void> setPocketEnabled(bool value) async {}
+
+  @override
+  Future<void> setRegulateEnabled(bool value) async {}
+
+  @override
+  Future<void> setSmartNudgesEnabled(bool value) async {}
+
+  @override
+  Future<void> setPatternDetectionEnabled(bool value) async {}
 }
 
 class _FlowSleepTonightNotifier extends SleepTonightNotifier {

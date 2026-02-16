@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "cards": [
+    {
+      "id": "transitions_timer_choice",
+      "triggerType": "transitions",
+      "prevent": "Use two warnings and a visual timer before the change.",
+      "say": "Two more minutes, then shoes. Red or blue shoes?",
+      "do": "Move close, point to timer, then guide body calmly toward next step.",
+      "ifEscalates": "Hold limit with one sentence and help their body move through.",
+      "evidence": "Predictable transitions reduce uncertainty and protest intensity.",
+      "ageRange": "12-60",
+      "match": [
+        { "trigger": "transitions", "intensity": "mild" },
+        { "trigger": "transitions" }
+      ]
+    },
+    {
+      "id": "transitions_connection_bridge",
+      "triggerType": "transitions",
+      "prevent": "Add one tiny connection ritual before every hard transition.",
+      "say": "One hug, then we walk together to the car.",
+      "do": "Offer brief connection, then start movement without reopening negotiation.",
+      "ifEscalates": "Name feeling, keep boundary, and reduce language to one line.",
+      "evidence": "Connection-before-demand can lower resistance during transitions.",
+      "ageRange": "12-60",
+      "match": [
+        { "trigger": "transitions", "intensity": "intense" },
+        { "trigger": "transitions" }
+      ]
+    },
+    {
+      "id": "bedtime_predictable_sequence",
+      "triggerType": "bedtime_battles",
+      "prevent": "Keep routine order identical nightly and dim lights 30 minutes early.",
+      "say": "Bath, books, bed. Same plan, I am with you.",
+      "do": "Use calm pace, short phrases, and repeat sequence without adding new steps.",
+      "ifEscalates": "Stay present, lower voice, and repeat only the next routine step.",
+      "evidence": "Consistent routines support faster settling and lower bedtime conflict.",
+      "ageRange": "12-60",
+      "match": [
+        { "trigger": "bedtime_battles" }
+      ]
+    },
+    {
+      "id": "bedtime_limit_with_warmth",
+      "triggerType": "bedtime_battles",
+      "prevent": "Preview one bedtime limit before routine starts.",
+      "say": "I hear you want one more book. Tonight we keep our two-book plan.",
+      "do": "Validate once, restate limit once, then continue with body-based guidance.",
+      "ifEscalates": "Pause talking, breathe with them, and continue bedtime sequence.",
+      "evidence": "Warmth plus clear limits reduces escalation from repeated negotiations.",
+      "ageRange": "18-60",
+      "match": [
+        { "trigger": "bedtime_battles", "parentReaction": "already_yelled" },
+        { "trigger": "bedtime_battles" }
+      ]
+    },
+    {
+      "id": "public_meltdown_exit_plan",
+      "triggerType": "public_meltdowns",
+      "prevent": "Agree on a short outing plan and exit cue before entering.",
+      "say": "You are upset. I will help. We are stepping outside now.",
+      "do": "Reduce stimulation, move to quiet spot, and prioritize safety over teaching.",
+      "ifEscalates": "Contain physically if needed, keep voice low, and shorten sentences.",
+      "evidence": "Lowering sensory input and moving to safety decreases escalation duration.",
+      "ageRange": "18-60",
+      "match": [
+        { "trigger": "public_meltdowns", "intensity": "intense" },
+        { "trigger": "public_meltdowns" }
+      ]
+    },
+    {
+      "id": "public_meltdown_reconnect_repair",
+      "triggerType": "public_meltdowns",
+      "prevent": "Use snack, bathroom, and transition checks before crowded settings.",
+      "say": "Big feelings happened. You are safe with me.",
+      "do": "After calm returns, reconnect briefly and practice one simple redo behavior.",
+      "ifEscalates": "Skip coaching and return to co-regulation first.",
+      "evidence": "Repair after regulation helps learning without adding shame.",
+      "ageRange": "18-60",
+      "match": [
+        { "trigger": "public_meltdowns", "intensity": "mild" },
+        { "trigger": "public_meltdowns" }
+      ]
+    },
+    {
+      "id": "no_everything_offer_two",
+      "triggerType": "no_to_everything",
+      "prevent": "Convert commands into two acceptable choices when possible.",
+      "say": "It is time to leave. Do you hop or tiptoe to the door?",
+      "do": "Offer two choices once, then guide follow-through without adding options.",
+      "ifEscalates": "Acknowledge feeling and proceed with the original two choices only.",
+      "evidence": "Bounded choice supports autonomy while keeping adult structure.",
+      "ageRange": "24-60",
+      "match": [
+        { "trigger": "no_to_everything" }
+      ]
+    },
+    {
+      "id": "no_everything_first_then",
+      "triggerType": "no_to_everything",
+      "prevent": "Use short first-then language before known refusal points.",
+      "say": "First pajamas, then your song.",
+      "do": "Point to visual first-then cue and immediately start first task together.",
+      "ifEscalates": "Shrink task to smallest next action and keep first-then wording.",
+      "evidence": "First-then structure improves compliance in high-refusal moments.",
+      "ageRange": "24-60",
+      "match": [
+        { "trigger": "no_to_everything", "intensity": "mild" },
+        { "trigger": "no_to_everything" }
+      ]
+    },
+    {
+      "id": "sibling_conflict_narrate_boundary",
+      "triggerType": "sibling_conflict",
+      "prevent": "State one shared play rule before conflict-prone activities.",
+      "say": "Hands stay safe. I will help you both solve this.",
+      "do": "Separate bodies, narrate each need briefly, then give one turn-taking step.",
+      "ifEscalates": "Keep children physically apart and coach one child at a time.",
+      "evidence": "Clear safety boundaries plus coaching reduces sibling escalation.",
+      "ageRange": "24-60",
+      "match": [
+        { "trigger": "sibling_conflict" }
+      ]
+    },
+    {
+      "id": "sibling_conflict_repair_script",
+      "triggerType": "sibling_conflict",
+      "prevent": "Practice a short repair script during calm moments daily.",
+      "say": "Try: 'I did not like that. I need space.'",
+      "do": "Coach exact words, prompt eye contact only if calm, then reset activity.",
+      "ifEscalates": "Return to safety script and postpone repair conversation until calm.",
+      "evidence": "Rehearsed repair language improves conflict recovery over time.",
+      "ageRange": "30-60",
+      "match": [
+        { "trigger": "sibling_conflict", "parentReaction": "freezing" },
+        { "trigger": "sibling_conflict" }
+      ]
+    },
+    {
+      "id": "overwhelmed_parent_pause",
+      "triggerType": "overwhelmed",
+      "prevent": "Use a 10-second pause cue when you feel your body speeding up.",
+      "say": "I need one calm breath so I can help you.",
+      "do": "Step back safely, exhale longer than inhale three times, then respond.",
+      "ifEscalates": "Move to regulate flow first, then return with one short script.",
+      "evidence": "Brief physiological regulation improves parent response quality.",
+      "ageRange": "12-60",
+      "match": [
+        { "trigger": "overwhelmed", "parentReaction": "about_to_lose_it" },
+        { "trigger": "overwhelmed" }
+      ]
+    },
+    {
+      "id": "overwhelmed_repair_after_yell",
+      "triggerType": "overwhelmed",
+      "prevent": "Preload a repair line so you can reconnect quickly after rupture.",
+      "say": "I yelled. That was not okay. I am here to reset with you.",
+      "do": "Own action, restate safety, and offer one specific next step together.",
+      "ifEscalates": "Keep repair brief and return to calm co-regulation before teaching.",
+      "evidence": "Rapid repair supports attachment security after conflict.",
+      "ageRange": "12-60",
+      "match": [
+        { "trigger": "overwhelmed", "parentReaction": "already_yelled" },
+        { "trigger": "overwhelmed" }
+      ]
+    }
+  ]
+}

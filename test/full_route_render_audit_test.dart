@@ -22,6 +22,7 @@ import 'package:settle/screens/release_compliance_checklist.dart';
 import 'package:settle/screens/release_metrics.dart';
 import 'package:settle/screens/release_ops_checklist.dart';
 import 'package:settle/screens/settings.dart';
+import 'package:settle/screens/sleep_hub_screen.dart';
 import 'package:settle/screens/sleep_tonight.dart';
 import 'package:settle/screens/sos.dart';
 import 'package:settle/screens/splash.dart';
@@ -120,7 +121,10 @@ void main() {
         path: '/now',
         expectedTypes: [HelpNowScreen, SleepTonightScreen],
       ),
-      _RouteCheck(path: '/sleep', expectedTypes: [SleepTonightScreen]),
+      _RouteCheck(
+        path: '/sleep',
+        expectedTypes: [SleepHubScreen, SleepTonightScreen],
+      ),
       _RouteCheck(path: '/sleep/rhythm', expectedTypes: [CurrentRhythmScreen]),
       _RouteCheck(
         path: '/sleep/update-rhythm',

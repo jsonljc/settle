@@ -18,7 +18,9 @@ class StepFamily extends StatelessWidget {
 
   static const _familyIcons = {
     FamilyStructure.twoParents: Icons.people_outline,
+    FamilyStructure.coParent: Icons.people_alt_outlined,
     FamilyStructure.singleParent: Icons.person_outline,
+    FamilyStructure.blended: Icons.family_restroom_outlined,
     FamilyStructure.withSupport: Icons.group_outlined,
     FamilyStructure.other: Icons.more_horiz,
   };
@@ -28,8 +30,10 @@ class StepFamily extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Your setup', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'Your setup',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 10),
         Text(
           'Who is typically in the daily caregiving loop?',
@@ -52,12 +56,15 @@ class StepFamily extends StatelessWidget {
             final i = entry.key;
             final fs = entry.value;
             return OptionButtonCompact(
-                  label: fs.label,
-                  icon: _familyIcons[fs],
-                  selected: family == fs,
-                  onTap: () => onFamilySelect(fs),
-                )
-                .entryScaleIn(context, delay: Duration(milliseconds: 220 + 60 * i), duration: 260.ms);
+              label: fs.label,
+              icon: _familyIcons[fs],
+              selected: family == fs,
+              onTap: () => onFamilySelect(fs),
+            ).entryScaleIn(
+              context,
+              delay: Duration(milliseconds: 220 + 60 * i),
+              duration: 260.ms,
+            );
           }).toList(),
         ),
       ],

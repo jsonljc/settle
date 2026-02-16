@@ -18,27 +18,23 @@ class SettleBottomNav extends StatelessWidget {
     super.key,
     required this.currentIndex,
     required this.onTap,
+    required this.items,
   });
 
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final List<SettleBottomNavItem> items;
 
   static const double _barHeight = 64;
   static const double _blurSigma = 18;
-
-  static const _items = [
-    _NavItem(label: 'Help Now', icon: Icons.favorite_outline, activeIcon: Icons.favorite_rounded),
-    _NavItem(label: 'Sleep', icon: Icons.nightlight_outlined, activeIcon: Icons.nightlight_round),
-    _NavItem(label: 'Progress', icon: Icons.trending_up_rounded, activeIcon: Icons.trending_up_rounded),
-    _NavItem(label: 'Tantrum', icon: Icons.psychology_outlined, activeIcon: Icons.psychology_rounded),
-  ];
 
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     final reduceMotion = MediaQuery.of(context).disableAnimations;
-    final reduceTransparency =
-        MediaQuery.of(context).accessibleNavigation; // proxy for reduce-transparency
+    final reduceTransparency = MediaQuery.of(
+      context,
+    ).accessibleNavigation; // proxy for reduce-transparency
 
     final barFill = reduceTransparency
         ? T.pal.bgDeep
@@ -54,16 +50,11 @@ class SettleBottomNav extends StatelessWidget {
           padding: EdgeInsets.only(bottom: bottomPadding),
           decoration: BoxDecoration(
             color: barFill,
-            border: Border(
-              top: BorderSide(
-                color: T.glass.border,
-                width: 0.5,
-              ),
-            ),
+            border: Border(top: BorderSide(color: T.glass.border, width: 0.5)),
           ),
           child: Row(
-            children: List.generate(_items.length, (i) {
-              final item = _items[i];
+            children: List.generate(items.length, (i) {
+              final item = items[i];
               final isActive = i == currentIndex;
 
               return Expanded(
@@ -96,7 +87,7 @@ class _NavTab extends StatelessWidget {
     required this.reduceMotion,
   });
 
-  final _NavItem item;
+  final SettleBottomNavItem item;
   final bool isActive;
   final bool reduceMotion;
 
@@ -152,8 +143,8 @@ class _NavTab extends StatelessWidget {
   }
 }
 
-class _NavItem {
-  const _NavItem({
+class SettleBottomNavItem {
+  const SettleBottomNavItem({
     required this.label,
     required this.icon,
     required this.activeIcon,

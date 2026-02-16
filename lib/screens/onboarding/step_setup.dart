@@ -27,7 +27,9 @@ class StepSetup extends StatelessWidget {
 
   static const _familyIcons = {
     FamilyStructure.twoParents: Icons.people_outline,
+    FamilyStructure.coParent: Icons.people_alt_outlined,
     FamilyStructure.singleParent: Icons.person_outline,
+    FamilyStructure.blended: Icons.family_restroom_outlined,
     FamilyStructure.withSupport: Icons.group_outlined,
     FamilyStructure.other: Icons.more_horiz,
   };
@@ -37,8 +39,10 @@ class StepSetup extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Your setup', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'Your setup',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 24),
 
         if (showFamily) ...[
@@ -76,12 +80,11 @@ class StepSetup extends StatelessWidget {
         final i = entry.key;
         final fs = entry.value;
         return OptionButtonCompact(
-              label: fs.label,
-              icon: _familyIcons[fs],
-              selected: family == fs,
-              onTap: () => onFamilySelect(fs),
-            )
-            .entryScaleIn(context, delay: Duration(milliseconds: 120 + 60 * i));
+          label: fs.label,
+          icon: _familyIcons[fs],
+          selected: family == fs,
+          onTap: () => onFamilySelect(fs),
+        ).entryScaleIn(context, delay: Duration(milliseconds: 120 + 60 * i));
       }).toList(),
     );
   }
@@ -91,15 +94,14 @@ class StepSetup extends StatelessWidget {
       final i = entry.key;
       final a = entry.value;
       return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: OptionButton(
-              label: a.label,
-              subtitle: a.description,
-              selected: approach == a,
-              onTap: () => onApproachSelect(a),
-            ),
-          )
-          .entrySlideIn(context, delay: Duration(milliseconds: 250 + 80 * i));
+        padding: const EdgeInsets.only(bottom: 10),
+        child: OptionButton(
+          label: a.label,
+          subtitle: a.description,
+          selected: approach == a,
+          onTap: () => onApproachSelect(a),
+        ),
+      ).entrySlideIn(context, delay: Duration(milliseconds: 250 + 80 * i));
     }).toList();
   }
 }

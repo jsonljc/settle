@@ -159,6 +159,10 @@ class FamilyStructureAdapter extends TypeAdapter<FamilyStructure> {
         return FamilyStructure.withSupport;
       case 3:
         return FamilyStructure.other;
+      case 4:
+        return FamilyStructure.coParent;
+      case 5:
+        return FamilyStructure.blended;
       default:
         return FamilyStructure.twoParents;
     }
@@ -179,6 +183,12 @@ class FamilyStructureAdapter extends TypeAdapter<FamilyStructure> {
       case FamilyStructure.other:
         writer.writeByte(3);
         break;
+      case FamilyStructure.coParent:
+        writer.writeByte(4);
+        break;
+      case FamilyStructure.blended:
+        writer.writeByte(5);
+        break;
     }
   }
 
@@ -189,6 +199,55 @@ class FamilyStructureAdapter extends TypeAdapter<FamilyStructure> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is FamilyStructureAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class RegulationLevelAdapter extends TypeAdapter<RegulationLevel> {
+  @override
+  final int typeId = 43;
+
+  @override
+  RegulationLevel read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return RegulationLevel.calm;
+      case 1:
+        return RegulationLevel.stressed;
+      case 2:
+        return RegulationLevel.anxious;
+      case 3:
+        return RegulationLevel.angry;
+      default:
+        return RegulationLevel.calm;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, RegulationLevel obj) {
+    switch (obj) {
+      case RegulationLevel.calm:
+        writer.writeByte(0);
+        break;
+      case RegulationLevel.stressed:
+        writer.writeByte(1);
+        break;
+      case RegulationLevel.anxious:
+        writer.writeByte(2);
+        break;
+      case RegulationLevel.angry:
+        writer.writeByte(3);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RegulationLevelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
