@@ -69,45 +69,5 @@ class MomentStubScreen extends StatelessWidget {
   }
 }
 
-/// Tantrum "Just happened" entry point — routes to Moment (10s brake) as primary CTA.
-class TantrumJustHappenedStubScreen extends StatelessWidget {
-  const TantrumJustHappenedStubScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SettleBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ScreenHeader(
-                  title: 'Tantrum just happened',
-                  fallbackRoute: '/plan',
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Need a quick reset?',
-                  style: T.type.h3.copyWith(color: T.pal.textPrimary),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Moment gives you two script choices in 10 seconds.',
-                  style: T.type.body.copyWith(color: T.pal.textSecondary),
-                ),
-                const SizedBox(height: 20),
-                GlassCta(
-                  label: 'Just need 10 seconds',
-                  onTap: () =>
-                      context.push('/plan/moment?context=tantrum'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+/// Tantrum "Just happened" — routes directly to Reset with context=tantrum.
+/// See: /plan/tantrum-just-happened redirect in router.

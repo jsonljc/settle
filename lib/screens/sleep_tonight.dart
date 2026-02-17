@@ -6,6 +6,8 @@ import '../models/approach.dart';
 import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
 import '../providers/sleep_tonight_provider.dart';
+import '../providers/user_cards_provider.dart';
+import '../services/card_content_service.dart';
 import '../services/event_bus_service.dart';
 import '../services/sleep_guidance_service.dart';
 import '../services/spec_policy.dart';
@@ -33,7 +35,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
   String? _loadedChildId;
   bool _loadScheduled = false;
   bool _didHydrateScenario = false;
-  bool _nightAutoStartScheduled = false;
   bool _openSetupFromQuery = false;
   bool _setupSheetScheduled = false;
   bool _firstGuidanceEventSent = false;
@@ -194,20 +195,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
     required int ageMonths,
     required SleepTonightState state,
   }) {
-    if (!_isNightContext || state.hasActivePlan || _nightAutoStartScheduled) {
-      return;
-    }
-    _nightAutoStartScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _nightAutoStartScheduled = false;
-      if (!mounted) return;
-      await _createOrSwitchPlan(
-        childId: childId,
-        approach: approach,
-        ageMonths: ageMonths,
-        scenario: _scenario,
-      );
-    });
+    // Slice 3B: Situation picker first always — no auto-start.
+    // User taps situation → guidance in ≤3 taps.
+    return;
   }
 
   Future<void> _showEvidenceSheet(List<String> evidenceRefs) async {
@@ -1094,8 +1084,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 ),
                                 const SizedBox(height: 10),
                               ],
-                              if (!_isNightContext && !state.hasActivePlan)
-                                _DayScenarioLanding(
+                              if (!state.hasActivePlan)
+                                _SituationPicker(
                                   onTapScenario: (scenario) async {
                                     setState(() => _scenario = scenario);
                                     await _createOrSwitchPlan(
@@ -1122,6 +1112,43 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                       pillar: 'SLEEP_TONIGHT',
                                       type: 'ST_NEXT_STEP_TAPPED',
                                     );
+                                  },
+                                  onClose: () async {
+                                    await ref
+                                        .read(sleepTonightProvider.notifier)
+                                        .clearActivePlan(childId);
+                                    if (context.mounted) {
+                                      setState(() {});
+                                    }
+                                  },
+                                  onSaveToPlaybook: () async {
+                                    final triggerType = _scenario ==
+                                            'bedtime_protest'
+                                        ? 'bedtime_battles'
+                                        : 'bedtime_battles';
+                                    final card = await CardContentService
+                                        .instance
+                                        .selectBestCard(
+                                            triggerType: triggerType);
+                                    if (card != null && context.mounted) {
+                                      await ref
+                                          .read(userCardsProvider.notifier)
+                                          .save(card.id);
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Saved to playbook'),
+                                            duration: Duration(
+                                                milliseconds: 1100),
+                                          ),
+                                        );
+                                        ref
+                                            .read(sleepTonightProvider.notifier)
+                                            .clearActivePlan(childId);
+                                        setState(() {});
+                                      }
+                                    }
                                   },
                                   onMoreOptions: () => _showMoreOptionsSheet(
                                     childId: childId,
@@ -1162,6 +1189,50 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        context.push('/sleep/rhythm'),
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: Size.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    child: Text(
+                                      'View rhythm',
+                                      style: T.type.caption.copyWith(
+                                        color: T.pal.textTertiary,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    ' · ',
+                                    style: T.type.caption
+                                        .copyWith(color: T.pal.textTertiary),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        context.push('/sleep/update'),
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: Size.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    child: Text(
+                                      'Update rhythm',
+                                      style: T.type.caption.copyWith(
+                                        color: T.pal.textTertiary,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               const SizedBox(height: 24),
                             ],
                           ),
@@ -1176,8 +1247,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
   }
 }
 
-class _DayScenarioLanding extends StatelessWidget {
-  const _DayScenarioLanding({required this.onTapScenario});
+class _SituationPicker extends StatelessWidget {
+  const _SituationPicker({required this.onTapScenario});
 
   final ValueChanged<String> onTapScenario;
 
@@ -1202,6 +1273,18 @@ class _DayScenarioLanding extends StatelessWidget {
           _ScenarioButton(
             label: 'Early wake',
             onTap: () => onTapScenario('early_wakes'),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () =>
+                context.push('/plan/moment?context=sleep'),
+            child: Text(
+              'In the moment? → Moment',
+              style: T.type.caption.copyWith(
+                color: T.pal.textTertiary,
+                decoration: TextDecoration.underline,
+              ),
+            ),
           ),
         ],
       ),
@@ -1231,8 +1314,10 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
     required this.approachLabel,
     required this.commitmentLabel,
     required this.plan,
-    required this.runnerHint,
+    this.runnerHint,
     required this.onNextStep,
+    required this.onClose,
+    required this.onSaveToPlaybook,
     required this.onMoreOptions,
   });
 
@@ -1241,7 +1326,11 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
   final Map<String, dynamic> plan;
   final String? runnerHint;
   final VoidCallback onNextStep;
+  final VoidCallback onClose;
+  final VoidCallback onSaveToPlaybook;
   final VoidCallback onMoreOptions;
+
+  static const _maxSteps = 3;
 
   String _singleLine(String text, String fallback) {
     final compact = text.replaceAll('\n', ' ').trim();
@@ -1250,7 +1339,10 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final steps = (plan['steps'] as List?)?.cast<Map>() ?? [];
+    final allSteps = (plan['steps'] as List?)?.cast<Map>() ?? [];
+    final steps = allSteps.length > _maxSteps
+        ? allSteps.sublist(0, _maxSteps)
+        : allSteps;
     final current = steps.isEmpty
         ? 0
         : (plan['current_step'] as int? ?? 0).clamp(0, steps.length - 1);
@@ -1258,6 +1350,7 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
         ? const <String, dynamic>{}
         : Map<String, dynamic>.from(steps[current]);
     final stepMinutes = (currentStep['minutes'] as int?) ?? 3;
+    final isLastStep = steps.isNotEmpty && current >= steps.length - 1;
 
     final doNow = _singleLine(
       currentStep['script']?.toString() ?? '',
@@ -1297,7 +1390,28 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 14),
-          GlassCta(label: 'Next step', onTap: onNextStep),
+          if (isLastStep) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: GlassCta(
+                    label: 'Close',
+                    onTap: onClose,
+                    compact: true,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: GlassCta(
+                    label: 'Save to Playbook',
+                    onTap: onSaveToPlaybook,
+                    compact: true,
+                  ),
+                ),
+              ],
+            ),
+          ] else
+            GlassCta(label: 'Next step', onTap: onNextStep),
           const SizedBox(height: 8),
           TextButton(
             onPressed: onMoreOptions,

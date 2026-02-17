@@ -21,7 +21,6 @@ import 'screens/onboarding/onboarding_v2_screen.dart';
 import 'screens/plan/plan_home_screen.dart';
 import 'screens/plan/plan_script_log_screen.dart';
 import 'screens/plan/moment_flow_screen.dart';
-import 'screens/plan/plan_spine_stub_screens.dart';
 import 'screens/plan/reset_flow_screen.dart';
 import 'screens/regulate/regulate_flow_screen.dart';
 import 'screens/release_compliance_checklist.dart';
@@ -235,8 +234,7 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
               ),
               GoRoute(
                 path: 'tantrum-just-happened',
-                pageBuilder: (context, state) =>
-                    _fade(state, const TantrumJustHappenedStubScreen()),
+                redirect: (_, __) => '/plan/reset?context=tantrum',
               ),
             ],
           ),
@@ -385,7 +383,7 @@ List<RouteBase> _compatibilityRoutes({required bool regulateEnabled}) {
     ),
     GoRoute(
       path: '/now/tantrum',
-      redirect: (_, __) => '/plan/tantrum-just-happened',
+      redirect: (_, __) => '/plan/reset?context=tantrum',
     ),
     GoRoute(
       path: '/now',
@@ -428,7 +426,7 @@ List<RouteBase> _compatibilityRoutes({required bool regulateEnabled}) {
         GoRoute(path: 'capture', redirect: (_, __) => '/plan'),
         GoRoute(
           path: 'just-happened',
-          redirect: (_, __) => '/plan/tantrum-just-happened',
+          redirect: (_, __) => '/plan/reset?context=tantrum',
         ),
       ],
     ),

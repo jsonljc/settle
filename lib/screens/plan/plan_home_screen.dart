@@ -158,15 +158,36 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                   showBackButton: false,
                 ),
                 SizedBox(height: T.space.sm),
-                GestureDetector(
-                  onTap: () => context.push('/plan/moment?context=general'),
-                  child: Text(
-                    'Just need 10 seconds',
-                    style: T.type.caption.copyWith(
-                      color: T.pal.textTertiary,
-                      decoration: TextDecoration.underline,
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () =>
+                          context.push('/plan/moment?context=general'),
+                      child: Text(
+                        'Just need 10 seconds',
+                        style: T.type.caption.copyWith(
+                          color: T.pal.textTertiary,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
                     ),
-                  ),
+                    Text(
+                      ' · ',
+                      style: T.type.caption
+                          .copyWith(color: T.pal.textTertiary),
+                    ),
+                    GestureDetector(
+                      onTap: () =>
+                          context.push('/plan/reset?context=tantrum'),
+                      child: Text(
+                        'Tantrum just happened',
+                        style: T.type.caption.copyWith(
+                          color: T.pal.textTertiary,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: T.space.lg),
                 Expanded(

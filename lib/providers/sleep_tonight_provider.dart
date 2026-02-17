@@ -513,6 +513,19 @@ class SleepTonightNotifier extends StateNotifier<SleepTonightState> {
     }
   }
 
+  /// Clears the active plan from state so the situation picker shows again.
+  Future<void> clearActivePlan(String childId) async {
+    final plan = state.activePlan;
+    if (plan == null) return;
+    final box = await _ensureBox();
+    final dateRaw = plan['date'] as String?;
+    if (dateRaw != null) {
+      final date = DateTime.tryParse('${dateRaw}T00:00:00') ?? DateTime.now();
+      await box.delete(_keyFor(childId, date));
+    }
+    state = state.copyWith(activePlan: null);
+  }
+
   void updateSafetyGate({
     required bool breathingDifficulty,
     required bool dehydrationSigns,

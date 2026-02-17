@@ -123,7 +123,7 @@ void main() {
       ),
       _RouteCheck(
         path: '/sleep',
-        expectedTypes: [SleepHubScreen, SleepTonightScreen],
+        expectedTypes: [SleepTonightScreen],
       ),
       _RouteCheck(path: '/sleep/rhythm', expectedTypes: [CurrentRhythmScreen]),
       _RouteCheck(

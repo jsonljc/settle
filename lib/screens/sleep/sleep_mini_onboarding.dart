@@ -9,8 +9,10 @@ import '../../theme/settle_tokens.dart';
 import '../../widgets/option_button.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
-import '../sleep_hub_screen.dart';
+import '../sleep_tonight.dart';
 
+/// Gate: profile required, sleep setup required. When complete, lands on
+/// Sleep Tonight (situation picker) as the Sleep tab default.
 class SleepMiniOnboardingGate extends ConsumerWidget {
   const SleepMiniOnboardingGate({super.key});
 
@@ -25,7 +27,7 @@ class SleepMiniOnboardingGate extends ConsumerWidget {
       return const SleepMiniOnboardingScreen();
     }
 
-    return const SleepHubScreen();
+    return const SleepTonightScreen();
   }
 }
 
