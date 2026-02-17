@@ -76,22 +76,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Moon icon
-              Icon(Icons.nightlight_round, size: 48, color: T.pal.accent)
-                  .entryScaleIn(context, duration: 600.ms, scaleBegin: 0.8),
+              Icon(
+                Icons.nightlight_round,
+                size: 48,
+                color: T.pal.accent,
+              ).entryScaleIn(context, duration: 600.ms, scaleBegin: 0.8),
               const SizedBox(height: 20),
               // App name
               Text(
-                    'settle',
-                    style: T.type.splash.copyWith(color: T.pal.textPrimary),
-                  )
-                  .entryFadeOnly(context, delay: 200.ms, duration: 600.ms),
+                'settle',
+                style: T.type.splash.copyWith(color: T.pal.textPrimary),
+              ).entryFadeOnly(context, delay: 200.ms, duration: 600.ms),
               const SizedBox(height: 8),
               // Tagline
               Text(
-                    'One step at a time.',
-                    style: T.type.overline.copyWith(color: T.pal.textSecondary),
-                  )
-                  .entryFadeOnly(context, delay: 500.ms, duration: 600.ms),
+                'One step at a time.',
+                style: T.type.overline.copyWith(color: T.pal.textSecondary),
+              ).entryFadeOnly(context, delay: 500.ms, duration: 600.ms),
             ],
           ),
         ),

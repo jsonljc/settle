@@ -19,10 +19,22 @@ class RegulateStepAcknowledge extends StatelessWidget {
   final VoidCallback onNext;
 
   static const _options = [
-    (RegulationTrigger.aboutToLoseIt, 'I\'m about to lose it', 'I feel my temper rising'),
-    (RegulationTrigger.childMelting, 'My child is melting down', 'They\'re in the middle of a big moment'),
+    (
+      RegulationTrigger.aboutToLoseIt,
+      'I\'m about to lose it',
+      'I feel my temper rising',
+    ),
+    (
+      RegulationTrigger.childMelting,
+      'My child is melting down',
+      'They\'re in the middle of a big moment',
+    ),
     (RegulationTrigger.alreadyYelled, 'I already yelled', 'I want to repair'),
-    (RegulationTrigger.needMinute, 'I just need a minute', 'I need to pause before responding'),
+    (
+      RegulationTrigger.needMinute,
+      'I just need a minute',
+      'I need to pause before responding',
+    ),
   ];
 
   @override
@@ -32,10 +44,7 @@ class RegulateStepAcknowledge extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'You\'re having a hard moment too.',
-            style: T.type.h2,
-          ),
+          Text('You\'re having a hard moment too.', style: T.type.h2),
           const SizedBox(height: 8),
           Text(
             'Which fits best right now?',

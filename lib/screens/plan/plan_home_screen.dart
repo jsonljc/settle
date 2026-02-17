@@ -108,7 +108,7 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Script copied to clipboard'),
-          duration: const Duration(milliseconds: 800),
+          duration: Duration(milliseconds: 800),
         ),
       );
     }
@@ -161,8 +161,7 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () =>
-                          context.push('/plan/moment?context=general'),
+                      onTap: () => context.push('/plan/moment?context=general'),
                       child: Text(
                         'Just need 10 seconds',
                         style: T.type.caption.copyWith(
@@ -173,12 +172,10 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                     ),
                     Text(
                       ' · ',
-                      style: T.type.caption
-                          .copyWith(color: T.pal.textTertiary),
+                      style: T.type.caption.copyWith(color: T.pal.textTertiary),
                     ),
                     GestureDetector(
-                      onTap: () =>
-                          context.push('/plan/reset?context=tantrum'),
+                      onTap: () => context.push('/plan/reset?context=tantrum'),
                       child: Text(
                         'Tantrum just happened',
                         style: T.type.caption.copyWith(

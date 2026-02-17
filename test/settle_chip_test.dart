@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:settle/widgets/settle_chip.dart';
 
 void main() {
-  testWidgets('SettleChip tag variant shows label and semantics', (tester) async {
+  testWidgets('SettleChip tag variant shows label and semantics', (
+    tester,
+  ) async {
     var tapped = false;
     await tester.pumpWidget(
       MaterialApp(

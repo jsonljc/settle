@@ -24,8 +24,8 @@ class DayPlan extends HiveObject {
     required this.date,
     List<SleepSession>? sessions,
     List<NightWake>? nightWakes,
-  })  : sessions = sessions ?? [],
-        nightWakes = nightWakes ?? [];
+  }) : sessions = sessions ?? [],
+       nightWakes = nightWakes ?? [];
 
   /// Total nap minutes for the day.
   int get totalNapMinutes => sessions

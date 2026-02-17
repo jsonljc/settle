@@ -44,10 +44,7 @@ class _WakeArcState extends State<WakeArc> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: T.anim.slow,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: T.anim.slow, vsync: this);
     _progressAnim = Tween<double>(
       begin: widget.progress,
       end: widget.progress,
@@ -61,8 +58,9 @@ class _WakeArcState extends State<WakeArc> with SingleTickerProviderStateMixin {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller.duration =
-        T.reduceMotion(context) ? Duration.zero : T.anim.slow;
+    _controller.duration = T.reduceMotion(context)
+        ? Duration.zero
+        : T.anim.slow;
   }
 
   @override
@@ -112,10 +110,7 @@ class _WakeArcState extends State<WakeArc> with SingleTickerProviderStateMixin {
 }
 
 class _WakeArcPainter extends CustomPainter {
-  _WakeArcPainter({
-    required this.progress,
-    required this.color,
-  });
+  _WakeArcPainter({required this.progress, required this.color});
 
   final double progress;
   final Color color;
@@ -131,7 +126,8 @@ class _WakeArcPainter extends CustomPainter {
 
     // --- Background arc: white 4%, full circle ---
     final bgPaint = Paint()
-      ..color = const Color(0x0AFFFFFF) // white ~4%
+      ..color =
+          const Color(0x0AFFFFFF) // white ~4%
       ..strokeWidth = _strokeWidth
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;

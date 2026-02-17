@@ -68,6 +68,7 @@
 
 | Date | Decision | Why | Impacted files |
 |------|----------|-----|----------------|
+| 2026-02 | Shared card payloads use standalone text-only copy (no app suffix/chrome) across Reset, Sleep, and Playbook send actions | Recipients should understand and use the script immediately without context | `lib/screens/plan/reset_flow_screen.dart`, `lib/screens/sleep_tonight.dart`, `lib/screens/library/playbook_card_detail_screen.dart`, `lib/screens/library/saved_playbook_screen.dart` |
 | 2025-02 | v1 sharing is native OS share sheet only — no sync, no shared accounts | Local-only architecture constraint; co-parent features are v2 | `PRODUCT_ARCHITECTURE_v1_3.md` §7 |
 | 2025-02 | Co-parent invite prompt shown once after 5th Reset | User has experienced enough value to recommend by then | `wireframes/WIREFRAMES.md` §H |
 
@@ -75,6 +76,7 @@
 
 | Date | Decision | Why | Impacted files |
 |------|----------|-----|----------------|
+| 2026-02 | Drift nudge wording uses calm check-in framing ("Rhythm check-in"), not alert framing | Reduce alarm tone and preserve emotional safety | `lib/services/notification_service.dart` |
 | 2025-02 | Evening check-in timed to 1hr before configured bedtime (or 6pm default) | Context-aware timing; not arbitrary | `PRODUCT_ARCHITECTURE_v1_3.md` §8, Settings ST3 |
 | 2025-02 | No daily nudges, no streak pressure, no "we miss you" — ever | Parents are overloaded; the app must not become another demand | `PRODUCT_ARCHITECTURE_v1_3.md` §8 |
 
@@ -82,6 +84,7 @@
 
 | Date | Decision | Why | Impacted files |
 |------|----------|-----|----------------|
+| 2026-02 | Moment script assets are capped to two short sentences per variant | Keep in-moment reading load minimal and deterministic | `assets/guidance/moment_scripts.json` |
 | 2025-02 | v1 is fully local — no server, no analytics SDK | Simplicity, privacy, speed; server features are v2 | `PRODUCT_ARCHITECTURE_v1_3.md` §13 |
 | 2025-02 | Events stored locally only (timestamp + category + card_id) | Powers personalization without server dependency | `wireframes/WIREFRAMES.md` §L |
 | 2025-02 | If storage fails, app falls back to universal content | Graceful degradation; never crash, never block | `PRODUCT_ARCHITECTURE_v1_3.md` §13 |

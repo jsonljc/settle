@@ -25,7 +25,9 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final profile = ref.read(profileProvider);
-      ref.read(familyMembersProvider.notifier).ensureBackfillFromProfile(profile);
+      ref
+          .read(familyMembersProvider.notifier)
+          .ensureBackfillFromProfile(profile);
     });
   }
 
@@ -39,7 +41,8 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
     }
 
     final structure = profile.familyStructure;
-    final isPartnerLayout = structure == FamilyStructure.twoParents ||
+    final isPartnerLayout =
+        structure == FamilyStructure.twoParents ||
         structure == FamilyStructure.coParent ||
         structure == FamilyStructure.blended;
 
@@ -67,10 +70,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Your support network',
-                            style: T.type.h3,
-                          ),
+                          Text('Your support network', style: T.type.h3),
                           const SizedBox(height: 6),
                           Text(
                             'Invite grandparents, babysitters, or other caregivers to stay on the same page.',

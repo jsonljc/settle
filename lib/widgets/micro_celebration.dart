@@ -41,11 +41,7 @@ class _MicroCelebrationState extends State<MicroCelebration> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.celebration_rounded,
-                  size: 40,
-                  color: T.pal.accent,
-                ),
+                Icon(Icons.celebration_rounded, size: 40, color: T.pal.accent),
                 const SizedBox(height: 12),
                 Text(
                   widget.message,

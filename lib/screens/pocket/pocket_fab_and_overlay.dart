@@ -15,7 +15,8 @@ class PocketFABAndOverlay extends ConsumerStatefulWidget {
   const PocketFABAndOverlay({super.key});
 
   @override
-  ConsumerState<PocketFABAndOverlay> createState() => _PocketFABAndOverlayState();
+  ConsumerState<PocketFABAndOverlay> createState() =>
+      _PocketFABAndOverlayState();
 }
 
 class _PocketFABAndOverlayState extends ConsumerState<PocketFABAndOverlay> {
@@ -34,7 +35,9 @@ class _PocketFABAndOverlayState extends ConsumerState<PocketFABAndOverlay> {
 
   Future<void> _onThisHelped(String cardId) async {
     await ref.read(userCardsProvider.notifier).incrementUsage(cardId);
-    await ref.read(usageEventsProvider.notifier).log(
+    await ref
+        .read(usageEventsProvider.notifier)
+        .log(
           cardId: cardId,
           outcome: UsageOutcome.great,
           regulationUsed: false,
@@ -92,9 +95,7 @@ class _PocketFABAndOverlayState extends ConsumerState<PocketFABAndOverlay> {
                         future: CardContentService.instance.getCards(),
                         builder: (context, snapshot) {
                           final allCards = snapshot.data ?? [];
-                          final byId = {
-                            for (final c in allCards) c.id: c
-                          };
+                          final byId = {for (final c in allCards) c.id: c};
                           final resolvedContent = pinnedCards
                               .map((uc) => byId[uc.cardId])
                               .toList();
@@ -104,7 +105,8 @@ class _PocketFABAndOverlayState extends ConsumerState<PocketFABAndOverlay> {
                             child: ConstrainedBox(
                               constraints: BoxConstraints(
                                 maxWidth: 400,
-                                maxHeight: MediaQuery.of(context).size.height * 0.75,
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.75,
                               ),
                               child: PocketOverlayBody(
                                 view: _view,

@@ -7,10 +7,7 @@ import '../../theme/settle_tokens.dart';
 /// Step 4: Actionable next step — context-aware Say/Do script from [CardContentService].
 /// Uses "overwhelmed" trigger for parent-focused script.
 class RegulateStepAction extends StatelessWidget {
-  const RegulateStepAction({
-    super.key,
-    required this.onNext,
-  });
+  const RegulateStepAction({super.key, required this.onNext});
 
   final VoidCallback onNext;
 
@@ -25,9 +22,7 @@ class RegulateStepAction extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: T.space.screen),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: const Center(child: CircularProgressIndicator()),
           );
         }
         if (card == null) {
@@ -36,10 +31,7 @@ class RegulateStepAction extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'One thing you can do',
-                  style: T.type.h2,
-                ),
+                Text('One thing you can do', style: T.type.h2),
                 const SizedBox(height: 12),
                 Text(
                   'Take one calm breath. Then name what you see: "You\'re having a hard time. I\'m here."',
@@ -56,10 +48,7 @@ class RegulateStepAction extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'One thing you can do',
-                style: T.type.h2,
-              ),
+              Text('One thing you can do', style: T.type.h2),
               const SizedBox(height: 12),
               GlassCard(
                 child: Column(

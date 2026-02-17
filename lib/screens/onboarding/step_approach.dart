@@ -72,8 +72,10 @@ class _StepApproachState extends State<StepApproach> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Choose your\napproach', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'Choose your\napproach',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 8),
         Text(
           'These are not points on a spectrum.\nEach is a valid, researched method.',
@@ -84,28 +86,31 @@ class _StepApproachState extends State<StepApproach> {
           final i = entry.key;
           final a = entry.value;
           return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _ApproachCard(
-                  approach: a,
-                  icon: _icons[a]!,
-                  howItWorks: _howItWorks[a]!,
-                  research: _research[a]!,
-                  isSelected: widget.selected == a,
-                  isExpanded: _expanded == a,
-                  onTap: () {
-                    setState(() {
-                      if (_expanded == a) {
-                        // Second tap on expanded card → select it
-                        widget.onSelect(a);
-                      } else {
-                        _expanded = a;
-                        widget.onSelect(a);
-                      }
-                    });
-                  },
-                ),
-              )
-              .entrySlideIn(context, delay: Duration(milliseconds: 100 + 80 * i), moveX: 20);
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _ApproachCard(
+              approach: a,
+              icon: _icons[a]!,
+              howItWorks: _howItWorks[a]!,
+              research: _research[a]!,
+              isSelected: widget.selected == a,
+              isExpanded: _expanded == a,
+              onTap: () {
+                setState(() {
+                  if (_expanded == a) {
+                    // Second tap on expanded card → select it
+                    widget.onSelect(a);
+                  } else {
+                    _expanded = a;
+                    widget.onSelect(a);
+                  }
+                });
+              },
+            ),
+          ).entrySlideIn(
+            context,
+            delay: Duration(milliseconds: 100 + 80 * i),
+            moveX: 20,
+          );
         }),
       ],
     );

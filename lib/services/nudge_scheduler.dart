@@ -50,10 +50,13 @@ class NudgeScheduler {
     }
 
     final weekFromNow = now.add(const Duration(days: 7));
-    final inWindow = candidates
-        .where((c) => c.fireAt.isAfter(now) && c.fireAt.isBefore(weekFromNow))
-        .toList()
-      ..sort((a, b) => a.fireAt.compareTo(b.fireAt));
+    final inWindow =
+        candidates
+            .where(
+              (c) => c.fireAt.isAfter(now) && c.fireAt.isBefore(weekFromNow),
+            )
+            .toList()
+          ..sort((a, b) => a.fireAt.compareTo(b.fireAt));
 
     final toSchedule = _applyFrequencyCap(inWindow, settings.frequency);
 
@@ -88,8 +91,13 @@ class NudgeScheduler {
     final bedtime = _parseBedtime(profile.preferredBedtime);
     if (bedtime == null) return null;
 
-    var fireAt = DateTime(now.year, now.month, now.day, bedtime.$1, bedtime.$2)
-        .subtract(const Duration(minutes: 30));
+    var fireAt = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      bedtime.$1,
+      bedtime.$2,
+    ).subtract(const Duration(minutes: 30));
     if (!fireAt.isAfter(now)) {
       fireAt = fireAt.add(const Duration(days: 1));
     }
@@ -109,7 +117,9 @@ class NudgeScheduler {
     if (parts.length < 2) return null;
     final h = int.tryParse(parts[0].trim());
     final m = int.tryParse(parts[1].trim());
-    if (h == null || m == null || h < 0 || h > 23 || m < 0 || m > 59) return null;
+    if (h == null || m == null || h < 0 || h > 23 || m < 0 || m > 59) {
+      return null;
+    }
     return (h, m);
   }
 
@@ -118,8 +128,9 @@ class NudgeScheduler {
     NudgeSettings settings,
     DateTime now,
   ) {
-    final timePatterns =
-        patterns.where((p) => p.patternType == PatternType.time).toList();
+    final timePatterns = patterns
+        .where((p) => p.patternType == PatternType.time)
+        .toList();
     if (timePatterns.isEmpty) return null;
 
     final insight = timePatterns.first.insight;
@@ -160,7 +171,8 @@ class NudgeScheduler {
     return _NudgeCandidate(
       id: 12,
       title: 'A script for this age',
-      body: 'Your ${ageMonths ~/ 12}-year-old might benefit from a quick script. Open Plan to try one.',
+      body:
+          'Your ${ageMonths ~/ 12}-year-old might benefit from a quick script. Open Plan to try one.',
       fireAt: fireAt,
     );
   }

@@ -7,17 +7,15 @@ import '../../theme/glass_components.dart';
 import '../../theme/settle_tokens.dart';
 
 class PrepNudgeSection extends StatelessWidget {
-  const PrepNudgeSection({
-    super.key,
-    this.patterns = const [],
-  });
+  const PrepNudgeSection({super.key, this.patterns = const []});
 
   final List<PatternInsight> patterns;
 
   @override
   Widget build(BuildContext context) {
-    final timePatterns =
-        patterns.where((p) => p.patternType == PatternType.time).toList();
+    final timePatterns = patterns
+        .where((p) => p.patternType == PatternType.time)
+        .toList();
     final timePattern = timePatterns.isNotEmpty ? timePatterns.first : null;
     final approaching =
         timePattern != null && _isApproachingPatternTime(timePattern);

@@ -191,7 +191,9 @@ class CardsLibraryScreen extends ConsumerWidget {
                         const Center(child: CircularProgressIndicator()),
                     error: (_, __) => Center(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: T.space.screen,
+                        ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [

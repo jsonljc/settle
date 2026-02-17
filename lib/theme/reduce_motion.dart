@@ -14,9 +14,9 @@ extension ReduceMotionAnimate on Widget {
     double moveY = 12,
   }) {
     if (T.reduceMotion(context)) return this;
-    return animate(delay: delay)
-        .fadeIn(duration: duration ?? T.anim.normal)
-        .moveY(begin: moveY, end: 0);
+    return animate(
+      delay: delay,
+    ).fadeIn(duration: duration ?? T.anim.normal).moveY(begin: moveY, end: 0);
   }
 
   /// Fade-in + moveX entry animation, skipped when reduce-motion is active.

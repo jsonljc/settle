@@ -43,11 +43,7 @@ void main() {
       _RouteCheck('/plan/reset', ResetFlowScreen, '/plan'),
       _RouteCheck('/library/saved', SavedPlaybookScreen, '/library'),
       _RouteCheck('/plan/moment', MomentFlowScreen, '/plan'),
-      _RouteCheck(
-        '/plan/tantrum-just-happened',
-        ResetFlowScreen,
-        '/plan',
-      ),
+      _RouteCheck('/plan/tantrum-just-happened', ResetFlowScreen, '/plan'),
     ];
 
     for (final check in routeChecks) {

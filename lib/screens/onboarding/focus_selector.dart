@@ -21,8 +21,10 @@ class FocusSelectorStep extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('What do you want\nhelp with?', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'What do you want\nhelp with?',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 8),
         Text(
           'Pick a starting point. You can change this anytime.',
@@ -33,15 +35,14 @@ class FocusSelectorStep extends StatelessWidget {
           final i = entry.key;
           final mode = entry.value;
           return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: OptionButton(
-                  label: mode.label,
-                  subtitle: _subtitle(mode),
-                  selected: selected == mode,
-                  onTap: () => onSelect(mode),
-                ),
-              )
-              .entrySlideIn(context, delay: Duration(milliseconds: 160 + 80 * i));
+            padding: const EdgeInsets.only(bottom: 10),
+            child: OptionButton(
+              label: mode.label,
+              subtitle: _subtitle(mode),
+              selected: selected == mode,
+              onTap: () => onSelect(mode),
+            ),
+          ).entrySlideIn(context, delay: Duration(milliseconds: 160 + 80 * i));
         }),
       ],
     );

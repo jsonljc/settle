@@ -7,8 +7,8 @@ const _key = 'settings';
 /// Frequency of nudge notifications.
 enum NudgeFrequency {
   minimal, // ~1 per week
-  smart,   // 2-3 per week
-  more,   // daily when relevant
+  smart, // 2-3 per week
+  more, // daily when relevant
 }
 
 /// Persisted nudge preferences: per-type toggles, quiet hours, frequency.
@@ -29,6 +29,7 @@ class NudgeSettings {
   final int quietStartHour;
   final int quietEndHour;
   final NudgeFrequency frequency;
+
   /// Evening check-in: one notification 1h before bedtime. Off by default (opt-in).
   final bool eveningCheckInEnabled;
 
@@ -65,8 +66,8 @@ class NudgeSettings {
       frequency: freq == 'minimal'
           ? NudgeFrequency.minimal
           : freq == 'more'
-              ? NudgeFrequency.more
-              : NudgeFrequency.smart,
+          ? NudgeFrequency.more
+          : NudgeFrequency.smart,
       eveningCheckInEnabled: map['evening_check_in_enabled'] as bool? ?? false,
     );
   }
@@ -81,8 +82,8 @@ class NudgeSettings {
       'frequency': frequency == NudgeFrequency.minimal
           ? 'minimal'
           : frequency == NudgeFrequency.more
-              ? 'more'
-              : 'smart',
+          ? 'more'
+          : 'smart',
       'evening_check_in_enabled': eveningCheckInEnabled,
     };
   }
@@ -98,8 +99,8 @@ class NudgeSettings {
 
 final nudgeSettingsProvider =
     StateNotifierProvider<NudgeSettingsNotifier, NudgeSettings>((ref) {
-  return NudgeSettingsNotifier();
-});
+      return NudgeSettingsNotifier();
+    });
 
 class NudgeSettingsNotifier extends StateNotifier<NudgeSettings> {
   NudgeSettingsNotifier() : super(const NudgeSettings()) {

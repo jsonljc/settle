@@ -76,8 +76,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       return const ProfileRequiredView(title: 'Home');
     }
 
-    final helpNowEnabled =
-        !rolloutReady || rollout.helpNowEnabled;
+    final helpNowEnabled = !rolloutReady || rollout.helpNowEnabled;
     final sleepEnabled = !rolloutReady || rollout.sleepTonightEnabled;
     final planEnabled = !rolloutReady || rollout.planProgressEnabled;
     final rulesEnabled = !rolloutReady || rollout.familyRulesEnabled;
@@ -140,8 +139,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                               ),
                               SettleGap.sm(),
-                              Text('Help with what\'s happening',
-                                  style: T.type.h3),
+                              Text(
+                                'Help with what\'s happening',
+                                style: T.type.h3,
+                              ),
                               SettleGap.sm(),
                               Text(
                                 'We\'ll give you one thing to say and do.',
@@ -169,70 +170,70 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             vertical: 8,
                           ),
                           child: SettleDisclosure(
-                              title: 'More actions',
-                              subtitle: 'Continue plan, reset, rules, or settings.',
-                              children: [
-                                SettleGap.sm(),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    GlassPill(
-                                      label: 'Continue tonight\'s plan',
-                                      enabled: sleepEnabled,
-                                      onTap: () => context.push(
-                                        SpecPolicy.sleepTonightEntryUri(
-                                          source: 'home_secondary',
-                                        ),
+                            title: 'More actions',
+                            subtitle:
+                                'Continue plan, reset, rules, or settings.',
+                            children: [
+                              SettleGap.sm(),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  GlassPill(
+                                    label: 'Continue tonight\'s plan',
+                                    enabled: sleepEnabled,
+                                    onTap: () => context.push(
+                                      SpecPolicy.sleepTonightEntryUri(
+                                        source: 'home_secondary',
                                       ),
                                     ),
-                                    GlassPill(
-                                      label: 'Take a breath',
-                                      onTap: () => context.push(
-                                        SpecPolicy.nowResetUri(
-                                          source: 'home_secondary',
-                                          returnMode:
-                                              SpecPolicy.nowModeIncident,
-                                        ),
+                                  ),
+                                  GlassPill(
+                                    label: 'Take a breath',
+                                    onTap: () => context.push(
+                                      SpecPolicy.nowResetUri(
+                                        source: 'home_secondary',
+                                        returnMode: SpecPolicy.nowModeIncident,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                if (!sleepState.hasActivePlan &&
-                                    sleepEnabled) ...[
-                                  SettleGap.sm(),
-                                  Text(
-                                    'No plan yet. This opens Sleep Tonight.',
-                                    style: T.type.caption.copyWith(
-                                      color: T.pal.textTertiary,
                                     ),
                                   ),
                                 ],
-                                SettleGap.md(),
-                                _MoreActionTile(
-                                  label: 'Plan',
-                                  subtitle: 'Pick one focus for this week',
-                                  enabled: planEnabled,
-                                  onTap: () => context.push('/plan'),
-                                ),
+                              ),
+                              if (!sleepState.hasActivePlan &&
+                                  sleepEnabled) ...[
                                 SettleGap.sm(),
-                                _MoreActionTile(
-                                  label: 'Rules',
-                                  subtitle: rulesState.unreadCount > 0
-                                      ? '${rulesState.unreadCount} changes to review'
-                                      : 'Shared scripts for caregivers',
-                                  badge: rulesState.unreadCount,
-                                  enabled: rulesEnabled,
-                                  onTap: () => context.push('/rules'),
+                                Text(
+                                  'No plan yet. This opens Sleep Tonight.',
+                                  style: T.type.caption.copyWith(
+                                    color: T.pal.textTertiary,
+                                  ),
                                 ),
-                                SettleGap.sm(),
-                                _MoreActionTile(
-                                  label: 'Settings',
-                                  subtitle: 'Profile and app preferences',
-                                  onTap: () => context.push('/settings'),
-                                ),
-                                SettleGap.sm(),
                               ],
+                              SettleGap.md(),
+                              _MoreActionTile(
+                                label: 'Plan',
+                                subtitle: 'Pick one focus for this week',
+                                enabled: planEnabled,
+                                onTap: () => context.push('/plan'),
+                              ),
+                              SettleGap.sm(),
+                              _MoreActionTile(
+                                label: 'Rules',
+                                subtitle: rulesState.unreadCount > 0
+                                    ? '${rulesState.unreadCount} changes to review'
+                                    : 'Shared scripts for caregivers',
+                                badge: rulesState.unreadCount,
+                                enabled: rulesEnabled,
+                                onTap: () => context.push('/rules'),
+                              ),
+                              SettleGap.sm(),
+                              _MoreActionTile(
+                                label: 'Settings',
+                                subtitle: 'Profile and app preferences',
+                                onTap: () => context.push('/settings'),
+                              ),
+                              SettleGap.sm(),
+                            ],
                           ),
                         ),
                         SettleGap.xxl(),

@@ -1,17 +1,13 @@
 /// Structured data for Moment flow script variants.
 /// Max 2 sentences per script. Content layer only — no UI.
-enum MomentScriptVariant {
-  boundary,
-  connection,
-}
+enum MomentScriptVariant { boundary, connection }
 
 class MomentScript {
-  const MomentScript({
-    required this.variant,
-    required this.lines,
-  }) : assert(lines.length >= 1 && lines.length <= 2);
+  const MomentScript({required this.variant, required this.lines})
+    : assert(lines.length >= 1 && lines.length <= 2);
 
   final MomentScriptVariant variant;
+
   /// One or two short sentences. No hardcoded UI strings here.
   final List<String> lines;
 

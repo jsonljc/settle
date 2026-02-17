@@ -46,24 +46,24 @@ class ActivityFeedScreen extends ConsumerWidget {
                           future: CardContentService.instance.getCards(),
                           builder: (context, snapshot) {
                             final cards = snapshot.data ?? [];
-                            final byId = {
-                              for (final c in cards) c.id: c
-                            };
+                            final byId = {for (final c in cards) c.id: c};
                             final recent = events.take(50).toList();
                             return ListView.builder(
                               itemCount: recent.length,
                               itemBuilder: (context, i) {
                                 final event = recent[i];
                                 final card = byId[event.cardId];
-                                final triggerLabel = card?.triggerType ?? event.cardId;
+                                final triggerLabel =
+                                    card?.triggerType ?? event.cardId;
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 10),
                                   child: GlassCard(
                                     child: ListTile(
-                                      contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 4,
-                                      ),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 4,
+                                          ),
                                       title: Text(
                                         _triggerDisplayName(triggerLabel),
                                         style: T.type.label,
@@ -74,14 +74,17 @@ class ActivityFeedScreen extends ConsumerWidget {
                                           color: T.pal.textTertiary,
                                         ),
                                       ),
-                                      trailing: event.outcome == UsageOutcome.great
+                                      trailing:
+                                          event.outcome == UsageOutcome.great
                                           ? Icon(
                                               Icons.thumb_up_rounded,
                                               size: 18,
                                               color: T.pal.teal,
                                             )
                                           : null,
-                                      onTap: () => context.push('/library/cards/${event.cardId}'),
+                                      onTap: () => context.push(
+                                        '/library/cards/${event.cardId}',
+                                      ),
                                     ),
                                   ),
                                 );
@@ -162,31 +165,33 @@ class ActivityFeedPreview extends ConsumerWidget {
               style: T.type.body.copyWith(color: T.pal.textSecondary),
             )
           else
-            ...recent.map((e) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(
-                    children: [
-                      Icon(
-                        e.outcome == UsageOutcome.great
-                            ? Icons.thumb_up_rounded
-                            : Icons.description_outlined,
-                        size: 16,
-                        color: T.pal.textTertiary,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          e.cardId,
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textSecondary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+            ...recent.map(
+              (e) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    Icon(
+                      e.outcome == UsageOutcome.great
+                          ? Icons.thumb_up_rounded
+                          : Icons.description_outlined,
+                      size: 16,
+                      color: T.pal.textTertiary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        e.cardId,
+                        style: T.type.caption.copyWith(
+                          color: T.pal.textSecondary,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                )),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           if (recent.isNotEmpty)
             GlassPill(
               label: 'Open activity',

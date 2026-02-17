@@ -58,7 +58,7 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Outcome logged'),
-        duration: const Duration(milliseconds: 800),
+        duration: Duration(milliseconds: 800),
       ),
     );
     if (context.canPop()) {

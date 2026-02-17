@@ -19,10 +19,7 @@ double _vagalScale(double t) {
 }
 
 class RegulateStepBreathe extends StatefulWidget {
-  const RegulateStepBreathe({
-    super.key,
-    required this.onComplete,
-  });
+  const RegulateStepBreathe({super.key, required this.onComplete});
 
   final VoidCallback onComplete;
 
@@ -40,7 +37,8 @@ class _RegulateStepBreatheState extends State<RegulateStepBreathe> {
     _cycleTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       if (!mounted || _startTime == null) return;
       final elapsedMs =
-          DateTime.now().difference(_startTime!).inMilliseconds % (_vagalCycleSeconds * 1000);
+          DateTime.now().difference(_startTime!).inMilliseconds %
+          (_vagalCycleSeconds * 1000);
       final t = (elapsedMs / 1000.0) / _vagalCycleSeconds;
       setState(() => _cycleT = t.clamp(0.0, 1.0));
     });
@@ -64,7 +62,10 @@ class _RegulateStepBreatheState extends State<RegulateStepBreathe> {
     final elapsed = _startTime != null
         ? DateTime.now().difference(_startTime!).inSeconds
         : 0;
-    final completed = (elapsed / _vagalCycleSeconds).floor().clamp(0, _vagalCycles);
+    final completed = (elapsed / _vagalCycleSeconds).floor().clamp(
+      0,
+      _vagalCycles,
+    );
     return (_vagalCycles - completed).clamp(0, _vagalCycles);
   }
 
@@ -77,19 +78,14 @@ class _RegulateStepBreatheState extends State<RegulateStepBreathe> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Breathe with me',
-            style: T.type.h2,
-          ),
+          Text('Breathe with me', style: T.type.h2),
           const SizedBox(height: 8),
           Text(
             'Inhale 4 counts, exhale 6. $_cyclesLeft ${_cyclesLeft == 1 ? "cycle" : "cycles"} left.',
             style: T.type.body.copyWith(color: T.pal.textSecondary),
           ),
           const SizedBox(height: 24),
-          Center(
-            child: _VagalBreathingCircles(scale: _vagalScale(_cycleT)),
-          ),
+          Center(child: _VagalBreathingCircles(scale: _vagalScale(_cycleT))),
           const SizedBox(height: 16),
           _BreathingLabel(isInhale: _isInhale),
           const SizedBox(height: 32),

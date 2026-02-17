@@ -130,16 +130,11 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'It\'s nighttime',
-                    style: T.type.h3,
-                  ),
+                  Text('It\'s nighttime', style: T.type.h3),
                   SettleGap.sm(),
                   Text(
                     'What do you need right now?',
-                    style: T.type.caption.copyWith(
-                      color: T.pal.textSecondary,
-                    ),
+                    style: T.type.caption.copyWith(color: T.pal.textSecondary),
                   ),
                   SettleGap.lg(),
                   GlassCta(
@@ -486,10 +481,7 @@ class _GuidedBeatsState extends State<_GuidedBeats>
         ),
         SettleGap.lg(),
         // Escape hatch — always visible
-        _SubtleActionLink(
-          label: 'I need a pause',
-          onTap: widget.onPause,
-        ),
+        _SubtleActionLink(label: 'I need a pause', onTap: widget.onPause),
       ],
     );
   }
@@ -497,41 +489,41 @@ class _GuidedBeatsState extends State<_GuidedBeats>
   Widget _buildBeat() {
     return switch (_beat) {
       _beatSay => _BeatSay(
-          key: const ValueKey('beat_say'),
-          text: widget.output.say,
-          onNext: () => _advance(_beatDo),
-        ),
+        key: const ValueKey('beat_say'),
+        text: widget.output.say,
+        onNext: () => _advance(_beatDo),
+      ),
       _beatDo => _BeatDo(
-          key: const ValueKey('beat_do'),
-          text: widget.output.doStep,
-          onNext: () => _advance(_beatWait),
-        ),
+        key: const ValueKey('beat_do'),
+        text: widget.output.doStep,
+        onNext: () => _advance(_beatWait),
+      ),
       _beatWait => _BeatWait(
-          key: const ValueKey('beat_wait'),
-          pulseController: _pulseController,
-          onCalming: () => _advance(_beatDone),
-          onHarder: () {
-            _escalateCount++;
-            _advance(_beatEscalate);
-          },
-        ),
+        key: const ValueKey('beat_wait'),
+        pulseController: _pulseController,
+        onCalming: () => _advance(_beatDone),
+        onHarder: () {
+          _escalateCount++;
+          _advance(_beatEscalate);
+        },
+      ),
       _beatDone => _BeatDone(
-          key: const ValueKey('beat_done'),
-          tags: widget.tags,
-          outcomes: widget.outcomes,
-          selectedTags: widget.selectedTags,
-          outcome: widget.outcome,
-          onTagToggle: widget.onTagToggle,
-          onOutcome: widget.onOutcome,
-          onFinish: widget.onFinish,
-        ),
+        key: const ValueKey('beat_done'),
+        tags: widget.tags,
+        outcomes: widget.outcomes,
+        selectedTags: widget.selectedTags,
+        outcome: widget.outcome,
+        onTagToggle: widget.onTagToggle,
+        onOutcome: widget.onOutcome,
+        onFinish: widget.onFinish,
+      ),
       _beatEscalate => _BeatEscalate(
-          key: const ValueKey('beat_escalate'),
-          text: widget.output.ifEscalates,
-          escalateCount: _escalateCount,
-          onGotIt: () => _advance(_beatWait),
-          onPause: widget.onPause,
-        ),
+        key: const ValueKey('beat_escalate'),
+        text: widget.output.ifEscalates,
+        escalateCount: _escalateCount,
+        onGotIt: () => _advance(_beatWait),
+        onPause: widget.onPause,
+      ),
       _ => const SizedBox.shrink(),
     };
   }
@@ -560,8 +552,8 @@ class _BeatDots extends StatelessWidget {
               color: isCurrent
                   ? T.pal.accent
                   : isDone
-                      ? T.pal.accent.withValues(alpha: 0.40)
-                      : T.glass.fill,
+                  ? T.pal.accent.withValues(alpha: 0.40)
+                  : T.glass.fill,
               borderRadius: BorderRadius.circular(T.radius.pill),
             ),
           ),
@@ -572,11 +564,7 @@ class _BeatDots extends StatelessWidget {
 }
 
 class _BeatSay extends StatelessWidget {
-  const _BeatSay({
-    super.key,
-    required this.text,
-    required this.onNext,
-  });
+  const _BeatSay({super.key, required this.text, required this.onNext});
 
   final String text;
   final VoidCallback onNext;
@@ -596,21 +584,14 @@ class _BeatSay extends StatelessWidget {
           child: Text(text, style: T.type.h2),
         ),
         SettleGap.md(),
-        GlassCta(
-          label: 'I said it →',
-          onTap: onNext,
-        ),
+        GlassCta(label: 'I said it →', onTap: onNext),
       ],
     );
   }
 }
 
 class _BeatDo extends StatelessWidget {
-  const _BeatDo({
-    super.key,
-    required this.text,
-    required this.onNext,
-  });
+  const _BeatDo({super.key, required this.text, required this.onNext});
 
   final String text;
   final VoidCallback onNext;
@@ -630,10 +611,7 @@ class _BeatDo extends StatelessWidget {
           child: Text(text, style: T.type.h3),
         ),
         SettleGap.md(),
-        GlassCta(
-          label: 'Done →',
-          onTap: onNext,
-        ),
+        GlassCta(label: 'Done →', onTap: onNext),
       ],
     );
   }
@@ -692,15 +670,9 @@ class _BeatWait extends StatelessWidget {
           ),
         ),
         SettleGap.md(),
-        GlassCta(
-          label: 'They\'re calming down',
-          onTap: onCalming,
-        ),
+        GlassCta(label: 'They\'re calming down', onTap: onCalming),
         SettleGap.md(),
-        GlassPill(
-          label: 'It\'s getting harder',
-          onTap: onHarder,
-        ),
+        GlassPill(label: 'It\'s getting harder', onTap: onHarder),
       ],
     );
   }
@@ -746,77 +718,74 @@ class _BeatDone extends StatelessWidget {
           ),
         ),
         SettleGap.md(),
-        GlassCta(
-          label: 'Finish',
-          onTap: onFinish,
-        ),
+        GlassCta(label: 'Finish', onTap: onFinish),
         SettleGap.lg(),
         // Optional outcome logging
         GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: SettleDisclosure(
-              title: 'Log this moment (optional)',
-              subtitle: 'Quick tags and outcome.',
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SettleGap.xs(),
-                      Text(
-                        'What was going on?',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
-                        ),
+            title: 'Log this moment (optional)',
+            subtitle: 'Quick tags and outcome.',
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SettleGap.xs(),
+                    Text(
+                      'What was going on?',
+                      style: T.type.caption.copyWith(
+                        color: T.pal.textSecondary,
                       ),
-                      SettleGap.sm(),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: tags.map((tag) {
-                          final selected = selectedTags.contains(tag);
-                          return _SmallChip(
-                            label: tag,
-                            selected: selected,
-                            onTap: () => onTagToggle(tag),
-                          );
-                        }).toList(),
+                    ),
+                    SettleGap.sm(),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: tags.map((tag) {
+                        final selected = selectedTags.contains(tag);
+                        return _SmallChip(
+                          label: tag,
+                          selected: selected,
+                          onTap: () => onTagToggle(tag),
+                        );
+                      }).toList(),
+                    ),
+                    SettleGap.lg(),
+                    Text(
+                      'How did it end?',
+                      style: T.type.caption.copyWith(
+                        color: T.pal.textSecondary,
                       ),
-                      SettleGap.lg(),
-                      Text(
-                        'How did it end?',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
-                        ),
-                      ),
-                      SettleGap.sm(),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: outcomes.map((o) {
-                          return _SmallChip(
-                            label: o,
-                            selected: outcome == o,
-                            onTap: () => onOutcome(o),
-                          );
-                        }).toList(),
-                      ),
-                      if (outcome != null) ...[
-                        SettleGap.md(),
-                        Text(
-                          'Noted. You can close anytime.',
-                          style: T.type.caption.copyWith(
-                            color: T.pal.teal,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    ),
+                    SettleGap.sm(),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: outcomes.map((o) {
+                        return _SmallChip(
+                          label: o,
+                          selected: outcome == o,
+                          onTap: () => onOutcome(o),
+                        );
+                      }).toList(),
+                    ),
+                    if (outcome != null) ...[
                       SettleGap.md(),
+                      Text(
+                        'Noted. You can close anytime.',
+                        style: T.type.caption.copyWith(
+                          color: T.pal.teal,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
-                  ),
+                    SettleGap.md(),
+                  ],
                 ),
-              ],
+              ),
+            ],
           ),
         ),
       ],
@@ -853,16 +822,10 @@ class _BeatEscalate extends StatelessWidget {
           child: Text(text, style: T.type.h3),
         ),
         SettleGap.md(),
-        GlassCta(
-          label: 'Got it →',
-          onTap: onGotIt,
-        ),
+        GlassCta(label: 'Got it →', onTap: onGotIt),
         if (escalateCount >= 2) ...[
           SettleGap.md(),
-          GlassPill(
-            label: 'Take a breath instead',
-            onTap: onPause,
-          ),
+          GlassPill(label: 'Take a breath instead', onTap: onPause),
         ],
       ],
     );
@@ -1003,13 +966,13 @@ class _IncidentGrid extends StatelessWidget {
         GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: SettleDisclosure(
-              title: 'More situations',
-              subtitle: 'Transitions, bedtime, refusal, and parent reset.',
-              children: [
-                SettleGap.sm(),
-                _buildGrid(moreOptions, childAspectRatio: 1.28),
-                SettleGap.xs(),
-              ],
+            title: 'More situations',
+            subtitle: 'Transitions, bedtime, refusal, and parent reset.',
+            children: [
+              SettleGap.sm(),
+              _buildGrid(moreOptions, childAspectRatio: 1.28),
+              SettleGap.xs(),
+            ],
           ),
         ),
       ],

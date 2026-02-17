@@ -22,8 +22,10 @@ class StepName extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('What\'s your\nbaby\'s name?', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'What\'s your\nbaby\'s name?',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 32),
         TextField(
           controller: controller,

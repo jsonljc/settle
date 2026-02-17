@@ -12,8 +12,8 @@ String weekKeyFor(DateTime date) {
 
 final weeklyReflectionProvider =
     StateNotifierProvider<WeeklyReflectionNotifier, String?>((ref) {
-  return WeeklyReflectionNotifier();
-});
+      return WeeklyReflectionNotifier();
+    });
 
 /// True if the user dismissed the weekly reflection banner this week (Monday–Sunday).
 final weeklyReflectionDismissedThisWeekProvider = Provider<bool>((ref) {

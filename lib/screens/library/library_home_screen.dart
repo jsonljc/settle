@@ -40,7 +40,9 @@ class LibraryHomeScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (WeeklyReflectionBanner.shouldShow() &&
-                            !ref.watch(weeklyReflectionDismissedThisWeekProvider)) ...[
+                            !ref.watch(
+                              weeklyReflectionDismissedThisWeekProvider,
+                            )) ...[
                           WeeklyReflectionBanner(
                             onDismiss: () => ref
                                 .read(weeklyReflectionProvider.notifier)
@@ -219,9 +221,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                   children: [
                     Text(
                       'Your playbook is empty. Save cards from Reset to get started.',
-                      style: T.type.body.copyWith(
-                        color: T.pal.textSecondary,
-                      ),
+                      style: T.type.body.copyWith(color: T.pal.textSecondary),
                     ),
                     const SizedBox(height: 12),
                     GlassPill(
@@ -246,8 +246,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: T.glass.fillAccent,
-                            borderRadius:
-                                BorderRadius.circular(T.radius.md),
+                            borderRadius: BorderRadius.circular(T.radius.md),
                             border: Border.all(color: T.glass.border),
                           ),
                           child: Text(
@@ -275,9 +274,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
               children: [
                 Text(
                   'We couldn\'t load your playbook right now.',
-                  style: T.type.body.copyWith(
-                    color: T.pal.textSecondary,
-                  ),
+                  style: T.type.body.copyWith(color: T.pal.textSecondary),
                 ),
                 const SizedBox(height: 12),
                 GlassPill(

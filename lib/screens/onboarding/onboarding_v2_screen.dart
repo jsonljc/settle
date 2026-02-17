@@ -31,10 +31,7 @@ enum _V2OnboardingStep {
 }
 
 class OnboardingV2Screen extends ConsumerStatefulWidget {
-  const OnboardingV2Screen({
-    super.key,
-    this.onSaveProfile,
-  });
+  const OnboardingV2Screen({super.key, this.onSaveProfile});
 
   final Future<void> Function(BabyProfile profile)? onSaveProfile;
 

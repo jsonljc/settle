@@ -7,10 +7,7 @@ import '../theme/settle_tokens.dart';
 /// Glass-style FAB for Pocket — bottom-right, above bottom nav.
 /// Used inside [PocketFABAndOverlay] which handles tap and modal.
 class PocketFAB extends StatelessWidget {
-  const PocketFAB({
-    super.key,
-    required this.onTap,
-  });
+  const PocketFAB({super.key, required this.onTap});
 
   final VoidCallback onTap;
 
@@ -22,7 +19,8 @@ class PocketFAB extends StatelessWidget {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     const navBarHeight = 64.0;
     const fabMargin = 16.0;
-    final top = MediaQuery.of(context).size.height -
+    final top =
+        MediaQuery.of(context).size.height -
         bottomPadding -
         navBarHeight -
         _size -

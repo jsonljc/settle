@@ -18,22 +18,23 @@ class StepAge extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('How old is\nyour child?', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'How old is\nyour child?',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 24),
         ...AgeBracket.values.asMap().entries.map((entry) {
           final i = entry.key;
           final bracket = entry.value;
           return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: OptionButton(
-                  label: bracket.label,
-                  subtitle: _subtitle(bracket),
-                  selected: selected == bracket,
-                  onTap: () => onSelect(bracket),
-                ),
-              )
-              .entrySlideIn(context, delay: Duration(milliseconds: 80 * i));
+            padding: const EdgeInsets.only(bottom: 10),
+            child: OptionButton(
+              label: bracket.label,
+              subtitle: _subtitle(bracket),
+              selected: selected == bracket,
+              onTap: () => onSelect(bracket),
+            ),
+          ).entrySlideIn(context, delay: Duration(milliseconds: 80 * i));
         }),
       ],
     );

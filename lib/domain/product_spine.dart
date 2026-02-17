@@ -12,11 +12,7 @@ typedef SpineContext = RepairCardContext;
 typedef SpineState = RepairCardState;
 
 /// Content stage derived from child age. Affects content weight only, not flow structure.
-enum Stage {
-  infant,
-  toddler,
-  preschool,
-}
+enum Stage { infant, toddler, preschool }
 
 /// Derives stage from child age (age bracket or months).
 /// Returns [Stage.infant] when age is unknown.

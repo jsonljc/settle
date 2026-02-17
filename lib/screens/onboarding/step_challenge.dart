@@ -43,8 +43,10 @@ class StepChallenge extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('What is\nhardest?', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'What is\nhardest?',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 24),
 
         // — Primary challenge —
@@ -57,15 +59,14 @@ class StepChallenge extends StatelessWidget {
           final i = entry.key;
           final c = entry.value;
           return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: OptionButton(
-                  label: c.label,
-                  icon: _challengeIcons[c],
-                  selected: challenge == c,
-                  onTap: () => onChallengeSelect(c),
-                ),
-              )
-              .entrySlideIn(context, delay: Duration(milliseconds: 120 + 60 * i));
+            padding: const EdgeInsets.only(bottom: 10),
+            child: OptionButton(
+              label: c.label,
+              icon: _challengeIcons[c],
+              selected: challenge == c,
+              onTap: () => onChallengeSelect(c),
+            ),
+          ).entrySlideIn(context, delay: Duration(milliseconds: 120 + 60 * i));
         }),
         const SizedBox(height: 20),
         SettleDisclosure(
@@ -100,12 +101,11 @@ class StepChallenge extends StatelessWidget {
         final i = entry.key;
         final ft = entry.value;
         return OptionButtonCompact(
-              label: ft.label,
-              icon: _feedingIcons[ft],
-              selected: feeding == ft,
-              onTap: () => onFeedingSelect(ft),
-            )
-            .entryScaleIn(context, delay: Duration(milliseconds: 400 + 60 * i));
+          label: ft.label,
+          icon: _feedingIcons[ft],
+          selected: feeding == ft,
+          onTap: () => onFeedingSelect(ft),
+        ).entryScaleIn(context, delay: Duration(milliseconds: 400 + 60 * i));
       }).toList(),
     );
   }

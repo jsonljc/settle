@@ -88,7 +88,7 @@ class SavedPlaybookScreen extends ConsumerWidget {
   }
 
   void _shareCard(RepairCard card) {
-    final text = 'Repair words to use right now:\n${card.title}\n${card.body}';
+    final text = '${card.title}\n${card.body}\n— from Settle';
     Share.share(text);
   }
 }

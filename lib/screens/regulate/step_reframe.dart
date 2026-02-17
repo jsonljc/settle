@@ -6,10 +6,7 @@ import '../../theme/settle_tokens.dart';
 /// Step 3: Cognitive reframe — "This isn't personal" + developmental context.
 /// Skipped when trigger is [RegulationTrigger.needMinute].
 class RegulateStepReframe extends StatelessWidget {
-  const RegulateStepReframe({
-    super.key,
-    required this.onNext,
-  });
+  const RegulateStepReframe({super.key, required this.onNext});
 
   final VoidCallback onNext;
 
@@ -26,10 +23,7 @@ class RegulateStepReframe extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'A quick reframe',
-            style: T.type.h2,
-          ),
+          Text('A quick reframe', style: T.type.h2),
           const SizedBox(height: 16),
           ..._reframeLines.map(
             (line) => Padding(

@@ -110,102 +110,105 @@ void main() {
     await Hive.deleteFromDisk();
   });
 
-  testWidgets('Logs screen routes to plan and learn next actions', (
-    tester,
-  ) async {
-    setPhoneViewport(tester);
+  testWidgets(
+    'Logs screen routes to plan and learn next actions',
+    (tester) async {
+      setPhoneViewport(tester);
 
-    final router = GoRouter(
-      initialLocation: '/library/logs',
-      routes: [
-        GoRoute(
-          path: '/library/logs',
-          builder: (context, state) => const TodayScreen(),
-        ),
-        GoRoute(
-          path: '/plan',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('PLAN_ROUTE'))),
-        ),
-        GoRoute(
-          path: '/library/learn',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('LEARN_ROUTE'))),
-        ),
-      ],
-    );
+      final router = GoRouter(
+        initialLocation: '/library/logs',
+        routes: [
+          GoRoute(
+            path: '/library/logs',
+            builder: (context, state) => const TodayScreen(),
+          ),
+          GoRoute(
+            path: '/plan',
+            builder: (context, state) =>
+                const Scaffold(body: Center(child: Text('PLAN_ROUTE'))),
+          ),
+          GoRoute(
+            path: '/library/learn',
+            builder: (context, state) =>
+                const Scaffold(body: Center(child: Text('LEARN_ROUTE'))),
+          ),
+        ],
+      );
 
-    await tester.pumpWidget(
-      ProviderScope(child: MaterialApp.router(routerConfig: router)),
-    );
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 700));
+      await tester.pumpWidget(
+        ProviderScope(child: MaterialApp.router(routerConfig: router)),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 700));
 
-    expect(find.text('Logs'), findsOneWidget);
-    expect(find.text('Open Plan Focus'), findsOneWidget);
-    expect(find.text('Open Learn Q&A'), findsOneWidget);
+      expect(find.text('Logs'), findsOneWidget);
+      expect(find.text('Open Plan Focus'), findsOneWidget);
+      expect(find.text('Open Learn Q&A'), findsOneWidget);
 
-    await tapLabel(tester, 'Open Plan Focus');
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('PLAN_ROUTE'), findsOneWidget);
+      await tapLabel(tester, 'Open Plan Focus');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('PLAN_ROUTE'), findsOneWidget);
 
-    router.go('/library/logs');
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+      router.go('/library/logs');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
 
-    await tapLabel(tester, 'Open Learn Q&A');
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('LEARN_ROUTE'), findsOneWidget);
-  }, skip: true); // Async rollout load; v2 routing in router_v2_shell_hardening_test
+      await tapLabel(tester, 'Open Learn Q&A');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('LEARN_ROUTE'), findsOneWidget);
+    },
+    skip: true,
+  ); // Async rollout load; v2 routing in router_v2_shell_hardening_test
 
-  testWidgets('Learn screen routes to plan and logs next actions', (
-    tester,
-  ) async {
-    setPhoneViewport(tester);
+  testWidgets(
+    'Learn screen routes to plan and logs next actions',
+    (tester) async {
+      setPhoneViewport(tester);
 
-    final router = GoRouter(
-      initialLocation: '/library/learn',
-      routes: [
-        GoRoute(
-          path: '/library/learn',
-          builder: (context, state) => const LearnScreen(),
-        ),
-        GoRoute(
-          path: '/plan',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('PLAN_ROUTE'))),
-        ),
-        GoRoute(
-          path: '/library/logs',
-          builder: (context, state) =>
-              const Scaffold(body: Center(child: Text('LOGS_ROUTE'))),
-        ),
-      ],
-    );
+      final router = GoRouter(
+        initialLocation: '/library/learn',
+        routes: [
+          GoRoute(
+            path: '/library/learn',
+            builder: (context, state) => const LearnScreen(),
+          ),
+          GoRoute(
+            path: '/plan',
+            builder: (context, state) =>
+                const Scaffold(body: Center(child: Text('PLAN_ROUTE'))),
+          ),
+          GoRoute(
+            path: '/library/logs',
+            builder: (context, state) =>
+                const Scaffold(body: Center(child: Text('LOGS_ROUTE'))),
+          ),
+        ],
+      );
 
-    await tester.pumpWidget(
-      ProviderScope(child: MaterialApp.router(routerConfig: router)),
-    );
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 700));
+      await tester.pumpWidget(
+        ProviderScope(child: MaterialApp.router(routerConfig: router)),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 700));
 
-    expect(find.text('Learn'), findsOneWidget);
+      expect(find.text('Learn'), findsOneWidget);
 
-    await tapLabel(tester, 'Open Plan Focus');
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('PLAN_ROUTE'), findsOneWidget);
+      await tapLabel(tester, 'Open Plan Focus');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('PLAN_ROUTE'), findsOneWidget);
 
-    router.go('/library/learn');
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+      router.go('/library/learn');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
 
-    await tapLabel(tester, 'Open Logs');
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('LOGS_ROUTE'), findsOneWidget);
-  }, skip: true); // Async rollout load; v2 routing in router_v2_shell_hardening_test
+      await tapLabel(tester, 'Open Logs');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('LOGS_ROUTE'), findsOneWidget);
+    },
+    skip: true,
+  ); // Async rollout load; v2 routing in router_v2_shell_hardening_test
 }
-

@@ -21,13 +21,23 @@ class MonthlyInsightScreen extends ConsumerWidget {
     final startOfMonth = DateTime(now.year, now.month, 1);
 
     final monthUsage = usageEvents
-        .where((e) => e.timestamp.isAfter(startOfMonth) || e.timestamp.isAtSameMomentAs(startOfMonth))
+        .where(
+          (e) =>
+              e.timestamp.isAfter(startOfMonth) ||
+              e.timestamp.isAtSameMomentAs(startOfMonth),
+        )
         .toList();
     final monthRegulation = regulationEvents
-        .where((e) => e.timestamp.isAfter(startOfMonth) || e.timestamp.isAtSameMomentAs(startOfMonth))
+        .where(
+          (e) =>
+              e.timestamp.isAfter(startOfMonth) ||
+              e.timestamp.isAtSameMomentAs(startOfMonth),
+        )
         .toList();
 
-    final greatCount = monthUsage.where((e) => e.outcome == UsageOutcome.great).length;
+    final greatCount = monthUsage
+        .where((e) => e.outcome == UsageOutcome.great)
+        .length;
 
     return Scaffold(
       body: SettleBackground(
@@ -53,8 +63,10 @@ class MonthlyInsightScreen extends ConsumerWidget {
                         final byId = {for (final c in cards) c.id: c};
                         final usageByTrigger = <String, int>{};
                         for (final e in monthUsage) {
-                          final trigger = byId[e.cardId]?.triggerType ?? e.cardId;
-                          usageByTrigger[trigger] = (usageByTrigger[trigger] ?? 0) + 1;
+                          final trigger =
+                              byId[e.cardId]?.triggerType ?? e.cardId;
+                          usageByTrigger[trigger] =
+                              (usageByTrigger[trigger] ?? 0) + 1;
                         }
 
                         return Column(
@@ -62,7 +74,8 @@ class MonthlyInsightScreen extends ConsumerWidget {
                           children: [
                             _SummaryCard(
                               title: 'Scripts used',
-                              subtitle: 'Times you used a Pocket or Plan script this month.',
+                              subtitle:
+                                  'Times you used a Pocket or Plan script this month.',
                               value: '${monthUsage.length}',
                               icon: Icons.menu_book_rounded,
                             ),
@@ -82,32 +95,31 @@ class MonthlyInsightScreen extends ConsumerWidget {
                             ),
                             if (usageByTrigger.isNotEmpty) ...[
                               const SizedBox(height: 16),
-                              Text(
-                                'By situation',
-                                style: T.type.h3,
-                              ),
+                              Text('By situation', style: T.type.h3),
                               const SizedBox(height: 8),
-                              ...usageByTrigger.entries.map((e) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: GlassCard(
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              _formatTrigger(e.key),
-                                              style: T.type.body,
-                                            ),
+                              ...usageByTrigger.entries.map(
+                                (e) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: GlassCard(
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            _formatTrigger(e.key),
+                                            style: T.type.body,
                                           ),
-                                          Text(
-                                            '${e.value}',
-                                            style: T.type.label.copyWith(
-                                              color: T.pal.accent,
-                                            ),
+                                        ),
+                                        Text(
+                                          '${e.value}',
+                                          style: T.type.label.copyWith(
+                                            color: T.pal.accent,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  )),
+                                  ),
+                                ),
+                              ),
                             ],
                             const SizedBox(height: 24),
                           ],
@@ -167,10 +179,7 @@ class _SummaryCard extends StatelessWidget {
                   style: T.type.body.copyWith(color: T.pal.textSecondary),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  value,
-                  style: T.type.h2.copyWith(color: T.pal.accent),
-                ),
+                Text(value, style: T.type.h2.copyWith(color: T.pal.accent)),
               ],
             ),
           ),

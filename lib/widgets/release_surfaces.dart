@@ -52,9 +52,8 @@ class FeaturePausedView extends StatelessWidget {
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () => context.canPop()
-                          ? context.pop()
-                          : context.go('/now'),
+                      onTap: () =>
+                          context.canPop() ? context.pop() : context.go('/now'),
                       child: Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 20,

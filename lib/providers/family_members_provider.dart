@@ -11,13 +11,11 @@ const _backfillKey = 'backfill_done';
 
 final familyMembersProvider =
     StateNotifierProvider<FamilyMembersNotifier, List<FamilyMember>>((ref) {
-  return FamilyMembersNotifier();
-});
+      return FamilyMembersNotifier();
+    });
 
 class FamilyMembersNotifier extends StateNotifier<List<FamilyMember>> {
-  FamilyMembersNotifier({bool persist = true})
-    : _persist = persist,
-      super([]) {
+  FamilyMembersNotifier({bool persist = true}) : _persist = persist, super([]) {
     if (_persist) {
       _load();
     }
@@ -100,10 +98,7 @@ class FamilyMembersNotifier extends StateNotifier<List<FamilyMember>> {
 
   Future<void> updateMember(FamilyMember member) async {
     if (!_persist) {
-      state = [
-        ...state.where((m) => m.id != member.id),
-        member,
-      ];
+      state = [...state.where((m) => m.id != member.id), member];
       return;
     }
     final box = await _ensureBox();

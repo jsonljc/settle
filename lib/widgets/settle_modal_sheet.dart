@@ -25,11 +25,9 @@ class SettleModalSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final padding = contentPadding ??
-        EdgeInsets.symmetric(
-          horizontal: T.space.md,
-          vertical: T.space.lg,
-        );
+    final padding =
+        contentPadding ??
+        EdgeInsets.symmetric(horizontal: T.space.md, vertical: T.space.lg);
 
     final sheetBody = Column(
       mainAxisSize: MainAxisSize.min,
@@ -83,22 +81,13 @@ class SettleModalSheet extends StatelessWidget {
       ],
     );
 
-    Widget content = GlassCard(
-      padding: EdgeInsets.zero,
-      child: sheetBody,
-    );
+    Widget content = GlassCard(padding: EdgeInsets.zero, child: sheetBody);
 
     if (title != null && title!.isNotEmpty) {
-      content = _AnnounceOnOpen(
-        message: title!,
-        child: content,
-      );
+      content = _AnnounceOnOpen(message: title!, child: content);
     }
 
-    return Semantics(
-      liveRegion: true,
-      child: content,
-    );
+    return Semantics(liveRegion: true, child: content);
   }
 }
 
@@ -131,7 +120,10 @@ class _AnnounceOnOpenState extends State<_AnnounceOnOpen> {
 /// Shows a bottom sheet with standard Settle styling (transparent background,
 /// scroll-controlled). Wrap content in [SettleModalSheet] for handle, glass
 /// surface, and padding.
-Future<TResult?> showSettleSheet<TResult>(BuildContext context, {required Widget child}) {
+Future<TResult?> showSettleSheet<TResult>(
+  BuildContext context, {
+  required Widget child,
+}) {
   return showModalBottomSheet<TResult>(
     context: context,
     isScrollControlled: true,

@@ -57,9 +57,7 @@ class _InviteScreenState extends State<InviteScreen> {
                     children: [
                       Text(
                         'Invite link',
-                        style: T.type.label.copyWith(
-                          color: T.pal.textTertiary,
-                        ),
+                        style: T.type.label.copyWith(color: T.pal.textTertiary),
                       ),
                       const SizedBox(height: 6),
                       SelectableText(

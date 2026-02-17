@@ -32,20 +32,17 @@ class ResetFlowState {
   bool get canShowAnother => anotherCount < maxAnother;
 }
 
-enum ResetFlowPhase {
-  chooseState,
-  showingCard,
-}
+enum ResetFlowPhase { chooseState, showingCard }
 
 class ResetFlowNotifier extends StateNotifier<ResetFlowState> {
   ResetFlowNotifier({
     required CardRepository cardRepo,
     required AppRepository appRepo,
     required UserCardsNotifier userCards,
-  })  : _cardRepo = cardRepo,
-        _appRepo = appRepo,
-        _userCards = userCards,
-        super(const ResetFlowState());
+  }) : _cardRepo = cardRepo,
+       _appRepo = appRepo,
+       _userCards = userCards,
+       super(const ResetFlowState());
 
   final CardRepository _cardRepo;
   final AppRepository _appRepo;
@@ -167,9 +164,9 @@ class ResetFlowNotifier extends StateNotifier<ResetFlowState> {
 
 final resetFlowProvider =
     StateNotifierProvider<ResetFlowNotifier, ResetFlowState>((ref) {
-  return ResetFlowNotifier(
-    cardRepo: ref.read(cardRepositoryProvider),
-    appRepo: ref.read(appRepositoryProvider),
-    userCards: ref.read(userCardsProvider.notifier),
-  );
-});
+      return ResetFlowNotifier(
+        cardRepo: ref.read(cardRepositoryProvider),
+        appRepo: ref.read(appRepositoryProvider),
+        userCards: ref.read(userCardsProvider.notifier),
+      );
+    });

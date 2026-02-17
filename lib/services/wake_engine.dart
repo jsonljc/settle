@@ -33,7 +33,11 @@ class WakeEngine {
     if (isSleeping) {
       return WakeComputation(
         elapsedMinutes: 0,
-        targetMinutes: _targetFor(ageBracket, adaptiveTargetMinutes, disruptionMode),
+        targetMinutes: _targetFor(
+          ageBracket,
+          adaptiveTargetMinutes,
+          disruptionMode,
+        ),
         progress: 0,
         isSleeping: true,
         zone: WakeZone.sleeping,
@@ -45,7 +49,11 @@ class WakeEngine {
       );
     }
 
-    final target = _targetFor(ageBracket, adaptiveTargetMinutes, disruptionMode);
+    final target = _targetFor(
+      ageBracket,
+      adaptiveTargetMinutes,
+      disruptionMode,
+    );
     final since = lastWokeAt ?? DateTime.now();
     final elapsed = DateTime.now().difference(since).inMinutes;
     final progress = target > 0 ? (elapsed / target).clamp(0.0, 1.5) : 0.0;
@@ -89,36 +97,36 @@ class WakeEngine {
   }
 
   static Color _colorFor(WakeZone zone) => switch (zone) {
-        WakeZone.sleeping => T.arc.ok,
-        WakeZone.ok => T.arc.ok,
-        WakeZone.watch => T.arc.watch,
-        WakeZone.soon => T.arc.soon,
-        WakeZone.now => T.arc.now,
-      };
+    WakeZone.sleeping => T.arc.ok,
+    WakeZone.ok => T.arc.ok,
+    WakeZone.watch => T.arc.watch,
+    WakeZone.soon => T.arc.soon,
+    WakeZone.now => T.arc.now,
+  };
 
   static String _textFor(WakeZone zone) => switch (zone) {
-        WakeZone.sleeping => '',
-        WakeZone.ok => 'Doing great',
-        WakeZone.watch => 'Watch for sleepy cues',
-        WakeZone.soon => 'Window is opening',
-        WakeZone.now => 'Time to settle',
-      };
+    WakeZone.sleeping => '',
+    WakeZone.ok => 'Doing great',
+    WakeZone.watch => 'Watch for sleepy cues',
+    WakeZone.soon => 'Window is opening',
+    WakeZone.now => 'Time to settle',
+  };
 
   static String _subtextFor(WakeZone zone) => switch (zone) {
-        WakeZone.sleeping => '',
-        WakeZone.ok => 'Plenty of time in this wake window',
-        WakeZone.watch => 'Yawning, eye rubbing, fussiness',
-        WakeZone.soon => 'Start your settling routine now',
-        WakeZone.now => 'Overtired risk increases from here',
-      };
+    WakeZone.sleeping => '',
+    WakeZone.ok => 'Plenty of time in this wake window',
+    WakeZone.watch => 'Yawning, eye rubbing, fussiness',
+    WakeZone.soon => 'Start your settling routine now',
+    WakeZone.now => 'Overtired risk increases from here',
+  };
 
   static String _ctaFor(WakeZone zone) => switch (zone) {
-        WakeZone.sleeping => 'End sleep',
-        WakeZone.ok => 'Log sleep',
-        WakeZone.watch => 'Log sleep',
-        WakeZone.soon => 'Start settling',
-        WakeZone.now => 'Start settling',
-      };
+    WakeZone.sleeping => 'End sleep',
+    WakeZone.ok => 'Log sleep',
+    WakeZone.watch => 'Log sleep',
+    WakeZone.soon => 'Start settling',
+    WakeZone.now => 'Start settling',
+  };
 }
 
 /// The five wake zones per spec.

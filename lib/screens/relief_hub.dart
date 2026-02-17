@@ -70,53 +70,53 @@ class ReliefHubScreen extends ConsumerWidget {
                             vertical: 8,
                           ),
                           child: SettleDisclosure(
-                              title: 'Other situations',
-                              subtitle: 'Early wakes and incident scripts.',
-                              children: [
-                                const SizedBox(height: 8),
-                                _ReliefTile(
-                                  label: 'Early wake',
-                                  subtitle:
-                                      'Open Sleep Tonight runner for early wakes.',
-                                  icon: Icons.wb_twilight_outlined,
-                                  enabled: sleepEnabled,
-                                  onTap: () => context.push(
-                                    SpecPolicy.sleepTonightScenarioUri(
-                                      'early_wakes',
-                                      source: 'relief',
-                                    ),
+                            title: 'Other situations',
+                            subtitle: 'Early wakes and incident scripts.',
+                            children: [
+                              const SizedBox(height: 8),
+                              _ReliefTile(
+                                label: 'Early wake',
+                                subtitle:
+                                    'Open Sleep Tonight runner for early wakes.',
+                                icon: Icons.wb_twilight_outlined,
+                                enabled: sleepEnabled,
+                                onTap: () => context.push(
+                                  SpecPolicy.sleepTonightScenarioUri(
+                                    'early_wakes',
+                                    source: 'relief',
                                   ),
                                 ),
-                                const SizedBox(height: 10),
-                                _ReliefTile(
-                                  label: 'Public tantrum',
-                                  subtitle:
-                                      'Open incident script for public moments.',
-                                  icon: Icons.storefront_outlined,
-                                  enabled: incidentEnabled,
-                                  onTap: () => context.push(
-                                    SpecPolicy.nowIncidentUri(
-                                      source: 'relief',
-                                      incident: 'public_meltdown',
-                                    ),
+                              ),
+                              const SizedBox(height: 10),
+                              _ReliefTile(
+                                label: 'Public tantrum',
+                                subtitle:
+                                    'Open incident script for public moments.',
+                                icon: Icons.storefront_outlined,
+                                enabled: incidentEnabled,
+                                onTap: () => context.push(
+                                  SpecPolicy.nowIncidentUri(
+                                    source: 'relief',
+                                    incident: 'public_meltdown',
                                   ),
                                 ),
-                                const SizedBox(height: 10),
-                                _ReliefTile(
-                                  label: 'Hitting / biting meltdown',
-                                  subtitle:
-                                      'Open incident script for aggressive moments.',
-                                  icon: Icons.sports_mma_outlined,
-                                  enabled: incidentEnabled,
-                                  onTap: () => context.push(
-                                    SpecPolicy.nowIncidentUri(
-                                      source: 'relief',
-                                      incident: 'hitting_throwing',
-                                    ),
+                              ),
+                              const SizedBox(height: 10),
+                              _ReliefTile(
+                                label: 'Hitting / biting meltdown',
+                                subtitle:
+                                    'Open incident script for aggressive moments.',
+                                icon: Icons.sports_mma_outlined,
+                                enabled: incidentEnabled,
+                                onTap: () => context.push(
+                                  SpecPolicy.nowIncidentUri(
+                                    source: 'relief',
+                                    incident: 'hitting_throwing',
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                              ],
+                              ),
+                              const SizedBox(height: 4),
+                            ],
                           ),
                         ),
                         if (rolloutReady && (!incidentEnabled || !sleepEnabled))

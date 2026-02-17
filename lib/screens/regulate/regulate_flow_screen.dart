@@ -63,7 +63,9 @@ class _RegulateFlowScreenState extends ConsumerState<RegulateFlowScreen> {
       final durationSeconds = _breatheStartTime != null
           ? DateTime.now().difference(_breatheStartTime!).inSeconds
           : 0;
-      await ref.read(regulationEventsProvider.notifier).log(
+      await ref
+          .read(regulationEventsProvider.notifier)
+          .log(
             trigger: trigger,
             completed: true,
             durationSeconds: durationSeconds,

@@ -34,11 +34,7 @@ class WeeklyReflectionBanner extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.auto_stories_rounded,
-                size: 20,
-                color: T.pal.teal,
-              ),
+              Icon(Icons.auto_stories_rounded, size: 20, color: T.pal.teal),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(

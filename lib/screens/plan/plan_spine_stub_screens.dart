@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../theme/glass_components.dart';
 import '../../theme/settle_tokens.dart';
@@ -19,10 +18,7 @@ class ResetStubScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ScreenHeader(
-                  title: 'Reset',
-                  fallbackRoute: '/plan',
-                ),
+                const ScreenHeader(title: 'Reset', fallbackRoute: '/plan'),
                 const SizedBox(height: 24),
                 Text(
                   'Open the full Reset flow from Plan.',
@@ -51,10 +47,7 @@ class MomentStubScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ScreenHeader(
-                  title: 'Moment',
-                  fallbackRoute: '/plan',
-                ),
+                const ScreenHeader(title: 'Moment', fallbackRoute: '/plan'),
                 const SizedBox(height: 24),
                 Text(
                   'Open the full Moment flow from Plan.',

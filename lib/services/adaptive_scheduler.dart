@@ -37,9 +37,7 @@ class AdaptiveScheduler {
   ///
   /// Returns the recommended target wake window in minutes, or null if
   /// there isn't enough data yet.
-  static Future<int?> analyse({
-    required int ageMidpointMinutes,
-  }) async {
+  static Future<int?> analyse({required int ageMidpointMinutes}) async {
     final sessionsBox = await Hive.openBox<SleepSession>(_sessionsBoxName);
     final adaptiveBox = await Hive.openBox<dynamic>(_adaptiveBoxName);
 
@@ -49,10 +47,12 @@ class AdaptiveScheduler {
       if (s.wakeWindowAtStart != null &&
           s.sleepOnsetLatency != null &&
           !s.isActive) {
-        eligible.add(_DataPoint(
-          wakeWindow: s.wakeWindowAtStart!,
-          sol: s.sleepOnsetLatency!,
-        ));
+        eligible.add(
+          _DataPoint(
+            wakeWindow: s.wakeWindowAtStart!,
+            sol: s.sleepOnsetLatency!,
+          ),
+        );
       }
     }
 
@@ -66,8 +66,7 @@ class AdaptiveScheduler {
     // Group into buckets
     final buckets = <int, List<int>>{}; // bucket center → SOL list
     for (final dp in eligible) {
-      final bucketCenter =
-          ((dp.wakeWindow / bucketSize).round() * bucketSize);
+      final bucketCenter = ((dp.wakeWindow / bucketSize).round() * bucketSize);
       buckets.putIfAbsent(bucketCenter, () => []).add(dp.sol);
     }
 
@@ -144,17 +143,17 @@ class AdaptiveScheduler {
 
     // Re-read the SOL data at the recommended bucket for the insight
     final sessionsBox = await Hive.openBox<SleepSession>(_sessionsBoxName);
-    final nearOptimal = sessionsBox.values.where((s) =>
-        s.wakeWindowAtStart != null &&
-        s.sleepOnsetLatency != null &&
-        !s.isActive &&
-        (s.wakeWindowAtStart! - rec).abs() <= bucketSize);
+    final nearOptimal = sessionsBox.values.where(
+      (s) =>
+          s.wakeWindowAtStart != null &&
+          s.sleepOnsetLatency != null &&
+          !s.isActive &&
+          (s.wakeWindowAtStart! - rec).abs() <= bucketSize,
+    );
     final avgSol = nearOptimal.isEmpty
         ? null
-        : nearOptimal
-                .map((s) => s.sleepOnsetLatency!)
-                .reduce((a, b) => a + b) /
-            nearOptimal.length;
+        : nearOptimal.map((s) => s.sleepOnsetLatency!).reduce((a, b) => a + b) /
+              nearOptimal.length;
 
     return AdaptiveInsight(
       hasRecommendation: true,

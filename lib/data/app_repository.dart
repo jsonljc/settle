@@ -147,15 +147,19 @@ class AppRepositoryImpl implements AppRepository {
     try {
       final box = await _spineBoxSafe();
       final raw = box.get(_spineKeyResetEvents);
-      final list = raw is List ? List<ResetEvent>.from(raw.whereType<ResetEvent>()) : <ResetEvent>[];
-      list.add(ResetEvent(
-        id: '${DateTime.now().millisecondsSinceEpoch}',
-        timestamp: DateTime.now(),
-        context: context,
-        state: state,
-        cardIdsSeen: cardIdsSeen,
-        cardIdKept: cardIdKept,
-      ));
+      final list = raw is List
+          ? List<ResetEvent>.from(raw.whereType<ResetEvent>())
+          : <ResetEvent>[];
+      list.add(
+        ResetEvent(
+          id: '${DateTime.now().millisecondsSinceEpoch}',
+          timestamp: DateTime.now(),
+          context: context,
+          state: state,
+          cardIdsSeen: cardIdsSeen,
+          cardIdKept: cardIdKept,
+        ),
+      );
       await box.put(_spineKeyResetEvents, list);
     } catch (_) {
       // Graceful fallback
@@ -249,7 +253,10 @@ class AppRepositoryImpl implements AppRepository {
       if (p == null) return;
       await box.put(
         _profileKey,
-        p.copyWith(ageBracket: ageBracket ?? p.ageBracket, ageMonths: ageMonths),
+        p.copyWith(
+          ageBracket: ageBracket ?? p.ageBracket,
+          ageMonths: ageMonths,
+        ),
       );
     } catch (_) {
       // Graceful fallback

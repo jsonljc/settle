@@ -18,11 +18,10 @@ class PatternEngine {
   ];
 
   /// Default trigger order when no usage data; use for loading/fallback.
-  static List<String> get defaultTriggerOrder => List.unmodifiable(_triggerOrder);
+  static List<String> get defaultTriggerOrder =>
+      List.unmodifiable(_triggerOrder);
 
-  static const _dayNames = [
-    'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',
-  ];
+  static const _dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   /// Compute pattern insights from events. [cardIdToTriggerType] maps cardId → triggerType (e.g. from registry).
   static List<PatternInsight> compute(
@@ -33,10 +32,7 @@ class PatternEngine {
     final insights = <PatternInsight>[];
 
     if (usageEvents.length >= 10) {
-      final timeInsight = _computeTimePattern(
-        usageEvents,
-        cardIdToTriggerType,
-      );
+      final timeInsight = _computeTimePattern(usageEvents, cardIdToTriggerType);
       if (timeInsight != null) insights.add(timeInsight);
     }
 
@@ -90,12 +86,11 @@ class PatternEngine {
       buckets[key] = (buckets[key] ?? 0) + 1;
     }
     if (buckets.isEmpty) return null;
-    final best = buckets.entries.reduce(
-      (a, b) => a.value >= b.value ? a : b,
-    );
+    final best = buckets.entries.reduce((a, b) => a.value >= b.value ? a : b);
     final triggerLabel = _triggerLabel(best.key.trigger);
     final dayRange = _describeDayRange(best.key.weekday);
-    final timeRange = '${best.key.hourBucket * 2}-${best.key.hourBucket * 2 + 2}';
+    final timeRange =
+        '${best.key.hourBucket * 2}-${best.key.hourBucket * 2 + 2}';
     final total = usageEvents.length;
     final confidence = (best.value / total).clamp(0.0, 1.0);
     return PatternInsight(
@@ -155,10 +150,7 @@ class PatternEngine {
         label = 'Night';
       }
       final current = buckets[label]!;
-      buckets[label] = (
-        current.$1 + (e.completed ? 1 : 0),
-        current.$2 + 1,
-      );
+      buckets[label] = (current.$1 + (e.completed ? 1 : 0), current.$2 + 1);
     }
     String? bestLabel;
     double bestRate = 0;

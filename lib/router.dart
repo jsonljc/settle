@@ -325,10 +325,7 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
                     path: 'card/:id',
                     pageBuilder: (context, state) {
                       final id = state.pathParameters['id'] ?? '';
-                      return _fade(
-                        state,
-                        PlaybookCardDetailScreen(cardId: id),
-                      );
+                      return _fade(state, PlaybookCardDetailScreen(cardId: id));
                     },
                   ),
                 ],
@@ -373,14 +370,8 @@ List<RouteBase> _compatibilityRoutes({required bool regulateEnabled}) {
       redirect: (context, state) =>
           _redirectWithMergedQuery(state, path: '/plan'),
     ),
-    GoRoute(
-      path: '/now/reset',
-      redirect: (_, __) => '/plan/reset',
-    ),
-    GoRoute(
-      path: '/now/moment',
-      redirect: (_, __) => '/plan/moment',
-    ),
+    GoRoute(path: '/now/reset', redirect: (_, __) => '/plan/reset'),
+    GoRoute(path: '/now/moment', redirect: (_, __) => '/plan/moment'),
     GoRoute(
       path: '/now/tantrum',
       redirect: (_, __) => '/plan/reset?context=tantrum',

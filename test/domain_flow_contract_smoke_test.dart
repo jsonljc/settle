@@ -175,7 +175,6 @@ void main() {
     expect(const ResetFlowState(anotherCount: 2).canShowAnother, isTrue);
     expect(const ResetFlowState(anotherCount: 3).canShowAnother, isFalse);
   });
-
 }
 
 Future<void> _pumpMomentApp(WidgetTester tester, String contextQuery) async {

@@ -6,10 +6,7 @@ import '../../theme/settle_tokens.dart';
 /// Step 5: Repair — shown when trigger was [RegulationTrigger.alreadyYelled].
 /// Simple repair scripts for reconnecting after a rupture.
 class RegulateStepRepair extends StatelessWidget {
-  const RegulateStepRepair({
-    super.key,
-    required this.onDone,
-  });
+  const RegulateStepRepair({super.key, required this.onDone});
 
   final VoidCallback onDone;
 
@@ -26,10 +23,7 @@ class RegulateStepRepair extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Repair when you\'re ready',
-            style: T.type.h2,
-          ),
+          Text('Repair when you\'re ready', style: T.type.h2),
           const SizedBox(height: 8),
           Text(
             'A short, genuine repair goes a long way. You don\'t have to be perfect.',
@@ -41,7 +35,10 @@ class RegulateStepRepair extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: GlassCard(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 4,
+                  ),
                   child: Text(
                     script,
                     style: T.type.body.copyWith(height: 1.45),

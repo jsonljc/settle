@@ -567,4 +567,3 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
     );
   }
 }
-

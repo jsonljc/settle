@@ -7,12 +7,13 @@ import 'profile_provider.dart';
 ///
 /// Re-analyses after each session ends (via [refresh]) and exposes
 /// the recommended target wake window and insight data.
-final adaptiveProvider =
-    StateNotifierProvider<AdaptiveNotifier, AdaptiveState>((ref) {
-  final profile = ref.watch(profileProvider);
-  final ageMidpoint = profile?.targetWakeMinutes ?? 90;
-  return AdaptiveNotifier(ageMidpointMinutes: ageMidpoint);
-});
+final adaptiveProvider = StateNotifierProvider<AdaptiveNotifier, AdaptiveState>(
+  (ref) {
+    final profile = ref.watch(profileProvider);
+    final ageMidpoint = profile?.targetWakeMinutes ?? 90;
+    return AdaptiveNotifier(ageMidpointMinutes: ageMidpoint);
+  },
+);
 
 class AdaptiveState {
   const AdaptiveState({
@@ -39,7 +40,7 @@ class AdaptiveState {
 
 class AdaptiveNotifier extends StateNotifier<AdaptiveState> {
   AdaptiveNotifier({required this.ageMidpointMinutes})
-      : super(AdaptiveState.initial) {
+    : super(AdaptiveState.initial) {
     _load();
   }
 

@@ -1,16 +1,9 @@
 /// Content model for repair cards used in Reset and related flows.
 ///
 /// Kept separate from UI. All user-facing strings come from registry/content.
-enum RepairCardContext {
-  general,
-  sleep,
-  tantrum,
-}
+enum RepairCardContext { general, sleep, tantrum }
 
-enum RepairCardState {
-  self,
-  child,
-}
+enum RepairCardState { self, child }
 
 /// A single repair card: id, title, short body, context/state, tags, style weights.
 class RepairCard {
@@ -23,19 +16,23 @@ class RepairCard {
     this.tags = const [],
     this.warmthWeight = 0.5,
     this.structureWeight = 0.5,
-  })  : assert(warmthWeight >= 0 && warmthWeight <= 1),
-        assert(structureWeight >= 0 && structureWeight <= 1);
+  }) : assert(warmthWeight >= 0 && warmthWeight <= 1),
+       assert(structureWeight >= 0 && structureWeight <= 1);
 
   final String id;
   final String title;
+
   /// Short copy; max 3 sentences in content source.
   final String body;
   final RepairCardContext context;
   final RepairCardState state;
+
   /// E.g. boundary, connection, co-regulation.
   final List<String> tags;
+
   /// 0 = structure-first, 1 = warmth-first.
   final double warmthWeight;
+
   /// 0 = warmth-first, 1 = structure-first.
   final double structureWeight;
 
@@ -80,11 +77,24 @@ class RepairCard {
     return def;
   }
 
+  /// Enforces max 3 sentences for body. Sentences split on . ! ?
+  static String _bodyMaxSentences(String text, {int max = 3}) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return trimmed;
+    final matches = RegExp(r'[^.!?]+(?:[.!?]|$)')
+        .allMatches(trimmed)
+        .map((m) => m.group(0)!.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (matches.length <= max) return trimmed;
+    return matches.take(max).join(' ');
+  }
+
   factory RepairCard.fromJson(Map<String, dynamic> json) {
     return RepairCard(
       id: (json['id'] as String).trim(),
       title: (json['title'] as String).trim(),
-      body: (json['body'] as String).trim(),
+      body: _bodyMaxSentences((json['body'] as String).trim()),
       context: _contextFromWire(json['context'] as String?),
       state: _stateFromWire(json['state'] as String?),
       tags: _tagsFromJson(json['tags']),

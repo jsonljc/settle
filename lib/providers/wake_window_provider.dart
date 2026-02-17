@@ -17,25 +17,25 @@ import 'session_provider.dart';
 /// Ticks every minute while baby is awake.
 final wakeWindowProvider =
     StateNotifierProvider<WakeWindowNotifier, WakeWindowState>((ref) {
-  final profile = ref.watch(profileProvider);
-  final activeSession = ref.watch(sessionProvider);
-  final sessionNotifier = ref.read(sessionProvider.notifier);
-  final adaptive = ref.watch(adaptiveProvider);
-  final disruption = ref.watch(disruptionProvider);
+      final profile = ref.watch(profileProvider);
+      final activeSession = ref.watch(sessionProvider);
+      final sessionNotifier = ref.read(sessionProvider.notifier);
+      final adaptive = ref.watch(adaptiveProvider);
+      final disruption = ref.watch(disruptionProvider);
 
-  final lastWokeAt = sessionNotifier.lastWokeAt;
-  final ageBracket = profile?.ageBracket ?? AgeBracket.fourToFiveMonths;
-  final name = profile?.name ?? 'Baby';
+      final lastWokeAt = sessionNotifier.lastWokeAt;
+      final ageBracket = profile?.ageBracket ?? AgeBracket.fourToFiveMonths;
+      final name = profile?.name ?? 'Baby';
 
-  return WakeWindowNotifier(
-    ageBracket: ageBracket,
-    name: name,
-    activeSession: activeSession,
-    lastWokeAt: lastWokeAt,
-    adaptiveTargetMinutes: adaptive.recommendedMinutes,
-    disruptionMode: disruption,
-  );
-});
+      return WakeWindowNotifier(
+        ageBracket: ageBracket,
+        name: name,
+        activeSession: activeSession,
+        lastWokeAt: lastWokeAt,
+        adaptiveTargetMinutes: adaptive.recommendedMinutes,
+        disruptionMode: disruption,
+      );
+    });
 
 class WakeWindowState {
   const WakeWindowState({
@@ -135,14 +135,19 @@ class WakeWindowNotifier extends StateNotifier<WakeWindowState> {
     );
 
     // For sleeping state, personalise the text
-    final text = computation.isSleeping ? '$name is sleeping' : computation.text;
-    final subtext =
-        computation.isSleeping ? 'Rest while you can' : computation.subtext;
-    final ctaLabel =
-        computation.isSleeping ? 'End sleep' : computation.ctaLabel;
+    final text = computation.isSleeping
+        ? '$name is sleeping'
+        : computation.text;
+    final subtext = computation.isSleeping
+        ? 'Rest while you can'
+        : computation.subtext;
+    final ctaLabel = computation.isSleeping
+        ? 'End sleep'
+        : computation.ctaLabel;
 
     // Personalise the "doing great" message
-    final personalText = computation.zone == WakeZone.ok && !computation.isSleeping
+    final personalText =
+        computation.zone == WakeZone.ok && !computation.isSleeping
         ? '$name is doing great'
         : text;
 

@@ -344,9 +344,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                 SettleGap.md(),
                 Expanded(
                   child: state.isLoading
-                      ? const CalmLoading(
-                          message: 'Loading your progress…',
-                        )
+                      ? const CalmLoading(message: 'Loading your progress…')
                       : SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           child: Column(
@@ -475,15 +473,12 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                 children: [
                                   _SecondaryLink(
                                     label: 'This week',
-                                    onTap: () => context.push(
-                                      '/progress/logs',
-                                    ),
+                                    onTap: () => context.push('/progress/logs'),
                                   ),
                                   _SecondaryLink(
                                     label: 'Learn why',
-                                    onTap: () => context.push(
-                                      '/progress/learn',
-                                    ),
+                                    onTap: () =>
+                                        context.push('/progress/learn'),
                                   ),
                                   _SecondaryLink(
                                     label: 'Shared Scripts',
@@ -499,221 +494,212 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                   vertical: 8,
                                 ),
                                 child: SettleDisclosure(
-                                    title: 'More details',
-                                    subtitle: 'Evidence and day rhythm tuning.',
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SettleGap.xs(),
-                                            Text(
-                                              'Tiny evidence',
-                                              style: T.type.overline.copyWith(
-                                                color: T.pal.textTertiary,
-                                              ),
+                                  title: 'More details',
+                                  subtitle: 'Evidence and day rhythm tuning.',
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SettleGap.xs(),
+                                          Text(
+                                            'Tiny evidence',
+                                            style: T.type.overline.copyWith(
+                                              color: T.pal.textTertiary,
                                             ),
-                                            SettleGap.sm(),
+                                          ),
+                                          SettleGap.sm(),
+                                          Text(
+                                            state.insightEligible
+                                                ? (evidence ??
+                                                      'Pattern still emerging.')
+                                                : 'Need a little more data.',
+                                            style: T.type.body.copyWith(
+                                              color: T.pal.textSecondary,
+                                            ),
+                                          ),
+                                          SettleGap.md(),
+                                          Text(
+                                            'Daily rhythm details',
+                                            style: T.type.overline.copyWith(
+                                              color: T.pal.textTertiary,
+                                            ),
+                                          ),
+                                          SettleGap.sm(),
+                                          Text(
+                                            'Use this only when tuning your plan feels useful.',
+                                            style: T.type.caption.copyWith(
+                                              color: T.pal.textSecondary,
+                                            ),
+                                          ),
+                                          SettleGap.md(),
+                                          ..._controllers.entries.map((entry) {
+                                            final key = entry.key;
+                                            final controller = entry.value;
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                bottom: 8,
+                                              ),
+                                              child: TextField(
+                                                controller: controller,
+                                                onSubmitted: (v) async {
+                                                  await ref
+                                                      .read(
+                                                        planProgressProvider
+                                                            .notifier,
+                                                      )
+                                                      .updateRhythmBlock(
+                                                        childId: childId,
+                                                        block: key,
+                                                        value: v,
+                                                      );
+                                                  await _loadDayRuntime(
+                                                    profile.ageBracket,
+                                                  );
+                                                },
+                                                style: T.type.caption,
+                                                decoration: InputDecoration(
+                                                  labelText: key.replaceAll(
+                                                    '_',
+                                                    ' ',
+                                                  ),
+                                                  labelStyle: T.type.caption
+                                                      .copyWith(
+                                                        color:
+                                                            T.pal.textTertiary,
+                                                      ),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          T.radius.md,
+                                                        ),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              T.radius.md,
+                                                            ),
+                                                        borderSide: BorderSide(
+                                                          color: T.pal.accent,
+                                                        ),
+                                                      ),
+                                                ),
+                                              ),
+                                            );
+                                          }),
+                                          SettleGap.md(),
+                                          Text(
+                                            'Day planner runtime',
+                                            style: T.type.label,
+                                          ),
+                                          SettleGap.sm(),
+                                          if (_dayRuntimeError != null)
                                             Text(
-                                              state.insightEligible
-                                                  ? (evidence ??
-                                                        'Pattern still emerging.')
-                                                  : 'Need a little more data.',
-                                              style: T.type.body.copyWith(
+                                              'Could not load day rhythm details right now.',
+                                              style: T.type.caption.copyWith(
                                                 color: T.pal.textSecondary,
                                               ),
-                                            ),
-                                            SettleGap.md(),
+                                            )
+                                          else if (_dayRuntime == null)
                                             Text(
-                                              'Daily rhythm details',
-                                              style: T.type.overline.copyWith(
-                                                color: T.pal.textTertiary,
+                                              'No day rhythm output yet.',
+                                              style: T.type.caption.copyWith(
+                                                color: T.pal.textSecondary,
                                               ),
-                                            ),
-                                            SettleGap.sm(),
+                                            )
+                                          else ...[
                                             Text(
-                                              'Use this only when tuning your plan feels useful.',
+                                              'Template: ${_dayRuntime!.templateId}',
+                                              style: T.type.caption,
+                                            ),
+                                            SettleGap.xs(),
+                                            Text(
+                                              'Bedtime window: ${_formatClock(_dayRuntime!.bedtimeWindowEarliest)}–${_formatClock(_dayRuntime!.bedtimeWindowLatest)}',
                                               style: T.type.caption.copyWith(
                                                 color: T.pal.textSecondary,
                                               ),
                                             ),
-                                            SettleGap.md(),
-                                            ..._controllers.entries.map((
-                                              entry,
-                                            ) {
-                                              final key = entry.key;
-                                              final controller = entry.value;
-                                              return Padding(
-                                                padding: const EdgeInsets.only(
-                                                  bottom: 8,
-                                                ),
-                                                child: TextField(
-                                                  controller: controller,
-                                                  onSubmitted: (v) async {
-                                                    await ref
-                                                        .read(
-                                                          planProgressProvider
-                                                              .notifier,
-                                                        )
-                                                        .updateRhythmBlock(
-                                                          childId: childId,
-                                                          block: key,
-                                                          value: v,
-                                                        );
-                                                    await _loadDayRuntime(
-                                                      profile.ageBracket,
-                                                    );
-                                                  },
-                                                  style: T.type.caption,
-                                                  decoration: InputDecoration(
-                                                    labelText: key.replaceAll(
-                                                      '_',
-                                                      ' ',
+                                            SettleGap.sm(),
+                                            ..._dayRuntime!.napWindows
+                                                .take(3)
+                                                .map(
+                                                  (nap) => Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          bottom: 4,
+                                                        ),
+                                                    child: Text(
+                                                      '${nap.slotId}: ${_formatClock(nap.startWindowMinutes)}–${_formatClock(nap.endWindowMinutes)} (${nap.targetDurationMinutes}m)',
+                                                      style: T.type.caption
+                                                          .copyWith(
+                                                            color: T
+                                                                .pal
+                                                                .textSecondary,
+                                                          ),
                                                     ),
-                                                    labelStyle: T.type.caption
-                                                        .copyWith(
+                                                  ),
+                                                ),
+                                            SettleGap.sm(),
+                                            Text(
+                                              'Rules: ${_dayRuntime!.appliedRuleIds.length} • Constraints: ${_dayRuntime!.appliedConstraintIds.length}',
+                                              style: T.type.caption.copyWith(
+                                                color: T.pal.textTertiary,
+                                              ),
+                                            ),
+                                            if (_dayRuntime!
+                                                .evidenceRefs
+                                                .isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  top: 6,
+                                                ),
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: GestureDetector(
+                                                    onTap: () =>
+                                                        _showEvidenceSheet(
+                                                          _dayRuntime!
+                                                              .evidenceRefs,
+                                                        ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Icon(
+                                                          Icons
+                                                              .menu_book_outlined,
+                                                          size: 14,
                                                           color: T
                                                               .pal
                                                               .textTertiary,
                                                         ),
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            T.radius.md,
-                                                          ),
-                                                    ),
-                                                    focusedBorder:
-                                                        OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                T.radius.md,
-                                                              ),
-                                                          borderSide:
-                                                              BorderSide(
+                                                        const SizedBox(
+                                                          width: 4,
+                                                        ),
+                                                        Text(
+                                                          'Why this? (${_dayRuntime!.evidenceRefs.length})',
+                                                          style: T.type.caption
+                                                              .copyWith(
                                                                 color: T
                                                                     .pal
-                                                                    .accent,
+                                                                    .textTertiary,
                                                               ),
                                                         ),
-                                                  ),
-                                                ),
-                                              );
-                                            }),
-                                            SettleGap.md(),
-                                            Text(
-                                              'Day planner runtime',
-                                              style: T.type.label,
-                                            ),
-                                            SettleGap.sm(),
-                                            if (_dayRuntimeError != null)
-                                              Text(
-                                                'Could not load day rhythm details right now.',
-                                                style: T.type.caption.copyWith(
-                                                  color: T.pal.textSecondary,
-                                                ),
-                                              )
-                                            else if (_dayRuntime == null)
-                                              Text(
-                                                'No day rhythm output yet.',
-                                                style: T.type.caption.copyWith(
-                                                  color: T.pal.textSecondary,
-                                                ),
-                                              )
-                                            else ...[
-                                              Text(
-                                                'Template: ${_dayRuntime!.templateId}',
-                                                style: T.type.caption,
-                                              ),
-                                              SettleGap.xs(),
-                                              Text(
-                                                'Bedtime window: ${_formatClock(_dayRuntime!.bedtimeWindowEarliest)}–${_formatClock(_dayRuntime!.bedtimeWindowLatest)}',
-                                                style: T.type.caption.copyWith(
-                                                  color: T.pal.textSecondary,
-                                                ),
-                                              ),
-                                              SettleGap.sm(),
-                                              ..._dayRuntime!.napWindows
-                                                  .take(3)
-                                                  .map(
-                                                    (nap) => Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                            bottom: 4,
-                                                          ),
-                                                      child: Text(
-                                                        '${nap.slotId}: ${_formatClock(nap.startWindowMinutes)}–${_formatClock(nap.endWindowMinutes)} (${nap.targetDurationMinutes}m)',
-                                                        style: T.type.caption
-                                                            .copyWith(
-                                                              color: T
-                                                                  .pal
-                                                                  .textSecondary,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                              SettleGap.sm(),
-                                              Text(
-                                                'Rules: ${_dayRuntime!.appliedRuleIds.length} • Constraints: ${_dayRuntime!.appliedConstraintIds.length}',
-                                                style: T.type.caption.copyWith(
-                                                  color: T.pal.textTertiary,
-                                                ),
-                                              ),
-                                              if (_dayRuntime!
-                                                  .evidenceRefs
-                                                  .isNotEmpty)
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        top: 6,
-                                                      ),
-                                                  child: Align(
-                                                    alignment:
-                                                        Alignment.centerRight,
-                                                    child: GestureDetector(
-                                                      onTap: () =>
-                                                          _showEvidenceSheet(
-                                                            _dayRuntime!
-                                                                .evidenceRefs,
-                                                          ),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Icon(
-                                                            Icons
-                                                                .menu_book_outlined,
-                                                            size: 14,
-                                                            color: T
-                                                                .pal
-                                                                .textTertiary,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 4,
-                                                          ),
-                                                          Text(
-                                                            'Why this? (${_dayRuntime!.evidenceRefs.length})',
-                                                            style: T
-                                                                .type
-                                                                .caption
-                                                                .copyWith(
-                                                                  color: T
-                                                                      .pal
-                                                                      .textTertiary,
-                                                                ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ),
-                                            ],
-                                            SettleGap.sm(),
+                                              ),
                                           ],
-                                        ),
+                                          SettleGap.sm(),
+                                        ],
                                       ),
-                                    ],
+                                    ),
+                                  ],
                                 ),
                               ),
                               SettleGap.xxl(),

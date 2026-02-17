@@ -76,9 +76,7 @@ class FamilyRulesScreen extends ConsumerWidget {
                 const SizedBox(height: 14),
                 Expanded(
                   child: rulesState.isLoading
-                      ? const CalmLoading(
-                          message: 'Loading shared scripts…',
-                        )
+                      ? const CalmLoading(message: 'Loading shared scripts…')
                       : ListView(
                           physics: const BouncingScrollPhysics(),
                           children: [
@@ -106,95 +104,93 @@ class FamilyRulesScreen extends ConsumerWidget {
                                 vertical: 8,
                               ),
                               child: SettleDisclosure(
-                                  title: 'More details (optional)',
-                                  titleStyle: T.type.h3,
-                                  subtitle: 'Defaults, tonight context, and recent updates.',
-                                  children: [
-                                    const SizedBox(height: 6),
-                                    _RulesEditor(
-                                      title: 'Defaults',
-                                      embedded: true,
-                                      rules: {
-                                        'screens_default':
-                                            rulesState
-                                                .rules['screens_default'] ??
-                                            '',
-                                        'snacks_default':
-                                            rulesState
-                                                .rules['snacks_default'] ??
-                                            '',
-                                        'bedtime_routine':
-                                            rulesState
-                                                .rules['bedtime_routine'] ??
-                                            '',
-                                      },
-                                      onSave: (ruleId, value) => ref
-                                          .read(familyRulesProvider.notifier)
-                                          .updateRule(
-                                            childId: childId,
-                                            ruleId: ruleId,
-                                            newValue: value,
-                                            author: author,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 10),
+                                title: 'More details (optional)',
+                                titleStyle: T.type.h3,
+                                subtitle:
+                                    'Defaults, tonight context, and recent updates.',
+                                children: [
+                                  const SizedBox(height: 6),
+                                  _RulesEditor(
+                                    title: 'Defaults',
+                                    embedded: true,
+                                    rules: {
+                                      'screens_default':
+                                          rulesState.rules['screens_default'] ??
+                                          '',
+                                      'snacks_default':
+                                          rulesState.rules['snacks_default'] ??
+                                          '',
+                                      'bedtime_routine':
+                                          rulesState.rules['bedtime_routine'] ??
+                                          '',
+                                    },
+                                    onSave: (ruleId, value) => ref
+                                        .read(familyRulesProvider.notifier)
+                                        .updateRule(
+                                          childId: childId,
+                                          ruleId: ruleId,
+                                          newValue: value,
+                                          author: author,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    'Tonight plan context',
+                                    style: T.type.h3,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  if (sleepPlan == null ||
+                                      !(sleepPlan['is_active'] as bool? ??
+                                          false))
                                     Text(
-                                      'Tonight plan context',
-                                      style: T.type.h3,
+                                      'No active sleep plan yet tonight.',
+                                      style: T.type.caption.copyWith(
+                                        color: T.pal.textSecondary,
+                                      ),
+                                    )
+                                  else ...[
+                                    Text(
+                                      'Scenario: ${sleepPlan['scenario']}',
+                                      style: T.type.caption,
                                     ),
-                                    const SizedBox(height: 8),
-                                    if (sleepPlan == null ||
-                                        !(sleepPlan['is_active'] as bool? ??
-                                            false))
-                                      Text(
-                                        'No active sleep plan yet tonight.',
-                                        style: T.type.caption.copyWith(
-                                          color: T.pal.textSecondary,
-                                        ),
-                                      )
-                                    else ...[
-                                      Text(
-                                        'Scenario: ${sleepPlan['scenario']}',
-                                        style: T.type.caption,
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      sleepPlan['escalation_rule']
+                                              ?.toString() ??
+                                          '',
+                                      style: T.type.body.copyWith(
+                                        color: T.pal.textSecondary,
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        sleepPlan['escalation_rule']
-                                                ?.toString() ??
-                                            '',
-                                        style: T.type.body.copyWith(
-                                          color: T.pal.textSecondary,
-                                        ),
+                                    ),
+                                  ],
+                                  const SizedBox(height: 12),
+                                  Text('Recent updates', style: T.type.h3),
+                                  const SizedBox(height: 8),
+                                  if (rulesState.changeFeed.isEmpty)
+                                    Text(
+                                      'No updates yet.',
+                                      style: T.type.caption.copyWith(
+                                        color: T.pal.textSecondary,
                                       ),
-                                    ],
-                                    const SizedBox(height: 12),
-                                    Text('Recent updates', style: T.type.h3),
-                                    const SizedBox(height: 8),
-                                    if (rulesState.changeFeed.isEmpty)
-                                      Text(
-                                        'No updates yet.',
-                                        style: T.type.caption.copyWith(
-                                          color: T.pal.textSecondary,
-                                        ),
-                                      )
-                                    else
-                                      ...rulesState.changeFeed
-                                          .take(10)
-                                          .map(
-                                            (item) => Padding(
-                                              padding: const EdgeInsets.only(
-                                                bottom: 8,
-                                              ),
-                                              child: Text(
-                                                '• ${item['message']} (${item['timestamp'].toString().split('T').first})',
-                                                style: T.type.caption.copyWith(
-                                                  color: T.pal.textSecondary,
-                                                ),
+                                    )
+                                  else
+                                    ...rulesState.changeFeed
+                                        .take(10)
+                                        .map(
+                                          (item) => Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 8,
+                                            ),
+                                            child: Text(
+                                              '• ${item['message']} (${item['timestamp'].toString().split('T').first})',
+                                              style: T.type.caption.copyWith(
+                                                color: T.pal.textSecondary,
                                               ),
                                             ),
                                           ),
-                                    const SizedBox(height: 6),
-                                  ],
+                                        ),
+                                  const SizedBox(height: 6),
+                                ],
                               ),
                             ),
                             const SizedBox(height: 24),

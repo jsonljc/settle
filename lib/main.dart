@@ -182,8 +182,13 @@ class _SettleAppState extends ConsumerState<SettleApp>
     final profile = ref.read(profileProvider);
     final (h, m) = _bedtimeHourMin(profile?.preferredBedtime);
     final now = DateTime.now();
-    var fireAt = DateTime(now.year, now.month, now.day, h, m)
-        .subtract(const Duration(hours: 1));
+    var fireAt = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      h,
+      m,
+    ).subtract(const Duration(hours: 1));
     if (!fireAt.isAfter(now.add(const Duration(minutes: 1)))) {
       fireAt = fireAt.add(const Duration(days: 1));
     }
@@ -199,8 +204,13 @@ class _SettleAppState extends ConsumerState<SettleApp>
     final profile = ref.read(profileProvider);
     final (h, m) = _bedtimeHourMin(profile?.preferredBedtime);
     final now = DateTime.now();
-    var fireAt = DateTime(now.year, now.month, now.day, h, m)
-        .subtract(const Duration(hours: 1));
+    var fireAt = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      h,
+      m,
+    ).subtract(const Duration(hours: 1));
     if (fireAt.isBefore(now)) {
       fireAt = fireAt.add(const Duration(days: 1));
     }

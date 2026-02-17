@@ -17,10 +17,7 @@ import '../../widgets/settle_tappable.dart';
 /// Below Close: "Need more? → Reset (15s)" link.
 /// Usable start-to-finish in ≤ 10 seconds.
 class MomentFlowScreen extends ConsumerStatefulWidget {
-  const MomentFlowScreen({
-    super.key,
-    this.contextQuery = 'general',
-  });
+  const MomentFlowScreen({super.key, this.contextQuery = 'general'});
 
   /// Route query: general, sleep, tantrum. Used for Reset link.
   final String contextQuery;
@@ -159,7 +156,8 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         ),
         Expanded(
           child: SettleTappable(
-            semanticLabel: '10 second calm. Double tap to skip to script choices.',
+            semanticLabel:
+                '10 second calm. Double tap to skip to script choices.',
             onTap: _skipCalm,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -195,9 +193,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
             ),
           ),
         ),
-        Expanded(
-          child: _buildChoiceContent(),
-        ),
+        Expanded(child: _buildChoiceContent()),
       ],
     );
   }
@@ -219,22 +215,25 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
       if (s.variant == MomentScriptVariant.connection) connection ??= s;
     }
 
+    final boundaryScript = boundary;
+    final connectionScript = connection;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SettleGap.xxl(),
-        if (boundary != null)
+        if (boundaryScript != null)
           _ScriptTile(
             label: 'Boundary',
-            script: boundary!,
-            onTap: () => _onScriptSelected(boundary!),
+            script: boundaryScript,
+            onTap: () => _onScriptSelected(boundaryScript),
           ),
-        if (boundary != null && connection != null) SettleGap.md(),
-        if (connection != null)
+        if (boundaryScript != null && connectionScript != null) SettleGap.md(),
+        if (connectionScript != null)
           _ScriptTile(
             label: 'Connection',
-            script: connection!,
-            onTap: () => _onScriptSelected(connection!),
+            script: connectionScript,
+            onTap: () => _onScriptSelected(connectionScript),
           ),
         const Spacer(),
       ],
@@ -251,10 +250,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
       children: [
         Text(
           script.lines.join(' '),
-          style: T.type.h2.copyWith(
-            color: T.pal.textPrimary,
-            height: 1.35,
-          ),
+          style: T.type.h2.copyWith(color: T.pal.textPrimary, height: 1.35),
         ),
         SettleGap.xxl(),
         SizedBox(
@@ -308,9 +304,10 @@ class _CalmPulseState extends State<_CalmPulse>
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     )..repeat(reverse: true);
-    _scale = Tween<double>(begin: 0.7, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scale = Tween<double>(
+      begin: 0.7,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -381,10 +378,7 @@ class _ScriptTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              label,
-              style: T.type.h3.copyWith(color: T.pal.textPrimary),
-            ),
+            Text(label, style: T.type.h3.copyWith(color: T.pal.textPrimary)),
             SettleGap.sm(),
             Text(
               firstLine,

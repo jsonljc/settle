@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/card_repository.dart';
 import '../models/repair_card.dart';
 import '../models/user_card.dart';
 import 'card_repository_provider.dart';
@@ -16,8 +15,9 @@ class PlaybookEntry {
 
 /// Playbook as list of repair cards only, most recent first.
 /// Cards saved from Reset (repair card ids) appear here; other saved ids are excluded.
-final playbookRepairCardsProvider =
-    FutureProvider<List<PlaybookEntry>>((ref) async {
+final playbookRepairCardsProvider = FutureProvider<List<PlaybookEntry>>((
+  ref,
+) async {
   final userCards = ref.watch(userCardsProvider);
   final repo = ref.read(cardRepositoryProvider);
   final all = await repo.loadAll();

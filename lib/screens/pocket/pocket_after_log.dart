@@ -37,7 +37,9 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
   Future<void> _submit() async {
     if (_submitting) return;
     setState(() => _submitting = true);
-    await ref.read(usageEventsProvider.notifier).log(
+    await ref
+        .read(usageEventsProvider.notifier)
+        .log(
           cardId: widget.cardId,
           outcome: widget.outcome,
           context: _contextController.text.trim().isEmpty
@@ -66,10 +68,7 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'Quick log',
-            style: T.type.h3,
-          ),
+          Text('Quick log', style: T.type.h3),
           const SizedBox(height: 6),
           Text(
             _outcomeLabel(widget.outcome),
@@ -99,8 +98,11 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
                 height: 24,
                 child: Checkbox(
                   value: _regulationUsed,
-                  onChanged: (v) => setState(() => _regulationUsed = v ?? false),
-                  fillColor: WidgetStateProperty.resolveWith((_) => T.glass.fill),
+                  onChanged: (v) =>
+                      setState(() => _regulationUsed = v ?? false),
+                  fillColor: WidgetStateProperty.resolveWith(
+                    (_) => T.glass.fill,
+                  ),
                   checkColor: T.pal.accent,
                 ),
               ),

@@ -11,8 +11,9 @@ const _key = 'disruption_mode';
 /// - Night guidance text is softened (gentler language, shorter waits)
 ///
 /// Persisted to Hive so the toggle survives app restarts.
-final disruptionProvider =
-    StateNotifierProvider<DisruptionNotifier, bool>((ref) {
+final disruptionProvider = StateNotifierProvider<DisruptionNotifier, bool>((
+  ref,
+) {
   return DisruptionNotifier();
 });
 

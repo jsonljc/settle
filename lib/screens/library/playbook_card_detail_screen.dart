@@ -157,7 +157,7 @@ class _Content extends ConsumerWidget {
   }
 
   void _share(BuildContext context) {
-    final text = 'Repair words to use right now:\n${card.title}\n${card.body}';
+    final text = '${card.title}\n${card.body}\n— from Settle';
     Share.share(text);
   }
 

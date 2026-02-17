@@ -59,20 +59,19 @@ class CardRepository {
     return List.unmodifiable(list);
   }
 
-  /// Returns one card from the filtered set. Selection is random for now;
-  /// warmthWeight/structureWeight can be used later for weighted choice.
-  /// Returns null if no cards match the filter.
+  /// Returns one card from the filtered set using weighted-random selection.
+  /// Weight = warmthWeight + structureWeight (both in [0,1]), so higher warmth
+  /// or structure increases chance of being picked. Returns null if no match.
   Future<RepairCard?> pickOne({
     RepairCardContext? context,
     RepairCardState? state,
   }) async {
     final list = await filter(context: context, state: state);
     if (list.isEmpty) return null;
-    return list[_rng.nextInt(list.length)];
+    return _weightedPick(list);
   }
 
   /// Like [pickOne] but excludes cards whose id is in [excludeIds].
-  /// Returns null if no cards remain after excluding.
   Future<RepairCard?> pickOneExcluding({
     Set<String> excludeIds = const {},
     RepairCardContext? context,
@@ -81,6 +80,22 @@ class CardRepository {
     final list = await filter(context: context, state: state);
     final available = list.where((c) => !excludeIds.contains(c.id)).toList();
     if (available.isEmpty) return null;
-    return available[_rng.nextInt(available.length)];
+    return _weightedPick(available);
+  }
+
+  /// Picks one card from [list] with probability proportional to
+  /// (warmthWeight + structureWeight). Minimum weight 0.01 so every card is pickable.
+  RepairCard _weightedPick(List<RepairCard> list) {
+    final weights = list.map((c) {
+      final w = c.warmthWeight + c.structureWeight;
+      return w < 0.01 ? 0.01 : w;
+    }).toList();
+    final sum = weights.fold<double>(0, (a, b) => a + b);
+    var r = _rng.nextDouble() * sum;
+    for (var i = 0; i < list.length; i++) {
+      r -= weights[i];
+      if (r <= 0) return list[i];
+    }
+    return list.last;
   }
 }

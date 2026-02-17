@@ -41,8 +41,7 @@ class SleepSession extends HiveObject {
 
   bool get isActive => endedAt == null;
 
-  Duration get duration =>
-      (endedAt ?? DateTime.now()).difference(startedAt);
+  Duration get duration => (endedAt ?? DateTime.now()).difference(startedAt);
 
   /// Minutes since sleep started (for the timer display).
   int get elapsedMinutes => duration.inMinutes;

@@ -31,8 +31,10 @@ class ResponseApproachStep extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Response focus', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'Response focus',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 8),
         Text(
           'Pick your priority for guidance weighting.',
@@ -43,15 +45,14 @@ class ResponseApproachStep extends StatelessWidget {
           final i = entry.key;
           final option = entry.value;
           return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: OptionButton(
-                  label: option.label,
-                  subtitle: _copy[option],
-                  selected: selected == option,
-                  onTap: () => onSelect(option),
-                ),
-              )
-              .entrySlideIn(context, delay: Duration(milliseconds: 160 + 80 * i));
+            padding: const EdgeInsets.only(bottom: 10),
+            child: OptionButton(
+              label: option.label,
+              subtitle: _copy[option],
+              selected: selected == option,
+              onTap: () => onSelect(option),
+            ),
+          ).entrySlideIn(context, delay: Duration(milliseconds: 160 + 80 * i));
         }),
       ],
     );

@@ -15,10 +15,7 @@ double _vagalScale(double t) {
 
 /// Inline vagal breathing for Pocket "I need to regulate first". Auto-advances after 3 cycles or user taps Back.
 class PocketInlineBreathe extends StatefulWidget {
-  const PocketInlineBreathe({
-    super.key,
-    required this.onBackToScript,
-  });
+  const PocketInlineBreathe({super.key, required this.onBackToScript});
 
   final VoidCallback onBackToScript;
 
@@ -66,25 +63,22 @@ class _PocketInlineBreatheState extends State<PocketInlineBreathe> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Quick reset',
-            style: T.type.h3,
-          ),
+          Text('Quick reset', style: T.type.h3),
           const SizedBox(height: 6),
           Text(
             'Inhale 4, exhale 6. Tap "Back to script" when ready.',
             style: T.type.caption.copyWith(color: T.pal.textSecondary),
           ),
           const SizedBox(height: 20),
-          Center(
-            child: _PocketVagalCircles(scale: _vagalScale(_cycleT)),
-          ),
+          Center(child: _PocketVagalCircles(scale: _vagalScale(_cycleT))),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                _isInhale ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+                _isInhale
+                    ? Icons.arrow_upward_rounded
+                    : Icons.arrow_downward_rounded,
                 size: 20,
                 color: T.pal.accent,
               ),

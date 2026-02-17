@@ -45,7 +45,8 @@ class SettleSegmentedChoice<TOption> extends StatelessWidget {
             final value = options[index];
             final isSelected = selected == value;
             final label = labelBuilder(value);
-            final positionLabel = '$label, ${index + 1} of $total'
+            final positionLabel =
+                '$label, ${index + 1} of $total'
                 '${isSelected ? ', selected' : ''}';
             return SettleChip(
               key: ValueKey(index),

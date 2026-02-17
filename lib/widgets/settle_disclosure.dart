@@ -85,7 +85,10 @@ class _SettleDisclosureState extends State<SettleDisclosure>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.title, style: widget.titleStyle ?? T.type.label),
+                    Text(
+                      widget.title,
+                      style: widget.titleStyle ?? T.type.label,
+                    ),
                     if (widget.subtitle != null) ...[
                       const SizedBox(height: 2),
                       Text(

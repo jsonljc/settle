@@ -45,8 +45,10 @@ class TantrumProfileStep extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Tantrum pattern', style: T.type.h1)
-            .entryFadeIn(context, duration: 400.ms, moveY: 10),
+        Text(
+          'Tantrum pattern',
+          style: T.type.h1,
+        ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 8),
         Text(
           'Pick the pattern that feels most true right now.',
@@ -62,15 +64,19 @@ class TantrumProfileStep extends StatelessWidget {
           final i = entry.key;
           final type = entry.value;
           return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: OptionButton(
-                  label: type.label,
-                  subtitle: _tantrumTypeCopy[type],
-                  selected: tantrumType == type,
-                  onTap: () => onTantrumTypeSelect(type),
-                ),
-              )
-              .entrySlideIn(context, delay: Duration(milliseconds: 180 + 70 * i), duration: 280.ms, moveX: 14);
+            padding: const EdgeInsets.only(bottom: 10),
+            child: OptionButton(
+              label: type.label,
+              subtitle: _tantrumTypeCopy[type],
+              selected: tantrumType == type,
+              onTap: () => onTantrumTypeSelect(type),
+            ),
+          ).entrySlideIn(
+            context,
+            delay: Duration(milliseconds: 180 + 70 * i),
+            duration: 280.ms,
+            moveX: 14,
+          );
         }),
         const SizedBox(height: 16),
         Text(
@@ -95,20 +101,24 @@ class TantrumProfileStep extends StatelessWidget {
                 final i = entry.key;
                 final trigger = entry.value;
                 return OptionButtonCompact(
-                      label: trigger.label,
-                      icon: _triggerIcons[trigger],
-                      selected: triggers.contains(trigger),
-                      onTap: () {
-                        final next = {...triggers};
-                        if (next.contains(trigger)) {
-                          next.remove(trigger);
-                        } else {
-                          next.add(trigger);
-                        }
-                        onTriggersChanged(next);
-                      },
-                    )
-                    .entryScaleIn(context, delay: Duration(milliseconds: 340 + 60 * i), duration: 250.ms, scaleBegin: 0.96);
+                  label: trigger.label,
+                  icon: _triggerIcons[trigger],
+                  selected: triggers.contains(trigger),
+                  onTap: () {
+                    final next = {...triggers};
+                    if (next.contains(trigger)) {
+                      next.remove(trigger);
+                    } else {
+                      next.add(trigger);
+                    }
+                    onTriggersChanged(next);
+                  },
+                ).entryScaleIn(
+                  context,
+                  delay: Duration(milliseconds: 340 + 60 * i),
+                  duration: 250.ms,
+                  scaleBegin: 0.96,
+                );
               }).toList(),
         ),
         const SizedBox(height: 20),
@@ -121,14 +131,18 @@ class TantrumProfileStep extends StatelessWidget {
           final i = entry.key;
           final pattern = entry.value;
           return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: OptionButton(
-                  label: pattern.label,
-                  selected: parentPattern == pattern,
-                  onTap: () => onParentPatternSelect(pattern),
-                ),
-              )
-              .entrySlideIn(context, delay: Duration(milliseconds: 480 + 65 * i), duration: 250.ms, moveX: 14);
+            padding: const EdgeInsets.only(bottom: 10),
+            child: OptionButton(
+              label: pattern.label,
+              selected: parentPattern == pattern,
+              onTap: () => onParentPatternSelect(pattern),
+            ),
+          ).entrySlideIn(
+            context,
+            delay: Duration(milliseconds: 480 + 65 * i),
+            duration: 250.ms,
+            moveX: 14,
+          );
         }),
       ],
     );

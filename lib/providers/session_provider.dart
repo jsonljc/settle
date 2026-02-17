@@ -7,8 +7,9 @@ const _boxName = 'sessions';
 
 /// Tracks the currently active [SleepSession] (null when baby is awake)
 /// and persists all sessions to Hive.
-final sessionProvider =
-    StateNotifierProvider<SessionNotifier, SleepSession?>((ref) {
+final sessionProvider = StateNotifierProvider<SessionNotifier, SleepSession?>((
+  ref,
+) {
   return SessionNotifier();
 });
 
@@ -56,10 +57,7 @@ class SessionNotifier extends StateNotifier<SleepSession?> {
   ///
   /// [wakeWindowMinutes] — the wake window length at the time of put-down,
   /// used by the adaptive scheduler to correlate window length with SOL.
-  Future<void> start({
-    bool isNight = false,
-    int? wakeWindowMinutes,
-  }) async {
+  Future<void> start({bool isNight = false, int? wakeWindowMinutes}) async {
     final box = await _ensureBox();
     final session = SleepSession(
       startedAt: DateTime.now(),
@@ -109,9 +107,7 @@ class SessionNotifier extends StateNotifier<SleepSession?> {
     final box = await _ensureBox();
     return box.values.where((s) {
       final d = s.startedAt;
-      return d.year == date.year &&
-          d.month == date.month &&
-          d.day == date.day;
+      return d.year == date.year && d.month == date.month && d.day == date.day;
     }).toList();
   }
 
@@ -123,10 +119,12 @@ class SessionNotifier extends StateNotifier<SleepSession?> {
   Future<int> get sessionsWithSolCount async {
     final box = await _ensureBox();
     return box.values
-        .where((s) =>
-            !s.isActive &&
-            s.sleepOnsetLatency != null &&
-            s.wakeWindowAtStart != null)
+        .where(
+          (s) =>
+              !s.isActive &&
+              s.sleepOnsetLatency != null &&
+              s.wakeWindowAtStart != null,
+        )
         .length;
   }
 }
