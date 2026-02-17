@@ -2,6 +2,10 @@
 
 A new Flutter project.
 
+## Documentation
+
+- **Product Specs:** [Settle — Product Architecture (v1.4 Locked)](docs/PRODUCT_ARCHITECTURE_v1_3.md) — canonical product reference.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

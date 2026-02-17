@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "cards": [
+    {
+      "id": "gen_1",
+      "title": "Right here with you",
+      "body": "You showed up. That’s what they needed. Take a breath. You’re still the safe place.",
+      "context": "general",
+      "state": "self",
+      "tags": ["connection", "co-regulation"],
+      "warmthWeight": 0.8,
+      "structureWeight": 0.3
+    },
+    {
+      "id": "gen_2",
+      "title": "Name the feeling",
+      "body": "Say it simply: “That was really hard. You got so frustrated.” No fix, just naming.",
+      "context": "general",
+      "state": "child",
+      "tags": ["connection"],
+      "warmthWeight": 0.7,
+      "structureWeight": 0.4
+    },
+    {
+      "id": "gen_3",
+      "title": "One clear line",
+      "body": "One sentence. “We’re not hitting. I’m here.” Then quiet presence.",
+      "context": "general",
+      "state": "child",
+      "tags": ["boundary", "connection"],
+      "warmthWeight": 0.5,
+      "structureWeight": 0.7
+    },
+    {
+      "id": "gen_4",
+      "title": "Reset your nervous system",
+      "body": "You don’t have to fix it this second. Breathe. Your calm is the first tool.",
+      "context": "general",
+      "state": "self",
+      "tags": ["co-regulation"],
+      "warmthWeight": 0.6,
+      "structureWeight": 0.5
+    },
+    {
+      "id": "gen_5",
+      "title": "Repair is enough",
+      "body": "You can say: “I didn’t like how I said that. I’m sorry.” That’s repair. No long talk needed.",
+      "context": "general",
+      "state": "child",
+      "tags": ["connection"],
+      "warmthWeight": 0.8,
+      "structureWeight": 0.3
+    },
+    {
+      "id": "sleep_bedtime_1",
+      "title": "Same plan, I’m here",
+      "body": "Bath, books, bed. Same plan every night. You don’t have to negotiate. Just repeat the next step calmly.",
+      "context": "sleep",
+      "state": "child",
+      "tags": ["boundary", "bedtime_protest"],
+      "warmthWeight": 0.5,
+      "structureWeight": 0.8
+    },
+    {
+      "id": "sleep_bedtime_2",
+      "title": "One more hug, then bed",
+      "body": "Offer one brief connection: “One more hug, then we’re going to sleep.” Then follow through without reopening the deal.",
+      "context": "sleep",
+      "state": "child",
+      "tags": ["connection", "bedtime_protest"],
+      "warmthWeight": 0.8,
+      "structureWeight": 0.5
+    },
+    {
+      "id": "sleep_night_1",
+      "title": "Quiet presence",
+      "body": "Keep it minimal. “I’m here. It’s still sleep time.” Low voice, one sentence, then wait.",
+      "context": "sleep",
+      "state": "child",
+      "tags": ["boundary", "night_wake"],
+      "warmthWeight": 0.4,
+      "structureWeight": 0.8
+    },
+    {
+      "id": "sleep_night_2",
+      "title": "Touch and one line",
+      "body": "A hand on their back. “You’re safe. Back to sleep.” No long conversation. Your presence does the work.",
+      "context": "sleep",
+      "state": "child",
+      "tags": ["connection", "night_wake"],
+      "warmthWeight": 0.8,
+      "structureWeight": 0.5
+    },
+    {
+      "id": "sleep_early_1",
+      "title": "Early wake, calm start",
+      "body": "When they’re up before the window: keep the room dim, one short phrase. “Still rest time. I’ll be back when it’s morning.”",
+      "context": "sleep",
+      "state": "child",
+      "tags": ["boundary", "early_wake"],
+      "warmthWeight": 0.5,
+      "structureWeight": 0.7
+    },
+    {
+      "id": "tantrum_child_1",
+      "title": "Big feelings, you’re safe",
+      "body": "After the storm: “That was really big. You’re safe. I’m right here.” No lesson yet. Just safety.",
+      "context": "tantrum",
+      "state": "child",
+      "tags": ["connection"],
+      "warmthWeight": 0.9,
+      "structureWeight": 0.2
+    },
+    {
+      "id": "tantrum_child_2",
+      "title": "Limit and presence",
+      "body": "One line: “We don’t hit. I’m staying close.” Then stay. No extra words until they’re calmer.",
+      "context": "tantrum",
+      "state": "child",
+      "tags": ["boundary", "connection"],
+      "warmthWeight": 0.5,
+      "structureWeight": 0.7
+    },
+    {
+      "id": "tantrum_child_3",
+      "title": "Name it, then wait",
+      "body": "“You wanted X and you couldn’t have it. That’s really frustrating.” Then give space. Don’t fix or persuade.",
+      "context": "tantrum",
+      "state": "child",
+      "tags": ["connection"],
+      "warmthWeight": 0.8,
+      "structureWeight": 0.4
+    },
+    {
+      "id": "tantrum_self_1",
+      "title": "You’re not failing",
+      "body": "Hard moments don’t mean you’re doing it wrong. You came back. That’s what matters.",
+      "context": "tantrum",
+      "state": "self",
+      "tags": ["co-regulation"],
+      "warmthWeight": 0.9,
+      "structureWeight": 0.2
+    },
+    {
+      "id": "tantrum_self_2",
+      "title": "Pause before you speak",
+      "body": "When you feel the wave: breathe once. One sentence is enough. You can repair after.",
+      "context": "tantrum",
+      "state": "self",
+      "tags": ["co-regulation", "boundary"],
+      "warmthWeight": 0.5,
+      "structureWeight": 0.6
+    }
+  ]
+}

@@ -9,6 +9,10 @@ class _Ids {
   static const int wakeWindowNudge = 1;
   static const int windDownReminder = 2;
   static const int scheduleDriftPrompt = 3;
+  // Plan nudges (v2)
+  static const int nudgePredictable = 10;
+  static const int nudgePattern = 11;
+  static const int nudgeContent = 12;
 }
 
 /// Handles all local notifications for Settle.
@@ -44,6 +48,13 @@ class NotificationService {
     'Sleep high-signal reminders',
     description: 'Wind-down and drift reminders',
     importance: Importance.high,
+  );
+
+  static const _planNudgeChannel = AndroidNotificationChannel(
+    'settle_plan_nudges',
+    'Plan nudges',
+    description: 'Gentle reminders for scripts and patterns',
+    importance: Importance.defaultImportance,
   );
 
   static DateTime? _lastWindDownScheduledAt;
@@ -97,6 +108,14 @@ class NotificationService {
           _sleepSignalChannel.name,
           description: _sleepSignalChannel.description,
           importance: _sleepSignalChannel.importance,
+        ),
+      );
+      await androidPlugin?.createNotificationChannel(
+        AndroidNotificationChannel(
+          _planNudgeChannel.id,
+          _planNudgeChannel.name,
+          description: _planNudgeChannel.description,
+          importance: _planNudgeChannel.importance,
         ),
       );
       // Request exact alarm permission (Android 12+).
@@ -276,5 +295,52 @@ class NotificationService {
   static Future<void> cancelAll() async {
     if (!_initialized) return;
     await _plugin.cancelAll();
+  }
+
+  // ───────────────────────────────────────────
+  //  Plan nudges (v2)
+  // ───────────────────────────────────────────
+
+  /// Schedule a plan nudge at [fireAt]. [id] must be one of [_Ids.nudgePredictable], [_Ids.nudgePattern], [_Ids.nudgeContent].
+  static Future<void> schedulePlanNudge({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime fireAt,
+  }) async {
+    if (!_initialized) return;
+    final tzFireAt = tz.TZDateTime.from(fireAt, tz.local);
+    await _plugin.zonedSchedule(
+      id,
+      title,
+      body,
+      tzFireAt,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _planNudgeChannel.id,
+          _planNudgeChannel.name,
+          channelDescription: _planNudgeChannel.description,
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: null,
+    );
+  }
+
+  /// Cancel all plan nudges (predictable, pattern, content).
+  static Future<void> cancelPlanNudges() async {
+    if (!_initialized) return;
+    await _plugin.cancel(_Ids.nudgePredictable);
+    await _plugin.cancel(_Ids.nudgePattern);
+    await _plugin.cancel(_Ids.nudgeContent);
   }
 }

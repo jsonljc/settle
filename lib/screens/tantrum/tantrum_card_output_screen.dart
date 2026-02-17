@@ -6,7 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../../tantrum/providers/tantrum_module_providers.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/output_card.dart';
 import '../../widgets/screen_header.dart';
+import '../../widgets/script_card.dart';
 
 /// Immediate post-capture payoff: one calm card for the logged event.
 class TantrumCardOutputScreen extends ConsumerWidget {
@@ -61,83 +63,37 @@ class TantrumCardOutputScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 18),
                     Expanded(
-                      child: GlassCard(
-                        fill: T.pal.textPrimary.withValues(alpha: 0.08),
-                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(card.title, style: T.type.h1),
-                            const SizedBox(height: 20),
-                            _CardLine(label: 'Remember', body: card.remember),
-                            const SizedBox(height: 16),
-                            _CardLine(label: 'Say', body: card.say),
-                            const SizedBox(height: 16),
-                            _CardLine(label: 'Do', body: card.doStep),
-                            const Spacer(),
-                            Divider(
-                              color: T.glass.border.withValues(alpha: 0.8),
-                              height: 1,
+                      child: OutputCard(
+                        context: ScriptCardContext.crisis,
+                        scenarioLabel: card.title,
+                        prevent: card.remember,
+                        say: card.say,
+                        doStep: card.doStep,
+                        ifEscalates: card.ifEscalates,
+                        onPrimary: () => context.go('/tantrum/capture'),
+                        onSave: () async {
+                          if (isSaved) return;
+                          await notifier.save(card.id);
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Saved to deck'),
+                              behavior: SnackBarBehavior.floating,
                             ),
-                            const SizedBox(height: 14),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: GlassPill(
-                                    label: isSaved
-                                        ? 'Saved to deck'
-                                        : 'Save to deck',
-                                    onTap: () async {
-                                      if (isSaved) return;
-                                      await notifier.save(card.id);
-                                      if (!context.mounted) return;
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Saved to deck'),
-                                          behavior: SnackBarBehavior.floating,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: GlassPill(
-                                    label: 'Share',
-                                    onTap: () async {
-                                      final payload =
-                                          '${card.title}\n\nRemember: ${card.remember}\n\nSay: ${card.say}\n\nDo: ${card.doStep}';
-                                      await Clipboard.setData(
-                                        ClipboardData(text: payload),
-                                      );
-                                      if (!context.mounted) return;
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Card copied to clipboard',
-                                          ),
-                                          behavior: SnackBarBehavior.floating,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: GlassCta(
-                                    label: 'Done',
-                                    onTap: () => context.go('/tantrum/capture'),
-                                    compact: true,
-                                  ),
-                                ),
-                              ],
+                          );
+                        },
+                        onShare: () async {
+                          final payload =
+                              '${card.title}\n\nRemember: ${card.remember}\n\nSay: ${card.say}\n\nDo: ${card.doStep}';
+                          await Clipboard.setData(ClipboardData(text: payload));
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Card copied to clipboard'),
+                              behavior: SnackBarBehavior.floating,
                             ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -168,25 +124,6 @@ class TantrumCardOutputScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _CardLine extends StatelessWidget {
-  const _CardLine({required this.label, required this.body});
-
-  final String label;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: T.type.overline.copyWith(color: T.pal.textTertiary)),
-        const SizedBox(height: 6),
-        Text(body, style: T.type.body.copyWith(color: T.pal.textPrimary)),
-      ],
     );
   }
 }

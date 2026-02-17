@@ -8,15 +8,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'models/approach.dart';
 import 'models/baby_profile.dart';
 import 'models/day_plan.dart';
+import 'models/family_member.dart';
 import 'models/nudge_record.dart';
 import 'models/night_wake.dart';
 import 'models/pattern_insight.dart';
 import 'models/regulation_event.dart';
+import 'models/reset_event.dart';
 import 'models/sleep_session.dart';
 import 'models/tantrum_profile.dart';
 import 'models/usage_event.dart';
 import 'models/user_card.dart';
 import 'models/v2_enums.dart';
+import 'data/app_repository.dart';
 import 'router.dart';
 import 'services/event_bus_service.dart';
 import 'services/notification_service.dart';
@@ -58,7 +61,9 @@ Future<void> main() async {
     ..registerAdapter(UsageOutcomeAdapter())
     ..registerAdapter(RegulationTriggerAdapter())
     ..registerAdapter(PatternTypeAdapter())
-    ..registerAdapter(NudgeTypeAdapter());
+    ..registerAdapter(NudgeTypeAdapter())
+    ..registerAdapter(FamilyMemberAdapter())
+    ..registerAdapter(ResetEventAdapter());
 
   await Future.wait([
     Hive.openBox<UserCard>('user_cards'),
@@ -66,8 +71,14 @@ Future<void> main() async {
     Hive.openBox<RegulationEvent>('regulation_events'),
     Hive.openBox<PatternInsight>('patterns'),
     Hive.openBox<NudgeRecord>('nudges'),
+    Hive.openBox<FamilyMember>('family_members'),
+    Hive.openBox<dynamic>('family_members_meta'),
+    Hive.openBox<dynamic>('nudge_settings'),
     Hive.openBox<dynamic>('release_rollout_v1'),
+    Hive.openBox<dynamic>('weekly_reflection_meta'),
+    Hive.openBox<dynamic>('spine_store'),
   ]);
+  _ensureSpineSchemaVersion();
   refreshRouterFromRollout();
 
   // Initialize local notifications (timezone, channels, permissions).
@@ -97,6 +108,17 @@ Future<void> main() async {
   runApp(const ProviderScope(child: SettleApp()));
 }
 
+void _ensureSpineSchemaVersion() {
+  try {
+    final box = Hive.box<dynamic>('spine_store');
+    if (box.get('schema_version') == null) {
+      box.put('schema_version', spineSchemaVersion);
+    }
+  } catch (_) {
+    // Graceful fallback: app still works
+  }
+}
+
 class SettleApp extends StatelessWidget {
   const SettleApp({super.key});
 
@@ -105,7 +127,7 @@ class SettleApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Settle',
       debugShowCheckedModeBanner: false,
-      theme: SettleTheme.data,
+      theme: SettleTheme.dataV3,
       routerConfig: router,
     );
   }

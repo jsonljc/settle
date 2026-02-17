@@ -138,7 +138,7 @@ void main() {
         ),
         GoRoute(path: '/now', builder: nowModeMarker),
         GoRoute(
-          path: '/sleep',
+          path: '/sleep/tonight',
           builder: (context, state) =>
               const Scaffold(body: Center(child: Text('SLEEP_TAB'))),
         ),
@@ -179,7 +179,7 @@ void main() {
         ),
         GoRoute(path: '/now', builder: nowModeMarker),
         GoRoute(
-          path: '/sleep',
+          path: '/sleep/tonight',
           builder: (context, state) =>
               const Scaffold(body: Center(child: Text('SLEEP_TAB'))),
         ),

@@ -75,16 +75,6 @@ class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
   }
 
   @override
-  Future<void> setV2NavigationEnabled(bool value) async {
-    state = state.copyWith(v2NavigationEnabled: value);
-  }
-
-  @override
-  Future<void> setV2OnboardingEnabled(bool value) async {
-    state = state.copyWith(v2OnboardingEnabled: value);
-  }
-
-  @override
   Future<void> setPlanTabEnabled(bool value) async {
     state = state.copyWith(planTabEnabled: value);
   }
@@ -117,6 +107,11 @@ class _StaticRolloutNotifier extends StateNotifier<ReleaseRolloutState>
   @override
   Future<void> setPatternDetectionEnabled(bool value) async {
     state = state.copyWith(patternDetectionEnabled: value);
+  }
+
+  @override
+  Future<void> setUiV3Enabled(bool value) async {
+    state = state.copyWith(uiV3Enabled: value);
   }
 }
 

@@ -11,7 +11,12 @@ import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 
 class ReleaseOpsChecklistScreen extends ConsumerStatefulWidget {
-  const ReleaseOpsChecklistScreen({super.key});
+  const ReleaseOpsChecklistScreen({
+    super.key,
+    this.service = const ReleaseOpsService(),
+  });
+
+  final ReleaseOpsService service;
 
   @override
   ConsumerState<ReleaseOpsChecklistScreen> createState() =>
@@ -20,8 +25,8 @@ class ReleaseOpsChecklistScreen extends ConsumerStatefulWidget {
 
 class _ReleaseOpsChecklistScreenState
     extends ConsumerState<ReleaseOpsChecklistScreen> {
-  final _service = const ReleaseOpsService();
   Future<ReleaseOpsSnapshot>? _future;
+  bool _isUpdatingRollout = false;
 
   @override
   void initState() {
@@ -31,7 +36,37 @@ class _ReleaseOpsChecklistScreenState
 
   void _reload() {
     final childId = ref.read(profileProvider)?.createdAt;
-    _future = _service.loadSnapshot(childId: childId);
+    _future = widget.service.loadSnapshot(childId: childId);
+  }
+
+  Future<void> _applyRolloutUpdate({
+    required Future<void> Function(ReleaseRolloutNotifier notifier) update,
+    required String successMessage,
+  }) async {
+    if (_isUpdatingRollout) return;
+    setState(() => _isUpdatingRollout = true);
+    try {
+      final notifier = ref.read(releaseRolloutProvider.notifier);
+      await update(notifier);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(successMessage),
+          duration: const Duration(milliseconds: 900),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not update rollout control. Try again.'),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUpdatingRollout = false);
+      }
+    }
   }
 
   @override
@@ -103,70 +138,179 @@ class _ReleaseOpsChecklistScreenState
                               children: [
                                 Text('Quick controls', style: T.type.h3),
                                 const SizedBox(height: 8),
+                                if (_isUpdatingRollout) ...[
+                                  Text(
+                                    'Updating rollout flags…',
+                                    style: T.type.caption.copyWith(
+                                      color: T.pal.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
                                 _RolloutSwitchRow(
                                   label: 'Help Now',
                                   value: rollout.helpNowEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setHelpNowEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setHelpNowEnabled(v),
+                                    successMessage: 'Help Now updated',
+                                  ),
                                 ),
                                 _RolloutSwitchRow(
                                   label: 'Sleep Tonight',
                                   value: rollout.sleepTonightEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setSleepTonightEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setSleepTonightEnabled(v),
+                                    successMessage: 'Sleep Tonight updated',
+                                  ),
                                 ),
                                 _RolloutSwitchRow(
                                   label: 'Plan & Progress',
                                   value: rollout.planProgressEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setPlanProgressEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setPlanProgressEnabled(v),
+                                    successMessage: 'Plan & Progress updated',
+                                  ),
                                 ),
                                 _RolloutSwitchRow(
                                   label: 'Family Rules',
                                   value: rollout.familyRulesEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setFamilyRulesEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setFamilyRulesEnabled(v),
+                                    successMessage: 'Family Rules updated',
+                                  ),
                                 ),
+                                const SizedBox(height: 8),
+                                Divider(color: T.glass.border),
+                                const SizedBox(height: 6),
+                                Text('Phase 1 controls', style: T.type.h3),
+                                const SizedBox(height: 8),
+                                _RolloutSwitchRow(
+                                  label: 'Plan tab',
+                                  switchKey: const ValueKey('rollout_v2_plan'),
+                                  value: rollout.planTabEnabled,
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setPlanTabEnabled(v),
+                                    successMessage: 'Plan tab updated',
+                                  ),
+                                ),
+                                _RolloutSwitchRow(
+                                  label: 'Family tab',
+                                  switchKey: const ValueKey(
+                                    'rollout_v2_family',
+                                  ),
+                                  value: rollout.familyTabEnabled,
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setFamilyTabEnabled(v),
+                                    successMessage: 'Family tab updated',
+                                  ),
+                                ),
+                                _RolloutSwitchRow(
+                                  label: 'Library tab',
+                                  switchKey: const ValueKey(
+                                    'rollout_v2_library',
+                                  ),
+                                  value: rollout.libraryTabEnabled,
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setLibraryTabEnabled(v),
+                                    successMessage: 'Library tab updated',
+                                  ),
+                                ),
+                                _RolloutSwitchRow(
+                                  label: 'Regulate route',
+                                  switchKey: const ValueKey(
+                                    'rollout_v2_regulate',
+                                  ),
+                                  caption:
+                                      'Controls /sos and /breathe -> /plan/regulate redirects',
+                                  value: rollout.regulateEnabled,
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setRegulateEnabled(v),
+                                    successMessage: v
+                                        ? 'Regulate redirect enabled'
+                                        : 'Regulate redirect disabled',
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Divider(color: T.glass.border),
+                                const SizedBox(height: 6),
+                                Text('Foundation flags', style: T.type.h3),
+                                const SizedBox(height: 8),
                                 _RolloutSwitchRow(
                                   label: 'Sleep bounded AI copy',
                                   value: rollout.sleepBoundedAiEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setSleepBoundedAiEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) =>
+                                        notifier.setSleepBoundedAiEnabled(v),
+                                    successMessage:
+                                        'Sleep bounded AI copy updated',
+                                  ),
                                 ),
                                 _RolloutSwitchRow(
                                   label: 'Sleep rhythm surfaces',
                                   value: rollout.sleepRhythmSurfacesEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setSleepRhythmSurfacesEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) => notifier
+                                        .setSleepRhythmSurfacesEnabled(v),
+                                    successMessage:
+                                        'Sleep rhythm surfaces updated',
+                                  ),
                                 ),
                                 _RolloutSwitchRow(
                                   label: 'Rhythm detector prompts',
                                   value:
                                       rollout.rhythmShiftDetectorPromptsEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setRhythmShiftDetectorPromptsEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) => notifier
+                                        .setRhythmShiftDetectorPromptsEnabled(
+                                          v,
+                                        ),
+                                    successMessage:
+                                        'Rhythm detector prompts updated',
+                                  ),
                                 ),
                                 _RolloutSwitchRow(
                                   label: 'Wind-down notifications',
                                   value: rollout.windDownNotificationsEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setWindDownNotificationsEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) => notifier
+                                        .setWindDownNotificationsEnabled(v),
+                                    successMessage:
+                                        'Wind-down notifications updated',
+                                  ),
                                 ),
                                 _RolloutSwitchRow(
                                   label: 'Drift notifications',
                                   value:
                                       rollout.scheduleDriftNotificationsEnabled,
-                                  onChanged: (v) => ref
-                                      .read(releaseRolloutProvider.notifier)
-                                      .setScheduleDriftNotificationsEnabled(v),
+                                  enabled: !_isUpdatingRollout,
+                                  onChanged: (v) => _applyRolloutUpdate(
+                                    update: (notifier) => notifier
+                                        .setScheduleDriftNotificationsEnabled(
+                                          v,
+                                        ),
+                                    successMessage:
+                                        'Drift notifications updated',
+                                  ),
                                 ),
                               ],
                             ),
@@ -301,20 +445,48 @@ class _RolloutSwitchRow extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onChanged,
+    this.switchKey,
+    this.enabled = true,
+    this.caption,
   });
 
   final String label;
   final bool value;
   final ValueChanged<bool> onChanged;
+  final Key? switchKey;
+  final bool enabled;
+  final String? caption;
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: Text(label, style: T.type.caption)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: T.type.caption.copyWith(
+                  color: enabled ? T.pal.textPrimary : T.pal.textTertiary,
+                ),
+              ),
+              if (caption != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  caption!,
+                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                ),
+              ],
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
         Switch.adaptive(
+          key: switchKey,
           value: value,
-          onChanged: onChanged,
+          onChanged: enabled ? onChanged : null,
           activeColor: T.pal.accent,
         ),
       ],

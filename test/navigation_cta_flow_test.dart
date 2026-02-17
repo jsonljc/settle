@@ -174,6 +174,11 @@ void main() {
             builder: (context, state) =>
                 const Scaffold(body: Center(child: Text('SETTINGS_ROUTE'))),
           ),
+          GoRoute(
+            path: '/sleep/tonight',
+            builder: (context, state) =>
+                const Scaffold(body: Center(child: Text('SLEEP_ROUTE'))),
+          ),
         ],
       );
 

@@ -19,6 +19,7 @@ Use this checklist for PR reviews that touch parent-facing UI.
 - Use accent for primary action only.
 - Reserve rose/red surfaces for urgent safety content.
 - Non-urgent surfaces use neutral glass fills and low-contrast borders.
+- **SOS and Regulate flow** use `T.pal.focusBackground` (pure black) for distraction-free focus mode; do not substitute with gradient or grey.
 
 ## Typography
 

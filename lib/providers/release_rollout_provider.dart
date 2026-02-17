@@ -8,7 +8,7 @@ import '../router.dart';
 
 const _rolloutBox = 'release_rollout_v1';
 const _rolloutKey = 'state';
-const _rolloutSchemaVersion = 3;
+const _rolloutSchemaVersion = 4;
 
 const _v2DeckMigrationGuardKey = 'v2_tantrum_deck_migrated';
 const _tantrumDeckBoxName = 'tantrum_deck';
@@ -29,15 +29,14 @@ class ReleaseRolloutState {
     required this.rhythmShiftDetectorPromptsEnabled,
     required this.windDownNotificationsEnabled,
     required this.scheduleDriftNotificationsEnabled,
-    this.v2NavigationEnabled = false,
-    this.v2OnboardingEnabled = false,
-    this.planTabEnabled = false,
-    this.familyTabEnabled = false,
-    this.libraryTabEnabled = false,
-    this.pocketEnabled = false,
-    this.regulateEnabled = false,
+    this.planTabEnabled = true,
+    this.familyTabEnabled = true,
+    this.libraryTabEnabled = true,
+    this.pocketEnabled = true,
+    this.regulateEnabled = true,
     this.smartNudgesEnabled = false,
     this.patternDetectionEnabled = false,
+    this.uiV3Enabled = true,
   });
 
   final bool isLoading;
@@ -53,8 +52,6 @@ class ReleaseRolloutState {
   final bool windDownNotificationsEnabled;
   final bool scheduleDriftNotificationsEnabled;
 
-  final bool v2NavigationEnabled;
-  final bool v2OnboardingEnabled;
   final bool planTabEnabled;
   final bool familyTabEnabled;
   final bool libraryTabEnabled;
@@ -62,6 +59,7 @@ class ReleaseRolloutState {
   final bool regulateEnabled;
   final bool smartNudgesEnabled;
   final bool patternDetectionEnabled;
+  final bool uiV3Enabled;
 
   static const initial = ReleaseRolloutState(
     isLoading: true,
@@ -76,15 +74,14 @@ class ReleaseRolloutState {
     rhythmShiftDetectorPromptsEnabled: true,
     windDownNotificationsEnabled: true,
     scheduleDriftNotificationsEnabled: false,
-    v2NavigationEnabled: false,
-    v2OnboardingEnabled: false,
-    planTabEnabled: false,
-    familyTabEnabled: false,
-    libraryTabEnabled: false,
-    pocketEnabled: false,
-    regulateEnabled: false,
+    planTabEnabled: true,
+    familyTabEnabled: true,
+    libraryTabEnabled: true,
+    pocketEnabled: true,
+    regulateEnabled: true,
     smartNudgesEnabled: false,
     patternDetectionEnabled: false,
+    uiV3Enabled: true,
   );
 
   ReleaseRolloutState copyWith({
@@ -100,8 +97,6 @@ class ReleaseRolloutState {
     bool? rhythmShiftDetectorPromptsEnabled,
     bool? windDownNotificationsEnabled,
     bool? scheduleDriftNotificationsEnabled,
-    bool? v2NavigationEnabled,
-    bool? v2OnboardingEnabled,
     bool? planTabEnabled,
     bool? familyTabEnabled,
     bool? libraryTabEnabled,
@@ -109,6 +104,7 @@ class ReleaseRolloutState {
     bool? regulateEnabled,
     bool? smartNudgesEnabled,
     bool? patternDetectionEnabled,
+    bool? uiV3Enabled,
   }) {
     return ReleaseRolloutState(
       isLoading: isLoading ?? this.isLoading,
@@ -132,8 +128,6 @@ class ReleaseRolloutState {
       scheduleDriftNotificationsEnabled:
           scheduleDriftNotificationsEnabled ??
           this.scheduleDriftNotificationsEnabled,
-      v2NavigationEnabled: v2NavigationEnabled ?? this.v2NavigationEnabled,
-      v2OnboardingEnabled: v2OnboardingEnabled ?? this.v2OnboardingEnabled,
       planTabEnabled: planTabEnabled ?? this.planTabEnabled,
       familyTabEnabled: familyTabEnabled ?? this.familyTabEnabled,
       libraryTabEnabled: libraryTabEnabled ?? this.libraryTabEnabled,
@@ -142,6 +136,7 @@ class ReleaseRolloutState {
       smartNudgesEnabled: smartNudgesEnabled ?? this.smartNudgesEnabled,
       patternDetectionEnabled:
           patternDetectionEnabled ?? this.patternDetectionEnabled,
+      uiV3Enabled: uiV3Enabled ?? this.uiV3Enabled,
     );
   }
 }
@@ -216,21 +211,18 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
               raw['wind_down_notifications_enabled'] as bool? ?? true,
           scheduleDriftNotificationsEnabled:
               raw['schedule_drift_notifications_enabled'] as bool? ?? false,
-          v2NavigationEnabled: raw['v2_navigation_enabled'] as bool? ?? false,
-          v2OnboardingEnabled: raw['v2_onboarding_enabled'] as bool? ?? false,
-          planTabEnabled: raw['plan_tab_enabled'] as bool? ?? false,
-          familyTabEnabled: raw['family_tab_enabled'] as bool? ?? false,
-          libraryTabEnabled: raw['library_tab_enabled'] as bool? ?? false,
-          pocketEnabled: raw['pocket_enabled'] as bool? ?? false,
-          regulateEnabled: raw['regulate_enabled'] as bool? ?? false,
+          planTabEnabled: raw['plan_tab_enabled'] as bool? ?? true,
+          familyTabEnabled: raw['family_tab_enabled'] as bool? ?? true,
+          libraryTabEnabled: raw['library_tab_enabled'] as bool? ?? true,
+          pocketEnabled: raw['pocket_enabled'] as bool? ?? true,
+          regulateEnabled: raw['regulate_enabled'] as bool? ?? true,
           smartNudgesEnabled: raw['smart_nudges_enabled'] as bool? ?? false,
           patternDetectionEnabled:
               raw['pattern_detection_enabled'] as bool? ?? false,
+          uiV3Enabled: raw['ui_v3_enabled'] as bool? ?? true,
         );
 
-        if (next.v2NavigationEnabled) {
-          await _migrateTantrumDeckIfNeeded();
-        }
+        await _migrateTantrumDeckIfNeeded();
 
         if (schemaVersion < _rolloutSchemaVersion) {
           await _persist(next);
@@ -265,8 +257,6 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
         'wind_down_notifications_enabled': next.windDownNotificationsEnabled,
         'schedule_drift_notifications_enabled':
             next.scheduleDriftNotificationsEnabled,
-        'v2_navigation_enabled': next.v2NavigationEnabled,
-        'v2_onboarding_enabled': next.v2OnboardingEnabled,
         'plan_tab_enabled': next.planTabEnabled,
         'family_tab_enabled': next.familyTabEnabled,
         'library_tab_enabled': next.libraryTabEnabled,
@@ -274,6 +264,7 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
         'regulate_enabled': next.regulateEnabled,
         'smart_nudges_enabled': next.smartNudgesEnabled,
         'pattern_detection_enabled': next.patternDetectionEnabled,
+        'ui_v3_enabled': next.uiV3Enabled,
       });
     } catch (_) {
       // Non-fatal in test contexts.
@@ -403,18 +394,6 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
     await _persist(state.copyWith(scheduleDriftNotificationsEnabled: value));
   }
 
-  Future<void> setV2NavigationEnabled(bool value) async {
-    if (value && !state.v2NavigationEnabled) {
-      await _migrateTantrumDeckIfNeeded();
-    }
-    await _persist(state.copyWith(v2NavigationEnabled: value));
-    refreshRouterFromRollout();
-  }
-
-  Future<void> setV2OnboardingEnabled(bool value) async {
-    await _persist(state.copyWith(v2OnboardingEnabled: value));
-  }
-
   Future<void> setPlanTabEnabled(bool value) async {
     await _persist(state.copyWith(planTabEnabled: value));
   }
@@ -442,5 +421,9 @@ class ReleaseRolloutNotifier extends StateNotifier<ReleaseRolloutState> {
 
   Future<void> setPatternDetectionEnabled(bool value) async {
     await _persist(state.copyWith(patternDetectionEnabled: value));
+  }
+
+  Future<void> setUiV3Enabled(bool value) async {
+    await _persist(state.copyWith(uiV3Enabled: value));
   }
 }

@@ -16,6 +16,8 @@ import '../widgets/release_surfaces.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
+import '../widgets/settle_chip.dart';
+import '../widgets/settle_gap.dart';
 
 class PlanProgressScreen extends ConsumerStatefulWidget {
   const PlanProgressScreen({super.key});
@@ -189,14 +191,14 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      SettleGap.sm(),
                       Text(
                         'Day planner suggestions are linked to evidence records.',
                         style: T.type.caption.copyWith(
                           color: T.pal.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SettleGap.md(),
                       if (items.isEmpty)
                         Text(
                           'No evidence records were found.',
@@ -214,21 +216,21 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(item.title, style: T.type.label),
-                                  const SizedBox(height: 4),
+                                  SettleGap.xs(),
                                   Text(
                                     item.claim,
                                     style: T.type.caption.copyWith(
                                       color: T.pal.textSecondary,
                                     ),
                                   ),
-                                  const SizedBox(height: 6),
+                                  SettleGap.sm(),
                                   Text(
                                     '${item.sources.length} source(s)',
                                     style: T.type.caption.copyWith(
                                       color: T.pal.textTertiary,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  SettleGap.xs(),
                                   ...item.sources
                                       .take(2)
                                       .map(
@@ -337,9 +339,9 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                   title: 'Progress',
                   subtitle: 'See how this week is going.',
                 ),
-                const SizedBox(height: 4),
+                SettleGap.xs(),
                 const BehavioralScopeNotice(),
-                const SizedBox(height: 14),
+                SettleGap.md(),
                 Expanded(
                   child: state.isLoading
                       ? const CalmLoading(
@@ -358,7 +360,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                       'This week\'s focus',
                                       style: T.type.h3,
                                     ),
-                                    const SizedBox(height: 10),
+                                    SettleGap.md(),
                                     if (!state.insightEligible &&
                                         bottleneck == null)
                                       Text(
@@ -376,13 +378,14 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                           color: T.pal.textSecondary,
                                         ),
                                       ),
-                                    const SizedBox(height: 10),
+                                    SettleGap.md(),
                                     Wrap(
                                       spacing: 8,
                                       runSpacing: 8,
                                       children: options.map((option) {
                                         final selected = option == bottleneck;
-                                        return _TagChip(
+                                        return SettleChip(
+                                          variant: SettleChipVariant.tag,
                                           label: option,
                                           selected: selected,
                                           onTap: () => ref
@@ -402,7 +405,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              SettleGap.md(),
                               GlassCardAccent(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,7 +416,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                         color: T.pal.accent,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    SettleGap.sm(),
                                     if (!state.insightEligible)
                                       Text(
                                         'Keep logging for a few days. We\'ll suggest one experiment.',
@@ -430,7 +433,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                         ),
                                       ),
                                       if (experiment != null) ...[
-                                        const SizedBox(height: 10),
+                                        SettleGap.md(),
                                         GlassCta(
                                           label: state.experiment == experiment
                                               ? 'Mark experiment done'
@@ -465,7 +468,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                 ),
                               ),
                               // ── Secondary links (visible, not behind disclosure) ──
-                              const SizedBox(height: 14),
+                              SettleGap.md(),
                               Wrap(
                                 spacing: 12,
                                 runSpacing: 8,
@@ -489,7 +492,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                 ],
                               ),
                               // ── More details (disclosure) ──
-                              const SizedBox(height: 14),
+                              SettleGap.md(),
                               GlassCard(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -505,14 +508,14 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            const SizedBox(height: 4),
+                                            SettleGap.xs(),
                                             Text(
                                               'Tiny evidence',
                                               style: T.type.overline.copyWith(
                                                 color: T.pal.textTertiary,
                                               ),
                                             ),
-                                            const SizedBox(height: 6),
+                                            SettleGap.sm(),
                                             Text(
                                               state.insightEligible
                                                   ? (evidence ??
@@ -522,21 +525,21 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                 color: T.pal.textSecondary,
                                               ),
                                             ),
-                                            const SizedBox(height: 14),
+                                            SettleGap.md(),
                                             Text(
                                               'Daily rhythm details',
                                               style: T.type.overline.copyWith(
                                                 color: T.pal.textTertiary,
                                               ),
                                             ),
-                                            const SizedBox(height: 6),
+                                            SettleGap.sm(),
                                             Text(
                                               'Use this only when you need to tune your plan.',
                                               style: T.type.caption.copyWith(
                                                 color: T.pal.textSecondary,
                                               ),
                                             ),
-                                            const SizedBox(height: 10),
+                                            SettleGap.md(),
                                             ..._controllers.entries.map((
                                               entry,
                                             ) {
@@ -598,12 +601,12 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                 ),
                                               );
                                             }),
-                                            const SizedBox(height: 12),
+                                            SettleGap.md(),
                                             Text(
                                               'Day planner runtime',
                                               style: T.type.label,
                                             ),
-                                            const SizedBox(height: 8),
+                                            SettleGap.sm(),
                                             if (_dayRuntimeError != null)
                                               Text(
                                                 'Could not load day rhythm details right now.',
@@ -623,14 +626,14 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                 'Template: ${_dayRuntime!.templateId}',
                                                 style: T.type.caption,
                                               ),
-                                              const SizedBox(height: 4),
+                                              SettleGap.xs(),
                                               Text(
                                                 'Bedtime window: ${_formatClock(_dayRuntime!.bedtimeWindowEarliest)}–${_formatClock(_dayRuntime!.bedtimeWindowLatest)}',
                                                 style: T.type.caption.copyWith(
                                                   color: T.pal.textSecondary,
                                                 ),
                                               ),
-                                              const SizedBox(height: 8),
+                                              SettleGap.sm(),
                                               ..._dayRuntime!.napWindows
                                                   .take(3)
                                                   .map(
@@ -650,7 +653,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                       ),
                                                     ),
                                                   ),
-                                              const SizedBox(height: 8),
+                                              SettleGap.sm(),
                                               Text(
                                                 'Rules: ${_dayRuntime!.appliedRuleIds.length} • Constraints: ${_dayRuntime!.appliedConstraintIds.length}',
                                                 style: T.type.caption.copyWith(
@@ -706,54 +709,20 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                   ),
                                                 ),
                                             ],
-                                            const SizedBox(height: 6),
+                                            SettleGap.sm(),
                                           ],
                                         ),
                                       ),
                                     ],
                                 ),
                               ),
-                              const SizedBox(height: 24),
+                              SettleGap.xxl(),
                             ],
                           ),
                         ),
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TagChip extends StatelessWidget {
-  const _TagChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? T.glass.fillAccent : T.glass.fill,
-          borderRadius: BorderRadius.circular(T.radius.pill),
-          border: Border.all(color: selected ? T.pal.accent : T.glass.border),
-        ),
-        child: Text(
-          label,
-          style: T.type.caption.copyWith(
-            color: selected ? T.pal.accent : T.pal.textSecondary,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ),

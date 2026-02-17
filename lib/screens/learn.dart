@@ -197,6 +197,8 @@ class _LearnNextActionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const planRoute = '/plan';
+    const logsRoute = '/library/logs';
     return GlassCardAccent(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,11 +216,11 @@ class _LearnNextActionsCard extends StatelessWidget {
             children: [
               GlassPill(
                 label: 'Open Plan Focus',
-                onTap: () => context.push('/plan'),
+                onTap: () => context.push(planRoute),
               ),
               GlassPill(
                 label: 'Open Logs',
-                onTap: () => context.push('/plan/logs'),
+                onTap: () => context.push(logsRoute),
               ),
             ],
           ),

@@ -14,6 +14,7 @@ import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
+import '../widgets/settle_chip.dart';
 
 class CurrentRhythmScreen extends ConsumerStatefulWidget {
   const CurrentRhythmScreen({super.key});
@@ -172,7 +173,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      _ActionChip(
+                      SettleChip(
+                        variant: SettleChipVariant.action,
                         label: 'Save recap',
                         selected: true,
                         onTap: () async {
@@ -475,7 +477,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                 const SizedBox(height: 6),
                                 Text(shift.explanation, style: T.type.body),
                                 const SizedBox(height: 8),
-                                _ActionChip(
+                                SettleChip(
+                                  variant: SettleChipVariant.action,
                                   label: 'Update Rhythm',
                                   selected: true,
                                   onTap: () => context.push('/sleep/update'),
@@ -654,15 +657,19 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                             spacing: 8,
                             runSpacing: 8,
                             children: [
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Wake time was…',
+                                selected: false,
                                 onTap: () => _pickWakeTime(
                                   childId,
                                   state.wakeTimeMinutes,
                                 ),
                               ),
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Short nap',
+                                selected: false,
                                 onTap: () => ref
                                     .read(rhythmProvider.notifier)
                                     .markNapQualityTap(
@@ -670,8 +677,10 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                       quality: NapQualityTap.short,
                                     ),
                               ),
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'OK nap',
+                                selected: false,
                                 onTap: () => ref
                                     .read(rhythmProvider.notifier)
                                     .markNapQualityTap(
@@ -679,8 +688,10 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                       quality: NapQualityTap.ok,
                                     ),
                               ),
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Long nap',
+                                selected: false,
                                 onTap: () => ref
                                     .read(rhythmProvider.notifier)
                                     .markNapQualityTap(
@@ -688,13 +699,16 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                       quality: NapQualityTap.long,
                                     ),
                               ),
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Skipped nap',
+                                selected: false,
                                 onTap: () => ref
                                     .read(rhythmProvider.notifier)
                                     .markSkippedNap(childId: childId),
                               ),
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: state.advancedDayLogging
                                     ? 'Advanced mode: On'
                                     : 'Advanced mode: Off',
@@ -707,31 +721,41 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                     ),
                               ),
                               if (state.advancedDayLogging)
-                                _ActionChip(
+                                SettleChip(
+                                  variant: SettleChipVariant.action,
                                   label: 'Nap started',
+                                  selected: false,
                                   onTap: () => ref
                                       .read(rhythmProvider.notifier)
                                       .markNapStarted(childId: childId),
                                 ),
                               if (state.advancedDayLogging)
-                                _ActionChip(
+                                SettleChip(
+                                  variant: SettleChipVariant.action,
                                   label: 'Nap ended',
+                                  selected: false,
                                   onTap: () => ref
                                       .read(rhythmProvider.notifier)
                                       .markNapEnded(childId: childId),
                                 ),
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Bedtime battle',
+                                selected: false,
                                 onTap: () => ref
                                     .read(rhythmProvider.notifier)
                                     .markBedtimeResistance(childId: childId),
                               ),
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Morning recap',
+                                selected: false,
                                 onTap: () => _openMorningRecapSheet(childId),
                               ),
-                              _ActionChip(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Recalculate schedule',
+                                selected: false,
                                 onTap: () => ref
                                     .read(rhythmProvider.notifier)
                                     .recalculate(childId: childId),
@@ -790,47 +814,13 @@ class _ChoiceWrap extends StatelessWidget {
       runSpacing: 8,
       children: options.entries.map((entry) {
         final isSelected = selected == entry.key;
-        return _ActionChip(
+        return SettleChip(
+          variant: SettleChipVariant.action,
           label: entry.value,
           selected: isSelected,
           onTap: () => onChanged(entry.key),
         );
       }).toList(),
-    );
-  }
-}
-
-class _ActionChip extends StatelessWidget {
-  const _ActionChip({
-    required this.label,
-    required this.onTap,
-    this.selected = false,
-  });
-
-  final String label;
-  final VoidCallback onTap;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = selected ? T.pal.accent : T.pal.textSecondary;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? T.glass.fillAccent : T.glass.fill,
-          borderRadius: BorderRadius.circular(T.radius.pill),
-          border: Border.all(color: T.glass.border),
-        ),
-        child: Text(
-          label,
-          style: T.type.caption.copyWith(
-            color: color,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
     );
   }
 }

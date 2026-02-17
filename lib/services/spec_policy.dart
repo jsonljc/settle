@@ -18,6 +18,12 @@ class SpecPolicy {
   static const int helpNowTimerMaxMinutes = 10;
   static const int helpNowTimeToActionSeconds = 10;
 
+  // Plan card copy constraints (v3 density contract).
+  static const int planPreventMaxWords = 12;
+  static const int planSayMaxWords = 13;
+  static const int planDoMaxWords = 12;
+  static const int planEscalatesMaxWords = 11;
+
   // Sleep Tonight and Plan & Progress constraints.
   static const int sleepTonightStartPlanSeconds = 60;
   static const int insightWindowDays = 14;

@@ -14,6 +14,7 @@ import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
+import '../widgets/settle_gap.dart';
 
 class HelpNowScreen extends ConsumerStatefulWidget {
   const HelpNowScreen({super.key, this.now});
@@ -133,14 +134,14 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
                     'It\'s nighttime',
                     style: T.type.h3,
                   ),
-                  const SizedBox(height: 8),
+                  SettleGap.sm(),
                   Text(
                     'What do you need right now?',
                     style: T.type.caption.copyWith(
                       color: T.pal.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SettleGap.lg(),
                   GlassCta(
                     label: 'Sleep support',
                     onTap: () {
@@ -148,7 +149,7 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
                       context.go(SpecPolicy.helpNowNightRouteUri());
                     },
                   ),
-                  const SizedBox(height: 10),
+                  SettleGap.md(),
                   GlassPill(
                     label: 'Crisis help — stay here',
                     onTap: () {
@@ -329,9 +330,9 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
                   title: 'Help Now',
                   subtitle: 'What\'s happening right now?',
                 ),
-                const SizedBox(height: 4),
+                SettleGap.xs(),
                 const BehavioralScopeNotice(),
-                const SizedBox(height: 16),
+                SettleGap.lg(),
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -369,7 +370,7 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
                               ),
                             ),
                           ),
-                        const SizedBox(height: 24),
+                        SettleGap.xxl(),
                       ],
                     ),
                   ),
@@ -477,13 +478,13 @@ class _GuidedBeatsState extends State<_GuidedBeats>
       children: [
         // Progress dots
         _BeatDots(total: _totalDots, active: _activeDot),
-        const SizedBox(height: 16),
+        SettleGap.lg(),
         // Current beat content
         AnimatedSwitcher(
           duration: reduceMotion ? Duration.zero : T.anim.normal,
           child: _buildBeat(),
         ),
-        const SizedBox(height: 16),
+        SettleGap.lg(),
         // Escape hatch — always visible
         _SubtleActionLink(
           label: 'I need a pause',
@@ -589,12 +590,12 @@ class _BeatSay extends StatelessWidget {
           'Say this',
           style: T.type.overline.copyWith(color: T.pal.textTertiary),
         ),
-        const SizedBox(height: 8),
+        SettleGap.sm(),
         GlassCardAccent(
           padding: const EdgeInsets.all(20),
           child: Text(text, style: T.type.h2),
         ),
-        const SizedBox(height: 14),
+        SettleGap.md(),
         GlassCta(
           label: 'I said it →',
           onTap: onNext,
@@ -623,12 +624,12 @@ class _BeatDo extends StatelessWidget {
           'Do this',
           style: T.type.overline.copyWith(color: T.pal.textTertiary),
         ),
-        const SizedBox(height: 8),
+        SettleGap.sm(),
         GlassCard(
           padding: const EdgeInsets.all(20),
           child: Text(text, style: T.type.h3),
         ),
-        const SizedBox(height: 14),
+        SettleGap.md(),
         GlassCta(
           label: 'Done →',
           onTap: onNext,
@@ -659,7 +660,7 @@ class _BeatWait extends StatelessWidget {
           'Wait with them',
           style: T.type.overline.copyWith(color: T.pal.textTertiary),
         ),
-        const SizedBox(height: 8),
+        SettleGap.sm(),
         GlassCard(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -681,7 +682,7 @@ class _BeatWait extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 16),
+              SettleGap.lg(),
               Text(
                 'Stay close. Breathe.\nThis will pass.',
                 textAlign: TextAlign.center,
@@ -690,12 +691,12 @@ class _BeatWait extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 14),
+        SettleGap.md(),
         GlassCta(
           label: 'They\'re calming down',
           onTap: onCalming,
         ),
-        const SizedBox(height: 10),
+        SettleGap.md(),
         GlassPill(
           label: 'It\'s getting harder',
           onTap: onHarder,
@@ -736,7 +737,7 @@ class _BeatDone extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('You handled it.', style: T.type.h2),
-              const SizedBox(height: 4),
+              SettleGap.xs(),
               Text(
                 'Close when you\'re ready.',
                 style: T.type.body.copyWith(color: T.pal.textSecondary),
@@ -744,12 +745,12 @@ class _BeatDone extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 14),
+        SettleGap.md(),
         GlassCta(
           label: 'Finish',
           onTap: onFinish,
         ),
-        const SizedBox(height: 16),
+        SettleGap.lg(),
         // Optional outcome logging
         GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -762,14 +763,14 @@ class _BeatDone extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 4),
+                      SettleGap.xs(),
                       Text(
                         'What was going on?',
                         style: T.type.caption.copyWith(
                           color: T.pal.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SettleGap.sm(),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -782,14 +783,14 @@ class _BeatDone extends StatelessWidget {
                           );
                         }).toList(),
                       ),
-                      const SizedBox(height: 16),
+                      SettleGap.lg(),
                       Text(
                         'How did it end?',
                         style: T.type.caption.copyWith(
                           color: T.pal.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SettleGap.sm(),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
@@ -802,7 +803,7 @@ class _BeatDone extends StatelessWidget {
                         }).toList(),
                       ),
                       if (outcome != null) ...[
-                        const SizedBox(height: 12),
+                        SettleGap.md(),
                         Text(
                           'Noted. You can close anytime.',
                           style: T.type.caption.copyWith(
@@ -811,7 +812,7 @@ class _BeatDone extends StatelessWidget {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 10),
+                      SettleGap.md(),
                     ],
                   ),
                 ),
@@ -846,18 +847,18 @@ class _BeatEscalate extends StatelessWidget {
           'If things get harder',
           style: T.type.overline.copyWith(color: T.pal.textTertiary),
         ),
-        const SizedBox(height: 8),
+        SettleGap.sm(),
         GlassCard(
           padding: const EdgeInsets.all(20),
           child: Text(text, style: T.type.h3),
         ),
-        const SizedBox(height: 14),
+        SettleGap.md(),
         GlassCta(
           label: 'Got it →',
           onTap: onGotIt,
         ),
         if (escalateCount >= 2) ...[
-          const SizedBox(height: 10),
+          SettleGap.md(),
           GlassPill(
             label: 'Take a breath instead',
             onTap: onPause,
@@ -978,7 +979,7 @@ class _IncidentGrid extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(option.icon, size: 24, color: T.pal.textSecondary),
-                const SizedBox(height: 8),
+                SettleGap.sm(),
                 Text(
                   option.label,
                   textAlign: TextAlign.center,
@@ -998,16 +999,16 @@ class _IncidentGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildGrid(primaryOptions),
-        const SizedBox(height: 10),
+        SettleGap.md(),
         GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: SettleDisclosure(
               title: 'More situations',
               subtitle: 'Transitions, bedtime, refusal, and parent reset.',
               children: [
-                const SizedBox(height: 8),
+                SettleGap.sm(),
                 _buildGrid(moreOptions, childAspectRatio: 1.28),
-                const SizedBox(height: 4),
+                SettleGap.xs(),
               ],
           ),
         ),
@@ -1027,12 +1028,12 @@ class _AgeBandPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Child age', style: T.type.h3),
-        const SizedBox(height: 4),
+        SettleGap.xs(),
         Text(
           'Choose your child\'s age to tailor wording.',
           style: T.type.caption.copyWith(color: T.pal.textSecondary),
         ),
-        const SizedBox(height: 10),
+        SettleGap.md(),
         Wrap(
           spacing: 8,
           runSpacing: 8,

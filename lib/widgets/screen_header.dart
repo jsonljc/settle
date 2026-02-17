@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/settle_tokens.dart';
+import 'settle_tappable.dart';
 
-/// Standardized screen header: back arrow + h2 title + optional subtitle
+/// Standardized screen header: optional back arrow + h2 title + optional subtitle
 /// and optional trailing widget.
 ///
-/// Pattern per UX spec: overline-style label is omitted (screens use h2 only).
+/// Use [showBackButton: false] for root screens (e.g. Home) so the title stands alone.
 /// Spacing: 12px top, 8px below title row, 4px below subtitle if present.
 class ScreenHeader extends StatelessWidget {
   const ScreenHeader({
@@ -15,6 +16,7 @@ class ScreenHeader extends StatelessWidget {
     this.subtitle,
     this.trailing,
     this.fallbackRoute = '/now',
+    this.showBackButton = true,
   });
 
   final String title;
@@ -24,6 +26,9 @@ class ScreenHeader extends StatelessWidget {
   /// Where back navigates when there is nothing to pop.
   final String fallbackRoute;
 
+  /// When false, no back arrow (e.g. home tab root). Default true.
+  final bool showBackButton;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -32,22 +37,28 @@ class ScreenHeader extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           children: [
-            GestureDetector(
-              onTap: () => context.canPop()
-                  ? context.pop()
-                  : context.go(fallbackRoute),
-              child: Icon(
-                Icons.arrow_back_ios_rounded,
-                size: 20,
-                color: T.pal.textSecondary,
+            if (showBackButton) ...[
+              SettleTappable(
+                semanticLabel: 'Back',
+                onTap: () => context.canPop()
+                    ? context.pop()
+                    : context.go(fallbackRoute),
+                child: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: 20,
+                  color: T.pal.textSecondary,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
+            ],
             Expanded(
-              child: Text(
-                title,
-                style: T.type.h2,
-                overflow: TextOverflow.ellipsis,
+              child: Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: T.type.h2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             if (trailing != null) trailing!,

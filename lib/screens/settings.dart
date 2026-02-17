@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,12 +6,17 @@ import '../internal_tools_gate.dart';
 import '../models/approach.dart';
 import '../models/tantrum_profile.dart';
 import '../providers/disruption_provider.dart';
+import '../providers/nudge_settings_provider.dart';
+import '../providers/patterns_provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/focus_mode_rules.dart';
+import '../services/nudge_scheduler.dart';
 import '../theme/glass_components.dart';
 import '../theme/reduce_motion.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/screen_header.dart';
+import '../widgets/option_button.dart';
+import '../widgets/settle_chip.dart';
 import '../widgets/settle_disclosure.dart';
 
 /// Settings — profile card, toggle groups, approach switcher.
@@ -121,9 +124,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           (profile?.focusMode ?? FocusMode.sleepOnly) == mode;
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
-                        child: _FocusModeOption(
-                          mode: mode,
-                          isSelected: isSelected,
+                        child: OptionButton(
+                          label: mode.label,
+                          selected: isSelected,
                           onTap: () => ref
                               .read(profileProvider.notifier)
                               .updateFocusMode(mode),
@@ -192,6 +195,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onChanged: (v) =>
                           ref.read(disruptionProvider.notifier).set(v),
                     ),
+                    const SizedBox(height: 20),
+                    _SectionHeader(title: 'Plan nudges'),
+                    const SizedBox(height: 10),
+                    _NudgeSettingsSection(),
                     const SizedBox(height: 20),
                     _SectionHeader(title: 'Shared Scripts'),
                     const SizedBox(height: 10),
@@ -280,10 +287,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           _SectionHeader(title: 'Approach'),
                           const SizedBox(height: 8),
                           if (profile != null)
-                            _ApproachOption(
-                              approach: profile.approach,
-                              isSelected: true,
+                            OptionButton(
+                              label: profile.approach.label,
+                              subtitle: profile.approach.description,
+                              selected: true,
                               onTap: () => context.push('/sleep/tonight'),
+                              icon: _approachIcon(profile.approach),
                             ),
                           const SizedBox(height: 6),
                           Text(
@@ -422,6 +431,129 @@ class _ToggleCard extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────
+//  Nudge settings (v2 Plan nudges)
+// ─────────────────────────────────────────────
+
+class _NudgeSettingsSection extends ConsumerWidget {
+  const _NudgeSettingsSection();
+
+  Future<void> _refreshScheduler(WidgetRef ref) async {
+    final profile = ref.read(profileProvider);
+    final patterns = ref.read(patternsProvider);
+    final settings = ref.read(nudgeSettingsProvider);
+    await NudgeScheduler.scheduleNudges(
+      profile: profile,
+      patterns: patterns,
+      settings: settings,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(nudgeSettingsProvider);
+
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Gentle reminders for scripts and patterns. Quiet hours: no nudges.',
+            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+          ),
+          const SizedBox(height: 12),
+          _ToggleCard(
+            label: 'Predictable moment (e.g. before bedtime)',
+            value: settings.predictableEnabled,
+            onChanged: (v) async {
+              await ref.read(nudgeSettingsProvider.notifier).setPredictableEnabled(v);
+              await _refreshScheduler(ref);
+            },
+          ),
+          const SizedBox(height: 8),
+          _ToggleCard(
+            label: 'Pattern-based (from your usage)',
+            value: settings.patternEnabled,
+            onChanged: (v) async {
+              await ref.read(nudgeSettingsProvider.notifier).setPatternEnabled(v);
+              await _refreshScheduler(ref);
+            },
+          ),
+          const SizedBox(height: 8),
+          _ToggleCard(
+            label: 'Content (age-based tips)',
+            value: settings.contentEnabled,
+            onChanged: (v) async {
+              await ref.read(nudgeSettingsProvider.notifier).setContentEnabled(v);
+              await _refreshScheduler(ref);
+            },
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Quiet hours: ${_formatHour(settings.quietStartHour)} – ${_formatHour(settings.quietEndHour)}',
+            style: T.type.caption.copyWith(color: T.pal.textTertiary),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Frequency: ${_frequencyLabel(settings.frequency)}',
+            style: T.type.caption.copyWith(color: T.pal.textTertiary),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              SettleChip(
+                variant: SettleChipVariant.frequency,
+                label: 'Minimal',
+                selected: settings.frequency == NudgeFrequency.minimal,
+                onTap: () async {
+                  await ref.read(nudgeSettingsProvider.notifier).setFrequency(NudgeFrequency.minimal);
+                  await _refreshScheduler(ref);
+                },
+              ),
+              SettleChip(
+                variant: SettleChipVariant.frequency,
+                label: 'Smart',
+                selected: settings.frequency == NudgeFrequency.smart,
+                onTap: () async {
+                  await ref.read(nudgeSettingsProvider.notifier).setFrequency(NudgeFrequency.smart);
+                  await _refreshScheduler(ref);
+                },
+              ),
+              SettleChip(
+                variant: SettleChipVariant.frequency,
+                label: 'More',
+                selected: settings.frequency == NudgeFrequency.more,
+                onTap: () async {
+                  await ref.read(nudgeSettingsProvider.notifier).setFrequency(NudgeFrequency.more);
+                  await _refreshScheduler(ref);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatHour(int h) {
+    if (h == 0) return '12am';
+    if (h == 12) return '12pm';
+    if (h < 12) return '${h}am';
+    return '${h - 12}pm';
+  }
+
+  String _frequencyLabel(NudgeFrequency f) {
+    return switch (f) {
+      NudgeFrequency.minimal => '~1 per week',
+      NudgeFrequency.smart => '2–3 per week',
+      NudgeFrequency.more => 'Daily when relevant',
+    };
+  }
+}
+
 class _InlineActionRow extends StatelessWidget {
   const _InlineActionRow({
     required this.icon,
@@ -459,147 +591,12 @@ class _InlineActionRow extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-//  Approach Option (compact — no expanded detail)
-// ─────────────────────────────────────────────
-
-class _ApproachOption extends StatelessWidget {
-  const _ApproachOption({
-    required this.approach,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final Approach approach;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  static const _icons = {
-    Approach.stayAndSupport: Icons.favorite_outline,
-    Approach.checkAndReassure: Icons.timer_outlined,
-    Approach.cueBased: Icons.hearing_outlined,
-    Approach.rhythmFirst: Icons.music_note_outlined,
+IconData _approachIcon(Approach approach) {
+  return switch (approach) {
+    Approach.stayAndSupport => Icons.favorite_outline,
+    Approach.checkAndReassure => Icons.timer_outlined,
+    Approach.cueBased => Icons.hearing_outlined,
+    Approach.rhythmFirst => Icons.music_note_outlined,
+    Approach.extinction => Icons.nightlight_round_outlined,
   };
-
-  @override
-  Widget build(BuildContext context) {
-    final fill = isSelected ? T.glass.fillAccent : T.glass.fill;
-    final borderColor = isSelected
-        ? T.pal.accent.withValues(alpha: 0.4)
-        : T.glass.border;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(T.radius.lg),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: T.glass.sigma,
-            sigmaY: T.glass.sigma,
-          ),
-          child: AnimatedContainer(
-            duration: T.anim.fast,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(T.radius.lg),
-              border: Border.all(color: borderColor, width: 1),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  _icons[approach],
-                  size: 20,
-                  color: isSelected ? T.pal.accent : T.pal.textSecondary,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        approach.label,
-                        style: T.type.label.copyWith(
-                          color: isSelected
-                              ? T.pal.textPrimary
-                              : T.pal.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        approach.description,
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textTertiary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (isSelected)
-                  Icon(Icons.check_circle, size: 20, color: T.pal.accent),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FocusModeOption extends StatelessWidget {
-  const _FocusModeOption({
-    required this.mode,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final FocusMode mode;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final fill = isSelected ? T.glass.fillAccent : T.glass.fill;
-    final borderColor = isSelected
-        ? T.pal.accent.withValues(alpha: 0.4)
-        : T.glass.border;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(T.radius.lg),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: T.glass.sigma,
-            sigmaY: T.glass.sigma,
-          ),
-          child: AnimatedContainer(
-            duration: T.anim.fast,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(T.radius.lg),
-              border: Border.all(color: borderColor, width: 1),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    mode.label,
-                    style: T.type.label.copyWith(
-                      color: isSelected
-                          ? T.pal.textPrimary
-                          : T.pal.textSecondary,
-                    ),
-                  ),
-                ),
-                if (isSelected)
-                  Icon(Icons.check_circle, size: 20, color: T.pal.accent),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

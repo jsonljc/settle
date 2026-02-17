@@ -40,10 +40,10 @@ class DebriefSection extends StatelessWidget {
           Text('What\'s been hardest?', style: T.type.h3),
           const SizedBox(height: 6),
           Text(
-            'Tap one to get a script right now.',
+            'Tap one for a script.',
             style: T.type.caption.copyWith(color: T.pal.textSecondary),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 8,

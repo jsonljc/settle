@@ -56,7 +56,7 @@ class _SosScreenState extends State<SosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: T.pal.focusBackground,
       body: SafeArea(
         child: Column(
           children: [

@@ -89,7 +89,7 @@ void main() {
 
       expect(find.text('Continue tonight\'s plan'), findsOneWidget);
       expect(find.text('Take a breath'), findsOneWidget);
-      expect(find.text('Plan'), findsOneWidget);
+      expect(find.text('Home'), findsOneWidget);
       expect(find.text('Rules'), findsOneWidget);
       expect(find.text('Settings'), findsOneWidget);
     },

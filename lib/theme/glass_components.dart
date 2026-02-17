@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'surface_mode_resolver.dart';
 import 'settle_tokens.dart';
 
 /// A frosted-glass card following the Settle glass morphism pattern:
@@ -41,18 +42,36 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mode = SurfaceModeResolver.resolveForContext(context);
     final r = borderRadius ?? T.radius.xl;
     final br = BorderRadius.circular(r);
+    final sigma = switch (mode) {
+      SurfaceMode.day => T.glass.sigmaDay,
+      SurfaceMode.night => T.glass.sigmaNight,
+      SurfaceMode.focus => T.glass.sigmaFocus,
+    };
+    final resolvedFill =
+        fill ??
+        switch (mode) {
+          SurfaceMode.day => T.glass.fillDay,
+          SurfaceMode.night => T.glass.fillNight,
+          SurfaceMode.focus => T.glass.fillDark,
+        };
+    final resolvedBorder = switch (mode) {
+      SurfaceMode.day => T.glass.borderDay,
+      SurfaceMode.night => T.glass.borderNight,
+      SurfaceMode.focus => T.glass.borderNight,
+    };
 
     return ClipRRect(
       borderRadius: br,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: T.glass.sigma, sigmaY: T.glass.sigma),
+        filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
         child: Container(
           decoration: BoxDecoration(
-            color: fill ?? T.glass.fill,
+            color: resolvedFill,
             borderRadius: br,
-            border: border ? Border.all(color: T.glass.border, width: 1) : null,
+            border: border ? Border.all(color: resolvedBorder, width: 1) : null,
           ),
           child: Stack(
             children: [
@@ -426,19 +445,33 @@ class _GlassCtaState extends State<GlassCta> {
 /// All glass cards should be children of this widget so BackdropFilter
 /// has something behind it to blur.
 class SettleBackground extends StatelessWidget {
-  const SettleBackground({super.key, required this.child, this.gradient});
+  const SettleBackground({
+    super.key,
+    required this.child,
+    this.mode,
+    this.gradientOverride,
+    this.gradient,
+  });
 
   final Widget child;
+  final SurfaceMode? mode;
 
-  /// Override the background gradient (e.g. for nighttime surfaces).
+  /// Override the background gradient.
+  final LinearGradient? gradientOverride;
+
+  /// Legacy alias kept for compatibility.
   final LinearGradient? gradient;
 
   @override
   Widget build(BuildContext context) {
+    final routeMode = mode ?? SurfaceModeResolver.resolveForContext(context);
+    final customGradient = gradientOverride ?? gradient;
+    final resolvedGradient = customGradient ?? T.pal.gradientFor(routeMode);
+
     return AnimatedContainer(
       duration: T.anim.modeSwitch,
       curve: Curves.easeInOut,
-      decoration: BoxDecoration(gradient: gradient ?? T.pal.bg),
+      decoration: BoxDecoration(gradient: resolvedGradient),
       child: child,
     );
   }

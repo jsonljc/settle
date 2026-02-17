@@ -52,7 +52,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
     _didRoute = true;
     final profile = ref.read(profileProvider);
-    context.go(profile != null ? '/now' : '/onboard');
+    if (profile == null) {
+      context.go('/onboard');
+      return;
+    }
+    context.go('/plan');
   }
 
   @override

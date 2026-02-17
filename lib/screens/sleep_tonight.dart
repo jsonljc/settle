@@ -14,6 +14,7 @@ import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
+import '../widgets/settle_segmented_choice.dart';
 
 class SleepTonightScreen extends ConsumerStatefulWidget {
   const SleepTonightScreen({super.key});
@@ -304,8 +305,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         const SizedBox(height: 10),
                         Text('Outcome', style: T.type.label),
                         const SizedBox(height: 8),
-                        _SegmentedChoice<SleepRecapOutcome>(
-                          values: const [
+                        SettleSegmentedChoice<SleepRecapOutcome>(
+                          options: const [
                             SleepRecapOutcome.settled,
                             SleepRecapOutcome.neededHelp,
                             SleepRecapOutcome.notResolved,
@@ -317,9 +318,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         const SizedBox(height: 10),
                         Text('Time to settle (optional)', style: T.type.label),
                         const SizedBox(height: 8),
-                        _SegmentedChoice<String>(
-                          values: const ['<5', '5-15', '15-30', '30+'],
-                          selected: timeBucket,
+                        SettleSegmentedChoice<String>(
+                          options: const ['<5', '5-15', '15-30', '30+'],
+                          selected: timeBucket ?? '<5',
                           labelBuilder: (v) => '$v min',
                           onChanged: (v) => setModalState(() => timeBucket = v),
                         ),
@@ -411,8 +412,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         const SizedBox(height: 10),
                         Text('Approach', style: T.type.label),
                         const SizedBox(height: 8),
-                        _SegmentedChoice<Approach>(
-                          values: Approach.values,
+                        SettleSegmentedChoice<Approach>(
+                          options: Approach.values,
                           selected: next,
                           labelBuilder: (v) => v.label,
                           onChanged: (v) => setModalState(() => next = v),
@@ -420,8 +421,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         const SizedBox(height: 10),
                         Text('Reason', style: T.type.label),
                         const SizedBox(height: 8),
-                        _SegmentedChoice<String>(
-                          values: const [
+                        SettleSegmentedChoice<String>(
+                          options: const [
                             'not_working',
                             'too_intense',
                             'caregiver_change',
@@ -442,8 +443,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         const SizedBox(height: 10),
                         Text('Effective timing', style: T.type.label),
                         const SizedBox(height: 8),
-                        _SegmentedChoice<String>(
-                          values: const ['tonight', 'tomorrow'],
+                        SettleSegmentedChoice<String>(
+                          options: const ['tonight', 'tomorrow'],
                           selected: timing,
                           labelBuilder: (v) =>
                               v == 'tonight' ? 'Tonight' : 'Tomorrow',
@@ -555,8 +556,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         ),
                         Text('Caregiver consistency', style: T.type.caption),
                         const SizedBox(height: 6),
-                        _SegmentedChoice<String>(
-                          values: const ['consistent', 'rotating', 'unsure'],
+                        SettleSegmentedChoice<String>(
+                          options: const ['consistent', 'rotating', 'unsure'],
                           selected: caregiverConsistency,
                           labelBuilder: (v) => switch (v) {
                             'consistent' => 'Consistent',
@@ -569,8 +570,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         const SizedBox(height: 8),
                         Text('Crying tolerance', style: T.type.caption),
                         const SizedBox(height: 6),
-                        _SegmentedChoice<String>(
-                          values: const ['low', 'med', 'high'],
+                        SettleSegmentedChoice<String>(
+                          options: const ['low', 'med', 'high'],
                           selected: cryingTolerance,
                           labelBuilder: (v) => v.toUpperCase(),
                           onChanged: (v) =>
@@ -672,8 +673,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           const SizedBox(height: 12),
                           Text('Switch scenario', style: T.type.label),
                           const SizedBox(height: 8),
-                          _SegmentedChoice<String>(
-                            values: _scenarioLabels.keys.toList(),
+                          SettleSegmentedChoice<String>(
+                            options: _scenarioLabels.keys.toList(),
                             selected: selectedScenario,
                             labelBuilder: (v) => _scenarioLabels[v]!,
                             onChanged: (v) async {
@@ -833,8 +834,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           const SizedBox(height: 10),
                           Text('Mode', style: T.type.label),
                           const SizedBox(height: 8),
-                          _SegmentedChoice<String>(
-                            values: const ['training', 'comfort'],
+                          SettleSegmentedChoice<String>(
+                            options: const ['training', 'comfort'],
                             selected: localComfortMode ? 'comfort' : 'training',
                             labelBuilder: (v) =>
                                 v == 'comfort' ? 'Comfort' : 'Training',
@@ -1295,37 +1296,3 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
   }
 }
 
-class _SegmentedChoice<V> extends StatelessWidget {
-  const _SegmentedChoice({
-    required this.values,
-    required this.selected,
-    required this.labelBuilder,
-    required this.onChanged,
-  });
-
-  final List<V> values;
-  final V? selected;
-  final String Function(V value) labelBuilder;
-  final ValueChanged<V> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: values.map((value) {
-        final isSelected = selected == value;
-        return ChoiceChip(
-          label: Text(labelBuilder(value)),
-          selected: isSelected,
-          onSelected: (_) => onChanged(value),
-          selectedColor: T.glass.fillAccent,
-          labelStyle: T.type.caption.copyWith(
-            color: isSelected ? T.pal.accent : T.pal.textSecondary,
-          ),
-          side: BorderSide(color: T.glass.border),
-        );
-      }).toList(),
-    );
-  }
-}

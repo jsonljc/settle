@@ -12,6 +12,7 @@ import '../widgets/settle_disclosure.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
+import '../widgets/settle_gap.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({
@@ -89,7 +90,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 16),
+                SettleGap.lg(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -99,11 +100,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         color: T.pal.textTertiary,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SettleGap.sm(),
                     Text(profile.name, style: T.type.h1),
                   ],
                 ),
-                const SizedBox(height: 10),
+                SettleGap.md(),
                 Text(
                   _isNight
                       ? 'It\'s nighttime. You\'re here — that\'s the first step.'
@@ -115,13 +116,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         !rollout.sleepTonightEnabled ||
                         !rollout.planProgressEnabled ||
                         !rollout.familyRulesEnabled)) ...[
-                  const SizedBox(height: 6),
+                  SettleGap.sm(),
                   Text(
                     'Some sections are taking a short break.',
                     style: T.type.caption.copyWith(color: T.pal.textTertiary),
                   ),
                 ],
-                const SizedBox(height: 16),
+                SettleGap.lg(),
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -138,17 +139,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   color: T.pal.textTertiary,
                                 ),
                               ),
-                              const SizedBox(height: 6),
+                              SettleGap.sm(),
                               Text('Help with what\'s happening',
                                   style: T.type.h3),
-                              const SizedBox(height: 8),
+                              SettleGap.sm(),
                               Text(
                                 'We\'ll give you one thing to say and do.',
                                 style: T.type.caption.copyWith(
                                   color: T.pal.textSecondary,
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              SettleGap.md(),
                               GlassCta(
                                 label: 'Help with what\'s happening',
                                 enabled: helpNowEnabled,
@@ -161,7 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        SettleGap.md(),
                         GlassCard(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -171,7 +172,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               title: 'More actions',
                               subtitle: 'Continue plan, reset, rules, or settings.',
                               children: [
-                                const SizedBox(height: 6),
+                                SettleGap.sm(),
                                 Wrap(
                                   spacing: 8,
                                   runSpacing: 8,
@@ -199,7 +200,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                                 if (!sleepState.hasActivePlan &&
                                     sleepEnabled) ...[
-                                  const SizedBox(height: 8),
+                                  SettleGap.sm(),
                                   Text(
                                     'No plan yet. This opens Sleep Tonight.',
                                     style: T.type.caption.copyWith(
@@ -207,14 +208,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     ),
                                   ),
                                 ],
-                                const SizedBox(height: 10),
+                                SettleGap.md(),
                                 _MoreActionTile(
                                   label: 'Plan',
                                   subtitle: 'Pick one focus for this week',
                                   enabled: planEnabled,
                                   onTap: () => context.push('/plan'),
                                 ),
-                                const SizedBox(height: 8),
+                                SettleGap.sm(),
                                 _MoreActionTile(
                                   label: 'Rules',
                                   subtitle: rulesState.unreadCount > 0
@@ -224,17 +225,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   enabled: rulesEnabled,
                                   onTap: () => context.push('/rules'),
                                 ),
-                                const SizedBox(height: 8),
+                                SettleGap.sm(),
                                 _MoreActionTile(
                                   label: 'Settings',
                                   subtitle: 'Profile and app preferences',
                                   onTap: () => context.push('/settings'),
                                 ),
-                                const SizedBox(height: 8),
+                                SettleGap.sm(),
                               ],
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        SettleGap.xxl(),
                       ],
                     ),
                   ),
@@ -283,7 +284,7 @@ class _MoreActionTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(label, style: T.type.label),
-                    const SizedBox(height: 2),
+                    SettleGap.xs(),
                     Text(
                       subtitle,
                       style: T.type.caption.copyWith(

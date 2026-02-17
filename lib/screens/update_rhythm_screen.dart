@@ -14,6 +14,7 @@ import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
+import '../widgets/settle_segmented_choice.dart';
 
 class UpdateRhythmScreen extends ConsumerStatefulWidget {
   const UpdateRhythmScreen({super.key});
@@ -341,10 +342,10 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                               if (_step == 1) ...[
                                 Text('Nap today?', style: T.type.h3),
                                 const SizedBox(height: 8),
-                                _SegmentedString(
-                                  values: const ['yes', 'no', 'not_sure'],
+                                SettleSegmentedChoice<String>(
+                                  options: const ['yes', 'no', 'not_sure'],
                                   selected: _napToday,
-                                  label: (v) => switch (v) {
+                                  labelBuilder: (v) => switch (v) {
                                     'yes' => 'Yes',
                                     'no' => 'No',
                                     _ => 'Not sure',
@@ -410,10 +411,10 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                               if (_step == 2) ...[
                                 Text('Bedtime target', style: T.type.h3),
                                 const SizedBox(height: 8),
-                                _SegmentedString(
-                                  values: const ['earlier', 'same', 'later'],
+                                SettleSegmentedChoice<String>(
+                                  options: const ['earlier', 'same', 'later'],
                                   selected: _bedtimeTarget,
-                                  label: (v) => switch (v) {
+                                  labelBuilder: (v) => switch (v) {
                                     'earlier' => 'Earlier',
                                     'same' => 'Same',
                                     _ => 'Later',
@@ -567,37 +568,3 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
   }
 }
 
-class _SegmentedString extends StatelessWidget {
-  const _SegmentedString({
-    required this.values,
-    required this.selected,
-    required this.label,
-    required this.onChanged,
-  });
-
-  final List<String> values;
-  final String selected;
-  final String Function(String value) label;
-  final ValueChanged<String> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: values.map((value) {
-        final isSelected = selected == value;
-        return ChoiceChip(
-          label: Text(label(value)),
-          selected: isSelected,
-          onSelected: (_) => onChanged(value),
-          selectedColor: T.glass.fillAccent,
-          labelStyle: T.type.caption.copyWith(
-            color: isSelected ? T.pal.accent : T.pal.textSecondary,
-          ),
-          side: BorderSide(color: T.glass.border),
-        );
-      }).toList(),
-    );
-  }
-}

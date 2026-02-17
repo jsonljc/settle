@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum SurfaceMode { day, night, focus }
+
 /// Settle Design Tokens — single source of truth for all visual constants.
 ///
 /// Access via the convenience alias `T`:
@@ -37,6 +39,11 @@ class _Palette {
   final Color bgSplashDeep = const Color(0xFF111D2E);
   final Color bgSplashMid = const Color(0xFF1A2D44);
 
+  // Day-mode backgrounds (v3): brighter neutral blues for daytime readability.
+  final Color bgDayTop = const Color(0xFF1A2433);
+  final Color bgDayMid = const Color(0xFF253245);
+  final Color bgDayBottom = const Color(0xFF2E3D53);
+
   // Background gradients (168° ≈ nearly vertical, slight rightward lean)
   LinearGradient get bg => const LinearGradient(
     begin: Alignment.topCenter,
@@ -48,6 +55,12 @@ class _Palette {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [Color(0xFF07090E), Color(0xFF0A0E17), Color(0xFF07090E)],
+  );
+
+  LinearGradient get bgDay => const LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFF1A2433), Color(0xFF253245), Color(0xFF2E3D53)],
   );
 
   LinearGradient get bgFlashcard => const LinearGradient(
@@ -71,6 +84,21 @@ class _Palette {
   final Color textPrimary = const Color(0xFFF2F5F8);
   final Color textSecondary = const Color(0x99FFFFFF); // white 60%
   final Color textTertiary = const Color(0x66FFFFFF); // white 40%
+
+  /// Pure black for distraction-free focus mode (SOS, Regulate flow).
+  final Color focusBackground = const Color(0xFF000000);
+
+  LinearGradient gradientFor(SurfaceMode mode) {
+    return switch (mode) {
+      SurfaceMode.day => bgDay,
+      SurfaceMode.night => bgNight,
+      SurfaceMode.focus => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF000000), Color(0xFF000000)],
+      ),
+    };
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -109,12 +137,21 @@ class _Glass {
   final Color fillRose = const Color(0x1FC86464); // rose 12%
   final Color fillTeal = const Color(0x1A5AB5A0); // teal 10%
 
+  // V3 mode-specific fills (higher opacity by mode for readability).
+  final Color fillDay = const Color(0x2AFFFFFF); // white 16%
+  final Color fillNight = const Color(0x16FFFFFF); // white 9%
+
   // Blur
   final double sigma = 12.0; // sigmaX & sigmaY for BackdropFilter
   final double saturate = 1.5;
+  final double sigmaDay = 8.0;
+  final double sigmaNight = 10.0;
+  final double sigmaFocus = 6.0;
 
   // Border
   final Color border = const Color(0x0AFFFFFF); // white 4%
+  final Color borderDay = const Color(0x2FFFFFFF); // white 18%
+  final Color borderNight = const Color(0x1AFFFFFF); // white 10%
 
   // Top-edge specular highlight
   final LinearGradient specular = const LinearGradient(

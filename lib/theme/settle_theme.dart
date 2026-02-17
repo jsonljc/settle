@@ -11,13 +11,19 @@ import 'settle_tokens.dart';
 class SettleTheme {
   SettleTheme._();
 
-  static ThemeData get data {
+  static ThemeData get data => _build(v3Enabled: false);
+
+  static ThemeData get dataV3 => _build(v3Enabled: true);
+
+  static ThemeData _build({required bool v3Enabled}) {
     final base = ThemeData.dark(useMaterial3: true);
 
     // Nunito as the primary font, falling back to platform default.
     final textTheme = GoogleFonts.nunitoTextTheme(
       base.textTheme,
     ).apply(bodyColor: T.pal.textPrimary, displayColor: T.pal.textPrimary);
+
+    final dividerAlpha = v3Enabled ? 0.22 : 0.15;
 
     return base.copyWith(
       scaffoldBackgroundColor: Colors.transparent,
@@ -78,7 +84,7 @@ class SettleTheme {
 
       // Dividers
       dividerTheme: DividerThemeData(
-        color: T.pal.textTertiary.withValues(alpha: 0.15),
+        color: T.pal.textTertiary.withValues(alpha: dividerAlpha),
         thickness: 0.5,
       ),
 

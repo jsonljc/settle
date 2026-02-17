@@ -49,6 +49,8 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
   Widget build(BuildContext context) {
     final historyAsync = ref.watch(_sleepHistoryProvider);
     final isPlanTab = _tabController.index == 0;
+    const planRoute = '/plan';
+    const learnRoute = '/library/learn';
 
     return Scaffold(
       body: SettleBackground(
@@ -92,12 +94,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
                       GlassCta(
                         label: isPlanTab ? 'Open Plan Focus' : 'Open Learn Q&A',
                         onTap: () =>
-                            context.push(isPlanTab ? '/plan' : '/plan/learn'),
+                            context.push(isPlanTab ? planRoute : learnRoute),
                       ),
                       const SizedBox(height: 8),
                       GestureDetector(
                         onTap: () =>
-                            context.push(isPlanTab ? '/plan/learn' : '/plan'),
+                            context.push(isPlanTab ? learnRoute : planRoute),
                         child: Text(
                           isPlanTab ? 'Open Learn Q&A' : 'Open Plan Focus',
                           style: T.type.caption.copyWith(
@@ -195,98 +197,91 @@ class _PlanTab extends StatelessWidget {
           child: Column(
             children: [
               GlassCard(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TARGET',
+                      style: T.type.overline.copyWith(
+                        color: T.pal.textTertiary,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
                       children: [
-                        Text(
-                          'TARGET',
-                          style: T.type.overline.copyWith(
-                            color: T.pal.textTertiary,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            _StatBlock(value: '${bracket.naps}', label: 'naps'),
-                            const SizedBox(width: 24),
-                            _StatBlock(
-                              value:
-                                  '${lo ~/ 60}h${lo % 60 > 0 ? ' ${lo % 60}m' : ''}–${hi ~/ 60}h${hi % 60 > 0 ? ' ${hi % 60}m' : ''}',
-                              label: 'wake window',
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          bracket.label,
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textTertiary,
-                          ),
+                        _StatBlock(value: '${bracket.naps}', label: 'naps'),
+                        const SizedBox(width: 24),
+                        _StatBlock(
+                          value:
+                              '${lo ~/ 60}h${lo % 60 > 0 ? ' ${lo % 60}m' : ''}–${hi ~/ 60}h${hi % 60 > 0 ? ' ${hi % 60}m' : ''}',
+                          label: 'wake window',
                         ),
                       ],
                     ),
-                  )
-                  .entryFadeIn(context, delay: const Duration(milliseconds: 150)),
+                    const SizedBox(height: 10),
+                    Text(
+                      bracket.label,
+                      style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                    ),
+                  ],
+                ),
+              ).entryFadeIn(context, delay: const Duration(milliseconds: 150)),
               const SizedBox(height: 16),
               GlassCard(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'TODAY SO FAR',
-                          style: T.type.overline.copyWith(
-                            color: T.pal.textTertiary,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          '${todaySessions.length} sleep sessions logged',
-                          style: T.type.h3,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _formatDuration(totalToday),
-                          style: T.type.body.copyWith(
-                            color: T.pal.textSecondary,
-                          ),
-                        ),
-                      ],
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TODAY SO FAR',
+                      style: T.type.overline.copyWith(
+                        color: T.pal.textTertiary,
+                      ),
                     ),
-                  )
-                  .entryFadeIn(context, delay: const Duration(milliseconds: 190)),
+                    const SizedBox(height: 10),
+                    Text(
+                      '${todaySessions.length} sleep sessions logged',
+                      style: T.type.h3,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _formatDuration(totalToday),
+                      style: T.type.body.copyWith(color: T.pal.textSecondary),
+                    ),
+                  ],
+                ),
+              ).entryFadeIn(context, delay: const Duration(milliseconds: 190)),
               const SizedBox(height: 16),
               GlassCard(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'TIMELINE',
-                          style: T.type.overline.copyWith(
-                            color: T.pal.textTertiary,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        if (todaySessions.isEmpty)
-                          EmptyState(
-                            message: 'No sleep logs yet today.',
-                            icon: Icons.bedtime_outlined,
-                            actionLabel: 'Log a session',
-                            onAction: () => context.push('/sleep'),
-                          )
-                        else
-                          ...todaySessions.map(
-                            (session) => Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: _SessionRow(session: session),
-                            ),
-                          ),
-                      ],
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TIMELINE',
+                      style: T.type.overline.copyWith(
+                        color: T.pal.textTertiary,
+                      ),
                     ),
-                  )
-                  .entryFadeIn(context, delay: const Duration(milliseconds: 230)),
+                    const SizedBox(height: 12),
+                    if (todaySessions.isEmpty)
+                      EmptyState(
+                        message: 'No sleep logs yet today.',
+                        icon: Icons.bedtime_outlined,
+                        actionLabel: 'Log a session',
+                        onAction: () => context.push('/sleep'),
+                      )
+                    else
+                      ...todaySessions.map(
+                        (session) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: _SessionRow(session: session),
+                        ),
+                      ),
+                  ],
+                ),
+              ).entryFadeIn(context, delay: const Duration(milliseconds: 230)),
               const SizedBox(height: 24),
             ],
           ),
@@ -376,7 +371,10 @@ class _WeekTab extends StatelessWidget {
                                 ),
                               )
                               as Widget)
-                    .entryFadeIn(context, delay: const Duration(milliseconds: 150))
+                    .entryFadeIn(
+                      context,
+                      delay: const Duration(milliseconds: 150),
+                    )
               else
                 GlassCard(
                   padding: const EdgeInsets.symmetric(
@@ -450,32 +448,32 @@ class _WeekTab extends StatelessWidget {
                   vertical: 8,
                 ),
                 child: SettleDisclosure(
-                    title: 'More weekly details (optional)',
-                    subtitle: 'Session count chart.',
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        'SESSION COUNT (LAST 7 DAYS)',
-                        style: T.type.overline.copyWith(
-                          color: T.pal.textTertiary,
-                        ),
+                  title: 'More weekly details (optional)',
+                  subtitle: 'Session count chart.',
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      'SESSION COUNT (LAST 7 DAYS)',
+                      style: T.type.overline.copyWith(
+                        color: T.pal.textTertiary,
                       ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 140,
-                        child: _BarChart(
-                          values: weekData
-                              .map((d) => d.sessions.toDouble())
-                              .toList(),
-                          labels: weekData.map((d) => d.label).toList(),
-                          todayIdx: 6,
-                          maxY: 6,
-                          suffix: '',
-                          barColor: T.pal.textSecondary,
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 140,
+                      child: _BarChart(
+                        values: weekData
+                            .map((d) => d.sessions.toDouble())
+                            .toList(),
+                        labels: weekData.map((d) => d.label).toList(),
+                        todayIdx: 6,
+                        maxY: 6,
+                        suffix: '',
+                        barColor: T.pal.textSecondary,
                       ),
-                      const SizedBox(height: 4),
-                    ],
+                    ),
+                    const SizedBox(height: 4),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),

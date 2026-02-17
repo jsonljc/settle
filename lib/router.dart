@@ -1,76 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'internal_tools_gate.dart';
+import 'providers/release_rollout_provider.dart';
 import 'screens/app_shell.dart';
 import 'screens/current_rhythm_screen.dart';
+import 'screens/family/activity_feed.dart';
 import 'screens/family/family_home_screen.dart';
+import 'screens/family/invite_screen.dart';
 import 'screens/family_rules.dart';
-import 'screens/help_now.dart';
 import 'screens/learn.dart';
 import 'screens/library/library_home_screen.dart';
-import 'screens/onboarding/onboarding_screen.dart';
+import 'screens/library/monthly_insight_screen.dart';
+import 'screens/library/patterns_screen.dart';
+import 'screens/library/saved_playbook_screen.dart';
+import 'screens/onboarding/onboarding_v2_screen.dart';
 import 'screens/plan/plan_home_screen.dart';
-import 'screens/plan_progress.dart';
+import 'screens/plan/plan_script_log_screen.dart';
+import 'screens/plan/plan_spine_stub_screens.dart';
+import 'screens/regulate/regulate_flow_screen.dart';
 import 'screens/release_compliance_checklist.dart';
 import 'screens/release_metrics.dart';
 import 'screens/release_ops_checklist.dart';
 import 'screens/settings.dart';
-import 'screens/sleep_hub_screen.dart';
+import 'screens/pocket/pocket_fab_and_overlay.dart';
+import 'screens/sleep/sleep_mini_onboarding.dart';
 import 'screens/sleep_tonight.dart';
 import 'screens/sos.dart';
 import 'screens/splash.dart';
-import 'screens/tantrum/card_detail_screen.dart';
-import 'screens/tantrum/crisis_view_screen.dart';
-import 'screens/tantrum/tantrum_card_output_screen.dart';
-import 'screens/tantrum/tantrum_capture_screen.dart';
-import 'screens/tantrum/tantrum_deck_screen.dart';
-import 'screens/tantrum/tantrum_insights_screen.dart';
 import 'screens/today.dart';
 import 'screens/update_rhythm_screen.dart';
-import 'services/spec_policy.dart';
 import 'widgets/release_surfaces.dart';
 import 'widgets/settle_bottom_nav.dart';
 
-// v1 tab indices.
-const int _v1TabHelpNow = 0;
-const int _v1TabSleep = 1;
-const int _v1TabProgress = 2;
-const int _v1TabTantrum = 3;
-
-// v2 tab indices.
 const int _v2TabPlan = 0;
 const int _v2TabFamily = 1;
 const int _v2TabSleep = 2;
 const int _v2TabLibrary = 3;
 
-const _v1NavItems = [
-  SettleBottomNavItem(
-    label: 'Help Now',
-    icon: Icons.favorite_outline,
-    activeIcon: Icons.favorite_rounded,
-  ),
-  SettleBottomNavItem(
-    label: 'Sleep',
-    icon: Icons.nightlight_outlined,
-    activeIcon: Icons.nightlight_round,
-  ),
-  SettleBottomNavItem(
-    label: 'Progress',
-    icon: Icons.trending_up_rounded,
-    activeIcon: Icons.trending_up_rounded,
-  ),
-  SettleBottomNavItem(
-    label: 'Tantrum',
-    icon: Icons.psychology_outlined,
-    activeIcon: Icons.psychology_rounded,
-  ),
-];
-
 const _v2NavItems = [
   SettleBottomNavItem(
-    label: 'Plan',
+    label: 'Home',
     icon: Icons.home_outlined,
     activeIcon: Icons.home_rounded,
   ),
@@ -103,31 +75,21 @@ void refreshRouterFromRollout() {
 }
 
 GoRouter _buildRouterFromRolloutState() {
-  var v2NavigationEnabled = false;
-  var regulateEnabled = false;
+  var regulateEnabled = true;
   try {
     if (Hive.isBoxOpen(_rolloutBox)) {
       final box = Hive.box<dynamic>(_rolloutBox);
       final raw = box.get(_rolloutKey);
       if (raw is Map) {
-        v2NavigationEnabled = raw['v2_navigation_enabled'] as bool? ?? false;
-        regulateEnabled = raw['regulate_enabled'] as bool? ?? false;
+        regulateEnabled = raw['regulate_enabled'] as bool? ?? true;
       }
     }
-  } catch (_) {
-    // Default to v1 shell when rollout state is unavailable.
-  }
+  } catch (_) {}
 
-  return buildRouter(
-    v2NavigationEnabled: v2NavigationEnabled,
-    regulateEnabled: regulateEnabled,
-  );
+  return buildRouter(regulateEnabled: regulateEnabled);
 }
 
-GoRouter buildRouter({
-  required bool v2NavigationEnabled,
-  required bool regulateEnabled,
-}) {
+GoRouter buildRouter({required bool regulateEnabled}) {
   return GoRouter(
     initialLocation: '/',
     errorPageBuilder: (context, state) => _fade(
@@ -142,41 +104,27 @@ GoRouter buildRouter({
       ),
       GoRoute(
         path: '/onboard',
-        pageBuilder: (context, state) => _fade(state, const OnboardingScreen()),
+        pageBuilder: (context, state) =>
+            _fade(state, const OnboardingV2Screen()),
       ),
 
-      // Main shell (v1 or v2).
-      v2NavigationEnabled
-          ? _buildV2ShellRoute(regulateEnabled: regulateEnabled)
-          : _buildV1ShellRoute(),
+      _buildV2ShellRoute(regulateEnabled: regulateEnabled),
 
-      // Overlay screens (push on top of shell, no bottom nav).
       GoRoute(
         path: '/breathe',
         redirect: (context, state) {
-          if (v2NavigationEnabled && regulateEnabled) {
+          if (regulateEnabled) {
             return _redirectWithMergedQuery(state, path: '/plan/regulate');
           }
           return null;
         },
         pageBuilder: (context, state) => _fade(state, const SosScreen()),
       ),
-
-      // Settings (push on top of shell).
       GoRoute(
         path: '/settings',
         pageBuilder: (context, state) => _fade(state, const SettingsScreen()),
       ),
-      if (!v2NavigationEnabled)
-        GoRoute(
-          path: '/rules',
-          pageBuilder: (context, state) =>
-              _fade(state, const FamilyRulesScreen()),
-        )
-      else
-        GoRoute(path: '/rules', redirect: (_, __) => '/family/shared'),
-
-      // Internal tooling routes.
+      GoRoute(path: '/rules', redirect: (_, __) => '/family/shared'),
       GoRoute(
         path: '/release-metrics',
         pageBuilder: (context, state) =>
@@ -192,172 +140,8 @@ GoRouter buildRouter({
         pageBuilder: (context, state) =>
             _internalOnly(state, const ReleaseOpsChecklistScreen()),
       ),
-
-      // Root home compatibility.
-      if (v2NavigationEnabled)
-        GoRoute(path: '/home', redirect: (_, __) => '/plan')
-      else
-        GoRoute(path: '/home', redirect: (_, __) => '/now'),
-
-      // Compatibility redirects.
-      ..._compatibilityRoutes(
-        v2NavigationEnabled: v2NavigationEnabled,
-        regulateEnabled: regulateEnabled,
-      ),
-    ],
-  );
-}
-
-StatefulShellRoute _buildV1ShellRoute() {
-  final shellNavigatorKeys = [
-    GlobalKey<NavigatorState>(debugLabel: 'helpNow'),
-    GlobalKey<NavigatorState>(debugLabel: 'sleep'),
-    GlobalKey<NavigatorState>(debugLabel: 'progress'),
-    GlobalKey<NavigatorState>(debugLabel: 'tantrum'),
-  ];
-
-  return StatefulShellRoute.indexedStack(
-    builder: (context, state, navigationShell) {
-      return AppShell(
-        currentIndex: navigationShell.currentIndex,
-        navItems: _v1NavItems,
-        onTabTap: (index) {
-          final resetToBranchRoot =
-              index == _v1TabSleep || index == navigationShell.currentIndex;
-          navigationShell.goBranch(index, initialLocation: resetToBranchRoot);
-        },
-        child: navigationShell,
-      );
-    },
-    branches: [
-      // Tab 0: Help Now
-      StatefulShellBranch(
-        navigatorKey: shellNavigatorKeys[_v1TabHelpNow],
-        routes: [
-          GoRoute(
-            path: '/now',
-            pageBuilder: (context, state) =>
-                _fade(state, const HelpNowScreen()),
-          ),
-        ],
-      ),
-      // Tab 1: Sleep
-      StatefulShellBranch(
-        navigatorKey: shellNavigatorKeys[_v1TabSleep],
-        routes: [
-          GoRoute(
-            path: '/sleep',
-            pageBuilder: (context, state) =>
-                _fade(state, const SleepHubScreen()),
-            routes: [
-              GoRoute(
-                path: 'tonight',
-                pageBuilder: (context, state) =>
-                    _fade(state, const SleepTonightScreen()),
-              ),
-              GoRoute(
-                path: 'rhythm',
-                pageBuilder: (context, state) =>
-                    _fade(state, const CurrentRhythmScreen()),
-              ),
-              GoRoute(
-                path: 'update',
-                pageBuilder: (context, state) =>
-                    _fade(state, const UpdateRhythmScreen()),
-              ),
-            ],
-          ),
-        ],
-      ),
-      // Tab 2: Progress
-      StatefulShellBranch(
-        navigatorKey: shellNavigatorKeys[_v1TabProgress],
-        routes: [
-          GoRoute(
-            path: '/progress',
-            pageBuilder: (context, state) =>
-                _fade(state, const PlanProgressScreen()),
-            routes: [
-              GoRoute(
-                path: 'logs',
-                pageBuilder: (context, state) =>
-                    _fade(state, const TodayScreen()),
-              ),
-              GoRoute(
-                path: 'learn',
-                pageBuilder: (context, state) =>
-                    _fade(state, const LearnScreen()),
-              ),
-            ],
-          ),
-        ],
-      ),
-      // Tab 3: Tantrum
-      StatefulShellBranch(
-        navigatorKey: shellNavigatorKeys[_v1TabTantrum],
-        routes: [
-          GoRoute(
-            path: '/tantrum',
-            redirect: (_, state) =>
-                state.uri.path == '/tantrum' ? '/tantrum/capture' : null,
-            routes: [
-              GoRoute(
-                path: 'capture',
-                pageBuilder: (context, state) =>
-                    _fade(state, const TantrumCaptureScreen()),
-              ),
-              GoRoute(path: 'now', redirect: (_, __) => '/tantrum/capture'),
-              GoRoute(
-                path: 'card',
-                pageBuilder: (context, state) {
-                  final cardId = state.uri.queryParameters['cardId'];
-                  return _fade(state, TantrumCardOutputScreen(cardId: cardId));
-                },
-              ),
-              GoRoute(
-                path: 'crisis',
-                pageBuilder: (context, state) {
-                  final cardId = state.uri.queryParameters['cardId'];
-                  return _fade(state, CrisisViewScreen(cardId: cardId));
-                },
-              ),
-              GoRoute(
-                path: 'deck',
-                pageBuilder: (context, state) =>
-                    _fade(state, const TantrumDeckScreen()),
-                routes: [
-                  GoRoute(
-                    path: ':id',
-                    pageBuilder: (context, state) {
-                      final id = state.pathParameters['id'] ?? '';
-                      return _fade(state, CardDetailScreen(cardId: id));
-                    },
-                  ),
-                ],
-              ),
-              GoRoute(
-                path: 'cards',
-                redirect: (_, __) => '/tantrum/deck',
-                routes: [
-                  GoRoute(
-                    path: ':id',
-                    redirect: (_, state) {
-                      final id = state.pathParameters['id'] ?? '';
-                      return '/tantrum/deck/$id';
-                    },
-                  ),
-                ],
-              ),
-              GoRoute(
-                path: 'insights',
-                pageBuilder: (context, state) =>
-                    _fade(state, const TantrumInsightsScreen()),
-              ),
-              GoRoute(path: 'learn', redirect: (_, __) => '/tantrum/insights'),
-            ],
-          ),
-        ],
-      ),
+      GoRoute(path: '/home', redirect: (_, __) => '/plan'),
+      ..._compatibilityRoutes(regulateEnabled: regulateEnabled),
     ],
   );
 }
@@ -372,15 +156,27 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
 
   return StatefulShellRoute.indexedStack(
     builder: (context, state, navigationShell) {
-      return AppShell(
-        currentIndex: navigationShell.currentIndex,
-        navItems: _v2NavItems,
-        onTabTap: (index) {
-          final resetToBranchRoot =
-              index == _v2TabSleep || index == navigationShell.currentIndex;
-          navigationShell.goBranch(index, initialLocation: resetToBranchRoot);
+      return Consumer(
+        builder: (context, ref, _) {
+          final rollout = ref.watch(releaseRolloutProvider);
+          final overlay = rollout.pocketEnabled
+              ? const PocketFABAndOverlay()
+              : null;
+          return AppShell(
+            currentIndex: navigationShell.currentIndex,
+            navItems: _v2NavItems,
+            onTabTap: (index) {
+              final resetToBranchRoot =
+                  index == _v2TabSleep || index == navigationShell.currentIndex;
+              navigationShell.goBranch(
+                index,
+                initialLocation: resetToBranchRoot,
+              );
+            },
+            overlay: overlay,
+            child: navigationShell,
+          );
         },
-        child: navigationShell,
       );
     },
     branches: [
@@ -395,10 +191,8 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
             routes: [
               GoRoute(
                 path: 'regulate',
-                pageBuilder: (context, state) {
-                  // Phase 1 stub: full flow lands in Phase 5.
-                  return _fade(state, const SosScreen());
-                },
+                pageBuilder: (context, state) =>
+                    _fade(state, const RegulateFlowScreen()),
               ),
               GoRoute(
                 path: 'card/:id',
@@ -409,8 +203,25 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
               ),
               GoRoute(
                 path: 'log',
+                pageBuilder: (context, state) {
+                  final cardId = state.uri.queryParameters['card_id'] ?? '';
+                  return _fade(state, PlanScriptLogScreen(cardId: cardId));
+                },
+              ),
+              GoRoute(
+                path: 'reset',
                 pageBuilder: (context, state) =>
-                    _fade(state, const TodayScreen()),
+                    _fade(state, const ResetStubScreen()),
+              ),
+              GoRoute(
+                path: 'moment',
+                pageBuilder: (context, state) =>
+                    _fade(state, const MomentStubScreen()),
+              ),
+              GoRoute(
+                path: 'tantrum-just-happened',
+                pageBuilder: (context, state) =>
+                    _fade(state, const TantrumJustHappenedStubScreen()),
               ),
             ],
           ),
@@ -433,13 +244,13 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
               ),
               GoRoute(
                 path: 'invite',
-                pageBuilder: (context, state) => _fade(
-                  state,
-                  const RouteUnavailableView(
-                    title: 'Invite coming soon',
-                    message: 'Invite flow lands in the Family MVP phase.',
-                  ),
-                ),
+                pageBuilder: (context, state) =>
+                    _fade(state, const InviteScreen()),
+              ),
+              GoRoute(
+                path: 'activity',
+                pageBuilder: (context, state) =>
+                    _fade(state, const ActivityFeedScreen()),
               ),
             ],
           ),
@@ -452,7 +263,7 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
           GoRoute(
             path: '/sleep',
             pageBuilder: (context, state) =>
-                _fade(state, const SleepHubScreen()),
+                _fade(state, const SleepMiniOnboardingGate()),
             routes: [
               GoRoute(
                 path: 'tonight',
@@ -492,13 +303,29 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
                 pageBuilder: (context, state) =>
                     _fade(state, const TodayScreen()),
               ),
-              GoRoute(path: 'saved', redirect: (_, __) => '/library'),
-              GoRoute(path: 'patterns', redirect: (_, __) => '/library'),
+              GoRoute(
+                path: 'saved',
+                pageBuilder: (context, state) =>
+                    _fade(state, const SavedPlaybookScreen()),
+              ),
+              GoRoute(
+                path: 'patterns',
+                pageBuilder: (context, state) =>
+                    _fade(state, const PatternsScreen()),
+              ),
+              GoRoute(
+                path: 'insights',
+                pageBuilder: (context, state) =>
+                    _fade(state, const MonthlyInsightScreen()),
+              ),
               GoRoute(
                 path: 'cards/:id',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id'] ?? '';
-                  return _fade(state, PlanCardScreen(cardId: id));
+                  return _fade(
+                    state,
+                    PlanCardScreen(cardId: id, fallbackRoute: '/library'),
+                  );
                 },
               ),
             ],
@@ -509,75 +336,7 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
   );
 }
 
-List<RouteBase> _compatibilityRoutes({
-  required bool v2NavigationEnabled,
-  required bool regulateEnabled,
-}) {
-  if (!v2NavigationEnabled) {
-    return [
-      GoRoute(
-        path: '/relief',
-        redirect: (context, state) => _redirectWithMergedQuery(
-          state,
-          path: '/now',
-          extraQuery: const {
-            SpecPolicy.nowModeParam: SpecPolicy.nowModeIncident,
-          },
-        ),
-      ),
-      GoRoute(
-        path: '/help-now',
-        redirect: (context, state) => _redirectWithMergedQuery(
-          state,
-          path: '/now',
-          extraQuery: const {
-            SpecPolicy.nowModeParam: SpecPolicy.nowModeIncident,
-          },
-        ),
-      ),
-      GoRoute(
-        path: '/sleep-tonight',
-        redirect: (context, state) =>
-            _redirectWithMergedQuery(state, path: '/sleep/tonight'),
-      ),
-      GoRoute(
-        path: '/sleep/update-rhythm',
-        redirect: (context, state) =>
-            _redirectWithMergedQuery(state, path: '/sleep/update'),
-      ),
-      GoRoute(
-        path: '/current-rhythm',
-        redirect: (context, state) =>
-            _redirectWithMergedQuery(state, path: '/sleep/rhythm'),
-      ),
-      GoRoute(
-        path: '/update-rhythm',
-        redirect: (context, state) =>
-            _redirectWithMergedQuery(state, path: '/sleep/update'),
-      ),
-      GoRoute(path: '/plan-progress', redirect: (_, __) => '/progress'),
-      GoRoute(path: '/plan', redirect: (_, __) => '/progress'),
-      GoRoute(
-        path: '/family-rules',
-        redirect: (context, state) =>
-            _redirectWithMergedQuery(state, path: '/rules'),
-      ),
-      GoRoute(
-        path: '/night-mode',
-        redirect: (context, state) =>
-            _redirectWithMergedQuery(state, path: '/sleep/tonight'),
-      ),
-      GoRoute(
-        path: '/night',
-        redirect: (context, state) =>
-            _redirectWithMergedQuery(state, path: '/sleep/tonight'),
-      ),
-      GoRoute(path: '/today', redirect: (_, __) => '/progress/logs'),
-      GoRoute(path: '/learn', redirect: (_, __) => '/progress/learn'),
-      GoRoute(path: '/sos', redirect: (_, __) => '/breathe'),
-    ];
-  }
-
+List<RouteBase> _compatibilityRoutes({required bool regulateEnabled}) {
   return [
     GoRoute(
       path: '/relief',
@@ -588,6 +347,18 @@ List<RouteBase> _compatibilityRoutes({
       path: '/help-now',
       redirect: (context, state) =>
           _redirectWithMergedQuery(state, path: '/plan'),
+    ),
+    GoRoute(
+      path: '/now/reset',
+      redirect: (_, __) => '/plan/reset',
+    ),
+    GoRoute(
+      path: '/now/moment',
+      redirect: (_, __) => '/plan/moment',
+    ),
+    GoRoute(
+      path: '/now/tantrum',
+      redirect: (_, __) => '/plan/tantrum-just-happened',
     ),
     GoRoute(
       path: '/now',
@@ -626,7 +397,13 @@ List<RouteBase> _compatibilityRoutes({
     GoRoute(
       path: '/tantrum',
       redirect: (_, __) => '/plan',
-      routes: [GoRoute(path: 'capture', redirect: (_, __) => '/plan')],
+      routes: [
+        GoRoute(path: 'capture', redirect: (_, __) => '/plan'),
+        GoRoute(
+          path: 'just-happened',
+          redirect: (_, __) => '/plan/tantrum-just-happened',
+        ),
+      ],
     ),
     GoRoute(
       path: '/family-rules',
@@ -651,7 +428,7 @@ List<RouteBase> _compatibilityRoutes({
         if (regulateEnabled) {
           return _redirectWithMergedQuery(state, path: '/plan/regulate');
         }
-        return '/plan/regulate';
+        return _redirectWithMergedQuery(state, path: '/breathe');
       },
     ),
   ];

@@ -29,7 +29,7 @@ void main() {
   });
 
   test(
-    'migrates rollout schema v1 data and backfills schema v3 flags',
+    'migrates rollout schema v1 data and backfills schema v4 flags',
     () async {
       final box = await Hive.openBox<dynamic>('release_rollout_v1');
       await box.put('state', {
@@ -50,22 +50,21 @@ void main() {
 
       expect(notifier.state.sleepRhythmSurfacesEnabled, isTrue);
       expect(notifier.state.rhythmShiftDetectorPromptsEnabled, isTrue);
-      expect(notifier.state.v2NavigationEnabled, isFalse);
-      expect(notifier.state.v2OnboardingEnabled, isFalse);
-      expect(notifier.state.planTabEnabled, isFalse);
-      expect(notifier.state.familyTabEnabled, isFalse);
-      expect(notifier.state.libraryTabEnabled, isFalse);
-      expect(notifier.state.pocketEnabled, isFalse);
-      expect(notifier.state.regulateEnabled, isFalse);
+      expect(notifier.state.planTabEnabled, isTrue);
+      expect(notifier.state.familyTabEnabled, isTrue);
+      expect(notifier.state.libraryTabEnabled, isTrue);
+      expect(notifier.state.pocketEnabled, isTrue);
+      expect(notifier.state.regulateEnabled, isTrue);
       expect(notifier.state.smartNudgesEnabled, isFalse);
       expect(notifier.state.patternDetectionEnabled, isFalse);
+      expect(notifier.state.uiV3Enabled, isTrue);
 
       final migrated = Map<String, dynamic>.from(box.get('state') as Map);
-      expect(migrated['schema_version'], 3);
+      expect(migrated['schema_version'], 4);
       expect(migrated['sleep_rhythm_surfaces_enabled'], isTrue);
       expect(migrated['rhythm_shift_detector_prompts_enabled'], isTrue);
-      expect(migrated['v2_navigation_enabled'], isFalse);
       expect(migrated['pattern_detection_enabled'], isFalse);
+      expect(migrated['ui_v3_enabled'], isTrue);
     },
   );
 
@@ -76,8 +75,8 @@ void main() {
     await notifier.setSleepRhythmSurfacesEnabled(false);
     await notifier.setRhythmShiftDetectorPromptsEnabled(false);
     await notifier.setWindDownNotificationsEnabled(false);
-    await notifier.setV2NavigationEnabled(true);
     await notifier.setPatternDetectionEnabled(true);
+    await notifier.setUiV3Enabled(true);
 
     final reloaded = ReleaseRolloutNotifier();
     await waitLoaded(reloaded);
@@ -85,11 +84,35 @@ void main() {
     expect(reloaded.state.sleepRhythmSurfacesEnabled, isFalse);
     expect(reloaded.state.rhythmShiftDetectorPromptsEnabled, isFalse);
     expect(reloaded.state.windDownNotificationsEnabled, isFalse);
-    expect(reloaded.state.v2NavigationEnabled, isTrue);
     expect(reloaded.state.patternDetectionEnabled, isTrue);
+    expect(reloaded.state.uiV3Enabled, isTrue);
   });
 
-  test('migrates tantrum deck cards once when v2 nav is enabled', () async {
+  test('migrates tantrum deck cards once on load', () async {
+    final rolloutBox = await Hive.openBox<dynamic>('release_rollout_v1');
+    await rolloutBox.put('state', {
+      'schema_version': 4,
+      'help_now_enabled': true,
+      'sleep_tonight_enabled': true,
+      'plan_progress_enabled': true,
+      'family_rules_enabled': true,
+      'metrics_dashboard_enabled': true,
+      'compliance_checklist_enabled': true,
+      'sleep_bounded_ai_enabled': true,
+      'sleep_rhythm_surfaces_enabled': true,
+      'rhythm_shift_detector_prompts_enabled': true,
+      'wind_down_notifications_enabled': true,
+      'schedule_drift_notifications_enabled': false,
+      'plan_tab_enabled': true,
+      'family_tab_enabled': true,
+      'library_tab_enabled': true,
+      'pocket_enabled': true,
+      'regulate_enabled': true,
+      'smart_nudges_enabled': false,
+      'pattern_detection_enabled': false,
+      'ui_v3_enabled': false,
+    });
+
     final deckBox = await Hive.openBox<dynamic>('tantrum_deck');
     await deckBox.put(
       'deck_state_v2',
@@ -103,23 +126,19 @@ void main() {
     final notifier = ReleaseRolloutNotifier();
     await waitLoaded(notifier);
 
-    await notifier.setV2NavigationEnabled(true);
-
     final userCardsBox = await Hive.openBox<UserCard>('user_cards');
     expect(userCardsBox.length, 3);
     expect(userCardsBox.get('card_a')?.pinned, isFalse);
     expect(userCardsBox.get('card_b')?.pinned, isTrue);
     expect(userCardsBox.get('card_c')?.pinned, isFalse);
 
-    final rolloutBox = await Hive.openBox<dynamic>('release_rollout_v1');
     expect(rolloutBox.get('v2_tantrum_deck_migrated'), isTrue);
 
     final cardB = userCardsBox.get('card_b');
     await userCardsBox.put('card_b', cardB!.copyWith(usageCount: 7));
 
-    await notifier.setV2NavigationEnabled(false);
-    await notifier.setV2NavigationEnabled(true);
-
+    final notifier2 = ReleaseRolloutNotifier();
+    await waitLoaded(notifier2);
     expect(userCardsBox.length, 3);
     expect(userCardsBox.get('card_b')?.usageCount, 7);
   });
