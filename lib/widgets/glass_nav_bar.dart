@@ -7,20 +7,14 @@ import '../theme/settle_design_system.dart';
 
 /// Single item for [GlassNavBar]: icon and label.
 class GlassNavBarItem {
-  const GlassNavBarItem({
-    required this.icon,
-    required this.label,
-  });
+  const GlassNavBarItem({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
 }
 
 /// Variant for bar fill and text (light vs dark).
-enum GlassNavBarVariant {
-  light,
-  dark,
-}
+enum GlassNavBarVariant { light, dark }
 
 /// Bottom nav bar with liquid glass: blur, top border, inner highlight.
 /// Use [variant] or leave null to auto-detect from [ThemeData.brightness].
@@ -63,27 +57,30 @@ class GlassNavBar extends StatelessWidget {
     }
   }
 
-  /// Label: 9.5px, weight 500, letterSpacing 0.02
+  /// Label: 10px, weight 500, letterSpacing 0.02
   static TextStyle _labelStyle(Color color) => GoogleFonts.inter(
-        fontSize: 9.5,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.02,
-        color: color,
-      );
+    fontSize: 10,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.02,
+    color: color,
+  );
 
   @override
   Widget build(BuildContext context) {
-    final effectiveVariant = variant ??
+    final effectiveVariant =
+        variant ??
         (Theme.of(context).brightness == Brightness.dark
             ? GlassNavBarVariant.dark
             : GlassNavBarVariant.light);
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     final isLight = effectiveVariant == GlassNavBarVariant.light;
 
-    final activeColor =
-        isLight ? SettleColors.dusk600 : SettleColors.nightAccent;
-    final inactiveColor =
-        isLight ? SettleColors.ink300 : SettleColors.nightMuted;
+    final activeColor = isLight
+        ? SettleColors.dusk600
+        : SettleColors.nightAccent;
+    final inactiveColor = isLight
+        ? SettleColors.ink300
+        : SettleColors.nightMuted;
 
     return ClipRect(
       child: BackdropFilter(
@@ -94,10 +91,7 @@ class GlassNavBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: _barFill(effectiveVariant),
             border: Border(
-              top: BorderSide(
-                color: _topBorder(effectiveVariant),
-                width: 0.5,
-              ),
+              top: BorderSide(color: _topBorder(effectiveVariant), width: 0.5),
             ),
           ),
           child: Stack(
@@ -141,16 +135,9 @@ class GlassNavBar extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  item.icon,
-                                  size: _iconSize,
-                                  color: color,
-                                ),
+                                Icon(item.icon, size: _iconSize, color: color),
                                 const SizedBox(height: 2),
-                                Text(
-                                  item.label,
-                                  style: _labelStyle(color),
-                                ),
+                                Text(item.label, style: _labelStyle(color)),
                               ],
                             ),
                           ),

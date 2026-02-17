@@ -26,7 +26,9 @@ class SavedPlaybookScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: const EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -36,7 +38,7 @@ class SavedPlaybookScreen extends ConsumerWidget {
                   style: GoogleFonts.fraunces(
                     fontSize: 24,
                     fontWeight: FontWeight.w400,
-                    letterSpacing: -0.3,
+                    letterSpacing: -0.5,
                     color: SettleColors.ink900,
                   ),
                 ),
@@ -46,6 +48,7 @@ class SavedPlaybookScreen extends ConsumerWidget {
                   style: GoogleFonts.inter(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w400,
+                    letterSpacing: -0.006,
                     color: SettleColors.ink400,
                   ),
                 ),
@@ -87,6 +90,7 @@ class SavedPlaybookScreen extends ConsumerWidget {
                               'We couldn\'t load your playbook right now.',
                               style: GoogleFonts.inter(
                                 fontSize: 14,
+                                letterSpacing: -0.006,
                                 color: SettleColors.ink500,
                               ),
                               textAlign: TextAlign.center,
@@ -150,7 +154,7 @@ class _PlaybookCard extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      letterSpacing: -0.01,
+                      letterSpacing: -0.3,
                       color: SettleColors.ink800,
                     ),
                   ),
@@ -180,11 +184,7 @@ class _PlaybookCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 10),
-            Wrap(
-              spacing: 5,
-              runSpacing: 5,
-              children: _chipsForCard(card),
-            ),
+            Wrap(spacing: 5, runSpacing: 5, children: _chipsForCard(card)),
           ],
         ),
       ),
@@ -193,23 +193,24 @@ class _PlaybookCard extends StatelessWidget {
 
   List<Widget> _chipsForCard(RepairCard card) {
     final chips = <Widget>[];
-    chips.add(GlassChip(
-      label: _contextLabel(card.context),
-      domain: _contextDomain(card.context),
-    ));
-    chips.add(GlassChip(
-      label: card.state == RepairCardState.self ? 'For you' : 'For them',
-      domain: card.state == RepairCardState.self
-          ? GlassChipDomain.self
-          : GlassChipDomain.child,
-    ));
+    chips.add(
+      GlassChip(
+        label: _contextLabel(card.context),
+        domain: _contextDomain(card.context),
+      ),
+    );
+    chips.add(
+      GlassChip(
+        label: card.state == RepairCardState.self ? 'For you' : 'For them',
+        domain: card.state == RepairCardState.self
+            ? GlassChipDomain.self
+            : GlassChipDomain.child,
+      ),
+    );
     for (final tag in card.tags.take(2)) {
       if (tag.trim().isEmpty) continue;
       final domain = _tagDomain(tag);
-      chips.add(GlassChip(
-        label: tag,
-        domain: domain,
-      ));
+      chips.add(GlassChip(label: tag, domain: domain));
     }
     return chips;
   }
@@ -259,6 +260,7 @@ class _PlaybookEmptyState extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w400,
+            letterSpacing: -0.006,
             color: SettleColors.ink400,
           ),
           textAlign: TextAlign.center,

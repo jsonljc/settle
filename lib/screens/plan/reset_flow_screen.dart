@@ -66,17 +66,16 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     );
 
     if (useDark) {
-      body = Theme(
-        data: SettleTheme.dark,
-        child: body,
-      );
+      body = Theme(data: SettleTheme.dark, child: body);
     }
     return body;
   }
 
   Widget _buildStatePicker(BuildContext context, ResetFlowNotifier notifier) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+      padding: const EdgeInsets.symmetric(
+        horizontal: SettleSpacing.screenPadding,
+      ),
       child: Column(
         children: [
           const SizedBox(height: 32),
@@ -88,6 +87,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
             style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w600,
+              letterSpacing: -0.3,
               color: SettleColors.nightText,
             ),
           ),
@@ -106,6 +106,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                     style: GoogleFonts.fraunces(
                       fontSize: 22,
                       fontWeight: FontWeight.w400,
+                      letterSpacing: -0.5,
                       color: SettleColors.nightText,
                     ),
                   ),
@@ -128,6 +129,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                     style: GoogleFonts.fraunces(
                       fontSize: 22,
                       fontWeight: FontWeight.w400,
+                      letterSpacing: -0.5,
                       color: SettleColors.nightText,
                     ),
                   ),
@@ -147,9 +149,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
   ) {
     if (state.loading) {
       return Center(
-        child: CircularProgressIndicator(
-          color: SettleColors.nightAccent,
-        ),
+        child: CircularProgressIndicator(color: SettleColors.nightAccent),
       );
     }
 
@@ -158,7 +158,9 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
 
     if (card == null) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+        padding: const EdgeInsets.symmetric(
+          horizontal: SettleSpacing.screenPadding,
+        ),
         child: Column(
           children: [
             const SizedBox(height: 32),
@@ -173,6 +175,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                     'No card for this combination right now.',
                     style: GoogleFonts.inter(
                       fontSize: 14,
+                      letterSpacing: -0.006,
                       color: SettleColors.nightSoft,
                       height: 1.7,
                     ),
@@ -186,11 +189,15 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
       );
     }
 
-    final stateLabel = chosenState == RepairCardState.self ? 'For you' : 'For them';
+    final stateLabel = chosenState == RepairCardState.self
+        ? 'For you'
+        : 'For them';
     final counterText = '${state.cardIdsSeen.length} of 3';
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+      padding: const EdgeInsets.symmetric(
+        horizontal: SettleSpacing.screenPadding,
+      ),
       child: Column(
         children: [
           const SizedBox(height: 24),
@@ -202,6 +209,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
             style: GoogleFonts.fraunces(
               fontSize: 22,
               fontWeight: FontWeight.w400,
+              letterSpacing: -0.5,
               color: SettleColors.nightText,
             ),
           ),
@@ -228,6 +236,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
+                    letterSpacing: -0.3,
                     color: SettleColors.nightText,
                   ),
                 ),
@@ -237,6 +246,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
+                    letterSpacing: -0.006,
                     color: SettleColors.nightSoft,
                     height: 1.7,
                   ),
@@ -289,6 +299,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
             style: GoogleFonts.inter(
               fontSize: 12,
               fontWeight: FontWeight.w400,
+              letterSpacing: -0.006,
               color: SettleColors.nightMuted.withValues(alpha: 0.45),
             ),
           ),

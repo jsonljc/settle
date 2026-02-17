@@ -118,9 +118,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: _buildBody(),
-      ),
+      body: SafeArea(child: _buildBody()),
     );
   }
 
@@ -156,9 +154,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         const SizedBox(height: 24),
         _buildRingAndText(),
         const SizedBox(height: 28),
-        Expanded(
-          child: _buildChoiceContent(),
-        ),
+        Expanded(child: _buildChoiceContent()),
         _buildFooter(),
       ],
     );
@@ -187,6 +183,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w400,
+            letterSpacing: -0.006,
             color: SettleColors.ink500.withValues(alpha: 0.6),
           ),
         ),
@@ -201,6 +198,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
           'Loading…',
           style: GoogleFonts.inter(
             fontSize: 14,
+            letterSpacing: -0.006,
             color: SettleColors.ink500,
           ),
         ),
@@ -218,7 +216,9 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
     final connectionScript = connection;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+      padding: const EdgeInsets.symmetric(
+        horizontal: SettleSpacing.screenPadding,
+      ),
       child: Row(
         children: [
           if (boundaryScript != null)
@@ -250,7 +250,12 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
 
   Widget _buildFooter() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      padding: const EdgeInsets.fromLTRB(
+        SettleSpacing.screenPadding,
+        12,
+        SettleSpacing.screenPadding,
+        16,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -262,6 +267,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
+                letterSpacing: -0.006,
                 color: SettleColors.ink400.withValues(alpha: 0.6),
               ),
             ),
@@ -270,6 +276,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
             ' · ',
             style: GoogleFonts.inter(
               fontSize: 12,
+              letterSpacing: -0.006,
               color: SettleColors.ink400.withValues(alpha: 0.6),
             ),
           ),
@@ -281,6 +288,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
+                letterSpacing: -0.006,
                 color: SettleColors.ink400.withValues(alpha: 0.6),
                 decoration: TextDecoration.underline,
               ),
@@ -299,13 +307,16 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: SettleSpacing.screenPadding,
+          ),
           child: Text(
             script.lines.join(' '),
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 20,
               fontWeight: FontWeight.w600,
+              letterSpacing: -0.3,
               height: 1.35,
               color: SettleColors.ink900,
             ),
@@ -313,7 +324,9 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         ),
         const SizedBox(height: 28),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+          padding: const EdgeInsets.symmetric(
+            horizontal: SettleSpacing.screenPadding,
+          ),
           child: SizedBox(
             width: double.infinity,
             child: FilledButton(
@@ -336,6 +349,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
               'Need more? → Reset (15s)',
               style: GoogleFonts.inter(
                 fontSize: 13,
+                letterSpacing: -0.006,
                 color: SettleColors.ink500,
                 decoration: TextDecoration.underline,
               ),
@@ -365,13 +379,12 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: _pulseDuration,
-      vsync: this,
-    )..repeat(reverse: true);
-    _scale = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(duration: _pulseDuration, vsync: this)
+      ..repeat(reverse: true);
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -391,10 +404,7 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
     return AnimatedBuilder(
       animation: _scale,
       builder: (context, child) {
-        return Transform.scale(
-          scale: _scale.value,
-          child: child,
-        );
+        return Transform.scale(scale: _scale.value, child: child);
       },
       child: ring,
     );
@@ -462,10 +472,7 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.transparent,
-                    border: Border.all(
-                      color: SettleColors.ink700,
-                      width: 2,
-                    ),
+                    border: Border.all(color: SettleColors.ink700, width: 2),
                   ),
                 ),
               ),
@@ -513,6 +520,7 @@ class _MomentChoiceCard extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
+                letterSpacing: -0.3,
                 color: SettleColors.ink900,
               ),
             ),
@@ -523,6 +531,7 @@ class _MomentChoiceCard extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w400,
+                letterSpacing: -0.006,
                 color: SettleColors.ink400,
               ),
             ),

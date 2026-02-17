@@ -1053,7 +1053,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: const EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1246,13 +1248,15 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                               Center(
                                 child: SettleTappable(
                                   semanticLabel: 'In the moment? Open Moment',
-                                  onTap: () =>
-                                      context.push('/plan/moment?context=sleep'),
+                                  onTap: () => context.push(
+                                    '/plan/moment?context=sleep',
+                                  ),
                                   child: Text(
                                     'In the moment? → Moment',
                                     style: GoogleFonts.inter(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
+                                      letterSpacing: -0.006,
                                       color: SettleColors.nightAccent
                                           .withValues(alpha: 0.5),
                                       decoration: TextDecoration.underline,
@@ -1268,9 +1272,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                         context.push('/sleep/rhythm'),
                                     style: TextButton.styleFrom(
                                       padding: EdgeInsets.zero,
-                                      minimumSize: Size.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
+                                      minimumSize: const Size(48, 48),
                                     ),
                                     child: Text(
                                       'View rhythm',
@@ -1291,9 +1293,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                         context.push('/sleep/update'),
                                     style: TextButton.styleFrom(
                                       padding: EdgeInsets.zero,
-                                      minimumSize: Size.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
+                                      minimumSize: const Size(48, 48),
                                     ),
                                     child: Text(
                                       'Update rhythm',
@@ -1305,7 +1305,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                 ],
                               ),
-const SizedBox(height: 24),
+                              const SizedBox(height: 24),
                             ],
                           ),
                         ),
@@ -1405,6 +1405,7 @@ class _SleepTonightSceneHeader extends StatelessWidget {
           style: GoogleFonts.fraunces(
             fontSize: 22,
             fontWeight: FontWeight.w400,
+            letterSpacing: -0.5,
             color: SettleColors.nightText,
           ),
         ),
@@ -1415,6 +1416,7 @@ class _SleepTonightSceneHeader extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12.5,
             fontWeight: FontWeight.w400,
+            letterSpacing: -0.006,
             color: SettleColors.nightMuted,
           ),
         ),
@@ -1475,6 +1477,7 @@ class _SleepTonightSituationPicker extends StatelessWidget {
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
+                letterSpacing: -0.006,
                 color: SettleColors.nightAccent.withValues(alpha: 0.5),
                 decoration: TextDecoration.underline,
               ),
@@ -1535,6 +1538,7 @@ class _SleepOptionCard extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
+                      letterSpacing: -0.3,
                       color: SettleColors.nightText,
                     ),
                   ),
@@ -1544,6 +1548,7 @@ class _SleepOptionCard extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w400,
+                      letterSpacing: -0.006,
                       color: SettleColors.nightMuted,
                     ),
                   ),
