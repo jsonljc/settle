@@ -25,7 +25,7 @@ import 'providers/profile_provider.dart';
 import 'router.dart';
 import 'services/event_bus_service.dart';
 import 'services/notification_service.dart';
-import 'theme/settle_theme.dart';
+import 'theme/settle_design_system.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -226,7 +226,9 @@ class _SettleAppState extends ConsumerState<SettleApp>
     return MaterialApp.router(
       title: 'Settle',
       debugShowCheckedModeBanner: false,
-      theme: SettleTheme.dataV3,
+      theme: SettleTheme.light,
+      darkTheme: SettleTheme.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
     );
   }
