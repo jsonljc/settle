@@ -20,11 +20,10 @@ class LibraryHomeScreen extends ConsumerWidget {
     final patterns = ref.watch(patternsProvider);
 
     return Scaffold(
-      body: SettleBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
-            child: Column(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+          child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const ScreenHeader(
@@ -106,7 +105,6 @@ class LibraryHomeScreen extends ConsumerWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }

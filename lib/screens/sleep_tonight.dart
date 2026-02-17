@@ -1042,17 +1042,16 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
         const <String>[];
 
     return Scaffold(
-      body: SettleBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ScreenHeader(
-                  title: 'Tonight',
-                  subtitle: 'One clear next step, right now.',
-                ),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ScreenHeader(
+                title: 'Tonight',
+                subtitle: 'One clear next step, right now.',
+              ),
                 const SizedBox(height: 4),
                 const BehavioralScopeNotice(),
                 const SizedBox(height: 14),
@@ -1305,7 +1304,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 }

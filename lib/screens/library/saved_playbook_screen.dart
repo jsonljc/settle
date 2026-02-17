@@ -21,66 +21,64 @@ class SavedPlaybookScreen extends ConsumerWidget {
     final asyncList = ref.watch(playbookRepairCardsProvider);
 
     return Scaffold(
-      body: SettleBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ScreenHeader(
-                  title: 'My Playbook',
-                  subtitle: 'Saved cards from Reset.',
-                  fallbackRoute: '/library',
-                ),
-                SettleGap.lg(),
-                Expanded(
-                  child: asyncList.when(
-                    data: (list) => list.isEmpty
-                        ? _EmptyState()
-                        : ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: list.length,
-                            itemBuilder: (context, index) {
-                              final entry = list[index];
-                              return _PlaybookListTile(
-                                entry: entry,
-                                onShare: () => _shareCard(entry.repairCard),
-                                onRemove: () => ref
-                                    .read(userCardsProvider.notifier)
-                                    .unsave(entry.userCard.cardId),
-                              );
-                            },
-                          ),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (_, __) => Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: T.space.lg),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'We couldn\'t load your playbook right now.',
-                              style: T.type.body.copyWith(
-                                color: T.pal.textSecondary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SettleGap.lg(),
-                            GlassCta(
-                              label: 'Try again',
-                              onTap: () =>
-                                  ref.invalidate(playbookRepairCardsProvider),
-                            ),
-                          ],
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ScreenHeader(
+                title: 'My Playbook',
+                subtitle: 'Saved cards from Reset.',
+                fallbackRoute: '/library',
+              ),
+              SettleGap.lg(),
+              Expanded(
+                child: asyncList.when(
+                  data: (list) => list.isEmpty
+                      ? _EmptyState()
+                      : ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: list.length,
+                          itemBuilder: (context, index) {
+                            final entry = list[index];
+                            return _PlaybookListTile(
+                              entry: entry,
+                              onShare: () => _shareCard(entry.repairCard),
+                              onRemove: () => ref
+                                  .read(userCardsProvider.notifier)
+                                  .unsave(entry.userCard.cardId),
+                            );
+                          },
                         ),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (_, __) => Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: T.space.lg),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'We couldn\'t load your playbook right now.',
+                            style: T.type.body.copyWith(
+                              color: T.pal.textSecondary,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SettleGap.lg(),
+                          GlassCta(
+                            label: 'Try again',
+                            onTap: () =>
+                                ref.invalidate(playbookRepairCardsProvider),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

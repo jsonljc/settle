@@ -1,25 +1,25 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/moment_script_repository.dart';
 import '../../models/moment_script.dart';
-import '../../theme/settle_tokens.dart';
-import '../../widgets/settle_gap.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/glass_card.dart';
 import '../../widgets/settle_tappable.dart';
 
 /// Moment — the fastest screen in the app.
 ///
-/// Flow: 10-second calm (tap to skip) → Boundary/Connection choice → Script + Close.
-/// Below Close: "Need more? → Reset (15s)" link.
-/// Usable start-to-finish in ≤ 10 seconds.
+/// Reskin: SettleGradients.moment + white blob; breath ring (glass sphere);
+/// calm → choice (Boundary/Connection) → script. Completable in <10s.
 class MomentFlowScreen extends ConsumerStatefulWidget {
   const MomentFlowScreen({super.key, this.contextQuery = 'general'});
 
-  /// Route query: general, sleep, tantrum. Used for Reset link.
   final String contextQuery;
 
   @override
@@ -117,12 +117,9 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: T.pal.focusBackground,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
-          child: _buildBody(),
-        ),
+        child: _buildBody(),
       ),
     );
   }
@@ -139,61 +136,60 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
   }
 
   Widget _buildCalmStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: SettleTappable(
-            semanticLabel: 'Back',
-            onTap: _close,
-            child: Icon(
-              Icons.arrow_back_ios_rounded,
-              size: 20,
-              color: T.pal.textTertiary,
-            ),
-          ),
-        ),
-        Expanded(
-          child: SettleTappable(
-            semanticLabel:
-                '10 second calm. Double tap to skip to script choices.',
-            onTap: _skipCalm,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '10 seconds',
-                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
-                ),
-                SettleGap.xxxl(),
-                _CalmPulse(),
-                SettleGap.xxxl(),
-              ],
-            ),
-          ),
-        ),
-      ],
+    return SettleTappable(
+      semanticLabel: 'Calm. Double tap to skip to choices.',
+      onTap: _skipCalm,
+      child: Column(
+        children: [
+          const SizedBox(height: 24),
+          _buildRingAndText(),
+          const Spacer(),
+          _buildFooter(),
+        ],
+      ),
     );
   }
 
   Widget _buildChoiceStep() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: SettleTappable(
-            semanticLabel: 'Back',
-            onTap: _close,
-            child: Icon(
-              Icons.arrow_back_ios_rounded,
-              size: 20,
-              color: T.pal.textTertiary,
-            ),
+        const SizedBox(height: 24),
+        _buildRingAndText(),
+        const SizedBox(height: 28),
+        Expanded(
+          child: _buildChoiceContent(),
+        ),
+        _buildFooter(),
+      ],
+    );
+  }
+
+  Widget _buildRingAndText() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _MomentBreathRing(),
+        const SizedBox(height: 24),
+        Text(
+          'Place one hand on your chest',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.fraunces(
+            fontSize: 26,
+            fontWeight: FontWeight.w400,
+            letterSpacing: -0.5,
+            color: SettleColors.ink900,
           ),
         ),
-        Expanded(child: _buildChoiceContent()),
+        const SizedBox(height: 8),
+        Text(
+          "You're here now. That's enough.",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            color: SettleColors.ink500.withValues(alpha: 0.6),
+          ),
+        ),
       ],
     );
   }
@@ -203,7 +199,10 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
       return Center(
         child: Text(
           'Loading…',
-          style: T.type.body.copyWith(color: T.pal.textSecondary),
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            color: SettleColors.ink500,
+          ),
         ),
       );
     }
@@ -218,25 +217,77 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
     final boundaryScript = boundary;
     final connectionScript = connection;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SettleGap.xxl(),
-        if (boundaryScript != null)
-          _ScriptTile(
-            label: 'Boundary',
-            script: boundaryScript,
-            onTap: () => _onScriptSelected(boundaryScript),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+      child: Row(
+        children: [
+          if (boundaryScript != null)
+            Expanded(
+              child: _MomentChoiceCard(
+                icon: Icons.square_rounded,
+                iconColor: SettleColors.sage600,
+                title: 'Boundary',
+                subtitle: 'Hold the line',
+                onTap: () => _onScriptSelected(boundaryScript),
+              ),
+            ),
+          if (boundaryScript != null && connectionScript != null)
+            const SizedBox(width: 10),
+          if (connectionScript != null)
+            Expanded(
+              child: _MomentChoiceCard(
+                icon: Icons.favorite_rounded,
+                iconColor: SettleColors.blush600,
+                title: 'Connection',
+                subtitle: 'Come closer',
+                onTap: () => _onScriptSelected(connectionScript),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFooter() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SettleTappable(
+            semanticLabel: 'Close',
+            onTap: _close,
+            child: Text(
+              'Close',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: SettleColors.ink400.withValues(alpha: 0.6),
+              ),
+            ),
           ),
-        if (boundaryScript != null && connectionScript != null) SettleGap.md(),
-        if (connectionScript != null)
-          _ScriptTile(
-            label: 'Connection',
-            script: connectionScript,
-            onTap: () => _onScriptSelected(connectionScript),
+          Text(
+            ' · ',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: SettleColors.ink400.withValues(alpha: 0.6),
+            ),
           ),
-        const Spacer(),
-      ],
+          SettleTappable(
+            semanticLabel: 'Need more? Open Reset',
+            onTap: _openReset,
+            child: Text(
+              'Need more? Reset →',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: SettleColors.ink400.withValues(alpha: 0.6),
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -245,38 +296,47 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
     if (script == null) return const SizedBox.shrink();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          script.lines.join(' '),
-          style: T.type.h2.copyWith(color: T.pal.textPrimary, height: 1.35),
-        ),
-        SettleGap.xxl(),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: _close,
-            style: FilledButton.styleFrom(
-              backgroundColor: T.pal.accent,
-              foregroundColor: T.pal.focusBackground,
-              padding: EdgeInsets.symmetric(
-                vertical: T.space.lg,
-                horizontal: T.space.xl,
-              ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+          child: Text(
+            script.lines.join(' '),
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              height: 1.35,
+              color: SettleColors.ink900,
             ),
-            child: const Text('Close'),
+          ),
+        ),
+        const SizedBox(height: 28),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _close,
+              style: FilledButton.styleFrom(
+                backgroundColor: SettleColors.sage600,
+                foregroundColor: SettleColors.cream,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: const Text('Close'),
+            ),
           ),
         ),
         if (_resetLinkVisible) ...[
-          SettleGap.xl(),
+          const SizedBox(height: 16),
           SettleTappable(
             semanticLabel: 'Need more? Open Reset flow',
             onTap: _openReset,
             child: Text(
               'Need more? → Reset (15s)',
-              style: T.type.caption.copyWith(
-                color: T.pal.textTertiary,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: SettleColors.ink500,
                 decoration: TextDecoration.underline,
               ),
             ),
@@ -287,13 +347,18 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
   }
 }
 
-class _CalmPulse extends StatefulWidget {
+/// Breath ring: 120px glass sphere, specular arc, inner shadows, 32px circle icon, pulse animation.
+class _MomentBreathRing extends StatefulWidget {
   @override
-  State<_CalmPulse> createState() => _CalmPulseState();
+  State<_MomentBreathRing> createState() => _MomentBreathRingState();
 }
 
-class _CalmPulseState extends State<_CalmPulse>
+class _MomentBreathRingState extends State<_MomentBreathRing>
     with SingleTickerProviderStateMixin {
+  static const double _size = 120;
+  static const double _blurSigma = 32;
+  static const Duration _pulseDuration = Duration(milliseconds: 4500);
+
   late AnimationController _controller;
   late Animation<double> _scale;
 
@@ -301,13 +366,12 @@ class _CalmPulseState extends State<_CalmPulse>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: _pulseDuration,
       vsync: this,
     )..repeat(reverse: true);
-    _scale = Tween<double>(
-      begin: 0.7,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _scale = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
   }
 
   @override
@@ -318,71 +382,149 @@ class _CalmPulseState extends State<_CalmPulse>
 
   @override
   Widget build(BuildContext context) {
-    if (T.reduceMotion(context)) {
-      return Container(
-        width: 120,
-        height: 120,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: T.pal.textTertiary.withValues(alpha: 0.15),
-        ),
-      );
+    final reduceMotion = MediaQuery.of(context).disableAnimations;
+    final ring = _buildRingContent();
+
+    if (reduceMotion) {
+      return ring;
     }
     return AnimatedBuilder(
       animation: _scale,
       builder: (context, child) {
         return Transform.scale(
           scale: _scale.value,
-          child: Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: T.pal.textTertiary.withValues(alpha: 0.15),
-            ),
-          ),
+          child: child,
         );
       },
+      child: ring,
+    );
+  }
+
+  Widget _buildRingContent() {
+    return SizedBox(
+      width: _size,
+      height: _size,
+      child: ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: _blurSigma, sigmaY: _blurSigma),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Base: white 22%, border 0.5 white 40%
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0x38FFFFFF), // white 22%
+                  border: Border.all(
+                    color: const Color(0x66FFFFFF), // white 40%
+                    width: 0.5,
+                  ),
+                ),
+              ),
+              // Inner shadow overlay: top white 50%, bottom black 3%
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0x80FFFFFF), // white 50%
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.03),
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
+                  ),
+                ),
+              ),
+              // Specular arc: top 45% of circle, white 40% → transparent
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  height: _size * 0.45,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        const Color(0x66FFFFFF), // white 40%
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              // Circle icon inside: 32px stroke ink700
+              Center(
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: SettleColors.ink700,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _ScriptTile extends StatelessWidget {
-  const _ScriptTile({
-    required this.label,
-    required this.script,
+/// Choice card: icon 26px, title 14 w600, subtitle 10.5 ink400. GlassCard lightStrong, padding 20 top 16 bottom.
+class _MomentChoiceCard extends StatelessWidget {
+  const _MomentChoiceCard({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
     required this.onTap,
   });
 
-  final String label;
-  final MomentScript script;
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final firstLine = script.lines.isNotEmpty ? script.lines.first : '';
     return SettleTappable(
-      semanticLabel: '$label: $firstLine',
       onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(
-          vertical: T.space.xl,
-          horizontal: T.space.lg,
-        ),
-        decoration: BoxDecoration(
-          color: T.glass.fill.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(T.radius.md),
-          border: Border.all(color: T.glass.border, width: 1),
-        ),
+      semanticLabel: '$title. $subtitle',
+      child: GlassCard(
+        variant: GlassCardVariant.lightStrong,
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(label, style: T.type.h3.copyWith(color: T.pal.textPrimary)),
-            SettleGap.sm(),
+            Icon(icon, size: 26, color: iconColor),
+            const SizedBox(height: 10),
             Text(
-              firstLine,
-              style: T.type.body.copyWith(color: T.pal.textSecondary),
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: SettleColors.ink900,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w400,
+                color: SettleColors.ink400,
+              ),
             ),
           ],
         ),

@@ -241,7 +241,7 @@ class SettleTheme {
     final textTheme = _buildLightTextTheme(base.textTheme);
 
     return base.copyWith(
-      scaffoldBackgroundColor: SettleColors.cream,
+      scaffoldBackgroundColor: Colors.transparent,
       canvasColor: SettleColors.stone50,
       colorScheme: ColorScheme.light(
         primary: SettleColors.sage600,
@@ -310,7 +310,7 @@ class SettleTheme {
     final textTheme = _buildDarkTextTheme(base.textTheme);
 
     return base.copyWith(
-      scaffoldBackgroundColor: SettleColors.night950,
+      scaffoldBackgroundColor: Colors.transparent,
       canvasColor: SettleColors.night900,
       colorScheme: ColorScheme.dark(
         primary: SettleColors.nightAccent,

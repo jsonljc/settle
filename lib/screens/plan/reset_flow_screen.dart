@@ -50,22 +50,20 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     final notifier = ref.read(resetFlowProvider.notifier);
 
     return Scaffold(
-      body: SettleBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const ScreenHeader(title: 'Reset', fallbackRoute: '/plan'),
-                SettleGap.xl(),
-                if (state.phase == ResetFlowPhase.chooseState) ...[
-                  _buildStatePicker(context, notifier),
-                ] else ...[
-                  _buildCardView(context, state, notifier),
-                ],
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const ScreenHeader(title: 'Reset', fallbackRoute: '/plan'),
+              SettleGap.xl(),
+              if (state.phase == ResetFlowPhase.chooseState) ...[
+                _buildStatePicker(context, notifier),
+              ] else ...[
+                _buildCardView(context, state, notifier),
               ],
-            ),
+            ],
           ),
         ),
       ),
