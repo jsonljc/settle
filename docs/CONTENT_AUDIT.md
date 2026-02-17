@@ -1,19 +1,24 @@
-# Content Audit: Repair Cards + Moment Scripts
+# Content Audit: Card Seed + Moment Scripts
 
-Audit date: 2026-02-17  
+Audit date: 2026-02-17
+
 Files audited:
 - `/Users/jasonli/settle/assets/guidance/repair_cards_seed.json`
 - `/Users/jasonli/settle/assets/guidance/moment_scripts.json`
 
-## 1) Required fields + body <= 3 sentences
+Method notes:
+- Sentence counts are computed by splitting on sentence-ending punctuation (`.`, `!`, `?`) and counting non-empty text segments.
+- Forbidden tone scan is case-insensitive and normalizes curly apostrophes/quotes before matching.
 
-Status: **PARTIAL FAIL**
+## 1) Required fields and body <= 3 sentences
+
+Status: **FAIL**
 
 - Cards audited: **15**
 - Required fields checked: `id`, `title`, `body`, `context`, `state`, `tags`, `warmthWeight`, `structureWeight`
-- Missing required fields: **0**
-- Body sentence limit pass (`<= 3`): **6/15**
-- Body sentence limit fail (`> 3`): **9/15**
+- Cards missing required fields: **0**
+- Cards with body <= 3 sentences: **6/15**
+- Cards with body > 3 sentences: **9/15**
 
 Cards over sentence limit:
 - `gen_1` (4)
@@ -26,71 +31,46 @@ Cards over sentence limit:
 - `tantrum_child_2` (4)
 - `tantrum_child_3` (4)
 
-## 2) Context x state coverage (>=2 each combo)
+## 2) Context/state coverage (>= 2 cards per context x state)
 
 Status: **FAIL**
 
-Observed matrix:
-- `general x self` = 2
-- `general x child` = 3
-- `sleep x self` = 0
-- `sleep x child` = 5
-- `tantrum x self` = 2
-- `tantrum x child` = 3
+Coverage matrix:
+- `general x self` = 2 (PASS)
+- `general x child` = 3 (PASS)
+- `sleep x self` = 0 (FAIL)
+- `sleep x child` = 5 (PASS)
+- `tantrum x self` = 2 (PASS)
+- `tantrum x child` = 3 (PASS)
 
-Coverage gap:
-- `sleep x self` has **0** cards (requires >=2)
+Gap:
+- `sleep x self` needs at least **2** cards (currently **0**).
 
 ## 3) Forbidden tone words in card text
 
 Status: **PASS**
 
-Forbidden phrases scanned in `title`, `body`, `tags`:
-- `"urgent"`
-- `"failed"`
-- `"streak"`
-- `"you need to"`
-- `"don't forget"`
-- `"we miss you"`
-- `"hurry"`
+Forbidden phrases scanned in card `title` + `body`:
+- `urgent`
+- `failed`
+- `streak`
+- `you need to`
+- `don't forget`
+- `we miss you`
+- `hurry`
 
 Matches found: **0**
+
+### Tone fixes applied to seed file
+
+- Required direct string fixes: **none**
+- Updated file: `/Users/jasonli/settle/assets/guidance/repair_cards_seed.json`
+- Changes made: **none**
 
 ## 4) Moment scripts <= 2 sentences each
 
 Status: **FAIL**
 
-Moment scripts found: **2** (`boundary`, `connection`)  
-Sentence count per script variant (combined lines):
-- `boundary`: 4 sentences
-- `connection`: 4 sentences
-
-Both exceed the <=2 sentence requirement.
-
-## Manual QA
-
-### Repository checks (runtime)
-
-Command: `flutter test test/manual_content_qa_tmp_test.dart`  
-Result: **PASS**
-
-Validated:
-- `CardRepository.instance.loadAll()` returns **15**
-- `filter(context: RepairCardContext.sleep, state: RepairCardState.child)` returns **5**, all `sleep+child`
-- `pickOne(context: RepairCardContext.tantrum)` returns tantrum cards and varies across samples
-- `MomentScriptRepository.instance.loadAll()` returns **2**
-- `getByVariant(MomentScriptVariant.connection)` returns non-null connection script
-
-### Build check
-
-Command: `flutter build apk --debug`  
-Result: **FAIL**
-
-Errors reported:
-- Android NDK mismatch (`26.3.11579264` configured; plugins require `27.0.12077973`)
-- Core library desugaring required by `flutter_local_notifications`
-
-## Fixes Applied
-
-- Tone violations in seed file: **none found**
-- String changes made in `/Users/jasonli/settle/assets/guidance/repair_cards_seed.json`: **none**
+Script sentence counts (per variant, combined lines):
+- `boundary` = 4 (FAIL)
+- `connection` = 4 (FAIL)

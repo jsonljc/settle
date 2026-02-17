@@ -157,6 +157,17 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                   fallbackRoute: '/plan',
                   showBackButton: false,
                 ),
+                SizedBox(height: T.space.sm),
+                GestureDetector(
+                  onTap: () => context.push('/plan/moment?context=general'),
+                  child: Text(
+                    'Just need 10 seconds',
+                    style: T.type.caption.copyWith(
+                      color: T.pal.textTertiary,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
                 SizedBox(height: T.space.lg),
                 Expanded(
                   child: SingleChildScrollView(

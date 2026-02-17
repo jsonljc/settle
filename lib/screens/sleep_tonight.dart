@@ -1149,6 +1149,19 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                 ),
                               ],
+                              const SizedBox(height: 12),
+                              GestureDetector(
+                                onTap: () => context.push(
+                                  '/plan/moment?context=sleep',
+                                ),
+                                child: Text(
+                                  'Just need 10 seconds',
+                                  style: T.type.caption.copyWith(
+                                    color: T.pal.textTertiary,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: 24),
                             ],
                           ),

@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../data/moment_script_repository.dart';
 import '../../models/moment_script.dart';
-import '../../theme/reduce_motion.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
@@ -148,7 +147,8 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
       children: [
         Align(
           alignment: Alignment.centerLeft,
-          child: GestureDetector(
+          child: SettleTappable(
+            semanticLabel: 'Back',
             onTap: _close,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -161,24 +161,52 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         ),
         Expanded(
           child: SettleTappable(
-      semanticLabel: '10 second calm. Double tap to skip to script choices.',
-      onTap: _skipCalm,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '10 seconds',
-            style: T.type.caption.copyWith(color: T.pal.textTertiary),
+            semanticLabel: '10 second calm. Double tap to skip to script choices.',
+            onTap: _skipCalm,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '10 seconds',
+                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                ),
+                SettleGap.xxxl(),
+                _CalmPulse(),
+                SettleGap.xxxl(),
+              ],
+            ),
           ),
-          SettleGap.xxxl(),
-          _CalmPulse(),
-          SettleGap.xxxl(),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildChoiceStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: SettleTappable(
+            semanticLabel: 'Back',
+            onTap: _close,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Text(
+                'back',
+                style: T.type.caption.copyWith(color: T.pal.textTertiary),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: _buildChoiceContent(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChoiceContent() {
     if (_scriptsLoading || _scripts.isEmpty) {
       return Center(
         child: Text(
@@ -188,14 +216,12 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
       );
     }
 
-    final boundary = _scripts.cast<MomentScript?>().firstWhere(
-          (s) => s?.variant == MomentScriptVariant.boundary,
-          orElse: () => null,
-        );
-    final connection = _scripts.cast<MomentScript?>().firstWhere(
-          (s) => s?.variant == MomentScriptVariant.connection,
-          orElse: () => null,
-        );
+    MomentScript? boundary;
+    MomentScript? connection;
+    for (final s in _scripts) {
+      if (s.variant == MomentScriptVariant.boundary) boundary ??= s;
+      if (s.variant == MomentScriptVariant.connection) connection ??= s;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -204,15 +230,15 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         if (boundary != null)
           _ScriptTile(
             label: 'Boundary',
-            script: boundary,
-            onTap: () => _onScriptSelected(boundary),
+            script: boundary!,
+            onTap: () => _onScriptSelected(boundary!),
           ),
         if (boundary != null && connection != null) SettleGap.md(),
         if (connection != null)
           _ScriptTile(
             label: 'Connection',
-            script: connection,
-            onTap: () => _onScriptSelected(connection),
+            script: connection!,
+            onTap: () => _onScriptSelected(connection!),
           ),
         const Spacer(),
       ],
@@ -304,7 +330,7 @@ class _CalmPulseState extends State<_CalmPulse>
         height: 120,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: T.pal.textTertiary.withOpacity(0.15),
+          color: T.pal.textTertiary.withValues(alpha: 0.15),
         ),
       );
     }
@@ -318,7 +344,7 @@ class _CalmPulseState extends State<_CalmPulse>
             height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: T.pal.textTertiary.withOpacity(0.15),
+              color: T.pal.textTertiary.withValues(alpha: 0.15),
             ),
           ),
         );
@@ -351,7 +377,7 @@ class _ScriptTile extends StatelessWidget {
           horizontal: T.space.lg,
         ),
         decoration: BoxDecoration(
-          color: T.glass.fill.withOpacity(0.5),
+          color: T.glass.fill.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(T.radius.md),
           border: Border.all(color: T.glass.border, width: 1),
         ),
