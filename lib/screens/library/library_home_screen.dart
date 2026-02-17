@@ -274,7 +274,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Something went wrong.',
+                  'We couldn\'t load your playbook right now.',
                   style: T.type.body.copyWith(
                     color: T.pal.textSecondary,
                   ),

@@ -13,12 +13,9 @@ import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
 
 /// View a single playbook (repair) card — same display as Reset card view.
-/// Share (text-only) and Remove (single tap, no modal).
+/// Send (text-only) and Remove (single tap, no modal).
 class PlaybookCardDetailScreen extends ConsumerWidget {
-  const PlaybookCardDetailScreen({
-    super.key,
-    required this.cardId,
-  });
+  const PlaybookCardDetailScreen({super.key, required this.cardId});
 
   final String cardId;
 
@@ -54,9 +51,12 @@ class PlaybookCardDetailScreen extends ConsumerWidget {
                       SettleGap.xl(),
                       Text(
                         'This card is no longer available.',
-                        style: T.type.body.copyWith(
-                          color: T.pal.textSecondary,
-                        ),
+                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                      ),
+                      SettleGap.lg(),
+                      GlassCta(
+                        label: 'Back to Playbook',
+                        onTap: () => context.go('/library/saved'),
                       ),
                     ],
                   ),
@@ -75,8 +75,6 @@ class _Content extends ConsumerWidget {
   const _Content({required this.card});
 
   final RepairCard card;
-
-  static const String _shareSuffix = '\n— from Settle';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -127,10 +125,7 @@ class _Content extends ConsumerWidget {
                           ),
                         ),
                         SettleGap.xxl(),
-                        GlassCta(
-                          label: 'Share',
-                          onTap: () => _share(context),
-                        ),
+                        GlassCta(label: 'Send', onTap: () => _share(context)),
                         SettleGap.lg(),
                         Center(
                           child: SettleTappable(
@@ -162,7 +157,7 @@ class _Content extends ConsumerWidget {
   }
 
   void _share(BuildContext context) {
-    final text = '${card.title}\n${card.body}$_shareSuffix';
+    final text = 'Repair words to use right now:\n${card.title}\n${card.body}';
     Share.share(text);
   }
 

@@ -67,7 +67,8 @@ Future<void> main() async {
     ..registerAdapter(FamilyMemberAdapter())
     ..registerAdapter(ResetEventAdapter());
 
-  await Future.wait([
+  // Open storage boxes; continue on partial failure so app can show calm fallback.
+  final boxes = <Future<void>>[
     Hive.openBox<UserCard>('user_cards'),
     Hive.openBox<UsageEvent>('usage_events'),
     Hive.openBox<RegulationEvent>('regulation_events'),
@@ -79,7 +80,14 @@ Future<void> main() async {
     Hive.openBox<dynamic>('release_rollout_v1'),
     Hive.openBox<dynamic>('weekly_reflection_meta'),
     Hive.openBox<dynamic>('spine_store'),
-  ]);
+  ];
+  for (final f in boxes) {
+    try {
+      await f;
+    } catch (_) {
+      // One box failed; others may have opened. App continues with partial storage.
+    }
+  }
   _ensureSpineSchemaVersion();
   refreshRouterFromRollout();
 
@@ -112,12 +120,13 @@ Future<void> main() async {
 
 void _ensureSpineSchemaVersion() {
   try {
+    if (!Hive.isBoxOpen('spine_store')) return;
     final box = Hive.box<dynamic>('spine_store');
     if (box.get('schema_version') == null) {
       box.put('schema_version', spineSchemaVersion);
     }
   } catch (_) {
-    // Graceful fallback: app still works
+    // Graceful fallback: app still works with default schema
   }
 }
 

@@ -52,7 +52,7 @@ class _ReleaseOpsChecklistScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(successMessage),
-          duration: const Duration(milliseconds: 900),
+          duration: const Duration(milliseconds: 800),
         ),
       );
     } catch (_) {

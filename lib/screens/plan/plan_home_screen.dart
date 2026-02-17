@@ -55,7 +55,7 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Saved to playbook'),
-        duration: const Duration(milliseconds: 1100),
+        duration: const Duration(milliseconds: 800),
       ),
     );
   }
@@ -108,7 +108,7 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Script copied to clipboard'),
-          duration: Duration(milliseconds: 1500),
+          duration: const Duration(milliseconds: 800),
         ),
       );
     }

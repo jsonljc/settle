@@ -209,7 +209,7 @@ class _Pulse extends StatelessWidget {
         .scale(
           begin: const Offset(0.86, 0.86),
           end: const Offset(1.0, 1.0),
-          duration: const Duration(milliseconds: 3600),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
   }

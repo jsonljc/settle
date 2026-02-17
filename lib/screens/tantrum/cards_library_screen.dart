@@ -8,6 +8,7 @@ import '../../tantrum/providers/tantrum_module_providers.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
+import '../../widgets/settle_gap.dart';
 import '../../widgets/tantrum_sub_nav.dart';
 
 /// DECK: saved cards, pinned cards, favorites, and purchased packs.
@@ -189,9 +190,25 @@ class CardsLibraryScreen extends ConsumerWidget {
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
                     error: (_, __) => Center(
-                      child: Text(
-                        'Could not load deck.',
-                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'We couldn\'t load your deck right now.',
+                              style: T.type.body.copyWith(
+                                color: T.pal.textSecondary,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SettleGap.lg(),
+                            GlassCta(
+                              label: 'Back to Incident',
+                              onTap: () => context.go('/tantrum'),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

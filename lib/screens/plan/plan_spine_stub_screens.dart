@@ -25,7 +25,7 @@ class ResetStubScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Reset flow placeholder.',
+                  'Open the full Reset flow from Plan.',
                   style: T.type.body.copyWith(color: T.pal.textSecondary),
                 ),
               ],
@@ -57,7 +57,7 @@ class MomentStubScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Moment flow placeholder.',
+                  'Open the full Moment flow from Plan.',
                   style: T.type.body.copyWith(color: T.pal.textSecondary),
                 ),
               ],

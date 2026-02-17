@@ -274,7 +274,8 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         ),
         if (_resetLinkVisible) ...[
           SettleGap.xl(),
-          GestureDetector(
+          SettleTappable(
+            semanticLabel: 'Need more? Open Reset flow',
             onTap: _openReset,
             child: Text(
               'Need more? → Reset (15s)',

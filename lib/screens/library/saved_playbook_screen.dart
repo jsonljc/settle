@@ -12,7 +12,7 @@ import '../../widgets/screen_header.dart';
 import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
 
-/// Playbook v1: list saved repair cards (most recent first), view detail, remove, share.
+/// Playbook v1: list saved repair cards (most recent first), view detail, remove, send.
 class SavedPlaybookScreen extends ConsumerWidget {
   const SavedPlaybookScreen({super.key});
 
@@ -52,14 +52,28 @@ class SavedPlaybookScreen extends ConsumerWidget {
                               );
                             },
                           ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (_, __) => Center(
-                      child: Text(
-                        'Something went wrong.',
-                        style: T.type.body.copyWith(
-                          color: T.pal.textSecondary,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: T.space.lg),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'We couldn\'t load your playbook right now.',
+                              style: T.type.body.copyWith(
+                                color: T.pal.textSecondary,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SettleGap.lg(),
+                            GlassCta(
+                              label: 'Try again',
+                              onTap: () =>
+                                  ref.invalidate(playbookRepairCardsProvider),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -74,7 +88,7 @@ class SavedPlaybookScreen extends ConsumerWidget {
   }
 
   void _shareCard(RepairCard card) {
-    final text = '${card.title}\n${card.body}\n— from Settle';
+    final text = 'Repair words to use right now:\n${card.title}\n${card.body}';
     Share.share(text);
   }
 }
@@ -137,15 +151,13 @@ class _PlaybookListTile extends StatelessWidget {
               Row(
                 children: [
                   SettleTappable(
-                    semanticLabel: 'Share card',
+                    semanticLabel: 'Send card',
                     onTap: onShare,
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: T.space.xs),
                       child: Text(
-                        'Share',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.accent,
-                        ),
+                        'Send',
+                        style: T.type.caption.copyWith(color: T.pal.accent),
                       ),
                     ),
                   ),
