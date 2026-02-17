@@ -150,12 +150,10 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
           child: SettleTappable(
             semanticLabel: 'Back',
             onTap: _close,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Text(
-                'back',
-                style: T.type.caption.copyWith(color: T.pal.textTertiary),
-              ),
+            child: Icon(
+              Icons.arrow_back_ios_rounded,
+              size: 20,
+              color: T.pal.textTertiary,
             ),
           ),
         ),
@@ -190,12 +188,10 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
           child: SettleTappable(
             semanticLabel: 'Back',
             onTap: _close,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Text(
-                'back',
-                style: T.type.caption.copyWith(color: T.pal.textTertiary),
-              ),
+            child: Icon(
+              Icons.arrow_back_ios_rounded,
+              size: 20,
+              color: T.pal.textTertiary,
             ),
           ),
         ),
