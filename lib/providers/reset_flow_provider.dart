@@ -115,7 +115,8 @@ class ResetFlowNotifier extends StateNotifier<ResetFlowState> {
         chosenState: state.chosenState,
         currentCard: state.currentCard,
         cardIdsSeen: state.cardIdsSeen,
-        anotherCount: state.anotherCount,
+        // Hide "Another" once no alternate card is available.
+        anotherCount: ResetFlowState.maxAnother,
         loading: false,
       );
       return;

@@ -208,7 +208,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
               ),
             ),
             SettleGap.xxl(),
-            GlassCta(label: 'Share', onTap: () => _share(card)),
+            GlassCta(label: 'Send', onTap: () => _share(card)),
             SettleGap.lg(),
             GlassCta(label: 'Keep', onTap: () => _keep(notifier, card.id)),
             SettleGap.lg(),
@@ -268,7 +268,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
   }
 
   void _share(RepairCard card) {
-    final text = 'Try this:\n${card.title}\n${card.body}';
+    final text = 'Repair words to use right now:\n${card.title}\n${card.body}';
     Share.share(text);
   }
 

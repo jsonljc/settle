@@ -408,7 +408,7 @@ class SleepGuidanceService {
       'last_nap_duration_minutes': lastNapDurationMinutes,
       'last_nap_slot_id': lastNapSlotId,
       'total_day_sleep_minutes_today': totalDaySleepMinutesToday,
-      'all_naps_failed_today': allNapsFailedToday,
+      'all_naps_no_landing_today': allNapsFailedToday,
       'micro_nap_feasible': microNapFeasible,
       'minutes_until_bedtime': minutesUntilBedtime,
       'early_wake_pattern': splitNightRecent || earlyWakeToday,

@@ -468,7 +468,9 @@ class _NudgeSettingsSection extends ConsumerWidget {
             label: 'Predictable moment (e.g. before bedtime)',
             value: settings.predictableEnabled,
             onChanged: (v) async {
-              await ref.read(nudgeSettingsProvider.notifier).setPredictableEnabled(v);
+              await ref
+                  .read(nudgeSettingsProvider.notifier)
+                  .setPredictableEnabled(v);
               await _refreshScheduler(ref);
             },
           ),
@@ -477,7 +479,9 @@ class _NudgeSettingsSection extends ConsumerWidget {
             label: 'Pattern-based (from your usage)',
             value: settings.patternEnabled,
             onChanged: (v) async {
-              await ref.read(nudgeSettingsProvider.notifier).setPatternEnabled(v);
+              await ref
+                  .read(nudgeSettingsProvider.notifier)
+                  .setPatternEnabled(v);
               await _refreshScheduler(ref);
             },
           ),
@@ -486,7 +490,9 @@ class _NudgeSettingsSection extends ConsumerWidget {
             label: 'Content (age-based tips)',
             value: settings.contentEnabled,
             onChanged: (v) async {
-              await ref.read(nudgeSettingsProvider.notifier).setContentEnabled(v);
+              await ref
+                  .read(nudgeSettingsProvider.notifier)
+                  .setContentEnabled(v);
               await _refreshScheduler(ref);
             },
           ),
@@ -521,7 +527,9 @@ class _NudgeSettingsSection extends ConsumerWidget {
                 label: 'Minimal',
                 selected: settings.frequency == NudgeFrequency.minimal,
                 onTap: () async {
-                  await ref.read(nudgeSettingsProvider.notifier).setFrequency(NudgeFrequency.minimal);
+                  await ref
+                      .read(nudgeSettingsProvider.notifier)
+                      .setFrequency(NudgeFrequency.minimal);
                   await _refreshScheduler(ref);
                 },
               ),
@@ -530,7 +538,9 @@ class _NudgeSettingsSection extends ConsumerWidget {
                 label: 'Smart',
                 selected: settings.frequency == NudgeFrequency.smart,
                 onTap: () async {
-                  await ref.read(nudgeSettingsProvider.notifier).setFrequency(NudgeFrequency.smart);
+                  await ref
+                      .read(nudgeSettingsProvider.notifier)
+                      .setFrequency(NudgeFrequency.smart);
                   await _refreshScheduler(ref);
                 },
               ),
@@ -539,7 +549,9 @@ class _NudgeSettingsSection extends ConsumerWidget {
                 label: 'More',
                 selected: settings.frequency == NudgeFrequency.more,
                 onTap: () async {
-                  await ref.read(nudgeSettingsProvider.notifier).setFrequency(NudgeFrequency.more);
+                  await ref
+                      .read(nudgeSettingsProvider.notifier)
+                      .setFrequency(NudgeFrequency.more);
                   await _refreshScheduler(ref);
                 },
               ),
@@ -561,7 +573,7 @@ class _NudgeSettingsSection extends ConsumerWidget {
     return switch (f) {
       NudgeFrequency.minimal => '~1 per week',
       NudgeFrequency.smart => '2–3 per week',
-      NudgeFrequency.more => 'Daily when relevant',
+      NudgeFrequency.more => 'Up to 3 per week',
     };
   }
 }

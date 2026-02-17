@@ -254,8 +254,8 @@ class NotificationService {
     final fireAt = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 2));
     await _plugin.zonedSchedule(
       _Ids.scheduleDriftPrompt,
-      'Schedule drift detected',
-      'Rhythm shifted for $babyName. Recalculate when ready.',
+      'Rhythm check-in',
+      'Rhythm shifted for $babyName. Update tonight\'s plan when ready.',
       fireAt,
       NotificationDetails(
         android: AndroidNotificationDetails(

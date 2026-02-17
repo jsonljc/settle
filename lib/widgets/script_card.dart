@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_tokens.dart';
 import 'settle_disclosure.dart';
+import 'settle_gap.dart';
 import 'settle_modal_sheet.dart';
 
 enum ScriptCardContext { plan, pocket, onboarding, detail, crisis }
@@ -124,17 +125,17 @@ class _ScriptCardState extends State<ScriptCard> {
                   widget.onSave?.call();
                 },
               ),
-              const SizedBox(height: 8),
+              SettleGap.sm(),
             ],
             if (widget.onShare != null) ...[
               GlassPill(
-                label: 'Share with partner',
+                label: 'Send to partner',
                 onTap: () {
                   Navigator.of(context).pop();
                   widget.onShare?.call();
                 },
               ),
-              const SizedBox(height: 8),
+              SettleGap.sm(),
             ],
             if (widget.onLog != null) ...[
               GlassPill(
@@ -144,7 +145,7 @@ class _ScriptCardState extends State<ScriptCard> {
                   widget.onLog?.call();
                 },
               ),
-              const SizedBox(height: 8),
+              SettleGap.sm(),
             ],
             if (widget.onWhy != null)
               GlassPill(
@@ -188,7 +189,7 @@ class _ScriptCardState extends State<ScriptCard> {
           ),
           if (_stage == ScriptCardStage.summary && !_isCrisisLike) ...[
             _LineBlock(label: 'Prevent', text: widget.prevent, bold: true),
-            const SizedBox(height: 8),
+            SettleGap.sm(),
             GestureDetector(
               onTap: () => _setStage(ScriptCardStage.action),
               child: Text(
@@ -224,7 +225,7 @@ class _ScriptCardState extends State<ScriptCard> {
                 title: 'Plan for next time',
                 subtitle: 'Optional prevention cue',
                 children: [
-                  const SizedBox(height: 8),
+                  SettleGap.sm(),
                   Text(
                     widget.prevent,
                     style: T.type.body.copyWith(color: T.pal.textSecondary),
@@ -237,7 +238,7 @@ class _ScriptCardState extends State<ScriptCard> {
               SettleDisclosure(
                 title: 'If escalates',
                 children: [
-                  const SizedBox(height: 8),
+                  SettleGap.sm(),
                   Text(
                     escalates,
                     style: T.type.body.copyWith(color: T.pal.textSecondary),
@@ -246,7 +247,7 @@ class _ScriptCardState extends State<ScriptCard> {
               ),
             ],
           ],
-          const SizedBox(height: 12),
+          SettleGap.md(),
           GlassCta(
             label: _resolvedPrimaryLabel(),
             onTap: _onPrimaryPressed,

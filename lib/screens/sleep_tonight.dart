@@ -617,19 +617,23 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
 
   void _shareSleepPlan(Map<String, dynamic> plan, Approach approach) {
     const maxSteps = 3;
-    final allSteps = (plan['steps'] as List?)?.cast<Map<String, dynamic>>() ?? [];
-    final steps =
-        allSteps.length > maxSteps ? allSteps.sublist(0, maxSteps) : allSteps;
+    final allSteps =
+        (plan['steps'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+    final steps = allSteps.length > maxSteps
+        ? allSteps.sublist(0, maxSteps)
+        : allSteps;
     final current = steps.isEmpty
         ? 0
         : (plan['current_step'] as int? ?? 0).clamp(0, steps.length - 1);
-    final currentStep =
-        steps.isEmpty ? <String, dynamic>{} : Map<String, dynamic>.from(steps[current]);
+    final currentStep = steps.isEmpty
+        ? <String, dynamic>{}
+        : Map<String, dynamic>.from(steps[current]);
     final stepMinutes = (currentStep['minutes'] as int?) ?? 3;
     String singleLine(String? text, String fallback) {
       final compact = (text ?? '').replaceAll('\n', ' ').trim();
       return compact.isEmpty ? fallback : compact;
     }
+
     final doNow = singleLine(
       currentStep['script']?.toString(),
       'Keep your response calm and consistent.',
@@ -650,7 +654,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
       'If still crying after $stepMinutes min: $ifStill',
       'Stop rule: $stopRule',
     ].join('\n');
-    final text = "Try this:\nTonight's sleep plan\n$body";
+    final text = "Tonight's sleep plan to use right now:\n$body";
     Share.share(text);
   }
 
@@ -709,7 +713,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 onShare();
                               },
                               icon: const Icon(Icons.share_outlined, size: 18),
-                              label: const Text('Share plan'),
+                              label: const Text('Send plan'),
                             ),
                             const SizedBox(height: 12),
                           ],
@@ -1174,25 +1178,28 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                     }
                                   },
                                   onSaveToPlaybook: () async {
-                                    final triggerType = _scenario ==
-                                            'bedtime_protest'
+                                    final triggerType =
+                                        _scenario == 'bedtime_protest'
                                         ? 'bedtime_battles'
                                         : 'bedtime_battles';
                                     final card = await CardContentService
                                         .instance
                                         .selectBestCard(
-                                            triggerType: triggerType);
+                                          triggerType: triggerType,
+                                        );
                                     if (card != null && context.mounted) {
                                       await ref
                                           .read(userCardsProvider.notifier)
                                           .save(card.id);
                                       if (context.mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
                                           const SnackBar(
                                             content: Text('Saved to playbook'),
                                             duration: Duration(
-                                                milliseconds: 1100),
+                                              milliseconds: 1100,
+                                            ),
                                           ),
                                         );
                                         ref
@@ -1202,7 +1209,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                       }
                                     }
                                   },
-                                  onShare: () => _shareSleepPlan(plan, approach),
+                                  onShare: () =>
+                                      _shareSleepPlan(plan, approach),
                                   onMoreOptions: () => _showMoreOptionsSheet(
                                     childId: childId,
                                     state: state,
@@ -1233,9 +1241,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                               ],
                               const SizedBox(height: 12),
                               GestureDetector(
-                                onTap: () => context.push(
-                                  '/plan/moment?context=sleep',
-                                ),
+                                onTap: () =>
+                                    context.push('/plan/moment?context=sleep'),
                                 child: Text(
                                   'Just need 10 seconds',
                                   style: T.type.caption.copyWith(
@@ -1266,8 +1273,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                   Text(
                                     ' · ',
-                                    style: T.type.caption
-                                        .copyWith(color: T.pal.textTertiary),
+                                    style: T.type.caption.copyWith(
+                                      color: T.pal.textTertiary,
+                                    ),
                                   ),
                                   TextButton(
                                     onPressed: () =>
@@ -1331,8 +1339,7 @@ class _SituationPicker extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           GestureDetector(
-            onTap: () =>
-                context.push('/plan/moment?context=sleep'),
+            onTap: () => context.push('/plan/moment?context=sleep'),
             child: Text(
               'In the moment? → Moment',
               style: T.type.caption.copyWith(
@@ -1469,11 +1476,7 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
             ),
             if (onShare != null) ...[
               const SizedBox(height: 8),
-              GlassCta(
-                label: 'Share',
-                onTap: onShare!,
-                compact: true,
-              ),
+              GlassCta(label: 'Send', onTap: onShare!, compact: true),
             ],
           ] else
             GlassCta(label: 'Next step', onTap: onNextStep),
@@ -1487,4 +1490,3 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
     );
   }
 }
-

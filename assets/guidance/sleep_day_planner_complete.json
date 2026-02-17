@@ -68,7 +68,7 @@
       "nap_rescue_daycare",
       "bedtime_rescue_late_nap",
       "bridge_micro_nap",
-      "all_naps_failed",
+      "all_naps_no_landing",
       "early_nap_wake",
       "nap_extension_attempt"
     ],
@@ -120,7 +120,7 @@
       "long_naps_recent",
       "minutes_until_bedtime",
       "micro_nap_feasible",
-      "all_naps_failed_today",
+      "all_naps_no_landing_today",
       "nap_transition_in_progress",
       "schedule_consistency_score"
     ],
@@ -717,11 +717,11 @@
       "priority": 15,
       "when": {
         "allOf": [
-          { "metric": "all_naps_failed_today", "op": "eq", "value": true },
+          { "metric": "all_naps_no_landing_today", "op": "eq", "value": true },
           { "metric": "overtired_signs_today", "op": "eq", "value": true }
         ]
       },
-      "rescueProtocolId": "all_naps_failed",
+      "rescueProtocolId": "all_naps_no_landing",
       "actions": [
         { "type": "shift_bedtime_minutes", "minutesValue": -60 }
       ],
@@ -1052,16 +1052,16 @@
       ]
     },
     {
-      "id": "all_naps_failed",
-      "labelKey": "day.rescue.all_failed",
+      "id": "all_naps_no_landing",
+      "labelKey": "day.rescue.no_landing",
       "steps": [
         {
-          "titleKey": "day.rescue.failed.step1.title",
-          "doKeys": ["day.rescue.failed.step1.do1", "day.rescue.failed.step1.do2"]
+          "titleKey": "day.rescue.recovery.step1.title",
+          "doKeys": ["day.rescue.recovery.step1.do1", "day.rescue.recovery.step1.do2"]
         },
         {
-          "titleKey": "day.rescue.failed.step2.title",
-          "doKeys": ["day.rescue.failed.step2.do1"]
+          "titleKey": "day.rescue.recovery.step2.title",
+          "doKeys": ["day.rescue.recovery.step2.do1"]
         }
       ]
     },
@@ -1384,12 +1384,12 @@
       "day.rescue.late.do1": { "text": "Cap the late nap if possible. Keep the last window shorter." },
       "day.rescue.late.do2": { "text": "Use a calmer bedtime routine and expect a slightly later bedtime." },
 
-      "day.rescue.all_failed": { "text": "no naps landed today" },
-      "day.rescue.failed.step1.title": { "text": "very early bedtime" },
-      "day.rescue.failed.step1.do1": { "text": "Move bedtime 60-90 minutes earlier than usual." },
-      "day.rescue.failed.step1.do2": { "text": "This is temporary - back to normal schedule tomorrow." },
-      "day.rescue.failed.step2.title": { "text": "tomorrow's reset" },
-      "day.rescue.failed.step2.do1": { "text": "Start fresh with normal wake windows. Don't overcompensate." },
+      "day.rescue.no_landing": { "text": "no naps landed today" },
+      "day.rescue.recovery.step1.title": { "text": "very early bedtime" },
+      "day.rescue.recovery.step1.do1": { "text": "Move bedtime 60-90 minutes earlier than usual." },
+      "day.rescue.recovery.step1.do2": { "text": "This is temporary - back to normal schedule tomorrow." },
+      "day.rescue.recovery.step2.title": { "text": "tomorrow's reset" },
+      "day.rescue.recovery.step2.do1": { "text": "Start fresh with normal wake windows. Don't overcompensate." },
 
       "day.rescue.early_wake": { "text": "early nap wake" },
       "day.rescue.early.step1.title": { "text": "extension attempt" },
