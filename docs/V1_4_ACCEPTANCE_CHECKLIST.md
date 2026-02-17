@@ -1,15 +1,16 @@
 # Settle v1.4 Acceptance Checklist
 
-- [ ] Product identity is preserved: Settle is a post-moment recovery tool (relief + repair + prevention), not a tracker, dashboard, course, or engagement app.
-- [ ] Every screen has one clear primary action; secondary actions are visually quieter and do not compete.
-- [ ] Any flow delivers practical value in 15 seconds or less (5 seconds for direct crisis entries like Sleep Tonight).
-- [ ] Copy stays calm and scannable: no dense paragraphs, content blocks are short, and emotional tone is warm/non-judgmental.
-- [ ] No forms outside onboarding O2 (child basics); interactions elsewhere are taps, chips, toggles, and selections.
-- [ ] Every flow has a clear finish path (Close moment or equivalent); no dead-end states.
-- [ ] Reset remains minimal and bounded: max 3 `Another` swaps/session, soft friction only at 4+ resets in 2 hours, no added bloat.
-- [ ] Sleep follows locked structure: Tonight is the hero lane (no Tonight/Rhythm toggle), each scenario is a short micro-flow, Rhythm is passive setup/support.
-- [ ] Tantrum follows locked structure: `Just happened` routes to Reset, debrief appears at most once/day on qualifying repeat events, prevention surfaces max 3 cards.
-- [ ] Moment stays a small emergency brake: 10-second haptic regulation, two script choices (Boundary/Connection), tap-to-close behavior.
-- [ ] Playbook is a sanctuary for saved repair/prevention cards and supportive resurfacing; no charts, streaks, counters, or scores.
-- [ ] v1 architecture remains local-first: native share sheet for co-parent sharing, no server/sync/accounts, graceful fallback to universal content if storage fails.
-- [ ] UI is token- and calm-system compliant: spacing/type tokens and approved components are used, one primary CTA per viewport section, accent only for primary action, rose/red only for urgent safety, SOS/Regulate use `T.pal.focusBackground`, and accessibility baseline (44x44 tap targets, large text, reduced motion) is met.
+- [ ] Preserve product identity: Settle remains a post-moment recovery tool (relief + repair + prevention), not a tracker, dashboard, course, or engagement system.
+- [ ] Maintain locked navigation/entry decisions: tab model and flow entry behavior match `docs/DECISIONS.md` and `docs/PRODUCT_ARCHITECTURE_v1_3.md` (including Moment as shortcut, not a full tab lane).
+- [ ] Enforce one-primary-action hierarchy per screen/section; secondary actions are visibly lower emphasis.
+- [ ] Deliver usable value in 15 seconds or less from any flow entry (and within ~5 seconds for direct crisis entries).
+- [ ] Keep copy calm and low-load: short blocks (about 1-2 short sentences), no dense paragraphs, no judgmental/guilt-inducing tone.
+- [ ] Keep interaction lightweight: no forms outside onboarding O2; use taps/chips/toggles/time pickers instead of keyboard input.
+- [ ] Ensure every flow has a clear end state (Close moment or direct equivalent); no dead ends.
+- [ ] Keep Reset "sacred": no bloat, max 3 `Another` swaps/session, and soft friction only at 4+ resets in 2 hours.
+- [ ] Keep Sleep tactical: Tonight is the hero lane, scenarios stay micro-flow length, Rhythm is supportive/passive (not a dashboard lane).
+- [ ] Keep Tantrum post-event: `Just happened` routes into Reset, debrief appears only under locked trigger conditions, and prevention is capped to 3 cards/visit.
+- [ ] Keep Moment minimal: 10-second haptic regulation, two script choices, tap-to-close, optional later handoff to Reset.
+- [ ] Keep Playbook as sanctuary: saved repair/prevention cards plus supportive resurfacing; no charts, counters, streaks, scores, or punitive framing.
+- [ ] Respect sharing/notification boundaries: native share sheet co-parent sharing in v1, no forced social loops, and no pressure notifications (no streaks/"we miss you").
+- [ ] Enforce design-system calm baseline: token spacing/type, approved primitives, accent reserved for primary CTA, rose/red only for urgent safety, SOS/Regulate on `T.pal.focusBackground`, and accessibility minimums (44x44 tap targets, large text support, reduced motion).

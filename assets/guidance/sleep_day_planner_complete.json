@@ -1384,7 +1384,7 @@
       "day.rescue.late.do1": { "text": "Cap the late nap if possible. Keep the last window shorter." },
       "day.rescue.late.do2": { "text": "Use a calmer bedtime routine and expect a slightly later bedtime." },
 
-      "day.rescue.all_failed": { "text": "all naps failed" },
+      "day.rescue.all_failed": { "text": "no naps landed today" },
       "day.rescue.failed.step1.title": { "text": "very early bedtime" },
       "day.rescue.failed.step1.do1": { "text": "Move bedtime 60-90 minutes earlier than usual." },
       "day.rescue.failed.step1.do2": { "text": "This is temporary - back to normal schedule tomorrow." },

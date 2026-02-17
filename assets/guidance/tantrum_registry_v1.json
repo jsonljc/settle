@@ -175,7 +175,7 @@
       "remember": "When intensity is high, teaching can wait.",
       "say": "Big feelings. We are doing body calm first.",
       "do": "Reduce stimulation and co-regulate with slow breath and presence.",
-      "ifEscalates": "Prioritize rest and postpone non-urgent plans.",
+      "ifEscalates": "Prioritize rest and postpone lower-priority plans.",
       "packId": "base",
       "tier": "free",
       "lessonId": "lesson_body_needs",

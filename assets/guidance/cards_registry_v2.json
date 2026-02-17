@@ -4,7 +4,7 @@
     {
       "id": "transitions_timer_choice",
       "triggerType": "transitions",
-      "prevent": "Use two warnings and a visual timer before the change.",
+      "prevent": "Use two countdown cues and a visual timer before the change.",
       "say": "Two more minutes, then shoes. Red or blue shoes?",
       "do": "Move close, point to timer, then guide body calmly toward next step.",
       "ifEscalates": "Hold limit with one sentence and help their body move through.",

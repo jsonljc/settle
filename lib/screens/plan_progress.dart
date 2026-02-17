@@ -534,7 +534,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                             ),
                                             SettleGap.sm(),
                                             Text(
-                                              'Use this only when you need to tune your plan.',
+                                              'Use this only when tuning your plan feels useful.',
                                               style: T.type.caption.copyWith(
                                                 color: T.pal.textSecondary,
                                               ),

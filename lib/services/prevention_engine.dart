@@ -71,7 +71,7 @@ class PreventionEngine {
   static String _triggerStrategy(TriggerType trigger, AgeBracket age) {
     return switch (trigger) {
       TriggerType.transitions =>
-        'Transitions are a hotspot. Give countdown warnings and one simple next step.',
+        'Transitions are a hotspot. Give countdown cues and one simple next step.',
       TriggerType.frustration =>
         age.index >= AgeBracket.threeToFourYears.index
             ? 'When frustration spikes, coach with: "Try once more, then I help."'

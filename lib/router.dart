@@ -20,6 +20,7 @@ import 'screens/library/saved_playbook_screen.dart';
 import 'screens/onboarding/onboarding_v2_screen.dart';
 import 'screens/plan/plan_home_screen.dart';
 import 'screens/plan/plan_script_log_screen.dart';
+import 'screens/plan/moment_flow_screen.dart';
 import 'screens/plan/plan_spine_stub_screens.dart';
 import 'screens/plan/reset_flow_screen.dart';
 import 'screens/regulate/regulate_flow_screen.dart';
@@ -223,8 +224,14 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
               ),
               GoRoute(
                 path: 'moment',
-                pageBuilder: (context, state) =>
-                    _fade(state, const MomentStubScreen()),
+                pageBuilder: (context, state) {
+                  final contextQuery =
+                      state.uri.queryParameters['context'] ?? 'general';
+                  return _fade(
+                    state,
+                    MomentFlowScreen(contextQuery: contextQuery),
+                  );
+                },
               ),
               GoRoute(
                 path: 'tantrum-just-happened',

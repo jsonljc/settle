@@ -21,7 +21,7 @@ class LearnScreen extends ConsumerWidget {
       answer:
           'Babies who fall asleep independently are more likely to resettle '
           'during normal overnight arousals without signaling. This doesn\u2019t '
-          'mean you need to avoid helping them — it means that when they can do it, '
+          'mean helping them is a problem — it means that when they can do it, '
           'night wakes often resolve on their own.\n\n'
           'But this isn\u2019t universal. Some babies need more support for longer, '
           'and that\u2019s developmentally normal.',
