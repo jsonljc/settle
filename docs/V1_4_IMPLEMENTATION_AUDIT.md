@@ -62,7 +62,7 @@ Audit date: 2025-02-17. Codebase: Settle v1.4 (post–Slice 5A).
 
 | # | Requirement | Result | Evidence / Notes |
 |---|-------------|--------|------------------|
-| 1 | Every card view across the app can share via native share sheet | **FAIL** | Tantrum card output uses **copy to clipboard** only (`lib/screens/tantrum/tantrum_card_output_screen.dart`: onShare → Clipboard.setData). No Share.share(). **Fix:** Use Share.share() for crisis card payload so native share sheet is available. |
+| 1 | Every card view across the app can share via native share sheet | **PASS** | Tantrum card output now uses Share.share() for the same text payload (with "— from Settle"); native share sheet available. |
 | 2 | All share output is text-only and readable standalone | **PASS** | Reset, Playbook, Sleep Tonight share plain text (title/body or plan summary). Tantrum copy is text-only but via clipboard. |
 | 3 | Evening notification exists, default 6 PM or 1hr before bedtime | **PASS** | `lib/services/notification_service.dart`: scheduleEveningCheckIn(DateTime fireAt). `lib/main.dart`: fireAt = 1hr before bedtime; _bedtimeHourMin default (18,0) = 6 PM. |
 | 4 | Notification frequency: max once/day, skipped if app opened in last 2hrs | **PASS** | Single scheduled time per day; _cancelEveningCheckInIfRecentlyOpened() cancels when now in [fireAt−2h, fireAt+15m]. |
@@ -92,18 +92,17 @@ Audit date: 2025-02-17. Codebase: Settle v1.4 (post–Slice 5A).
 | Phase 1 — Spine + Storage | 5 | 0 | 5 |
 | Phase 2 — Reset + Playbook | 8 | 0 | 8 |
 | Phase 3 — Domain Flows | 8 | 0 | 8 |
-| Phase 4 — Share + Notifications | 5 | 1 | 6 |
+| Phase 4 — Share + Notifications | 6 | 0 | 6 |
 | Cross-cutting | 6 | 0 | 6 |
-| **Total** | **36** | **2** | **38** |
+| **Total** | **38** | **0** | **38** |
 
-**Overall: 36/38 passed.**
+**Overall: 38/38 passed.**
 
 ---
 
-## Failures by phase
+## Fixes applied (post-audit)
 
-**Phase 4**
-- **Native share on every card view:** `lib/screens/tantrum/tantrum_card_output_screen.dart` — crisis card uses Clipboard only. Add Share.share() for the same payload so native share sheet is available.
+- **Phase 4.1:** `lib/screens/tantrum/tantrum_card_output_screen.dart` — onShare now uses `Share.share(payload)` instead of clipboard; payload includes "— from Settle" for consistency with other card shares.
 
 ---
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../tantrum/providers/tantrum_module_providers.dart';
@@ -84,15 +84,8 @@ class TantrumCardOutputScreen extends ConsumerWidget {
                         },
                         onShare: () async {
                           final payload =
-                              '${card.title}\n\nRemember: ${card.remember}\n\nSay: ${card.say}\n\nDo: ${card.doStep}';
-                          await Clipboard.setData(ClipboardData(text: payload));
-                          if (!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Card copied to clipboard'),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
+                              '${card.title}\n\nRemember: ${card.remember}\n\nSay: ${card.say}\n\nDo: ${card.doStep}\n\n— from Settle';
+                          await Share.share(payload);
                         },
                       ),
                     ),
