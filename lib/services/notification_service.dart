@@ -9,6 +9,7 @@ class _Ids {
   static const int wakeWindowNudge = 1;
   static const int windDownReminder = 2;
   static const int scheduleDriftPrompt = 3;
+  static const int eveningCheckIn = 4;
   // Plan nudges (v2)
   static const int nudgePredictable = 10;
   static const int nudgePattern = 11;
@@ -295,6 +296,51 @@ class NotificationService {
   static Future<void> cancelAll() async {
     if (!_initialized) return;
     await _plugin.cancelAll();
+  }
+
+  // ───────────────────────────────────────────
+  //  Evening check-in (opt-in, 1h before bedtime)
+  // ───────────────────────────────────────────
+
+  /// Schedules a single evening check-in at [fireAt].
+  /// Copy: "Tonight's sleep plan is ready". Once per day; caller must ensure
+  /// [fireAt] is 1h before user bedtime and not in quiet hours.
+  static Future<void> scheduleEveningCheckIn(DateTime fireAt) async {
+    if (!_initialized) return;
+    final now = DateTime.now();
+    if (!fireAt.isAfter(now.add(const Duration(minutes: 1)))) return;
+
+    final tzFireAt = tz.TZDateTime.from(fireAt, tz.local);
+    await _plugin.zonedSchedule(
+      _Ids.eveningCheckIn,
+      "Tonight's sleep plan is ready",
+      'Open Settle to see your plan for tonight.',
+      tzFireAt,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _sleepSignalChannel.id,
+          _sleepSignalChannel.name,
+          channelDescription: _sleepSignalChannel.description,
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: false,
+          presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: null,
+    );
+  }
+
+  /// Cancel the evening check-in notification (e.g. when user opens app within 2h of fire time).
+  static Future<void> cancelEveningCheckIn() async {
+    if (!_initialized) return;
+    await _plugin.cancel(_Ids.eveningCheckIn);
   }
 
   // ───────────────────────────────────────────

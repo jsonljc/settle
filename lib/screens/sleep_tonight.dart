@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../models/approach.dart';
 import '../providers/profile_provider.dart';
@@ -614,12 +615,52 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
     );
   }
 
+  void _shareSleepPlan(Map<String, dynamic> plan, Approach approach) {
+    const maxSteps = 3;
+    final allSteps = (plan['steps'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+    final steps =
+        allSteps.length > maxSteps ? allSteps.sublist(0, maxSteps) : allSteps;
+    final current = steps.isEmpty
+        ? 0
+        : (plan['current_step'] as int? ?? 0).clamp(0, steps.length - 1);
+    final currentStep =
+        steps.isEmpty ? <String, dynamic>{} : Map<String, dynamic>.from(steps[current]);
+    final stepMinutes = (currentStep['minutes'] as int?) ?? 3;
+    String singleLine(String? text, String fallback) {
+      final compact = (text ?? '').replaceAll('\n', ' ').trim();
+      return compact.isEmpty ? fallback : compact;
+    }
+    final doNow = singleLine(
+      currentStep['script']?.toString(),
+      'Keep your response calm and consistent.',
+    );
+    final ifStill = singleLine(
+      currentStep['do_step']?.toString(),
+      'Repeat the same brief response.',
+    );
+    final stopRule = singleLine(
+      plan['escalation_rule']?.toString(),
+      'Pause and switch to comfort-first if things escalate.',
+    );
+    final commitmentLabel =
+        'Night ${plan['current_step'] ?? 0}/${plan['commitment_nights'] ?? 7}';
+    final body = [
+      'Approach: ${approach.label} • $commitmentLabel',
+      'Do now: $doNow',
+      'If still crying after $stepMinutes min: $ifStill',
+      'Stop rule: $stopRule',
+    ].join('\n');
+    final text = "Try this:\nTonight's sleep plan\n$body";
+    Share.share(text);
+  }
+
   Future<void> _showMoreOptionsSheet({
     required String childId,
     required SleepTonightState state,
     required Approach approach,
     required int ageMonths,
     required List<String> evidenceRefs,
+    VoidCallback? onShare,
   }) async {
     var selectedScenario =
         state.activePlan?['scenario']?.toString() ?? _scenario;
@@ -661,6 +702,17 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         children: [
                           Text('More options', style: T.type.h3),
                           const SizedBox(height: 12),
+                          if (onShare != null) ...[
+                            OutlinedButton.icon(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                onShare();
+                              },
+                              icon: const Icon(Icons.share_outlined, size: 18),
+                              label: const Text('Share plan'),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
                           Text('Switch scenario', style: T.type.label),
                           const SizedBox(height: 8),
                           SettleSegmentedChoice<String>(
@@ -1150,12 +1202,15 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                       }
                                     }
                                   },
+                                  onShare: () => _shareSleepPlan(plan, approach),
                                   onMoreOptions: () => _showMoreOptionsSheet(
                                     childId: childId,
                                     state: state,
                                     approach: approach,
                                     ageMonths: ageMonths,
                                     evidenceRefs: evidenceRefs,
+                                    onShare: () =>
+                                        _shareSleepPlan(plan, approach),
                                   ),
                                 )
                               else
@@ -1318,6 +1373,7 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
     required this.onNextStep,
     required this.onClose,
     required this.onSaveToPlaybook,
+    this.onShare,
     required this.onMoreOptions,
   });
 
@@ -1328,6 +1384,7 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
   final VoidCallback onNextStep;
   final VoidCallback onClose;
   final VoidCallback onSaveToPlaybook;
+  final VoidCallback? onShare;
   final VoidCallback onMoreOptions;
 
   static const _maxSteps = 3;
@@ -1410,6 +1467,14 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (onShare != null) ...[
+              const SizedBox(height: 8),
+              GlassCta(
+                label: 'Share',
+                onTap: onShare!,
+                compact: true,
+              ),
+            ],
           ] else
             GlassCta(label: 'Next step', onTap: onNextStep),
           const SizedBox(height: 8),

@@ -11,6 +11,7 @@ import '../providers/patterns_provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/focus_mode_rules.dart';
 import '../services/nudge_scheduler.dart';
+import '../services/notification_service.dart';
 import '../theme/glass_components.dart';
 import '../theme/reduce_motion.dart';
 import '../theme/settle_tokens.dart';
@@ -487,6 +488,17 @@ class _NudgeSettingsSection extends ConsumerWidget {
             onChanged: (v) async {
               await ref.read(nudgeSettingsProvider.notifier).setContentEnabled(v);
               await _refreshScheduler(ref);
+            },
+          ),
+          const SizedBox(height: 8),
+          _ToggleCard(
+            label: 'Evening check-in (1h before bedtime)',
+            value: settings.eveningCheckInEnabled,
+            onChanged: (v) async {
+              await ref
+                  .read(nudgeSettingsProvider.notifier)
+                  .setEveningCheckInEnabled(v);
+              if (!v) await NotificationService.cancelEveningCheckIn();
             },
           ),
           const SizedBox(height: 12),

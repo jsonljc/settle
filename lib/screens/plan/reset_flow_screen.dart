@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../models/repair_card.dart';
 import '../../providers/reset_flow_provider.dart';
@@ -207,7 +208,9 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
               ),
             ),
             SettleGap.xxl(),
-            GlassCta(label: 'Keep', onTap: () => _keep(notifier)),
+            GlassCta(label: 'Share', onTap: () => _share(card)),
+            SettleGap.lg(),
+            GlassCta(label: 'Keep', onTap: () => _keep(notifier, card.id)),
             SettleGap.lg(),
             if (state.canShowAnother)
               Center(
@@ -243,16 +246,30 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     );
   }
 
-  Future<void> _keep(ResetFlowNotifier notifier) async {
+  Future<void> _keep(ResetFlowNotifier notifier, String cardIdKept) async {
     await notifier.keep();
+    await notifier.close(cardIdKept: cardIdKept);
     if (!mounted) return;
-    context.pop();
+    _exitFlow();
   }
 
   Future<void> _close(ResetFlowNotifier notifier, String? cardIdKept) async {
     await notifier.close(cardIdKept: cardIdKept);
     if (!mounted) return;
-    context.pop();
+    _exitFlow();
+  }
+
+  void _exitFlow() {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    context.go('/plan');
+  }
+
+  void _share(RepairCard card) {
+    final text = 'Try this:\n${card.title}\n${card.body}';
+    Share.share(text);
   }
 
   String _maxSentences(String text, {int max = 3}) {

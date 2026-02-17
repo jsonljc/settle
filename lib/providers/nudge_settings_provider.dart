@@ -20,6 +20,7 @@ class NudgeSettings {
     this.quietStartHour = 20,
     this.quietEndHour = 7,
     this.frequency = NudgeFrequency.smart,
+    this.eveningCheckInEnabled = false,
   });
 
   final bool predictableEnabled;
@@ -28,6 +29,8 @@ class NudgeSettings {
   final int quietStartHour;
   final int quietEndHour;
   final NudgeFrequency frequency;
+  /// Evening check-in: one notification 1h before bedtime. Off by default (opt-in).
+  final bool eveningCheckInEnabled;
 
   NudgeSettings copyWith({
     bool? predictableEnabled,
@@ -36,6 +39,7 @@ class NudgeSettings {
     int? quietStartHour,
     int? quietEndHour,
     NudgeFrequency? frequency,
+    bool? eveningCheckInEnabled,
   }) {
     return NudgeSettings(
       predictableEnabled: predictableEnabled ?? this.predictableEnabled,
@@ -44,6 +48,8 @@ class NudgeSettings {
       quietStartHour: quietStartHour ?? this.quietStartHour,
       quietEndHour: quietEndHour ?? this.quietEndHour,
       frequency: frequency ?? this.frequency,
+      eveningCheckInEnabled:
+          eveningCheckInEnabled ?? this.eveningCheckInEnabled,
     );
   }
 
@@ -61,6 +67,7 @@ class NudgeSettings {
           : freq == 'more'
               ? NudgeFrequency.more
               : NudgeFrequency.smart,
+      eveningCheckInEnabled: map['evening_check_in_enabled'] as bool? ?? false,
     );
   }
 
@@ -76,6 +83,7 @@ class NudgeSettings {
           : frequency == NudgeFrequency.more
               ? 'more'
               : 'smart',
+      'evening_check_in_enabled': eveningCheckInEnabled,
     };
   }
 
@@ -146,6 +154,11 @@ class NudgeSettingsNotifier extends StateNotifier<NudgeSettings> {
 
   Future<void> setFrequency(NudgeFrequency value) async {
     state = state.copyWith(frequency: value);
+    await _persist();
+  }
+
+  Future<void> setEveningCheckInEnabled(bool value) async {
+    state = state.copyWith(eveningCheckInEnabled: value);
     await _persist();
   }
 }
