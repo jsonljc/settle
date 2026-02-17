@@ -28,8 +28,14 @@ abstract class AppRepository {
   /// All reset events, newest first.
   Future<List<ResetEvent>> getResetEvents();
 
-  /// Appends a reset event. Context is optional (e.g. 'general', 'sleep', 'tantrum').
-  Future<void> addResetEvent({String? context});
+  /// Appends a reset event. Context/state optional. cardIdsSeen and cardIdKept
+  /// record what was shown and whether user kept a card.
+  Future<void> addResetEvent({
+    String? context,
+    String? state,
+    List<String> cardIdsSeen = const [],
+    String? cardIdKept,
+  });
 
   /// Saved playbook card ids.
   Future<List<String>> getSavedCardIds();
@@ -132,7 +138,12 @@ class AppRepositoryImpl implements AppRepository {
   }
 
   @override
-  Future<void> addResetEvent({String? context}) async {
+  Future<void> addResetEvent({
+    String? context,
+    String? state,
+    List<String> cardIdsSeen = const [],
+    String? cardIdKept,
+  }) async {
     try {
       final box = await _spineBoxSafe();
       final raw = box.get(_spineKeyResetEvents);
@@ -141,6 +152,9 @@ class AppRepositoryImpl implements AppRepository {
         id: '${DateTime.now().millisecondsSinceEpoch}',
         timestamp: DateTime.now(),
         context: context,
+        state: state,
+        cardIdsSeen: cardIdsSeen,
+        cardIdKept: cardIdKept,
       ));
       await box.put(_spineKeyResetEvents, list);
     } catch (_) {

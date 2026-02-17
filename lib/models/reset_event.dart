@@ -16,9 +16,24 @@ class ResetEvent extends HiveObject {
   @HiveField(2)
   final String? context;
 
+  /// Who the reset was for: "self" or "child".
+  @HiveField(3)
+  final String? state;
+
+  /// Card ids shown this session (order seen).
+  @HiveField(4)
+  final List<String> cardIdsSeen;
+
+  /// Card id kept in playbook, or null if user closed without keeping.
+  @HiveField(5)
+  final String? cardIdKept;
+
   ResetEvent({
     required this.id,
     required this.timestamp,
     this.context,
+    this.state,
+    this.cardIdsSeen = const [],
+    this.cardIdKept,
   });
 }

@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
-import '../../models/user_card.dart';
+import '../../models/repair_card.dart';
+import '../../providers/playbook_provider.dart';
 import '../../providers/user_cards_provider.dart';
-import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
+import '../../widgets/settle_gap.dart';
+import '../../widgets/settle_tappable.dart';
 
+/// Playbook v1: list saved repair cards (most recent first), view detail, remove, share.
 class SavedPlaybookScreen extends ConsumerWidget {
   const SavedPlaybookScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final savedCards = ref.watch(userCardsProvider);
+    final asyncList = ref.watch(playbookRepairCardsProvider);
 
     return Scaffold(
       body: SettleBackground(
@@ -25,73 +29,41 @@ class SavedPlaybookScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const ScreenHeader(
-                  title: 'Saved playbook',
-                  subtitle: 'Your saved scripts grouped by scenario.',
+                  title: 'My Playbook',
+                  subtitle: 'Saved cards from Reset.',
                   fallbackRoute: '/library',
                 ),
-                const SizedBox(height: 10),
+                SettleGap.lg(),
                 Expanded(
-                  child: savedCards.isEmpty
-                      ? _EmptySavedState()
-                      : FutureBuilder<List<CardContent>>(
-                          future: CardContentService.instance.getCards(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState !=
-                                ConnectionState.done) {
-                              return const Center(
-                                child: CircularProgressIndicator.adaptive(),
+                  child: asyncList.when(
+                    data: (list) => list.isEmpty
+                        ? _EmptyState()
+                        : ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: list.length,
+                            itemBuilder: (context, index) {
+                              final entry = list[index];
+                              return _PlaybookListTile(
+                                entry: entry,
+                                onShare: () => _shareCard(entry.repairCard),
+                                onRemove: () => ref
+                                    .read(userCardsProvider.notifier)
+                                    .unsave(entry.userCard.cardId),
                               );
-                            }
-
-                            final cards =
-                                snapshot.data ?? const <CardContent>[];
-                            final grouped = _groupResolved(savedCards, cards);
-                            if (grouped.isEmpty) {
-                              return GlassCard(
-                                child: Text(
-                                  'Saved entries exist, but matching card content was not found.',
-                                  style: T.type.body.copyWith(
-                                    color: T.pal.textSecondary,
-                                  ),
-                                ),
-                              );
-                            }
-
-                            final triggerKeys = grouped.keys.toList()..sort();
-                            return ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: triggerKeys.length,
-                              itemBuilder: (context, index) {
-                                final trigger = triggerKeys[index];
-                                final entries = grouped[trigger]!;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: GlassCard(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          _triggerLabel(trigger),
-                                          style: T.type.h3,
-                                        ),
-                                        const SizedBox(height: 10),
-                                        ...entries.map((entry) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: 8,
-                                            ),
-                                            child: _SavedCardRow(entry: entry),
-                                          );
-                                        }),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                            },
+                          ),
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    error: (_, __) => Center(
+                      child: Text(
+                        'Something went wrong.',
+                        style: T.type.body.copyWith(
+                          color: T.pal.textSecondary,
                         ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -101,148 +73,118 @@ class SavedPlaybookScreen extends ConsumerWidget {
     );
   }
 
-  Map<String, List<_ResolvedCard>> _groupResolved(
-    List<UserCard> userCards,
-    List<CardContent> cards,
-  ) {
-    final byId = {for (final card in cards) card.id: card};
-    final grouped = <String, List<_ResolvedCard>>{};
-    for (final userCard in userCards) {
-      final content = byId[userCard.cardId];
-      if (content == null) continue;
-      final key = content.triggerType;
-      final bucket = grouped.putIfAbsent(key, () => <_ResolvedCard>[]);
-      bucket.add(_ResolvedCard(userCard: userCard, content: content));
-    }
-
-    for (final bucket in grouped.values) {
-      bucket.sort((a, b) {
-        if (a.userCard.pinned != b.userCard.pinned) {
-          return a.userCard.pinned ? -1 : 1;
-        }
-        return b.userCard.savedAt.compareTo(a.userCard.savedAt);
-      });
-    }
-    return grouped;
-  }
-
-  String _triggerLabel(String triggerType) {
-    return triggerType
-        .split('_')
-        .map((part) {
-          if (part.isEmpty) return part;
-          return '${part[0].toUpperCase()}${part.substring(1)}';
-        })
-        .join(' ');
+  void _shareCard(RepairCard card) {
+    final text = '${card.title}\n${card.body}\n— from Settle';
+    Share.share(text);
   }
 }
 
-class _SavedCardRow extends ConsumerWidget {
-  const _SavedCardRow({required this.entry});
+class _PlaybookListTile extends StatelessWidget {
+  const _PlaybookListTile({
+    required this.entry,
+    required this.onShare,
+    required this.onRemove,
+  });
 
-  final _ResolvedCard entry;
+  final PlaybookEntry entry;
+  final VoidCallback onShare;
+  final VoidCallback onRemove;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final notifier = ref.read(userCardsProvider.notifier);
-    final card = entry.content;
-    final userCard = entry.userCard;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: T.glass.fillAccent,
-        borderRadius: BorderRadius.circular(T.radius.md),
-        border: Border.all(color: T.glass.border),
-      ),
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  card.prevent,
-                  style: T.type.label,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              if (userCard.pinned)
-                Icon(Icons.push_pin_rounded, size: 14, color: T.pal.accent),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            card.say,
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              GlassPill(
-                label: 'Open',
-                onTap: () => context.push('/library/cards/${card.id}'),
-              ),
-              GlassPill(
-                label: userCard.pinned ? 'Unpin' : 'Pin',
-                onTap: () async {
-                  if (userCard.pinned) {
-                    await notifier.unpin(userCard.cardId);
-                  } else {
-                    await notifier.pin(userCard.cardId);
-                  }
-                },
-              ),
-              GlassPill(
-                label: 'Remove',
-                onTap: () async {
-                  await notifier.unsave(userCard.cardId);
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Removed from playbook'),
-                      duration: Duration(milliseconds: 1000),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EmptySavedState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('No saved scripts yet', style: T.type.h3),
-          const SizedBox(height: 8),
-          Text(
-            'Save cards from Plan to build your playbook.',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+    final card = entry.repairCard;
+    return Padding(
+      padding: EdgeInsets.only(bottom: T.space.md),
+      child: SettleTappable(
+        semanticLabel: '${card.title}. Open card',
+        onTap: () => context.push('/library/saved/card/${card.id}'),
+        child: GlassCard(
+          padding: EdgeInsets.symmetric(
+            vertical: T.space.lg,
+            horizontal: T.space.lg,
           ),
-          const SizedBox(height: 12),
-          GlassCta(label: 'Open plan', onTap: () => context.push('/plan')),
-        ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          card.title,
+                          style: T.type.label.copyWith(
+                            color: T.pal.textPrimary,
+                          ),
+                        ),
+                        SettleGap.sm(),
+                        Text(
+                          card.body,
+                          style: T.type.caption.copyWith(
+                            color: T.pal.textSecondary,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SettleGap.md(),
+              Row(
+                children: [
+                  SettleTappable(
+                    semanticLabel: 'Share card',
+                    onTap: onShare,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: T.space.xs),
+                      child: Text(
+                        'Share',
+                        style: T.type.caption.copyWith(
+                          color: T.pal.accent,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SettleGap.lg(),
+                  SettleTappable(
+                    semanticLabel: 'Remove from playbook',
+                    onTap: onRemove,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: T.space.xs),
+                      child: Text(
+                        'Remove',
+                        style: T.type.caption.copyWith(
+                          color: T.pal.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class _ResolvedCard {
-  const _ResolvedCard({required this.userCard, required this.content});
-
-  final UserCard userCard;
-  final CardContent content;
+class _EmptyState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: T.space.lg),
+        child: Text(
+          'Your playbook is empty. Save cards from Reset to get started.',
+          style: T.type.body.copyWith(color: T.pal.textSecondary),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
 }

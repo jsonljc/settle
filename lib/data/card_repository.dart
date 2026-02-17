@@ -33,6 +33,16 @@ class CardRepository {
     return List.unmodifiable(_cards!);
   }
 
+  /// Returns the repair card with the given id, or null if not found.
+  Future<RepairCard?> getById(String id) async {
+    await _ensureLoaded();
+    try {
+      return _cards!.firstWhere((c) => c.id == id);
+    } on StateError {
+      return null;
+    }
+  }
+
   /// Filters by context and optional state. Omitted filters are not applied.
   Future<List<RepairCard>> filter({
     RepairCardContext? context,
@@ -59,5 +69,18 @@ class CardRepository {
     final list = await filter(context: context, state: state);
     if (list.isEmpty) return null;
     return list[_rng.nextInt(list.length)];
+  }
+
+  /// Like [pickOne] but excludes cards whose id is in [excludeIds].
+  /// Returns null if no cards remain after excluding.
+  Future<RepairCard?> pickOneExcluding({
+    Set<String> excludeIds = const {},
+    RepairCardContext? context,
+    RepairCardState? state,
+  }) async {
+    final list = await filter(context: context, state: state);
+    final available = list.where((c) => !excludeIds.contains(c.id)).toList();
+    if (available.isEmpty) return null;
+    return available[_rng.nextInt(available.length)];
   }
 }

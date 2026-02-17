@@ -3,10 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/pattern_insight.dart';
-import '../../models/user_card.dart';
 import '../../providers/patterns_provider.dart';
-import '../../providers/user_cards_provider.dart';
-import '../../services/card_content_service.dart';
+import '../../providers/playbook_provider.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_tokens.dart';
 import '../../providers/weekly_reflection_provider.dart';
@@ -18,7 +16,7 @@ class LibraryHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final savedCards = ref.watch(userCardsProvider);
+    final playbookAsync = ref.watch(playbookRepairCardsProvider);
     final patterns = ref.watch(patternsProvider);
 
     return Scaffold(
@@ -54,7 +52,7 @@ class LibraryHomeScreen extends ConsumerWidget {
                         const SizedBox(height: 10),
                         _PatternsPreviewCard(patterns: patterns),
                         const SizedBox(height: 10),
-                        _SavedPlaybookPreviewCard(savedCards: savedCards),
+                        _SavedPlaybookPreviewCard(playbookAsync: playbookAsync),
                         const SizedBox(height: 10),
                         GlassCard(
                           child: Column(
@@ -201,129 +199,96 @@ class _PatternsPreviewCard extends StatelessWidget {
 }
 
 class _SavedPlaybookPreviewCard extends StatelessWidget {
-  const _SavedPlaybookPreviewCard({required this.savedCards});
+  const _SavedPlaybookPreviewCard({required this.playbookAsync});
 
-  final List<UserCard> savedCards;
+  final AsyncValue<List<PlaybookEntry>> playbookAsync;
 
   @override
   Widget build(BuildContext context) {
-    if (savedCards.isEmpty) {
-      return GlassCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Saved playbook', style: T.type.h3),
-            const SizedBox(height: 8),
-            Text(
-              'Your saved scripts will appear here as you build your playbook.',
-              style: T.type.body.copyWith(color: T.pal.textSecondary),
-            ),
-            const SizedBox(height: 12),
-            GlassPill(label: 'Open plan', onTap: () => context.push('/plan')),
-          ],
-        ),
-      );
-    }
-
-    return FutureBuilder<List<CardContent>>(
-      future: CardContentService.instance.getCards(),
-      builder: (context, snapshot) {
-        final cards = snapshot.data ?? const <CardContent>[];
-        final resolved = _resolveCards(savedCards, cards);
-
-        return GlassCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Saved playbook', style: T.type.h3),
-              const SizedBox(height: 8),
-              if (snapshot.connectionState != ConnectionState.done)
-                const SizedBox(
-                  height: 56,
-                  child: Center(child: CircularProgressIndicator.adaptive()),
-                )
-              else if (resolved.isEmpty)
-                Text(
-                  'Saved entries exist, but matching card content was not found.',
-                  style: T.type.body.copyWith(color: T.pal.textSecondary),
-                )
-              else
-                ...resolved.take(3).map((item) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: GestureDetector(
-                      onTap: () =>
-                          context.push('/library/cards/${item.cardId}'),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: T.glass.fillAccent,
-                          borderRadius: BorderRadius.circular(T.radius.md),
-                          border: Border.all(color: T.glass.border),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _triggerLabel(item.content.triggerType),
-                                style: T.type.label,
-                              ),
-                            ),
-                            if (item.userCard.pinned)
-                              Icon(
-                                Icons.push_pin_rounded,
-                                size: 14,
-                                color: T.pal.accent,
-                              ),
-                          ],
-                        ),
+    return GlassCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('My Playbook', style: T.type.h3),
+          const SizedBox(height: 8),
+          playbookAsync.when(
+            data: (list) {
+              if (list.isEmpty) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Your playbook is empty. Save cards from Reset to get started.',
+                      style: T.type.body.copyWith(
+                        color: T.pal.textSecondary,
                       ),
                     ),
-                  );
-                }),
-              const SizedBox(height: 10),
-              GlassPill(
-                label: 'Open saved playbook',
-                onTap: () => context.push('/library/saved'),
-              ),
-            ],
+                    const SizedBox(height: 12),
+                    GlassPill(
+                      label: 'Open playbook',
+                      onTap: () => context.push('/library/saved'),
+                    ),
+                  ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...list.take(3).map((entry) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: GestureDetector(
+                        onTap: () => context.push(
+                          '/library/saved/card/${entry.repairCard.id}',
+                        ),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: T.glass.fillAccent,
+                            borderRadius:
+                                BorderRadius.circular(T.radius.md),
+                            border: Border.all(color: T.glass.border),
+                          ),
+                          child: Text(
+                            entry.repairCard.title,
+                            style: T.type.label,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 10),
+                  GlassPill(
+                    label: 'Open playbook',
+                    onTap: () => context.push('/library/saved'),
+                  ),
+                ],
+              );
+            },
+            loading: () => const SizedBox(
+              height: 56,
+              child: Center(child: CircularProgressIndicator.adaptive()),
+            ),
+            error: (_, __) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Something went wrong.',
+                  style: T.type.body.copyWith(
+                    color: T.pal.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                GlassPill(
+                  label: 'Open playbook',
+                  onTap: () => context.push('/library/saved'),
+                ),
+              ],
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
-
-  List<_ResolvedCard> _resolveCards(
-    List<UserCard> userCards,
-    List<CardContent> cards,
-  ) {
-    final byId = {for (final card in cards) card.id: card};
-    final resolved = <_ResolvedCard>[];
-    for (final userCard in userCards) {
-      final content = byId[userCard.cardId];
-      if (content == null) continue;
-      resolved.add(_ResolvedCard(userCard: userCard, content: content));
-    }
-    return resolved;
-  }
-
-  String _triggerLabel(String triggerType) {
-    return triggerType
-        .split('_')
-        .map((part) {
-          if (part.isEmpty) return part;
-          return '${part[0].toUpperCase()}${part.substring(1)}';
-        })
-        .join(' ');
-  }
-}
-
-class _ResolvedCard {
-  const _ResolvedCard({required this.userCard, required this.content});
-
-  final UserCard userCard;
-  final CardContent content;
-
-  String get cardId => userCard.cardId;
 }

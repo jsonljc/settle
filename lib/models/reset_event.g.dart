@@ -20,19 +20,28 @@ class ResetEventAdapter extends TypeAdapter<ResetEvent> {
       id: fields[0] as String,
       timestamp: fields[1] as DateTime,
       context: fields[2] as String?,
+      state: fields[3] as String?,
+      cardIdsSeen: (fields[4] as List?)?.cast<String>() ?? const [],
+      cardIdKept: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ResetEvent obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.timestamp)
       ..writeByte(2)
-      ..write(obj.context);
+      ..write(obj.context)
+      ..writeByte(3)
+      ..write(obj.state)
+      ..writeByte(4)
+      ..write(obj.cardIdsSeen)
+      ..writeByte(5)
+      ..write(obj.cardIdKept);
   }
 
   @override

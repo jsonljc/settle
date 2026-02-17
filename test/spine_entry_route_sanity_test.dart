@@ -15,6 +15,7 @@ import 'package:settle/models/user_card.dart';
 import 'package:settle/router.dart';
 import 'package:settle/screens/library/saved_playbook_screen.dart';
 import 'package:settle/screens/plan/plan_spine_stub_screens.dart';
+import 'package:settle/screens/plan/reset_flow_screen.dart';
 import 'package:settle/screens/sleep_tonight.dart';
 
 void main() {
@@ -39,7 +40,7 @@ void main() {
     await _settleRoute(tester);
 
     final routeChecks = <_RouteCheck>[
-      _RouteCheck('/plan/reset', ResetStubScreen, '/plan'),
+      _RouteCheck('/plan/reset', ResetFlowScreen, '/plan'),
       _RouteCheck('/library/saved', SavedPlaybookScreen, '/library'),
       _RouteCheck('/plan/moment', MomentStubScreen, '/plan'),
       _RouteCheck(

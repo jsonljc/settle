@@ -15,11 +15,13 @@ import 'screens/learn.dart';
 import 'screens/library/library_home_screen.dart';
 import 'screens/library/monthly_insight_screen.dart';
 import 'screens/library/patterns_screen.dart';
+import 'screens/library/playbook_card_detail_screen.dart';
 import 'screens/library/saved_playbook_screen.dart';
 import 'screens/onboarding/onboarding_v2_screen.dart';
 import 'screens/plan/plan_home_screen.dart';
 import 'screens/plan/plan_script_log_screen.dart';
 import 'screens/plan/plan_spine_stub_screens.dart';
+import 'screens/plan/reset_flow_screen.dart';
 import 'screens/regulate/regulate_flow_screen.dart';
 import 'screens/release_compliance_checklist.dart';
 import 'screens/release_metrics.dart';
@@ -210,8 +212,14 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
               ),
               GoRoute(
                 path: 'reset',
-                pageBuilder: (context, state) =>
-                    _fade(state, const ResetStubScreen()),
+                pageBuilder: (context, state) {
+                  final contextQuery =
+                      state.uri.queryParameters['context'] ?? 'general';
+                  return _fade(
+                    state,
+                    ResetFlowScreen(contextQuery: contextQuery),
+                  );
+                },
               ),
               GoRoute(
                 path: 'moment',
@@ -307,6 +315,18 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
                 path: 'saved',
                 pageBuilder: (context, state) =>
                     _fade(state, const SavedPlaybookScreen()),
+                routes: [
+                  GoRoute(
+                    path: 'card/:id',
+                    pageBuilder: (context, state) {
+                      final id = state.pathParameters['id'] ?? '';
+                      return _fade(
+                        state,
+                        PlaybookCardDetailScreen(cardId: id),
+                      );
+                    },
+                  ),
+                ],
               ),
               GoRoute(
                 path: 'patterns',
