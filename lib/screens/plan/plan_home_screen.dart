@@ -12,7 +12,7 @@ import '../../providers/profile_provider.dart';
 import '../../services/nudge_scheduler.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../services/card_content_service.dart';
-import '../../theme/glass_components.dart';
+import '../../theme/glass_components.dart' hide GlassCard, GlassPill;
 import '../../theme/settle_tokens.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/glass_card.dart';

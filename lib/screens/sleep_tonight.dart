@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../models/approach.dart';
@@ -12,12 +15,15 @@ import '../services/card_content_service.dart';
 import '../services/event_bus_service.dart';
 import '../services/sleep_guidance_service.dart';
 import '../services/spec_policy.dart';
-import '../theme/glass_components.dart';
+import '../theme/glass_components.dart' hide GlassCard;
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
+import '../widgets/glass_card.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_segmented_choice.dart';
+import '../widgets/settle_tappable.dart';
 
 class SleepTonightScreen extends ConsumerStatefulWidget {
   const SleepTonightScreen({super.key});
@@ -1041,19 +1047,17 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
             .toList() ??
         const <String>[];
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const ScreenHeader(
-                title: 'Tonight',
-                subtitle: 'One clear next step, right now.',
-              ),
-                const SizedBox(height: 4),
-                const BehavioralScopeNotice(),
+    return Theme(
+      data: SettleTheme.dark,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const _SleepTonightSceneHeader(),
                 const SizedBox(height: 14),
                 Expanded(
                   child: state.isLoading
@@ -1140,7 +1144,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 const SizedBox(height: 10),
                               ],
                               if (!state.hasActivePlan)
-                                _SituationPicker(
+                                _SleepTonightSituationPicker(
                                   onTapScenario: (scenario) async {
                                     setState(() => _scenario = scenario);
                                     await _createOrSwitchPlan(
@@ -1239,14 +1243,20 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 ),
                               ],
                               const SizedBox(height: 12),
-                              GestureDetector(
-                                onTap: () =>
-                                    context.push('/plan/moment?context=sleep'),
-                                child: Text(
-                                  'Just need 10 seconds',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textTertiary,
-                                    decoration: TextDecoration.underline,
+                              Center(
+                                child: SettleTappable(
+                                  semanticLabel: 'In the moment? Open Moment',
+                                  onTap: () =>
+                                      context.push('/plan/moment?context=sleep'),
+                                  child: Text(
+                                    'In the moment? → Moment',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: SettleColors.nightAccent
+                                          .withValues(alpha: 0.5),
+                                      decoration: TextDecoration.underline,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1295,7 +1305,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 24),
+const SizedBox(height: 24),
                             ],
                           ),
                         ),
@@ -1304,6 +1314,253 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Scene header: glass moon, stars, "Sleep tonight", "What's happening?". Dark only.
+class _SleepTonightSceneHeader extends StatelessWidget {
+  const _SleepTonightSceneHeader();
+
+  static const double _moonSize = 44;
+  static const double _moonBlur = 20;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 80,
+          height: 56,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Stars: 5 dots 1.5px, white 30%, scattered
+              Positioned(left: 4, top: 6, child: _starDot()),
+              Positioned(right: 8, top: 4, child: _starDot()),
+              Positioned(left: 12, top: 14, child: _starDot()),
+              Positioned(right: 2, top: 18, child: _starDot()),
+              Positioned(left: 28, top: 2, child: _starDot()),
+              // Glass moon centered
+              Center(
+                child: ClipOval(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: _moonBlur,
+                      sigmaY: _moonBlur,
+                    ),
+                    child: Container(
+                      width: _moonSize,
+                      height: _moonSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.05),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.08),
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          // Specular arc: top 35%
+                          Align(
+                            alignment: Alignment.topCenter,
+                            child: Container(
+                              height: _moonSize * 0.35,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.white.withValues(alpha: 0.06),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Icon(
+                              Icons.nightlight_round,
+                              size: 20,
+                              color: SettleColors.nightAccent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Sleep tonight',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.fraunces(
+            fontSize: 22,
+            fontWeight: FontWeight.w400,
+            color: SettleColors.nightText,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          "What's happening?",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w400,
+            color: SettleColors.nightMuted,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _starDot() {
+    return Container(
+      width: 1.5,
+      height: 1.5,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: 0.3),
+      ),
+    );
+  }
+}
+
+/// Three option cards (GlassCard dark) + Moment link. Dark only.
+class _SleepTonightSituationPicker extends StatelessWidget {
+  const _SleepTonightSituationPicker({required this.onTapScenario});
+
+  final ValueChanged<String> onTapScenario;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _SleepOptionCard(
+          emoji: '😤',
+          title: 'Bedtime protest',
+          subtitle: "Won't settle at bedtime",
+          onTap: () => onTapScenario('bedtime_protest'),
+        ),
+        const SizedBox(height: SettleSpacing.sm),
+        _SleepOptionCard(
+          emoji: '🌙',
+          title: 'Night wake',
+          subtitle: 'Up in the middle of the night',
+          onTap: () => onTapScenario('night_wakes'),
+        ),
+        const SizedBox(height: SettleSpacing.sm),
+        _SleepOptionCard(
+          emoji: '🌅',
+          title: 'Early wake',
+          subtitle: 'Up too early',
+          onTap: () => onTapScenario('early_wakes'),
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: SettleTappable(
+            semanticLabel: 'In the moment? Open Moment',
+            onTap: () => context.push('/plan/moment?context=sleep'),
+            child: Text(
+              'In the moment? → Moment',
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: SettleColors.nightAccent.withValues(alpha: 0.5),
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// One row: icon container (38px, glass, emoji) | title + subtitle | chevron. GlassCard dark.
+class _SleepOptionCard extends StatelessWidget {
+  const _SleepOptionCard({
+    required this.emoji,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final String emoji;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettleTappable(
+      onTap: onTap,
+      semanticLabel: '$title. $subtitle',
+      child: GlassCard(
+        variant: GlassCardVariant.dark,
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: SettleColors.nightAccent.withValues(alpha: 0.06),
+                border: Border.all(
+                  color: SettleColors.nightAccent.withValues(alpha: 0.12),
+                  width: 0.5,
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(emoji, style: const TextStyle(fontSize: 20)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: SettleColors.nightText,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w400,
+                      color: SettleColors.nightMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '›',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w300,
+                color: SettleColors.nightMuted.withValues(alpha: 0.3),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
