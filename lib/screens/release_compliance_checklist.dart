@@ -4,10 +4,39 @@ import '../providers/release_rollout_provider.dart';
 import '../services/safety_compliance_service.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
+
+class _RccT {
+  _RccT._();
+
+  static final type = _RccTypeTokens();
+  static const pal = _RccPaletteTokens();
+}
+
+class _RccTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _RccPaletteTokens {
+  const _RccPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get teal => SettleColors.sage400;
+}
 
 class ReleaseComplianceChecklistScreen extends ConsumerStatefulWidget {
   const ReleaseComplianceChecklistScreen({super.key});
@@ -39,7 +68,9 @@ class _ReleaseComplianceChecklistScreenState
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -61,8 +92,8 @@ class _ReleaseComplianceChecklistScreenState
                           child: GlassCard(
                             child: Text(
                               'Unable to load compliance checklist.',
-                              style: T.type.body.copyWith(
-                                color: T.pal.textSecondary,
+                              style: _RccT.type.body.copyWith(
+                                color: _RccT.pal.textSecondary,
                               ),
                             ),
                           ),
@@ -82,22 +113,22 @@ class _ReleaseComplianceChecklistScreenState
                               children: [
                                 Text(
                                   'Checklist status',
-                                  style: T.type.h3.copyWith(
-                                    color: T.pal.accent,
+                                  style: _RccT.type.h3.copyWith(
+                                    color: _RccT.pal.accent,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   '$passed / $total controls mapped',
-                                  style: T.type.body.copyWith(
-                                    color: T.pal.textSecondary,
+                                  style: _RccT.type.body.copyWith(
+                                    color: _RccT.pal.textSecondary,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Registry updated ${data.updatedAt}',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textTertiary,
+                                  style: _RccT.type.caption.copyWith(
+                                    color: _RccT.pal.textTertiary,
                                   ),
                                 ),
                               ],
@@ -106,7 +137,7 @@ class _ReleaseComplianceChecklistScreenState
                           const SizedBox(height: 10),
                           ...data.items.map((item) {
                             final color = item.passed
-                                ? T.pal.teal
+                                ? _RccT.pal.teal
                                 : SettleColors.blush400;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10),
@@ -127,7 +158,7 @@ class _ReleaseComplianceChecklistScreenState
                                         Expanded(
                                           child: Text(
                                             item.title,
-                                            style: T.type.label,
+                                            style: _RccT.type.label,
                                           ),
                                         ),
                                       ],
@@ -135,8 +166,8 @@ class _ReleaseComplianceChecklistScreenState
                                     const SizedBox(height: 8),
                                     Text(
                                       item.detail,
-                                      style: T.type.caption.copyWith(
-                                        color: T.pal.textSecondary,
+                                      style: _RccT.type.caption.copyWith(
+                                        color: _RccT.pal.textSecondary,
                                       ),
                                     ),
                                   ],
