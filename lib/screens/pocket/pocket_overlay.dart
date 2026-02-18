@@ -5,13 +5,36 @@ import '../../models/v2_enums.dart';
 import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/micro_celebration.dart';
 import '../../widgets/output_card.dart';
 import '../../widgets/script_card.dart';
 import '../../widgets/settle_disclosure.dart';
 import 'pocket_after_log.dart';
 import 'pocket_inline_breathe.dart';
+
+class _PoT {
+  _PoT._();
+
+  static final type = _PoTypeTokens();
+  static const pal = _PoPaletteTokens();
+}
+
+class _PoTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+}
+
+class _PoPaletteTokens {
+  const _PoPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+}
 
 /// Modal content for Pocket: top pinned script (OutputCard), CTAs, optional "regulate first" and after-log.
 class PocketOverlay extends StatelessWidget {
@@ -63,12 +86,12 @@ class PocketOverlay extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Pocket', style: T.type.h3),
+              Text('Pocket', style: _PoT.type.h3),
               GestureDetector(
                 onTap: onClose,
                 child: Text(
                   'Done',
-                  style: T.type.label.copyWith(color: T.pal.accent),
+                  style: _PoT.type.label.copyWith(color: _PoT.pal.accent),
                 ),
               ),
             ],
@@ -130,12 +153,12 @@ class _EmptyPocketContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Pocket', style: T.type.h3),
+              Text('Pocket', style: _PoT.type.h3),
               GestureDetector(
                 onTap: onClose,
                 child: Text(
                   'Done',
-                  style: T.type.label.copyWith(color: T.pal.accent),
+                  style: _PoT.type.label.copyWith(color: _PoT.pal.accent),
                 ),
               ),
             ],
@@ -143,7 +166,7 @@ class _EmptyPocketContent extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             'Pin a script from Plan or Library to see it here in the moment.',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _PoT.type.body.copyWith(color: _PoT.pal.textSecondary),
           ),
           const SizedBox(height: 24),
           GlassCta(label: 'Done', onTap: onClose),
