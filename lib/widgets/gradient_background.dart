@@ -29,10 +29,7 @@ class AmbientBlob {
     return AmbientBlob(
       color: color,
       size: size,
-      position: Alignment(
-        position.dx * 2 - 1,
-        position.dy * 2 - 1,
-      ),
+      position: Alignment(position.dx * 2 - 1, position.dy * 2 - 1),
       blur: blur,
     );
   }
@@ -57,9 +54,7 @@ class GradientBackground extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         // 1. Base gradient
-        Container(
-          decoration: BoxDecoration(gradient: gradient),
-        ),
+        Container(decoration: BoxDecoration(gradient: gradient)),
         // 2. Ambient blobs (soft circles)
         if (ambientBlobs != null && ambientBlobs!.isNotEmpty)
           ...ambientBlobs!.map((blob) => _buildBlob(blob)),
@@ -76,26 +71,17 @@ class GradientBackground extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: RadialGradient(
-          colors: [
-            blob.color,
-            blob.color.withValues(alpha: 0),
-          ],
+          colors: [blob.color, blob.color.withValues(alpha: 0)],
           stops: const [0.0, 1.0],
         ),
       ),
     );
     final blurred = ImageFiltered(
-      imageFilter: ImageFilter.blur(
-        sigmaX: blob.blur,
-        sigmaY: blob.blur,
-      ),
+      imageFilter: ImageFilter.blur(sigmaX: blob.blur, sigmaY: blob.blur),
       child: blobWidget,
     );
     return Positioned.fill(
-      child: Align(
-        alignment: blob.position,
-        child: blurred,
-      ),
+      child: Align(alignment: blob.position, child: blurred),
     );
   }
 }
@@ -207,32 +193,27 @@ class GradientBackgroundPresets {
 /// Wraps [child] in [GradientBackground] using gradient + blobs for the current
 /// route. Use in AppShell so the background updates when the route changes.
 class GradientBackgroundFromRoute extends StatelessWidget {
-  const GradientBackgroundFromRoute({
-    super.key,
-    required this.child,
-  });
+  const GradientBackgroundFromRoute({super.key, required this.child});
 
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final goRouter = GoRouter.of(context);
-    return ListenableBuilder(
-      listenable: goRouter.routeInformationProvider,
-      builder: (context, _) {
-        final path = goRouter.routerDelegate.currentConfiguration.fullPath;
-        final pathStr = path.isEmpty ? '/plan' : path;
-        final uri = goRouter.routeInformationProvider.value.uri;
-        final presets = GradientBackgroundPresets.forPath(
-          pathStr,
-          queryParameters: uri.queryParameters,
-        );
-        return GradientBackground(
-          gradient: presets.gradient,
-          ambientBlobs: presets.blobs,
-          child: child,
-        );
-      },
+    Uri uri;
+    try {
+      uri = GoRouterState.of(context).uri;
+    } catch (_) {
+      uri = GoRouter.of(context).routeInformationProvider.value.uri;
+    }
+    final pathStr = uri.path.isEmpty ? '/plan' : uri.path;
+    final presets = GradientBackgroundPresets.forPath(
+      pathStr,
+      queryParameters: uri.queryParameters,
+    );
+    return GradientBackground(
+      gradient: presets.gradient,
+      ambientBlobs: presets.blobs,
+      child: child,
     );
   }
 }

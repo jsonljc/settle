@@ -35,7 +35,7 @@ import 'screens/splash.dart';
 import 'screens/today.dart';
 import 'screens/update_rhythm_screen.dart';
 import 'widgets/release_surfaces.dart';
-import 'widgets/settle_bottom_nav.dart';
+import 'widgets/nav_item.dart';
 
 const int _v2TabPlan = 0;
 const int _v2TabFamily = 1;
@@ -327,7 +327,10 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
                     path: 'card/:id',
                     pageBuilder: (context, state) {
                       final id = state.pathParameters['id'] ?? '';
-                      return _slide(state, PlaybookCardDetailScreen(cardId: id));
+                      return _slide(
+                        state,
+                        PlaybookCardDetailScreen(cardId: id),
+                      );
                     },
                   ),
                 ],
@@ -492,10 +495,7 @@ CustomTransitionPage<void> _slide(GoRouterState state, Widget child) {
         position: Tween<Offset>(
           begin: const Offset(1, 0),
           end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOut,
-        )),
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
         child: child,
       );
     },
@@ -515,10 +515,7 @@ CustomTransitionPage<void> _fade(
     reverseTransitionDuration: duration,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return FadeTransition(
-        opacity: CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOut,
-        ),
+        opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
         child: child,
       );
     },
