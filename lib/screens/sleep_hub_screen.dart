@@ -11,9 +11,34 @@ import '../services/spec_policy.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
+
+class _ShT {
+  _ShT._();
+
+  static final type = _ShTypeTokens();
+  static const pal = _ShPaletteTokens();
+}
+
+class _ShTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _ShPaletteTokens {
+  const _ShPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
 
 class SleepHubScreen extends ConsumerStatefulWidget {
   const SleepHubScreen({super.key});
@@ -128,7 +153,9 @@ class _SleepHubScreenState extends ConsumerState<SleepHubScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -221,17 +248,17 @@ class _HubCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: T.type.h3),
+          Text(title, style: _ShT.type.h3),
           const SizedBox(height: 6),
           Text(
             subtitle,
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _ShT.type.body.copyWith(color: _ShT.pal.textSecondary),
           ),
           if (footer != null) ...[
             const SizedBox(height: 8),
             Text(
               footer!,
-              style: T.type.caption.copyWith(color: T.pal.textTertiary),
+              style: _ShT.type.caption.copyWith(color: _ShT.pal.textTertiary),
             ),
           ],
           const SizedBox(height: 12),

@@ -7,8 +7,37 @@ import 'package:go_router/go_router.dart';
 
 import '../providers/profile_provider.dart';
 import '../theme/reduce_motion.dart';
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
+
+class _SplT {
+  _SplT._();
+
+  static final type = _SplTypeTokens();
+  static const pal = _SplPaletteTokens();
+}
+
+class _SplTypeTokens {
+  TextStyle get splash => SettleTypography.heading.copyWith(
+    fontSize: 32,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.8,
+    height: 1.15,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _SplPaletteTokens {
+  const _SplPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+}
 
 /// Splash screen — app name + tagline, auto-redirects after a short minimum.
 /// Goes to /home if a profile already exists, /onboard otherwise.
@@ -78,19 +107,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               Icon(
                 Icons.nightlight_round,
                 size: 48,
-                color: T.pal.accent,
+                color: _SplT.pal.accent,
               ).entryScaleIn(context, duration: 600.ms, scaleBegin: 0.8),
               const SizedBox(height: 20),
               // App name
               Text(
                 'settle',
-                style: T.type.splash.copyWith(color: T.pal.textPrimary),
+                style: _SplT.type.splash.copyWith(color: _SplT.pal.textPrimary),
               ).entryFadeOnly(context, delay: 200.ms, duration: 600.ms),
               const SizedBox(height: 8),
               // Tagline
               Text(
                 'One step at a time.',
-                style: T.type.overline.copyWith(color: T.pal.textSecondary),
+                style: _SplT.type.overline.copyWith(
+                  color: _SplT.pal.textSecondary,
+                ),
               ).entryFadeOnly(context, delay: 500.ms, duration: 600.ms),
             ],
           ),
