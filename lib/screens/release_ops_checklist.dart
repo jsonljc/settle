@@ -7,10 +7,41 @@ import '../providers/release_rollout_provider.dart';
 import '../services/release_ops_service.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
+
+class _RocT {
+  _RocT._();
+
+  static final type = _RocTypeTokens();
+  static const pal = _RocPaletteTokens();
+  static const glass = _RocGlassTokens();
+}
+
+class _RocTypeTokens {
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption;
+}
+
+class _RocPaletteTokens {
+  const _RocPaletteTokens();
+
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+  Color get teal => SettleColors.sage400;
+}
+
+class _RocGlassTokens {
+  const _RocGlassTokens();
+
+  Color get border => SettleGlassDark.borderStrong;
+}
 
 class ReleaseOpsChecklistScreen extends ConsumerStatefulWidget {
   const ReleaseOpsChecklistScreen({
@@ -79,7 +110,9 @@ class _ReleaseOpsChecklistScreenState
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -90,7 +123,7 @@ class _ReleaseOpsChecklistScreenState
                     child: Icon(
                       Icons.refresh_rounded,
                       size: 20,
-                      color: T.pal.textTertiary,
+                      color: _RocT.pal.textTertiary,
                     ),
                   ),
                 ),
@@ -111,8 +144,8 @@ class _ReleaseOpsChecklistScreenState
                           child: GlassCard(
                             child: Text(
                               'Unable to load release checklist.',
-                              style: T.type.body.copyWith(
-                                color: T.pal.textSecondary,
+                              style: _RocT.type.body.copyWith(
+                                color: _RocT.pal.textSecondary,
                               ),
                             ),
                           ),
@@ -138,13 +171,13 @@ class _ReleaseOpsChecklistScreenState
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Quick controls', style: T.type.h3),
+                                Text('Quick controls', style: _RocT.type.h3),
                                 const SizedBox(height: 8),
                                 if (_isUpdatingRollout) ...[
                                   Text(
                                     'Updating rollout flags…',
-                                    style: T.type.caption.copyWith(
-                                      color: T.pal.textSecondary,
+                                    style: _RocT.type.caption.copyWith(
+                                      color: _RocT.pal.textSecondary,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -190,9 +223,9 @@ class _ReleaseOpsChecklistScreenState
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Divider(color: T.glass.border),
+                                Divider(color: _RocT.glass.border),
                                 const SizedBox(height: 6),
-                                Text('Phase 1 controls', style: T.type.h3),
+                                Text('Phase 1 controls', style: _RocT.type.h3),
                                 const SizedBox(height: 8),
                                 _RolloutSwitchRow(
                                   label: 'Plan tab',
@@ -249,9 +282,9 @@ class _ReleaseOpsChecklistScreenState
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Divider(color: T.glass.border),
+                                Divider(color: _RocT.glass.border),
                                 const SizedBox(height: 6),
-                                Text('Foundation flags', style: T.type.h3),
+                                Text('Foundation flags', style: _RocT.type.h3),
                                 const SizedBox(height: 8),
                                 _RolloutSwitchRow(
                                   label: 'Sleep bounded AI copy',
@@ -356,7 +389,7 @@ class _HeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ready = data.rolloutReady;
-    final color = ready ? T.pal.teal : SettleColors.blush400;
+    final color = ready ? _RocT.pal.teal : SettleColors.blush400;
 
     return GlassCardAccent(
       child: Column(
@@ -364,17 +397,17 @@ class _HeaderCard extends StatelessWidget {
         children: [
           Text(
             ready ? 'Ready to expand rollout' : 'Hold rollout',
-            style: T.type.h3.copyWith(color: T.pal.accent),
+            style: _RocT.type.h3.copyWith(color: _RocT.pal.accent),
           ),
           const SizedBox(height: 8),
           Text(
             'Required: ${data.requiredPassCount}/${data.requiredTotal} · Advisory: ${data.advisoryPassCount}/${data.advisoryTotal}',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _RocT.type.body.copyWith(color: _RocT.pal.textSecondary),
           ),
           const SizedBox(height: 4),
           Text(
             'Status: ${ready ? 'green' : 'needs attention'}',
-            style: T.type.caption.copyWith(
+            style: _RocT.type.caption.copyWith(
               color: color,
               fontWeight: FontWeight.w700,
             ),
@@ -397,10 +430,10 @@ class _GateSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: T.type.h3),
+          Text(title, style: _RocT.type.h3),
           const SizedBox(height: 8),
           ...gates.map((gate) {
-            final color = gate.passed ? T.pal.teal : SettleColors.blush400;
+            final color = gate.passed ? _RocT.pal.teal : SettleColors.blush400;
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
@@ -421,12 +454,12 @@ class _GateSection extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(gate.title, style: T.type.label),
+                        Text(gate.title, style: _RocT.type.label),
                         const SizedBox(height: 2),
                         Text(
                           gate.detail,
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textSecondary,
+                          style: _RocT.type.caption.copyWith(
+                            color: _RocT.pal.textSecondary,
                           ),
                         ),
                       ],
@@ -470,15 +503,19 @@ class _RolloutSwitchRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: T.type.caption.copyWith(
-                  color: enabled ? T.pal.textPrimary : T.pal.textTertiary,
+                style: _RocT.type.caption.copyWith(
+                  color: enabled
+                      ? _RocT.pal.textPrimary
+                      : _RocT.pal.textTertiary,
                 ),
               ),
               if (caption != null) ...[
                 const SizedBox(height: 2),
                 Text(
                   caption!,
-                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                  style: _RocT.type.caption.copyWith(
+                    color: _RocT.pal.textTertiary,
+                  ),
                 ),
               ],
               const SizedBox(height: 8),
@@ -489,7 +526,7 @@ class _RolloutSwitchRow extends StatelessWidget {
           key: switchKey,
           value: value,
           onChanged: enabled ? onChanged : null,
-          activeColor: T.pal.accent,
+          activeColor: _RocT.pal.accent,
         ),
       ],
     );

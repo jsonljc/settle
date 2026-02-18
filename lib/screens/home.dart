@@ -12,9 +12,56 @@ import '../widgets/settle_disclosure.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/settle_gap.dart';
+
+class _HmT {
+  _HmT._();
+
+  static final type = _HmTypeTokens();
+  static const pal = _HmPaletteTokens();
+  static const glass = _HmGlassTokens();
+  static const radius = _HmRadiusTokens();
+}
+
+class _HmTypeTokens {
+  TextStyle get h1 => SettleTypography.display.copyWith(
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.5,
+    height: 1.2,
+  );
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption;
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _HmPaletteTokens {
+  const _HmPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _HmGlassTokens {
+  const _HmGlassTokens();
+
+  Color get fill => SettleGlassDark.backgroundStrong;
+  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
+}
+
+class _HmRadiusTokens {
+  const _HmRadiusTokens();
+
+  double get pill => SettleRadii.pill;
+}
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({
@@ -87,7 +134,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -97,12 +146,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Text(
                       'Home',
-                      style: T.type.overline.copyWith(
-                        color: T.pal.textTertiary,
+                      style: _HmT.type.overline.copyWith(
+                        color: _HmT.pal.textTertiary,
                       ),
                     ),
                     SettleGap.sm(),
-                    Text(profile.name, style: T.type.h1),
+                    Text(profile.name, style: _HmT.type.h1),
                   ],
                 ),
                 SettleGap.md(),
@@ -110,7 +159,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   _isNight
                       ? 'It\'s nighttime. You\'re here — that\'s the first step.'
                       : 'You\'re here. That\'s the first step.',
-                  style: T.type.caption.copyWith(color: T.pal.textSecondary),
+                  style: _HmT.type.caption.copyWith(
+                    color: _HmT.pal.textSecondary,
+                  ),
                 ),
                 if (rolloutReady &&
                     (!rollout.helpNowEnabled ||
@@ -120,7 +171,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   SettleGap.sm(),
                   Text(
                     'Some sections are taking a short break.',
-                    style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                    style: _HmT.type.caption.copyWith(
+                      color: _HmT.pal.textTertiary,
+                    ),
                   ),
                 ],
                 SettleGap.lg(),
@@ -136,20 +189,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             children: [
                               Text(
                                 'Start here',
-                                style: T.type.overline.copyWith(
-                                  color: T.pal.textTertiary,
+                                style: _HmT.type.overline.copyWith(
+                                  color: _HmT.pal.textTertiary,
                                 ),
                               ),
                               SettleGap.sm(),
                               Text(
                                 'Help with what\'s happening',
-                                style: T.type.h3,
+                                style: _HmT.type.h3,
                               ),
                               SettleGap.sm(),
                               Text(
                                 'We\'ll give you one thing to say and do.',
-                                style: T.type.caption.copyWith(
-                                  color: T.pal.textSecondary,
+                                style: _HmT.type.caption.copyWith(
+                                  color: _HmT.pal.textSecondary,
                                 ),
                               ),
                               SettleGap.md(),
@@ -206,8 +259,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 SettleGap.sm(),
                                 Text(
                                   'No plan yet. This opens Sleep Tonight.',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textTertiary,
+                                  style: _HmT.type.caption.copyWith(
+                                    color: _HmT.pal.textTertiary,
                                   ),
                                 ),
                               ],
@@ -275,19 +328,19 @@ class _MoreActionTile extends StatelessWidget {
         onTap: enabled ? onTap : null,
         child: GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          fill: T.glass.fill,
+          fill: _HmT.glass.fill,
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label, style: T.type.label),
+                    Text(label, style: _HmT.type.label),
                     SettleGap.xs(),
                     Text(
                       subtitle,
-                      style: T.type.caption.copyWith(
-                        color: T.pal.textSecondary,
+                      style: _HmT.type.caption.copyWith(
+                        color: _HmT.pal.textSecondary,
                       ),
                     ),
                   ],
@@ -301,13 +354,13 @@ class _MoreActionTile extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: T.glass.fillAccent,
-                    borderRadius: BorderRadius.circular(T.radius.pill),
+                    color: _HmT.glass.fillAccent,
+                    borderRadius: BorderRadius.circular(_HmT.radius.pill),
                   ),
                   child: Text(
                     '$badge',
-                    style: T.type.caption.copyWith(
-                      color: T.pal.accent,
+                    style: _HmT.type.caption.copyWith(
+                      color: _HmT.pal.accent,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -315,7 +368,7 @@ class _MoreActionTile extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,
-                color: T.pal.textTertiary,
+                color: _HmT.pal.textTertiary,
               ),
             ],
           ),
