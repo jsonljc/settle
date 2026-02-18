@@ -7,9 +7,38 @@ import '../../tantrum/services/tantrum_insights_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/tantrum_sub_nav.dart';
+
+class _TiT {
+  _TiT._();
+
+  static final type = _TiTypeTokens();
+  static const pal = _TiPaletteTokens();
+  static const glass = _TiGlassTokens();
+}
+
+class _TiTypeTokens {
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption;
+}
+
+class _TiPaletteTokens {
+  const _TiPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get accent => SettleColors.nightAccent;
+}
+
+class _TiGlassTokens {
+  const _TiGlassTokens();
+
+  Color get fill => SettleGlassDark.backgroundStrong;
+  Color get border => SettleGlassDark.borderStrong;
+}
 
 class TantrumInsightsScreen extends ConsumerWidget {
   const TantrumInsightsScreen({super.key});
@@ -26,7 +55,9 @@ class TantrumInsightsScreen extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -75,13 +106,13 @@ class _LockedInsightsView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Insights unlock at 5 logs', style: T.type.h3),
+              Text('Insights unlock at 5 logs', style: _TiT.type.h3),
               const SizedBox(height: 8),
               Text(
                 remainingCount == 0
                     ? 'You unlocked insights. Keep logging to sharpen the pattern.'
                     : 'You are $remainingCount log${remainingCount == 1 ? '' : 's'} away from your first pattern insight.',
-                style: T.type.body.copyWith(color: T.pal.textSecondary),
+                style: _TiT.type.body.copyWith(color: _TiT.pal.textSecondary),
               ),
             ],
           ),
@@ -92,7 +123,7 @@ class _LockedInsightsView extends StatelessWidget {
         GlassCard(
           child: Text(
             'You may notice better insight when each moment is logged the same quick way.',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _TiT.type.body.copyWith(color: _TiT.pal.textSecondary),
           ),
         ),
       ],
@@ -112,7 +143,7 @@ class _UnlockProgress extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Progress', style: T.type.label),
+          Text('Progress', style: _TiT.type.label),
           const SizedBox(height: 10),
           Row(
             children: List.generate(TantrumInsightsService.unlockThreshold, (
@@ -125,13 +156,13 @@ class _UnlockProgress extends StatelessWidget {
                   height: 10,
                   decoration: BoxDecoration(
                     color: on
-                        ? T.pal.accent.withValues(alpha: 0.6)
-                        : T.glass.fill,
+                        ? _TiT.pal.accent.withValues(alpha: 0.6)
+                        : _TiT.glass.fill,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: on
-                          ? T.pal.accent.withValues(alpha: 0.5)
-                          : T.glass.border,
+                          ? _TiT.pal.accent.withValues(alpha: 0.5)
+                          : _TiT.glass.border,
                     ),
                   ),
                 ),
@@ -141,7 +172,7 @@ class _UnlockProgress extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             '$active / ${TantrumInsightsService.unlockThreshold} logs',
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: _TiT.type.caption.copyWith(color: _TiT.pal.textSecondary),
           ),
         ],
       ),
@@ -170,11 +201,13 @@ class _InsightsView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Pattern insights', style: T.type.h3),
+              Text('Pattern insights', style: _TiT.type.h3),
               const SizedBox(height: 8),
               Text(
                 'Based on your recent logs',
-                style: T.type.caption.copyWith(color: T.pal.textSecondary),
+                style: _TiT.type.caption.copyWith(
+                  color: _TiT.pal.textSecondary,
+                ),
               ),
               const SizedBox(height: 12),
               ...lines.asMap().entries.map(
@@ -193,7 +226,7 @@ class _InsightsView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Time pattern', style: T.type.label),
+              Text('Time pattern', style: _TiT.type.label),
               const SizedBox(height: 10),
               ...DayBucket.values.map(
                 (bucket) => Padding(
@@ -237,7 +270,7 @@ class _InsightLine extends StatelessWidget {
             width: 6,
             height: 6,
             decoration: BoxDecoration(
-              color: T.pal.accent.withValues(alpha: 0.8),
+              color: _TiT.pal.accent.withValues(alpha: 0.8),
               shape: BoxShape.circle,
             ),
           ),
@@ -246,7 +279,7 @@ class _InsightLine extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _TiT.type.body.copyWith(color: _TiT.pal.textSecondary),
           ),
         ),
       ],
@@ -274,7 +307,7 @@ class _BucketRow extends StatelessWidget {
           width: 78,
           child: Text(
             label,
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: _TiT.type.caption.copyWith(color: _TiT.pal.textSecondary),
           ),
         ),
         Expanded(
@@ -283,9 +316,9 @@ class _BucketRow extends StatelessWidget {
             child: LinearProgressIndicator(
               value: fill,
               minHeight: 8,
-              backgroundColor: T.glass.fill,
+              backgroundColor: _TiT.glass.fill,
               valueColor: AlwaysStoppedAnimation(
-                T.pal.accent.withValues(alpha: 0.7),
+                _TiT.pal.accent.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -296,7 +329,7 @@ class _BucketRow extends StatelessWidget {
           child: Text(
             '$value',
             textAlign: TextAlign.right,
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: _TiT.type.caption.copyWith(color: _TiT.pal.textSecondary),
           ),
         ),
       ],
