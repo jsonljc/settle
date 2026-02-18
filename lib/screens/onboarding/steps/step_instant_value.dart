@@ -2,10 +2,38 @@ import 'package:flutter/material.dart';
 
 import '../../../services/card_content_service.dart';
 import '../../../theme/glass_components.dart';
-import '../../../theme/settle_tokens.dart';
+import '../../../theme/settle_design_system.dart';
 import '../../../widgets/calm_loading.dart';
 import '../../../widgets/output_card.dart';
 import '../../../widgets/script_card.dart';
+
+class _SivT {
+  _SivT._();
+
+  static final type = _SivTypeTokens();
+  static const pal = _SivPaletteTokens();
+}
+
+class _SivTypeTokens {
+  TextStyle get h1 => SettleTypography.heading.copyWith(
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _SivPaletteTokens {
+  const _SivPaletteTokens();
+
+  Color get teal => SettleColors.sage400;
+  Color get textSecondary => SettleColors.nightSoft;
+}
 
 class StepInstantValue extends StatelessWidget {
   const StepInstantValue({
@@ -28,27 +56,25 @@ class StepInstantValue extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Instant value', style: T.type.h1),
+        Text('Instant value', style: _SivT.type.h1),
         const SizedBox(height: 10),
         Text(
           'Here is a first script for $challengeLabel.',
-          style: T.type.caption.copyWith(color: T.pal.textSecondary),
+          style: _SivT.type.caption.copyWith(color: _SivT.pal.textSecondary),
         ),
         const SizedBox(height: 16),
         if (loading)
           const GlassCard(
             child: SizedBox(
               height: 140,
-              child: const Center(
-                child: CalmLoading(message: 'Almost there…'),
-              ),
+              child: Center(child: CalmLoading(message: 'Almost there…')),
             ),
           )
         else if (card == null)
           GlassCard(
             child: Text(
               'Could not load a script right now. You can still continue.',
-              style: T.type.body.copyWith(color: T.pal.textSecondary),
+              style: _SivT.type.body.copyWith(color: _SivT.pal.textSecondary),
             ),
           )
         else
@@ -73,7 +99,7 @@ class StepInstantValue extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'Saved to My Playbook',
-            style: T.type.label.copyWith(color: T.pal.teal),
+            style: _SivT.type.label.copyWith(color: _SivT.pal.teal),
           ),
         ],
       ],
