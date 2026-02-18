@@ -9,11 +9,50 @@ import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/calm_loading.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
 import '../widgets/error_state.dart';
+
+class _FrT {
+  _FrT._();
+
+  static final type = _FrTypeTokens();
+  static const pal = _FrPaletteTokens();
+  static const glass = _FrGlassTokens();
+  static const radius = _FrRadiusTokens();
+}
+
+class _FrTypeTokens {
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption;
+}
+
+class _FrPaletteTokens {
+  const _FrPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get teal => SettleColors.sage400;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _FrGlassTokens {
+  const _FrGlassTokens();
+
+  Color get fill => SettleGlassDark.backgroundStrong;
+  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
+}
+
+class _FrRadiusTokens {
+  const _FrRadiusTokens();
+
+  double get pill => SettleRadii.pill;
+  double get md => 18;
+}
 
 String _ruleLabel(String ruleId) {
   return switch (ruleId) {
@@ -50,7 +89,9 @@ class FamilyRulesScreen extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -65,12 +106,12 @@ class FamilyRulesScreen extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: T.glass.fillAccent,
-                      borderRadius: BorderRadius.circular(T.radius.pill),
+                      color: _FrT.glass.fillAccent,
+                      borderRadius: BorderRadius.circular(_FrT.radius.pill),
                     ),
                     child: Text(
                       'v${rulesState.rulesetVersion}',
-                      style: T.type.caption.copyWith(color: T.pal.accent),
+                      style: _FrT.type.caption.copyWith(color: _FrT.pal.accent),
                     ),
                   ),
                 ),
@@ -81,17 +122,15 @@ class FamilyRulesScreen extends ConsumerWidget {
                   child: rulesState.isLoading
                       ? const CalmLoading(message: 'Loading shared scripts…')
                       : rulesState.error != null
-                          ? SettleErrorState(
-                              message: rulesState.error!,
-                              onRetry: () => ref
-                                  .read(familyRulesProvider.notifier)
-                                  .load(),
-                            )
-                          : ListView(
+                      ? SettleErrorState(
+                          message: rulesState.error!,
+                          onRetry: () =>
+                              ref.read(familyRulesProvider.notifier).load(),
+                        )
+                      : ListView(
                           physics: const BouncingScrollPhysics(),
                           children: [
-                            _PendingDiffs(
-                                childId: childId, state: rulesState),
+                            _PendingDiffs(childId: childId, state: rulesState),
                             const SizedBox(height: 10),
                             _RulesEditor(
                               title: 'Boundary scripts',
@@ -116,7 +155,7 @@ class FamilyRulesScreen extends ConsumerWidget {
                               ),
                               child: SettleDisclosure(
                                 title: 'More details (optional)',
-                                titleStyle: T.type.h3,
+                                titleStyle: _FrT.type.h3,
                                 subtitle:
                                     'Defaults, tonight context, and recent updates.',
                                 children: [
@@ -147,7 +186,7 @@ class FamilyRulesScreen extends ConsumerWidget {
                                   const SizedBox(height: 10),
                                   Text(
                                     'Tonight plan context',
-                                    style: T.type.h3,
+                                    style: _FrT.type.h3,
                                   ),
                                   const SizedBox(height: 8),
                                   if (sleepPlan == null ||
@@ -155,33 +194,33 @@ class FamilyRulesScreen extends ConsumerWidget {
                                           false))
                                     Text(
                                       'No active sleep plan yet tonight.',
-                                      style: T.type.caption.copyWith(
-                                        color: T.pal.textSecondary,
+                                      style: _FrT.type.caption.copyWith(
+                                        color: _FrT.pal.textSecondary,
                                       ),
                                     )
                                   else ...[
                                     Text(
                                       'Scenario: ${sleepPlan['scenario']}',
-                                      style: T.type.caption,
+                                      style: _FrT.type.caption,
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       sleepPlan['escalation_rule']
                                               ?.toString() ??
                                           '',
-                                      style: T.type.body.copyWith(
-                                        color: T.pal.textSecondary,
+                                      style: _FrT.type.body.copyWith(
+                                        color: _FrT.pal.textSecondary,
                                       ),
                                     ),
                                   ],
                                   const SizedBox(height: 12),
-                                  Text('Recent updates', style: T.type.h3),
+                                  Text('Recent updates', style: _FrT.type.h3),
                                   const SizedBox(height: 8),
                                   if (rulesState.changeFeed.isEmpty)
                                     Text(
                                       'No updates yet.',
-                                      style: T.type.caption.copyWith(
-                                        color: T.pal.textSecondary,
+                                      style: _FrT.type.caption.copyWith(
+                                        color: _FrT.pal.textSecondary,
                                       ),
                                     )
                                   else
@@ -194,8 +233,8 @@ class FamilyRulesScreen extends ConsumerWidget {
                                             ),
                                             child: Text(
                                               '• ${item['message']} (${item['timestamp'].toString().split('T').first})',
-                                              style: T.type.caption.copyWith(
-                                                color: T.pal.textSecondary,
+                                              style: _FrT.type.caption.copyWith(
+                                                color: _FrT.pal.textSecondary,
                                               ),
                                             ),
                                           ),
@@ -281,7 +320,7 @@ class _RulesEditorState extends State<_RulesEditor> {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.title, style: T.type.h3),
+        Text(widget.title, style: _FrT.type.h3),
         const SizedBox(height: 8),
         ...widget.rules.keys.map((ruleId) {
           final controller = _controllers[ruleId]!;
@@ -292,14 +331,14 @@ class _RulesEditorState extends State<_RulesEditor> {
               children: [
                 TextField(
                   controller: controller,
-                  style: T.type.caption,
+                  style: _FrT.type.caption,
                   decoration: InputDecoration(
                     labelText: _ruleLabel(ruleId),
-                    labelStyle: T.type.caption.copyWith(
-                      color: T.pal.textTertiary,
+                    labelStyle: _FrT.type.caption.copyWith(
+                      color: _FrT.pal.textTertiary,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(T.radius.md),
+                      borderRadius: BorderRadius.circular(_FrT.radius.md),
                     ),
                   ),
                   onSubmitted: (_) => _saveRule(ruleId),
@@ -315,8 +354,8 @@ class _RulesEditorState extends State<_RulesEditor> {
                       const SizedBox(width: 8),
                       Text(
                         'Saved',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.teal,
+                        style: _FrT.type.caption.copyWith(
+                          color: _FrT.pal.teal,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -333,7 +372,7 @@ class _RulesEditorState extends State<_RulesEditor> {
     if (widget.embedded) {
       return GlassCard(
         padding: const EdgeInsets.all(16),
-        fill: T.glass.fill,
+        fill: _FrT.glass.fill,
         child: content,
       );
     }
@@ -360,12 +399,12 @@ class _PendingDiffs extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Pending updates', style: T.type.h3),
+          Text('Pending updates', style: _FrT.type.h3),
           const SizedBox(height: 8),
           if (state.pendingDiffs.isEmpty)
             Text(
               'No updates waiting.',
-              style: T.type.caption.copyWith(color: T.pal.textSecondary),
+              style: _FrT.type.caption.copyWith(color: _FrT.pal.textSecondary),
             )
           else
             ...byRule.entries.map((entry) {
@@ -381,7 +420,7 @@ class _PendingDiffs extends ConsumerWidget {
                     children: [
                       Text(
                         'Choose one final version for ${_ruleLabel(ruleId)}.',
-                        style: T.type.label,
+                        style: _FrT.type.label,
                       ),
                       const SizedBox(height: 6),
                       ...overlapConflicts.map((diff) {
@@ -399,15 +438,15 @@ class _PendingDiffs extends ConsumerWidget {
                               children: [
                                 Text(
                                   diff.newValue,
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textSecondary,
+                                  style: _FrT.type.caption.copyWith(
+                                    color: _FrT.pal.textSecondary,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   'Updated by ${diff.author} on $dateLabel',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textTertiary,
+                                  style: _FrT.type.caption.copyWith(
+                                    color: _FrT.pal.textTertiary,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -446,19 +485,19 @@ class _PendingDiffs extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(_ruleLabel(ruleId), style: T.type.label),
+                          Text(_ruleLabel(ruleId), style: _FrT.type.label),
                           const SizedBox(height: 8),
                           Text(
                             'Current: ${diff.oldValue}',
-                            style: T.type.caption.copyWith(
-                              color: T.pal.textTertiary,
+                            style: _FrT.type.caption.copyWith(
+                              color: _FrT.pal.textTertiary,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Suggested: ${diff.newValue}',
-                            style: T.type.caption.copyWith(
-                              color: T.pal.textSecondary,
+                            style: _FrT.type.caption.copyWith(
+                              color: _FrT.pal.textSecondary,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -497,10 +536,10 @@ class _RuleActionLink extends StatelessWidget {
       onTap: onTap,
       child: Text(
         label,
-        style: T.type.caption.copyWith(
-          color: T.pal.textTertiary,
+        style: _FrT.type.caption.copyWith(
+          color: _FrT.pal.textTertiary,
           decoration: TextDecoration.underline,
-          decorationColor: T.pal.textTertiary,
+          decorationColor: _FrT.pal.textTertiary,
         ),
       ),
     );
