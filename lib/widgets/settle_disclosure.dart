@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
 /// Drop-in replacement for the `Theme(dividerColor: transparent) +
 /// ExpansionTile(tilePadding: zero, childrenPadding: zero, …)` pattern
@@ -19,7 +19,7 @@ class SettleDisclosure extends StatefulWidget {
 
   final String title;
 
-  /// Override the default title style (`T.type.label`).
+  /// Override the default title style.
   final TextStyle? titleStyle;
   final String? subtitle;
   final bool initiallyExpanded;
@@ -33,7 +33,7 @@ class _SettleDisclosureState extends State<SettleDisclosure>
     with SingleTickerProviderStateMixin {
   late bool _expanded = widget.initiallyExpanded;
   late final AnimationController _controller = AnimationController(
-    duration: T.anim.normal,
+    duration: const Duration(milliseconds: 250),
     vsync: this,
     value: _expanded ? 1.0 : 0.0,
   );
@@ -67,7 +67,9 @@ class _SettleDisclosureState extends State<SettleDisclosure>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final reduced = MediaQuery.of(context).disableAnimations;
-    _controller.duration = reduced ? Duration.zero : T.anim.normal;
+    _controller.duration = reduced
+        ? Duration.zero
+        : const Duration(milliseconds: 250);
   }
 
   @override
@@ -87,14 +89,19 @@ class _SettleDisclosureState extends State<SettleDisclosure>
                   children: [
                     Text(
                       widget.title,
-                      style: widget.titleStyle ?? T.type.label,
+                      style:
+                          widget.titleStyle ??
+                          SettleTypography.body.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: SettleColors.nightText,
+                          ),
                     ),
                     if (widget.subtitle != null) ...[
                       const SizedBox(height: 2),
                       Text(
                         widget.subtitle!,
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
+                        style: SettleTypography.caption.copyWith(
+                          color: SettleColors.nightSoft,
                         ),
                       ),
                     ],
@@ -106,7 +113,7 @@ class _SettleDisclosureState extends State<SettleDisclosure>
                 child: Icon(
                   Icons.expand_more_rounded,
                   size: 20,
-                  color: T.pal.textSecondary,
+                  color: SettleColors.nightSoft,
                 ),
               ),
             ],

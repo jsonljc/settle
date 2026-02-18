@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
 /// Variant of chip used in the Settle design system.
 enum SettleChipVariant {
@@ -16,8 +16,6 @@ enum SettleChipVariant {
 }
 
 /// Shared chip widget replacing ad-hoc _TagChip, _ActionChip, _FrequencyChip.
-/// Uses [T.pal], [T.type], [T.radius], [T.glass]. Selected state uses glass
-/// fill accent; unselected uses [T.glass.fill] and subtle border.
 class SettleChip extends StatelessWidget {
   const SettleChip({
     super.key,
@@ -52,30 +50,41 @@ class SettleChip extends StatelessWidget {
 
     switch (variant) {
       case SettleChipVariant.tag:
-        fill = selected ? T.glass.fillAccent : T.glass.fill;
-        borderColor = selected ? T.pal.accent : T.glass.border;
-        textColor = selected ? T.pal.accent : T.pal.textSecondary;
-        textStyle = T.type.caption.copyWith(
+        fill = selected
+            ? SettleColors.dusk600.withValues(alpha: 0.18)
+            : SettleGlassDark.backgroundStrong;
+        borderColor = selected
+            ? SettleColors.dusk400.withValues(alpha: 0.50)
+            : SettleGlassDark.borderStrong;
+        textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
+        textStyle = SettleTypography.caption.copyWith(
           color: textColor,
           fontWeight: FontWeight.w600,
         );
         break;
       case SettleChipVariant.action:
-        fill = selected ? T.glass.fillAccent : T.glass.fill;
-        borderColor = T.glass.border;
-        textColor = selected ? T.pal.accent : T.pal.textSecondary;
-        textStyle = T.type.caption.copyWith(
+        fill = selected
+            ? SettleColors.dusk600.withValues(alpha: 0.16)
+            : SettleGlassDark.background;
+        borderColor = SettleGlassDark.borderStrong;
+        textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
+        textStyle = SettleTypography.caption.copyWith(
           color: textColor,
           fontWeight: FontWeight.w600,
         );
         break;
       case SettleChipVariant.frequency:
-        fill = selected ? T.glass.fillAccent : T.glass.fill;
+        fill = selected
+            ? SettleColors.dusk600.withValues(alpha: 0.16)
+            : SettleGlassDark.background;
         borderColor = selected
-            ? T.pal.accent.withValues(alpha: 0.4)
-            : T.glass.border;
-        textColor = selected ? T.pal.accent : T.pal.textSecondary;
-        textStyle = T.type.label.copyWith(color: textColor);
+            ? SettleColors.dusk400.withValues(alpha: 0.45)
+            : SettleGlassDark.borderStrong;
+        textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
+        textStyle = SettleTypography.body.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.w600,
+        );
         break;
     }
 
@@ -95,15 +104,15 @@ class SettleChip extends StatelessWidget {
                   onTap!();
                 }
               : null,
-          borderRadius: BorderRadius.circular(T.radius.pill),
+          borderRadius: BorderRadius.circular(SettleRadii.pill),
           child: Container(
             padding: EdgeInsets.symmetric(
-              horizontal: T.space.md,
-              vertical: T.space.sm,
+              horizontal: SettleSpacing.md,
+              vertical: SettleSpacing.sm,
             ),
             decoration: BoxDecoration(
               color: fill,
-              borderRadius: BorderRadius.circular(T.radius.pill),
+              borderRadius: BorderRadius.circular(SettleRadii.pill),
               border: Border.all(color: borderColor),
             ),
             child: Row(
@@ -111,7 +120,7 @@ class SettleChip extends StatelessWidget {
               children: [
                 if (icon != null) ...[
                   Icon(icon, size: 18, color: textColor),
-                  SizedBox(width: T.space.sm),
+                  SizedBox(width: SettleSpacing.sm),
                 ],
                 Text(displayLabel, style: textStyle),
               ],

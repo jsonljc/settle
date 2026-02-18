@@ -3,7 +3,6 @@ import 'package:flutter/semantics.dart';
 
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
-import '../theme/settle_tokens.dart';
 import 'settle_gap.dart';
 
 /// Standard bottom sheet content: glass surface, handle bar, optional title and
@@ -28,20 +27,23 @@ class SettleModalSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final padding =
         contentPadding ??
-        EdgeInsets.symmetric(horizontal: T.space.md, vertical: T.space.lg);
+        const EdgeInsets.symmetric(
+          horizontal: SettleSpacing.md,
+          vertical: SettleSpacing.lg,
+        );
 
     final sheetBody = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: EdgeInsets.only(top: T.space.sm),
+          padding: const EdgeInsets.only(top: SettleSpacing.sm),
           child: Center(
             child: Container(
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: T.pal.textTertiary,
+                color: SettleColors.nightMuted.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -57,7 +59,7 @@ class SettleModalSheet extends StatelessWidget {
                 if (title != null) ...[
                   Semantics(
                     header: true,
-                    child: Text(title!, style: T.type.h3),
+                    child: Text(title!, style: SettleTypography.heading),
                   ),
                   SettleGap.md(),
                 ],
@@ -134,7 +136,7 @@ Future<TResult?> showSettleSheet<TResult>(
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           SettleSpacing.screenPadding,
-          T.space.md,
+          SettleSpacing.md,
           SettleSpacing.screenPadding,
           SettleSpacing.screenPadding + MediaQuery.viewInsetsOf(context).bottom,
         ),

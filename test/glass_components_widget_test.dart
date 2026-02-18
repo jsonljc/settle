@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -213,7 +212,7 @@ void main() {
       await _pumpNavBar(tester, brightness: Brightness.light);
 
       final activeIcon = tester.widget<Icon>(find.byIcon(Icons.home));
-      expect(activeIcon.color, SettleColors.dusk600);
+      expect(activeIcon.color, SettleColors.ink900);
       expect(tester.takeException(), isNull);
     });
 
@@ -221,7 +220,7 @@ void main() {
       await _pumpNavBar(tester, brightness: Brightness.dark);
 
       final activeIcon = tester.widget<Icon>(find.byIcon(Icons.home));
-      expect(activeIcon.color, SettleColors.nightAccent);
+      expect(activeIcon.color, SettleColors.nightText);
     });
 
     testWidgets('explicit variant switching overrides brightness', (
@@ -234,7 +233,7 @@ void main() {
       );
       expect(
         tester.widget<Icon>(find.byIcon(Icons.home)).color,
-        SettleColors.nightAccent,
+        SettleColors.nightText,
       );
 
       await _pumpNavBar(
@@ -244,7 +243,7 @@ void main() {
       );
       expect(
         tester.widget<Icon>(find.byIcon(Icons.home)).color,
-        SettleColors.dusk600,
+        SettleColors.ink900,
       );
     });
   });

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 import 'settle_chip.dart';
 
 /// A single-select group of options rendered as chips in a shared glass container.
@@ -30,17 +30,17 @@ class SettleSegmentedChoice<TOption> extends StatelessWidget {
       label: groupSemanticLabel,
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: T.space.sm,
-          vertical: T.space.sm,
+          horizontal: SettleSpacing.sm,
+          vertical: SettleSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: T.glass.fill,
-          borderRadius: BorderRadius.circular(T.radius.lg),
-          border: Border.all(color: T.glass.border),
+          color: SettleGlassDark.background,
+          borderRadius: BorderRadius.circular(SettleRadii.glass),
+          border: Border.all(color: SettleGlassDark.borderStrong),
         ),
         child: Wrap(
-          spacing: T.space.sm,
-          runSpacing: T.space.sm,
+          spacing: SettleSpacing.sm,
+          runSpacing: SettleSpacing.sm,
           children: List.generate(options.length, (index) {
             final value = options[index];
             final isSelected = selected == value;
