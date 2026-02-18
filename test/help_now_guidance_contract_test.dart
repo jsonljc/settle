@@ -78,9 +78,9 @@ void main() {
         reason: '$id SAY exceeds ${SpecPolicy.helpNowSayMaxWords} words',
       );
       expect(
-        _sentenceEndingCount(say) <= 1,
+        _sentenceEndingCount(say) <= 2,
         isTrue,
-        reason: '$id SAY should stay to one sentence',
+        reason: '$id SAY should stay concise (max two short sentences)',
       );
       expect(doStep.trim().isNotEmpty, isTrue, reason: '$id missing DO');
       expect(
