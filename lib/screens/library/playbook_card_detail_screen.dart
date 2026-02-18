@@ -9,12 +9,44 @@ import '../../utils/share_text.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/calm_loading.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
+
+class _PcdT {
+  _PcdT._();
+
+  static final type = _PcdTypeTokens();
+  static const pal = _PcdPaletteTokens();
+  static const space = _PcdSpaceTokens();
+}
+
+class _PcdTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+}
+
+class _PcdPaletteTokens {
+  const _PcdPaletteTokens();
+
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+}
+
+class _PcdSpaceTokens {
+  const _PcdSpaceTokens();
+
+  double get sm => 8;
+  double get lg => 16;
+  double get xxl => 24;
+}
 
 /// View a single playbook (repair) card — same display as Reset card view.
 /// Send (text-only) and Remove (single tap, no modal).
@@ -33,9 +65,7 @@ class PlaybookCardDetailScreen extends ConsumerWidget {
         if (snapshot.connectionState != ConnectionState.done) {
           return Scaffold(
             body: GradientBackgroundFromRoute(
-              child: const Center(
-                child: CalmLoading(message: 'Loading card…'),
-              ),
+              child: const Center(child: CalmLoading(message: 'Loading card…')),
             ),
           );
         }
@@ -44,7 +74,9 @@ class PlaybookCardDetailScreen extends ConsumerWidget {
             body: GradientBackgroundFromRoute(
               child: SafeArea(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SettleSpacing.screenPadding,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -55,7 +87,9 @@ class PlaybookCardDetailScreen extends ConsumerWidget {
                       SettleGap.xl(),
                       Text(
                         'This card is no longer available.',
-                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                        style: _PcdT.type.body.copyWith(
+                          color: _PcdT.pal.textSecondary,
+                        ),
                       ),
                       SettleGap.lg(),
                       GlassCta(
@@ -86,7 +120,9 @@ class _Content extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -102,8 +138,8 @@ class _Content extends ConsumerWidget {
                       children: [
                         GlassCard(
                           padding: EdgeInsets.symmetric(
-                            vertical: T.space.xxl,
-                            horizontal: T.space.lg,
+                            vertical: _PcdT.space.xxl,
+                            horizontal: _PcdT.space.lg,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,16 +148,16 @@ class _Content extends ConsumerWidget {
                                 header: true,
                                 child: Text(
                                   card.title,
-                                  style: T.type.h3.copyWith(
-                                    color: T.pal.textPrimary,
+                                  style: _PcdT.type.h3.copyWith(
+                                    color: _PcdT.pal.textPrimary,
                                   ),
                                 ),
                               ),
                               SettleGap.xl(),
                               Text(
                                 card.body,
-                                style: T.type.body.copyWith(
-                                  color: T.pal.textSecondary,
+                                style: _PcdT.type.body.copyWith(
+                                  color: _PcdT.pal.textSecondary,
                                   height: 1.6,
                                 ),
                               ),
@@ -137,12 +173,12 @@ class _Content extends ConsumerWidget {
                             onTap: () => _remove(context, ref),
                             child: Padding(
                               padding: EdgeInsets.symmetric(
-                                vertical: T.space.sm,
+                                vertical: _PcdT.space.sm,
                               ),
                               child: Text(
                                 'Remove',
-                                style: T.type.label.copyWith(
-                                  color: T.pal.textSecondary,
+                                style: _PcdT.type.label.copyWith(
+                                  color: _PcdT.pal.textSecondary,
                                 ),
                               ),
                             ),
