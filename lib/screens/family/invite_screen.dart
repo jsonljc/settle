@@ -4,8 +4,32 @@ import 'package:flutter/services.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
+
+class _InvT {
+  _InvT._();
+
+  static final type = _InvTypeTokens();
+  static const pal = _InvPaletteTokens();
+}
+
+class _InvTypeTokens {
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _InvPaletteTokens {
+  const _InvPaletteTokens();
+
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
 
 /// Invite flow MVP: copy invite link (deep link). No backend delivery yet.
 class InviteScreen extends StatefulWidget {
@@ -38,7 +62,9 @@ class _InviteScreenState extends State<InviteScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -50,7 +76,9 @@ class _InviteScreenState extends State<InviteScreen> {
                 const SizedBox(height: 20),
                 Text(
                   'They\'ll be included in your plan and can see the same scripts you use.',
-                  style: T.type.body.copyWith(color: T.pal.textSecondary),
+                  style: _InvT.type.body.copyWith(
+                    color: _InvT.pal.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 GlassCard(
@@ -59,13 +87,15 @@ class _InviteScreenState extends State<InviteScreen> {
                     children: [
                       Text(
                         'Invite link',
-                        style: T.type.label.copyWith(color: T.pal.textTertiary),
+                        style: _InvT.type.label.copyWith(
+                          color: _InvT.pal.textTertiary,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       SelectableText(
                         _inviteLink,
-                        style: T.type.body.copyWith(
-                          color: T.pal.textPrimary,
+                        style: _InvT.type.body.copyWith(
+                          color: _InvT.pal.textPrimary,
                           fontSize: 13,
                         ),
                       ),
@@ -80,7 +110,9 @@ class _InviteScreenState extends State<InviteScreen> {
                 const SizedBox(height: 24),
                 Text(
                   'Share this link by message or email. When they open it, they can join your plan. (Delivery and sign-up flow coming soon.)',
-                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                  style: _InvT.type.caption.copyWith(
+                    color: _InvT.pal.textTertiary,
+                  ),
                 ),
               ],
             ),

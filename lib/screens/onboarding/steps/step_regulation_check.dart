@@ -2,8 +2,37 @@ import 'package:flutter/material.dart';
 
 import '../../../models/approach.dart';
 import '../../../theme/glass_components.dart';
-import '../../../theme/settle_tokens.dart';
+import '../../../theme/settle_design_system.dart';
 import '../../../widgets/option_button.dart';
+
+class _SrcT {
+  _SrcT._();
+
+  static final type = _SrcTypeTokens();
+  static const pal = _SrcPaletteTokens();
+}
+
+class _SrcTypeTokens {
+  TextStyle get h1 => SettleTypography.heading.copyWith(
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _SrcPaletteTokens {
+  const _SrcPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+}
 
 class StepRegulationCheck extends StatelessWidget {
   const StepRegulationCheck({
@@ -50,11 +79,11 @@ class StepRegulationCheck extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('How are you feeling right now?', style: T.type.h1),
+        Text('How are you feeling right now?', style: _SrcT.type.h1),
         const SizedBox(height: 10),
         Text(
           'We use this to prioritize regulate support in Plan.',
-          style: T.type.caption.copyWith(color: T.pal.textSecondary),
+          style: _SrcT.type.caption.copyWith(color: _SrcT.pal.textSecondary),
         ),
         const SizedBox(height: 20),
         ..._options.map((option) {
@@ -75,11 +104,13 @@ class StepRegulationCheck extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Regulate preview ready', style: T.type.h3),
+                Text('Regulate preview ready', style: _SrcT.type.h3),
                 const SizedBox(height: 6),
                 Text(
                   _previewForLevel(selected!),
-                  style: T.type.body.copyWith(color: T.pal.textSecondary),
+                  style: _SrcT.type.body.copyWith(
+                    color: _SrcT.pal.textSecondary,
+                  ),
                 ),
               ],
             ),
