@@ -5,7 +5,64 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../models/approach.dart';
 import '../../theme/reduce_motion.dart';
-import '../../theme/settle_tokens.dart';
+import '../../theme/settle_design_system.dart';
+
+class _SaT {
+  _SaT._();
+
+  static final type = _SaTypeTokens();
+  static const pal = _SaPaletteTokens();
+  static const glass = _SaGlassTokens();
+  static const radius = _SaRadiusTokens();
+  static const anim = _SaAnimTokens();
+}
+
+class _SaTypeTokens {
+  TextStyle get h1 => SettleTypography.display.copyWith(
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.5,
+    height: 1.2,
+  );
+  TextStyle get h3 => SettleTypography.heading.copyWith(fontSize: 17);
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(fontSize: 13);
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _SaPaletteTokens {
+  const _SaPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _SaGlassTokens {
+  const _SaGlassTokens();
+
+  Color get fill => SettleGlassDark.backgroundStrong;
+  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
+  Color get border => SettleGlassDark.borderStrong;
+  double get sigma => 12;
+}
+
+class _SaRadiusTokens {
+  const _SaRadiusTokens();
+
+  double get xl => 26;
+}
+
+class _SaAnimTokens {
+  const _SaAnimTokens();
+
+  Duration get normal => const Duration(milliseconds: 250);
+}
 
 /// Step 4: Approach selection. NOT a slider. Four discrete cards.
 /// Tapping one expands it to show how it works + cited research.
@@ -74,12 +131,12 @@ class _StepApproachState extends State<StepApproach> {
       children: [
         Text(
           'Choose your\napproach',
-          style: T.type.h1,
+          style: _SaT.type.h1,
         ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 8),
         Text(
           'These are not points on a spectrum.\nEach is a valid, researched method.',
-          style: T.type.caption.copyWith(color: T.pal.textSecondary),
+          style: _SaT.type.caption.copyWith(color: _SaT.pal.textSecondary),
         ).entryFadeOnly(context, delay: 150.ms, duration: 400.ms),
         const SizedBox(height: 24),
         ...Approach.values.asMap().entries.map((entry) {
@@ -138,27 +195,27 @@ class _ApproachCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fill = isSelected ? T.glass.fillAccent : T.glass.fill;
+    final fill = isSelected ? _SaT.glass.fillAccent : _SaT.glass.fill;
     final borderColor = isSelected
-        ? T.pal.accent.withValues(alpha: 0.4)
-        : T.glass.border;
+        ? _SaT.pal.accent.withValues(alpha: 0.4)
+        : _SaT.glass.border;
 
     return GestureDetector(
       onTap: onTap,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(T.radius.xl),
+        borderRadius: BorderRadius.circular(_SaT.radius.xl),
         child: BackdropFilter(
           filter: ImageFilter.blur(
-            sigmaX: T.glass.sigma,
-            sigmaY: T.glass.sigma,
+            sigmaX: _SaT.glass.sigma,
+            sigmaY: _SaT.glass.sigma,
           ),
           child: AnimatedContainer(
-            duration: T.anim.normal,
+            duration: _SaT.anim.normal,
             curve: Curves.easeInOut,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: fill,
-              borderRadius: BorderRadius.circular(T.radius.xl),
+              borderRadius: BorderRadius.circular(_SaT.radius.xl),
               border: Border.all(color: borderColor, width: 1),
             ),
             child: Column(
@@ -170,28 +227,36 @@ class _ApproachCard extends StatelessWidget {
                     Icon(
                       icon,
                       size: 22,
-                      color: isSelected ? T.pal.accent : T.pal.textSecondary,
+                      color: isSelected
+                          ? _SaT.pal.accent
+                          : _SaT.pal.textSecondary,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         approach.label,
-                        style: T.type.h3.copyWith(
+                        style: _SaT.type.h3.copyWith(
                           color: isSelected
-                              ? T.pal.textPrimary
-                              : T.pal.textSecondary,
+                              ? _SaT.pal.textPrimary
+                              : _SaT.pal.textSecondary,
                         ),
                       ),
                     ),
                     if (isSelected)
-                      Icon(Icons.check_circle, size: 20, color: T.pal.accent),
+                      Icon(
+                        Icons.check_circle,
+                        size: 20,
+                        color: _SaT.pal.accent,
+                      ),
                   ],
                 ),
                 // Short description
                 const SizedBox(height: 6),
                 Text(
                   approach.description,
-                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                  style: _SaT.type.caption.copyWith(
+                    color: _SaT.pal.textTertiary,
+                  ),
                 ),
                 // Expanded detail
                 AnimatedCrossFade(
@@ -203,29 +268,29 @@ class _ApproachCard extends StatelessWidget {
                       children: [
                         Text(
                           'HOW IT WORKS',
-                          style: T.type.overline.copyWith(
-                            color: T.pal.textTertiary,
+                          style: _SaT.type.overline.copyWith(
+                            color: _SaT.pal.textTertiary,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           howItWorks,
-                          style: T.type.body.copyWith(
-                            color: T.pal.textSecondary,
+                          style: _SaT.type.body.copyWith(
+                            color: _SaT.pal.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 14),
                         Text(
                           'RESEARCH',
-                          style: T.type.overline.copyWith(
-                            color: T.pal.textTertiary,
+                          style: _SaT.type.overline.copyWith(
+                            color: _SaT.pal.textTertiary,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           research,
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textTertiary,
+                          style: _SaT.type.caption.copyWith(
+                            color: _SaT.pal.textTertiary,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -235,7 +300,7 @@ class _ApproachCard extends StatelessWidget {
                   crossFadeState: isExpanded
                       ? CrossFadeState.showSecond
                       : CrossFadeState.showFirst,
-                  duration: T.anim.normal,
+                  duration: _SaT.anim.normal,
                   sizeCurve: Curves.easeInOut,
                 ),
               ],
