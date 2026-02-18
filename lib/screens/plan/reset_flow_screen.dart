@@ -8,11 +8,24 @@ import '../../models/repair_card.dart';
 import '../../providers/reset_flow_provider.dart';
 import '../../utils/share_text.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/calm_loading.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_pill.dart';
 import '../../widgets/settle_tappable.dart';
+
+class _RfT {
+  _RfT._();
+
+  static final type = _RfTypeTokens();
+}
+
+class _RfTypeTokens {
+  TextStyle get h2 => SettleTypography.heading.copyWith(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+}
 
 /// Reset flow: choose state (self/child) → repair card → Keep / Another (max 3) / Close.
 /// Dark-mode reskin: 2 AM screen. Override to dark theme when night (9pm–5am).
@@ -90,7 +103,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
           Text(
             'Who needs the reset?',
             textAlign: TextAlign.center,
-            style: T.type.body.copyWith(
+            style: _RfT.type.body.copyWith(
               fontWeight: FontWeight.w600,
               color: SettleColors.nightText,
             ),
@@ -107,7 +120,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                 children: [
                   Text(
                     'For you',
-                    style: T.type.h2.copyWith(
+                    style: _RfT.type.h2.copyWith(
                       fontWeight: FontWeight.w400,
                       color: SettleColors.nightText,
                     ),
@@ -128,7 +141,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                 children: [
                   Text(
                     'For them',
-                    style: T.type.h2.copyWith(
+                    style: _RfT.type.h2.copyWith(
                       fontWeight: FontWeight.w400,
                       color: SettleColors.nightText,
                     ),
@@ -148,9 +161,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     ResetFlowNotifier notifier,
   ) {
     if (state.loading) {
-      return const Center(
-        child: CalmLoading(message: 'Preparing your reset…'),
-      );
+      return const Center(child: CalmLoading(message: 'Preparing your reset…'));
     }
 
     final card = state.currentCard;
@@ -204,7 +215,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
           Text(
             stateLabel,
             textAlign: TextAlign.center,
-            style: T.type.h2.copyWith(
+            style: _RfT.type.h2.copyWith(
               fontWeight: FontWeight.w400,
               color: SettleColors.nightText,
             ),
@@ -226,7 +237,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
               children: [
                 Text(
                   card.title,
-                  style: T.type.body.copyWith(
+                  style: _RfT.type.body.copyWith(
                     fontWeight: FontWeight.w600,
                     color: SettleColors.nightText,
                   ),
@@ -417,8 +428,7 @@ class _ResetCharacterBlob extends StatelessWidget {
 
 /// Simple face: two closed eyes (arcs), gentle smile (arc). stroke 1.8, tint (nightAccent or warmth).
 class _ResetFacePainter extends CustomPainter {
-  _ResetFacePainter({Color? tint})
-      : tint = tint ?? SettleColors.nightAccent;
+  _ResetFacePainter({Color? tint}) : tint = tint ?? SettleColors.nightAccent;
 
   final Color tint;
 

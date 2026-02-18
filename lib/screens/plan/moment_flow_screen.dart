@@ -9,9 +9,36 @@ import 'package:go_router/go_router.dart';
 import '../../data/moment_script_repository.dart';
 import '../../models/moment_script.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/settle_tappable.dart';
+
+class _MfT {
+  _MfT._();
+
+  static final type = _MfTypeTokens();
+  static const glass = _MfGlassTokens();
+}
+
+class _MfTypeTokens {
+  TextStyle get h1 => SettleTypography.heading.copyWith(
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get h2 => SettleTypography.heading.copyWith(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _MfGlassTokens {
+  const _MfGlassTokens();
+
+  Color get fillDay => const Color(0x2AFFFFFF);
+}
 
 /// Moment — the fastest screen in the app.
 ///
@@ -169,7 +196,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         Text(
           'Place one hand on your chest',
           textAlign: TextAlign.center,
-          style: T.type.h1.copyWith(
+          style: _MfT.type.h1.copyWith(
             fontWeight: FontWeight.w400,
             color: SettleColors.ink900,
           ),
@@ -178,7 +205,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         Text(
           "You're here now. That's enough.",
           textAlign: TextAlign.center,
-          style: T.type.caption.copyWith(
+          style: _MfT.type.caption.copyWith(
             color: SettleColors.ink500.withValues(alpha: 0.6),
           ),
         ),
@@ -191,9 +218,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
       return Center(
         child: Text(
           'Loading…',
-          style: SettleTypography.body.copyWith(
-            color: SettleColors.ink500,
-          ),
+          style: SettleTypography.body.copyWith(color: SettleColors.ink500),
         ),
       );
     }
@@ -298,7 +323,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
           child: Text(
             script.lines.join(' '),
             textAlign: TextAlign.center,
-            style: T.type.h2.copyWith(
+            style: _MfT.type.h2.copyWith(
               fontWeight: FontWeight.w600,
               height: 1.35,
               color: SettleColors.ink900,
@@ -330,7 +355,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
             onTap: _openReset,
             child: Text(
               'Need more? → Reset (15s)',
-              style: T.type.caption.copyWith(
+              style: _MfT.type.caption.copyWith(
                 color: SettleColors.ink500,
                 decoration: TextDecoration.underline,
               ),
@@ -405,7 +430,7 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: T.glass.fillDay,
+                  color: _MfT.glass.fillDay,
                   border: Border.all(
                     color: SettleGlassLight.border,
                     width: 0.5,
