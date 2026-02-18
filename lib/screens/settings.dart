@@ -16,11 +16,46 @@ import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../theme/reduce_motion.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/option_button.dart';
 import '../widgets/settle_chip.dart';
 import '../widgets/settle_disclosure.dart';
+
+class _StgT {
+  _StgT._();
+
+  static final type = _StgTypeTokens();
+  static const pal = _StgPaletteTokens();
+  static const glass = _StgGlassTokens();
+}
+
+class _StgTypeTokens {
+  TextStyle get h2 => SettleTypography.heading.copyWith(fontSize: 22);
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption;
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _StgPaletteTokens {
+  const _StgPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _StgGlassTokens {
+  const _StgGlassTokens();
+
+  Color get fill => SettleGlassDark.backgroundStrong;
+  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
+}
 
 /// Settings — profile card, toggle groups, approach switcher.
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -56,7 +91,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
                 child: const ScreenHeader(title: 'Settings'),
               ),
               const SizedBox(height: 20),
@@ -79,14 +116,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             height: 52,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: T.pal.accent.withValues(alpha: 0.15),
+                              color: _StgT.pal.accent.withValues(alpha: 0.15),
                             ),
                             alignment: Alignment.center,
                             child: Text(
                               (profile?.name ?? 'B')
                                   .substring(0, 1)
                                   .toUpperCase(),
-                              style: T.type.h2.copyWith(color: T.pal.accent),
+                              style: _StgT.type.h2.copyWith(
+                                color: _StgT.pal.accent,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -94,19 +133,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(profile?.name ?? 'Baby', style: T.type.h3),
+                                Text(
+                                  profile?.name ?? 'Baby',
+                                  style: _StgT.type.h3,
+                                ),
                                 const SizedBox(height: 2),
                                 Text(
                                   '${profile?.ageBracket.label ?? ''} · ${profile?.approach.label ?? ''}',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textSecondary,
+                                  style: _StgT.type.caption.copyWith(
+                                    color: _StgT.pal.textSecondary,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   'Focus: ${profile?.focusMode.label ?? FocusMode.sleepOnly.label}',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textTertiary,
+                                  style: _StgT.type.caption.copyWith(
+                                    color: _StgT.pal.textTertiary,
                                   ),
                                 ),
                               ],
@@ -145,29 +187,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           children: [
                             Text(
                               'Tantrum profile',
-                              style: T.type.overline.copyWith(
-                                color: T.pal.textTertiary,
+                              style: _StgT.type.overline.copyWith(
+                                color: _StgT.pal.textTertiary,
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Type: ${profile!.tantrumProfile!.tantrumType.label}',
-                              style: T.type.caption.copyWith(
-                                color: T.pal.textSecondary,
+                              style: _StgT.type.caption.copyWith(
+                                color: _StgT.pal.textSecondary,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Triggers: ${profile.tantrumProfile!.commonTriggers.map((t) => t.label).join(', ')}',
-                              style: T.type.caption.copyWith(
-                                color: T.pal.textSecondary,
+                              style: _StgT.type.caption.copyWith(
+                                color: _StgT.pal.textSecondary,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Priority: ${profile.tantrumProfile!.responsePriority.label}',
-                              style: T.type.caption.copyWith(
-                                color: T.pal.textSecondary,
+                              style: _StgT.type.caption.copyWith(
+                                color: _StgT.pal.textSecondary,
                               ),
                             ),
                           ],
@@ -300,8 +342,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(height: 6),
                           Text(
                             'To switch approach, use Tonight → More options → Change approach.',
-                            style: T.type.caption.copyWith(
-                              color: T.pal.textSecondary,
+                            style: _StgT.type.caption.copyWith(
+                              color: _StgT.pal.textSecondary,
                             ),
                           ),
                           if (showInternalTools) ...[
@@ -358,7 +400,7 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: T.type.overline.copyWith(color: T.pal.textTertiary),
+      style: _StgT.type.overline.copyWith(color: _StgT.pal.textTertiary),
     );
   }
 }
@@ -390,12 +432,14 @@ class _ToggleCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: T.type.label),
+              Text(label, style: _StgT.type.label),
               if (subtitle != null) ...[
                 const SizedBox(height: 2),
                 Text(
                   subtitle!,
-                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                  style: _StgT.type.caption.copyWith(
+                    color: _StgT.pal.textTertiary,
+                  ),
                 ),
               ],
             ],
@@ -406,10 +450,10 @@ class _ToggleCard extends StatelessWidget {
           child: Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeColor: T.pal.accent,
-            activeTrackColor: T.pal.accent.withValues(alpha: 0.3),
-            inactiveTrackColor: T.glass.fill,
-            inactiveThumbColor: T.pal.textTertiary,
+            activeColor: _StgT.pal.accent,
+            activeTrackColor: _StgT.pal.accent.withValues(alpha: 0.3),
+            inactiveTrackColor: _StgT.glass.fill,
+            inactiveThumbColor: _StgT.pal.textTertiary,
           ),
         ),
       ],
@@ -418,7 +462,7 @@ class _ToggleCard extends StatelessWidget {
     if (embedded) {
       return GlassCard(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        fill: T.glass.fill,
+        fill: _StgT.glass.fill,
         child: content,
       );
     }
@@ -459,7 +503,7 @@ class _NudgeSettingsSection extends ConsumerWidget {
         children: [
           Text(
             'Gentle reminders for scripts and patterns. Quiet hours: no nudges.',
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: _StgT.type.caption.copyWith(color: _StgT.pal.textSecondary),
           ),
           const SizedBox(height: 12),
           _ToggleCard(
@@ -508,12 +552,12 @@ class _NudgeSettingsSection extends ConsumerWidget {
           const SizedBox(height: 12),
           Text(
             'Quiet hours: ${_formatHour(settings.quietStartHour)} – ${_formatHour(settings.quietEndHour)}',
-            style: T.type.caption.copyWith(color: T.pal.textTertiary),
+            style: _StgT.type.caption.copyWith(color: _StgT.pal.textTertiary),
           ),
           const SizedBox(height: 8),
           Text(
             'Frequency: ${_frequencyLabel(settings.frequency)}',
-            style: T.type.caption.copyWith(color: T.pal.textTertiary),
+            style: _StgT.type.caption.copyWith(color: _StgT.pal.textTertiary),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -591,18 +635,18 @@ class _InlineActionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      fill: T.glass.fill,
+      fill: _StgT.glass.fill,
       child: Row(
         children: [
-          Icon(icon, size: 18, color: T.pal.textSecondary),
+          Icon(icon, size: 18, color: _StgT.pal.textSecondary),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               title,
-              style: T.type.label.copyWith(color: T.pal.textSecondary),
+              style: _StgT.type.label.copyWith(color: _StgT.pal.textSecondary),
             ),
           ),
-          Icon(trailing, size: 18, color: T.pal.textTertiary),
+          Icon(trailing, size: 18, color: _StgT.pal.textTertiary),
         ],
       ),
     );
