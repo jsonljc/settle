@@ -7,9 +7,51 @@ import '../../tantrum/models/tantrum_card.dart';
 import '../../tantrum/providers/tantrum_module_providers.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
+
+class _CvT {
+  _CvT._();
+
+  static final type = _CvTypeTokens();
+  static const pal = _CvPaletteTokens();
+  static const glass = _CvGlassTokens();
+}
+
+class _CvTypeTokens {
+  TextStyle get h2 => SettleTypography.heading.copyWith(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _CvPaletteTokens {
+  const _CvPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+}
+
+class _CvGlassTokens {
+  const _CvGlassTokens();
+
+  Color get fill => SettleGlassDark.backgroundStrong;
+}
 
 /// Crisis View: big SAY line, DO, IF ESCALATES, Audio button (stub), Repeat line mode.
 /// Shown after 2 taps from NOW (e.g. pick card or Use protocol).
@@ -46,7 +88,9 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: cardAsync.when(
               data: (card) {
                 if (card == null) {
@@ -60,7 +104,9 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
                       const SizedBox(height: 24),
                       Text(
                         'No card selected. Add and pin cards from Deck first.',
-                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                        style: _CvT.type.body.copyWith(
+                          color: _CvT.pal.textSecondary,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       GlassCta(
@@ -95,9 +141,9 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
                       children: [
                         Text(
                           'Something went wrong.',
-                          style: T.type.body.copyWith(
+                          style: _CvT.type.body.copyWith(
                             fontSize: 14,
-                            color: T.pal.textSecondary,
+                            color: _CvT.pal.textSecondary,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -165,18 +211,18 @@ class _CrisisContent extends StatelessWidget {
         if (step == 0 || repeatLineMode) ...[
           Text(
             'Say this',
-            style: T.type.overline.copyWith(color: T.pal.textTertiary),
+            style: _CvT.type.overline.copyWith(color: _CvT.pal.textTertiary),
           ),
           const SizedBox(height: 8),
           GlassCardAccent(
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Expanded(child: Text(sayLine, style: T.type.h2)),
+                Expanded(child: Text(sayLine, style: _CvT.type.h2)),
                 IconButton(
                   onPressed: onAudioStub,
                   icon: const Icon(Icons.volume_up_rounded),
-                  color: T.pal.accent,
+                  color: _CvT.pal.accent,
                 ),
               ],
             ),
@@ -193,24 +239,24 @@ class _CrisisContent extends StatelessWidget {
         if (step == 1) ...[
           Text(
             'Do this',
-            style: T.type.overline.copyWith(color: T.pal.textTertiary),
+            style: _CvT.type.overline.copyWith(color: _CvT.pal.textTertiary),
           ),
           const SizedBox(height: 8),
           GlassCard(
             padding: const EdgeInsets.all(20),
-            child: Text(card.doStep, style: T.type.h3),
+            child: Text(card.doStep, style: _CvT.type.h3),
           ),
           const SizedBox(height: 20),
         ],
         if (step == 2) ...[
           Text(
             'If it escalates',
-            style: T.type.overline.copyWith(color: T.pal.textTertiary),
+            style: _CvT.type.overline.copyWith(color: _CvT.pal.textTertiary),
           ),
           const SizedBox(height: 8),
           GlassCard(
             padding: const EdgeInsets.all(20),
-            child: Text(card.ifEscalates, style: T.type.h3),
+            child: Text(card.ifEscalates, style: _CvT.type.h3),
           ),
           const SizedBox(height: 20),
         ],
@@ -249,17 +295,17 @@ class _StepDot extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: active
-                ? T.pal.accent
+                ? _CvT.pal.accent
                 : done
-                ? T.pal.accent.withValues(alpha: 0.5)
-                : T.glass.fill,
+                ? _CvT.pal.accent.withValues(alpha: 0.5)
+                : _CvT.glass.fill,
           ),
         ),
         const SizedBox(width: 6),
         Text(
           label,
-          style: T.type.caption.copyWith(
-            color: active ? T.pal.accent : T.pal.textTertiary,
+          style: _CvT.type.caption.copyWith(
+            color: active ? _CvT.pal.accent : _CvT.pal.textTertiary,
             fontWeight: active ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
@@ -287,7 +333,7 @@ class _AudioStubButton extends ConsumerWidget {
       icon: Icon(
         Icons.volume_up_outlined,
         size: 22,
-        color: T.pal.textSecondary,
+        color: _CvT.pal.textSecondary,
       ),
     );
   }

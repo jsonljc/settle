@@ -10,9 +10,50 @@ import '../../services/tantrum_engine.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/option_button.dart';
 import 'tantrum_unavailable.dart';
+
+class _DbT {
+  _DbT._();
+
+  static final type = _DbTypeTokens();
+  static const pal = _DbPaletteTokens();
+  static const anim = _DbAnimTokens();
+}
+
+class _DbTypeTokens {
+  TextStyle get h2 => SettleTypography.heading.copyWith(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _DbPaletteTokens {
+  const _DbPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _DbAnimTokens {
+  const _DbAnimTokens();
+
+  Duration get fast => const Duration(milliseconds: 150);
+}
 
 // Deprecated in IA cleanup PR6. This legacy tantrum surface is no longer
 // reachable from production routes and is retained only for internal reference.
@@ -128,7 +169,9 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
             children: [
               const SizedBox(height: 12),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
                 child: Row(
                   children: [
                     GestureDetector(
@@ -140,11 +183,11 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
                       child: Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 20,
-                        color: T.pal.textSecondary,
+                        color: _DbT.pal.textSecondary,
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Text('Debrief', style: T.type.h2),
+                    Text('Debrief', style: _DbT.type.h2),
                   ],
                 ),
               ),
@@ -182,8 +225,8 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
                             onTap: _back,
                             child: Text(
                               'Back',
-                              style: T.type.caption.copyWith(
-                                color: T.pal.textSecondary,
+                              style: _DbT.type.caption.copyWith(
+                                color: _DbT.pal.textSecondary,
                               ),
                             ),
                           ),
@@ -191,7 +234,7 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
                       if (_step > 0) const SizedBox(height: 8),
                       AnimatedOpacity(
                         opacity: _canProceed ? 1.0 : 0.4,
-                        duration: T.anim.fast,
+                        duration: _DbT.anim.fast,
                         child: GlassCta(
                           label: _step == 3 ? 'Save debrief' : 'Continue',
                           enabled: _canProceed,
@@ -214,7 +257,7 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('1. What triggered it?', style: T.type.h3),
+            Text('1. What triggered it?', style: _DbT.type.h3),
             const SizedBox(height: 12),
             ...triggerOptions.map(
               (trigger) => Padding(
@@ -250,7 +293,7 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
                 child: TextField(
                   controller: _otherTriggerController,
                   onChanged: (_) => setState(() {}),
-                  style: T.type.body,
+                  style: _DbT.type.body,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Type a quick trigger note',
@@ -264,7 +307,7 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('2. How intense was it?', style: T.type.h3),
+            Text('2. How intense was it?', style: _DbT.type.h3),
             const SizedBox(height: 12),
             ...TantrumIntensity.values.map(
               (i) => Padding(
@@ -287,11 +330,11 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('3. What helped?', style: T.type.h3),
+            Text('3. What helped?', style: _DbT.type.h3),
             const SizedBox(height: 6),
             Text(
               'Select all that applied',
-              style: T.type.caption.copyWith(color: T.pal.textSecondary),
+              style: _DbT.type.caption.copyWith(color: _DbT.pal.textSecondary),
             ),
             const SizedBox(height: 12),
             ..._helperOptions.map(
@@ -316,14 +359,14 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('4. Add a note (optional)', style: T.type.h3),
+            Text('4. Add a note (optional)', style: _DbT.type.h3),
             const SizedBox(height: 10),
             GlassCard(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               child: TextField(
                 controller: _noteController,
                 maxLines: 3,
-                style: T.type.body,
+                style: _DbT.type.body,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Anything you want to remember?',
@@ -353,11 +396,11 @@ class _SavedView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Debrief saved', style: T.type.h3),
+              Text('Debrief saved', style: _DbT.type.h3),
               const SizedBox(height: 8),
               Text(
                 'Nice work. Consistent reflection is how patterns get clearer over time.',
-                style: T.type.body.copyWith(color: T.pal.textSecondary),
+                style: _DbT.type.body.copyWith(color: _DbT.pal.textSecondary),
               ),
             ],
           ),
@@ -370,10 +413,12 @@ class _SavedView extends StatelessWidget {
             children: [
               Text(
                 'Repair script',
-                style: T.type.overline.copyWith(color: T.pal.textTertiary),
+                style: _DbT.type.overline.copyWith(
+                  color: _DbT.pal.textTertiary,
+                ),
               ),
               const SizedBox(height: 8),
-              Text(repairScript, style: T.type.h3),
+              Text(repairScript, style: _DbT.type.h3),
             ],
           ),
         ),
