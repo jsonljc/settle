@@ -16,12 +16,50 @@ import '../services/sleep_guidance_service.dart';
 import '../services/spec_policy.dart';
 import '../theme/glass_components.dart' hide GlassCard;
 import '../theme/settle_design_system.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/settle_segmented_choice.dart';
 import '../widgets/settle_tappable.dart';
+
+class _StTokens {
+  _StTokens._();
+
+  static const type = _StTypeTokens();
+  static const pal = _StPaletteTokens();
+  static const radius = _StRadiusTokens();
+  static const space = _StSpaceTokens();
+}
+
+class _StTypeTokens {
+  const _StTypeTokens();
+
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption;
+  TextStyle get h2 => SettleTypography.heading.copyWith(fontSize: 22);
+}
+
+class _StPaletteTokens {
+  const _StPaletteTokens();
+
+  Color get textSecondary => SettleColors.ink500;
+  Color get textTertiary => SettleColors.ink400;
+}
+
+class _StRadiusTokens {
+  const _StRadiusTokens();
+
+  double get md => 18;
+}
+
+class _StSpaceTokens {
+  const _StSpaceTokens();
+
+  double get md => SettleSpacing.md;
+}
 
 class SleepTonightScreen extends ConsumerStatefulWidget {
   const SleepTonightScreen({super.key});
@@ -220,7 +258,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
           child: Padding(
             padding: EdgeInsets.fromLTRB(
               SettleSpacing.screenPadding,
-              T.space.md,
+              _StTokens.space.md,
               SettleSpacing.screenPadding,
               SettleSpacing.screenPadding,
             ),
@@ -233,13 +271,13 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Why this works', style: T.type.h3),
+                      Text('Why this works', style: _StTokens.type.h3),
                       const SizedBox(height: 8),
                       if (items.isEmpty)
                         Text(
                           'No evidence details are available for this card right now.',
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textSecondary,
+                          style: _StTokens.type.caption.copyWith(
+                            color: _StTokens.pal.textSecondary,
                           ),
                         )
                       else
@@ -250,8 +288,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 padding: const EdgeInsets.only(bottom: 10),
                                 child: Text(
                                   '• ${item.claim}',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textSecondary,
+                                  style: _StTokens.type.caption.copyWith(
+                                    color: _StTokens.pal.textSecondary,
                                   ),
                                 ),
                               ),
@@ -286,9 +324,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   SettleSpacing.screenPadding,
-                  T.space.md,
+                  _StTokens.space.md,
                   SettleSpacing.screenPadding,
-                  SettleSpacing.screenPadding + MediaQuery.viewInsetsOf(context).bottom,
+                  SettleSpacing.screenPadding +
+                      MediaQuery.viewInsetsOf(context).bottom,
                 ),
                 child: GlassCard(
                   child: SingleChildScrollView(
@@ -296,9 +335,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Quick recap', style: T.type.h3),
+                        Text('Quick recap', style: _StTokens.type.h3),
                         const SizedBox(height: 10),
-                        Text('Outcome', style: T.type.label),
+                        Text('Outcome', style: _StTokens.type.label),
                         const SizedBox(height: 8),
                         SettleSegmentedChoice<SleepRecapOutcome>(
                           options: const [
@@ -311,7 +350,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           onChanged: (v) => setModalState(() => outcome = v),
                         ),
                         const SizedBox(height: 10),
-                        Text('Time to settle (optional)', style: T.type.label),
+                        Text(
+                          'Time to settle (optional)',
+                          style: _StTokens.type.label,
+                        ),
                         const SizedBox(height: 8),
                         SettleSegmentedChoice<String>(
                           options: const ['<5', '5-15', '15-30', '30+'],
@@ -322,14 +364,16 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         const SizedBox(height: 10),
                         TextField(
                           controller: noteController,
-                          style: T.type.caption,
+                          style: _StTokens.type.caption,
                           decoration: InputDecoration(
                             labelText: 'Note (optional)',
-                            labelStyle: T.type.caption.copyWith(
-                              color: T.pal.textTertiary,
+                            labelStyle: _StTokens.type.caption.copyWith(
+                              color: _StTokens.pal.textTertiary,
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(T.radius.md),
+                              borderRadius: BorderRadius.circular(
+                                _StTokens.radius.md,
+                              ),
                             ),
                           ),
                         ),
@@ -393,9 +437,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   SettleSpacing.screenPadding,
-                  T.space.md,
+                  _StTokens.space.md,
                   SettleSpacing.screenPadding,
-                  SettleSpacing.screenPadding + MediaQuery.viewInsetsOf(context).bottom,
+                  SettleSpacing.screenPadding +
+                      MediaQuery.viewInsetsOf(context).bottom,
                 ),
                 child: GlassCard(
                   child: SingleChildScrollView(
@@ -403,9 +448,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Change approach', style: T.type.h3),
+                        Text('Change approach', style: _StTokens.type.h3),
                         const SizedBox(height: 10),
-                        Text('Approach', style: T.type.label),
+                        Text('Approach', style: _StTokens.type.label),
                         const SizedBox(height: 8),
                         SettleSegmentedChoice<Approach>(
                           options: Approach.values,
@@ -414,7 +459,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           onChanged: (v) => setModalState(() => next = v),
                         ),
                         const SizedBox(height: 10),
-                        Text('Reason', style: T.type.label),
+                        Text('Reason', style: _StTokens.type.label),
                         const SizedBox(height: 8),
                         SettleSegmentedChoice<String>(
                           options: const [
@@ -436,7 +481,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           onChanged: (v) => setModalState(() => reason = v),
                         ),
                         const SizedBox(height: 10),
-                        Text('Effective timing', style: T.type.label),
+                        Text('Effective timing', style: _StTokens.type.label),
                         const SizedBox(height: 8),
                         SettleSegmentedChoice<String>(
                           options: const ['tonight', 'tomorrow'],
@@ -448,8 +493,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         const SizedBox(height: 10),
                         Text(
                           'Switching resets consistency. Expect 2–3 nights to read results.',
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textSecondary,
+                          style: _StTokens.type.caption.copyWith(
+                            color: _StTokens.pal.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -524,9 +569,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   SettleSpacing.screenPadding,
-                  T.space.md,
+                  _StTokens.space.md,
                   SettleSpacing.screenPadding,
-                  SettleSpacing.screenPadding + MediaQuery.viewInsetsOf(context).bottom,
+                  SettleSpacing.screenPadding +
+                      MediaQuery.viewInsetsOf(context).bottom,
                 ),
                 child: GlassCard(
                   child: SingleChildScrollView(
@@ -534,22 +580,31 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Make guidance fit your home', style: T.type.h3),
+                        Text(
+                          'Make guidance fit your home',
+                          style: _StTokens.type.h3,
+                        ),
                         const SizedBox(height: 4),
                         Text(
                           '15 seconds',
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textSecondary,
+                          style: _StTokens.type.caption.copyWith(
+                            color: _StTokens.pal.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 10),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: Text('Shared room', style: T.type.caption),
+                          title: Text(
+                            'Shared room',
+                            style: _StTokens.type.caption,
+                          ),
                           value: sharedRoom,
                           onChanged: (v) => setModalState(() => sharedRoom = v),
                         ),
-                        Text('Caregiver consistency', style: T.type.caption),
+                        Text(
+                          'Caregiver consistency',
+                          style: _StTokens.type.caption,
+                        ),
                         const SizedBox(height: 6),
                         SettleSegmentedChoice<String>(
                           options: const ['consistent', 'rotating', 'unsure'],
@@ -563,7 +618,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                               setModalState(() => caregiverConsistency = v),
                         ),
                         const SizedBox(height: 8),
-                        Text('Crying tolerance', style: T.type.caption),
+                        Text('Crying tolerance', style: _StTokens.type.caption),
                         const SizedBox(height: 6),
                         SettleSegmentedChoice<String>(
                           options: const ['low', 'med', 'high'],
@@ -574,7 +629,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         ),
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
-                          title: Text('Can leave room', style: T.type.caption),
+                          title: Text(
+                            'Can leave room',
+                            style: _StTokens.type.caption,
+                          ),
                           value: canLeaveRoom,
                           onChanged: (v) =>
                               setModalState(() => canLeaveRoom = v),
@@ -583,7 +641,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           contentPadding: EdgeInsets.zero,
                           title: Text(
                             'Night feeds expected',
-                            style: T.type.caption,
+                            style: _StTokens.type.caption,
                           ),
                           value: nightFeedsExpected,
                           onChanged: (v) =>
@@ -695,7 +753,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   SettleSpacing.screenPadding,
-                  T.space.md,
+                  _StTokens.space.md,
                   SettleSpacing.screenPadding,
                   SettleSpacing.screenPadding,
                 ),
@@ -708,7 +766,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('More options', style: T.type.h3),
+                          Text('More options', style: _StTokens.type.h3),
                           const SizedBox(height: 12),
                           if (onShare != null) ...[
                             GlassPill(
@@ -721,7 +779,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                             ),
                             const SizedBox(height: 12),
                           ],
-                          Text('Switch scenario', style: T.type.label),
+                          Text('Switch scenario', style: _StTokens.type.label),
                           const SizedBox(height: 8),
                           SettleSegmentedChoice<String>(
                             options: _scenarioLabels.keys.toList(),
@@ -747,7 +805,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           const SizedBox(height: 10),
                           ExpansionTile(
                             tilePadding: EdgeInsets.zero,
-                            title: Text('Optional inputs', style: T.type.label),
+                            title: Text(
+                              'Optional inputs',
+                              style: _StTokens.type.label,
+                            ),
                             children: [
                               const SizedBox(height: 6),
                               Row(
@@ -757,8 +818,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                       _lastFeedTime == null
                                           ? 'Last feed: not set'
                                           : 'Last feed: ${_lastFeedTime!.format(context)}',
-                                      style: T.type.caption.copyWith(
-                                        color: T.pal.textSecondary,
+                                      style: _StTokens.type.caption.copyWith(
+                                        color: _StTokens.pal.textSecondary,
                                       ),
                                     ),
                                   ),
@@ -785,8 +846,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                       _lastNapEndTime == null
                                           ? 'Last nap end: not set'
                                           : 'Last nap end: ${_lastNapEndTime!.format(context)}',
-                                      style: T.type.caption.copyWith(
-                                        color: T.pal.textSecondary,
+                                      style: _StTokens.type.caption.copyWith(
+                                        color: _StTokens.pal.textSecondary,
                                       ),
                                     ),
                                   ),
@@ -812,7 +873,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 contentPadding: EdgeInsets.zero,
                                 title: Text(
                                   'Feeding-to-sleep pattern',
-                                  style: T.type.caption,
+                                  style: _StTokens.type.caption,
                                 ),
                                 value: _feedingAssociation,
                                 onChanged: (v) {
@@ -828,7 +889,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                               label: 'Why this works',
                               onTap: () => _showEvidenceSheet(evidenceRefs),
                             ),
-                          Text('Log & recap', style: T.type.label),
+                          Text('Log & recap', style: _StTokens.type.label),
                           const SizedBox(height: 8),
                           Wrap(
                             spacing: 8,
@@ -868,7 +929,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                             contentPadding: EdgeInsets.zero,
                             title: Text(
                               'Quick done uses last recap defaults',
-                              style: T.type.caption,
+                              style: _StTokens.type.caption,
                             ),
                             value: quickDone,
                             onChanged: (v) async {
@@ -882,7 +943,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                             },
                           ),
                           const SizedBox(height: 10),
-                          Text('Mode', style: T.type.label),
+                          Text('Mode', style: _StTokens.type.label),
                           const SizedBox(height: 8),
                           SettleSegmentedChoice<String>(
                             options: const ['training', 'comfort'],
@@ -920,8 +981,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           const SizedBox(height: 10),
                           Text(
                             'If you suspect illness or pain, pause training and comfort first tonight.',
-                            style: T.type.caption.copyWith(
-                              color: T.pal.textSecondary,
+                            style: _StTokens.type.caption.copyWith(
+                              color: _StTokens.pal.textSecondary,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -929,7 +990,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                             contentPadding: EdgeInsets.zero,
                             title: Text(
                               'Sleep space is safe',
-                              style: T.type.caption,
+                              style: _StTokens.type.caption,
                             ),
                             value: safeSleepConfirmed,
                             onChanged: (v) {
@@ -1075,7 +1136,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                     children: [
                                       Text(
                                         'Make guidance fit your home (15 seconds)',
-                                        style: T.type.label,
+                                        style: _StTokens.type.label,
                                       ),
                                       const SizedBox(height: 8),
                                       GlassCta(
@@ -1096,8 +1157,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   padding: const EdgeInsets.only(bottom: 8),
                                   child: Text(
                                     'Might be an early wake? You can switch in More options.',
-                                    style: T.type.caption.copyWith(
-                                      color: T.pal.textSecondary,
+                                    style: _StTokens.type.caption.copyWith(
+                                      color: _StTokens.pal.textSecondary,
                                     ),
                                   ),
                                 ),
@@ -1109,13 +1170,13 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                     children: [
                                       Text(
                                         'Sleep space is not confirmed as safe.',
-                                        style: T.type.label,
+                                        style: _StTokens.type.label,
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
                                         'Confirm safety before starting training guidance.',
-                                        style: T.type.caption.copyWith(
-                                          color: T.pal.textSecondary,
+                                        style: _StTokens.type.caption.copyWith(
+                                          color: _StTokens.pal.textSecondary,
                                         ),
                                       ),
                                       const SizedBox(height: 10),
@@ -1228,7 +1289,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 GlassCard(
                                   child: Text(
                                     'Preparing tonight\'s guidance…',
-                                    style: T.type.body,
+                                    style: _StTokens.type.body,
                                   ),
                                 ),
                               if (state.lastError != null) ...[
@@ -1236,8 +1297,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 GlassCardRose(
                                   child: Text(
                                     state.lastError!,
-                                    style: T.type.caption.copyWith(
-                                      color: T.pal.textSecondary,
+                                    style: _StTokens.type.caption.copyWith(
+                                      color: _StTokens.pal.textSecondary,
                                     ),
                                   ),
                                 ),
@@ -1251,7 +1312,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                   child: Text(
                                     'In the moment? → Moment',
-                                    style: T.type.caption.copyWith(
+                                    style: _StTokens.type.caption.copyWith(
                                       color: SettleColors.nightAccent
                                           .withValues(alpha: 0.5),
                                       decoration: TextDecoration.underline,
@@ -1266,13 +1327,11 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 children: [
                                   GlassPill(
                                     label: 'View rhythm',
-                                    onTap: () =>
-                                        context.push('/sleep/rhythm'),
+                                    onTap: () => context.push('/sleep/rhythm'),
                                   ),
                                   GlassPill(
                                     label: 'Update rhythm',
-                                    onTap: () =>
-                                        context.push('/sleep/update'),
+                                    onTap: () => context.push('/sleep/update'),
                                   ),
                                 ],
                               ),
@@ -1373,7 +1432,7 @@ class _SleepTonightSceneHeader extends StatelessWidget {
         Text(
           'Sleep tonight',
           textAlign: TextAlign.center,
-          style: T.type.h2.copyWith(
+          style: _StTokens.type.h2.copyWith(
             fontWeight: FontWeight.w400,
             color: SettleColors.nightText,
           ),
@@ -1440,10 +1499,10 @@ class _SleepTonightSituationPicker extends StatelessWidget {
             onTap: () => context.push('/plan/moment?context=sleep'),
             child: Text(
               'In the moment? → Moment',
-            style: T.type.caption.copyWith(
-              color: SettleColors.nightAccent.withValues(alpha: 0.5),
-              decoration: TextDecoration.underline,
-            ),
+              style: _StTokens.type.caption.copyWith(
+                color: SettleColors.nightAccent.withValues(alpha: 0.5),
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
         ),
@@ -1515,7 +1574,7 @@ class _SleepOptionCard extends StatelessWidget {
             ),
             Text(
               '›',
-              style: T.type.body.copyWith(
+              style: _StTokens.type.body.copyWith(
                 fontWeight: FontWeight.w300,
                 color: SettleColors.nightMuted.withValues(alpha: 0.3),
               ),
@@ -1523,67 +1582,6 @@ class _SleepOptionCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _SituationPicker extends StatelessWidget {
-  const _SituationPicker({required this.onTapScenario});
-
-  final ValueChanged<String> onTapScenario;
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Choose what is happening', style: T.type.h3),
-          const SizedBox(height: 10),
-          _ScenarioButton(
-            label: 'Bedtime protest',
-            onTap: () => onTapScenario('bedtime_protest'),
-          ),
-          const SizedBox(height: 8),
-          _ScenarioButton(
-            label: 'Night wake',
-            onTap: () => onTapScenario('night_wakes'),
-          ),
-          const SizedBox(height: 8),
-          _ScenarioButton(
-            label: 'Early wake',
-            onTap: () => onTapScenario('early_wakes'),
-          ),
-          const SizedBox(height: 12),
-          GestureDetector(
-            onTap: () => context.push('/plan/moment?context=sleep'),
-            child: Text(
-              'In the moment? → Moment',
-              style: T.type.caption.copyWith(
-                color: T.pal.textTertiary,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ScenarioButton extends StatelessWidget {
-  const _ScenarioButton({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassCta(
-      label: label,
-      onTap: onTap,
-      compact: true,
-      alignment: Alignment.centerLeft,
     );
   }
 }
@@ -1652,22 +1650,26 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
         children: [
           Text(
             'Approach: $approachLabel • $commitmentLabel',
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: _StTokens.type.caption.copyWith(
+              color: _StTokens.pal.textSecondary,
+            ),
           ),
           const SizedBox(height: 12),
-          Text('Do now: $doNow', style: T.type.h3),
+          Text('Do now: $doNow', style: _StTokens.type.h3),
           const SizedBox(height: 10),
           Text(
             'If still crying after $stepMinutes min: $ifStill',
-            style: T.type.h3,
+            style: _StTokens.type.h3,
           ),
           const SizedBox(height: 10),
-          Text('Stop rule: $stopRule', style: T.type.h3),
+          Text('Stop rule: $stopRule', style: _StTokens.type.h3),
           if (runnerHint != null && runnerHint!.trim().isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(
               runnerHint!,
-              style: T.type.caption.copyWith(color: T.pal.textSecondary),
+              style: _StTokens.type.caption.copyWith(
+                color: _StTokens.pal.textSecondary,
+              ),
             ),
           ],
           const SizedBox(height: 14),
@@ -1698,10 +1700,7 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
           ] else
             GlassCta(label: 'Next step', onTap: onNextStep),
           const SizedBox(height: 8),
-          GlassPill(
-            label: 'More options',
-            onTap: onMoreOptions,
-          ),
+          GlassPill(label: 'More options', onTap: onMoreOptions),
         ],
       ),
     );
