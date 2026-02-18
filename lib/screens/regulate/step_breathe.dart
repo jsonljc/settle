@@ -4,8 +4,49 @@ import 'package:flutter/material.dart';
 
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/settle_disclosure.dart';
+
+class _RbT {
+  _RbT._();
+
+  static final type = _RbTypeTokens();
+  static const pal = _RbPaletteTokens();
+  static const glass = _RbGlassTokens();
+
+  static bool reduceMotion(BuildContext context) =>
+      MediaQuery.of(context).disableAnimations;
+}
+
+class _RbTypeTokens {
+  TextStyle get h2 => SettleTypography.heading.copyWith(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _RbPaletteTokens {
+  const _RbPaletteTokens();
+
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+}
+
+class _RbGlassTokens {
+  const _RbGlassTokens();
+
+  Color get fillAccent => SettleColors.nightAccent.withValues(alpha: 0.10);
+}
 
 /// Step 2: Physiological regulation — vagal tone 4s in / 6s out, 3 cycles (~30s), then auto-advance.
 const int _vagalInSeconds = 4;
@@ -79,11 +120,11 @@ class _RegulateStepBreatheState extends State<RegulateStepBreathe> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Breathe with me', style: T.type.h2),
+          Text('Breathe with me', style: _RbT.type.h2),
           const SizedBox(height: 8),
           Text(
             'Inhale 4 counts, exhale 6. $_cyclesLeft ${_cyclesLeft == 1 ? "cycle" : "cycles"} left.',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _RbT.type.body.copyWith(color: _RbT.pal.textSecondary),
           ),
           const SizedBox(height: 24),
           Center(child: _VagalBreathingCircles(scale: _vagalScale(_cycleT))),
@@ -91,7 +132,9 @@ class _RegulateStepBreatheState extends State<RegulateStepBreathe> {
           _BreathingLabel(isInhale: _isInhale),
           const SizedBox(height: 32),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: GlassCard(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SettleDisclosure(
@@ -136,24 +179,24 @@ class _VagalBreathingCircles extends StatelessWidget {
           _ScaledCircle(
             size: 220,
             scale: scale,
-            color: T.pal.accent.withValues(alpha: 0.08),
+            color: _RbT.pal.accent.withValues(alpha: 0.08),
           ),
           _ScaledCircle(
             size: 160,
             scale: scale,
-            color: T.pal.accent.withValues(alpha: 0.12),
+            color: _RbT.pal.accent.withValues(alpha: 0.12),
           ),
           _ScaledCircle(
             size: 100,
             scale: scale,
-            color: T.pal.accent.withValues(alpha: 0.18),
+            color: _RbT.pal.accent.withValues(alpha: 0.18),
           ),
           Container(
             width: 12,
             height: 12,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: T.pal.accent,
+              color: _RbT.pal.accent,
             ),
           ),
         ],
@@ -175,7 +218,7 @@ class _ScaledCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = T.reduceMotion(context) ? 1.0 : scale;
+    final s = _RbT.reduceMotion(context) ? 1.0 : scale;
     return Transform.scale(
       scale: s,
       child: Container(
@@ -199,12 +242,12 @@ class _BreathingLabel extends StatelessWidget {
         Icon(
           isInhale ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
           size: 24,
-          color: T.pal.accent,
+          color: _RbT.pal.accent,
         ),
         const SizedBox(width: 8),
         Text(
           isInhale ? 'Breathe in' : 'Breathe out',
-          style: T.type.h3.copyWith(color: T.pal.accent),
+          style: _RbT.type.h3.copyWith(color: _RbT.pal.accent),
         ),
       ],
     );
@@ -235,14 +278,16 @@ class _CrisisResource extends StatelessWidget {
                 Text(
                   name,
                   style: SettleTypography.body.copyWith(
-                    color: T.pal.textPrimary,
+                    color: _RbT.pal.textPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   note,
-                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                  style: _RbT.type.caption.copyWith(
+                    color: _RbT.pal.textTertiary,
+                  ),
                 ),
               ],
             ),
@@ -251,13 +296,13 @@ class _CrisisResource extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: T.glass.fillAccent,
-              borderRadius: BorderRadius.circular(T.radius.pill),
+              color: _RbT.glass.fillAccent,
+              borderRadius: BorderRadius.circular(SettleRadii.pill),
             ),
             child: Text(
               number,
               style: SettleTypography.body.copyWith(
-                color: T.pal.accent,
+                color: _RbT.pal.accent,
                 fontWeight: FontWeight.w600,
               ),
             ),
