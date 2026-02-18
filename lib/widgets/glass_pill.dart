@@ -41,18 +41,19 @@ class _GlassPillState extends State<GlassPill> {
   bool _pressed = false;
 
   static const double _minHeight = 48;
-  static const EdgeInsets _padding =
-      EdgeInsets.symmetric(vertical: 11, horizontal: 22);
+  static const EdgeInsets _padding = EdgeInsets.symmetric(
+    vertical: 11,
+    horizontal: 22,
+  );
   static const Duration _pressDuration = Duration(milliseconds: 100);
   static const double _pressedScale = 0.97;
 
   /// Inter 14, weight 500, letterSpacing -0.01
-  static TextStyle _labelStyle(Color color) =>
-      SettleTypography.body.copyWith(
-        fontWeight: FontWeight.w500,
-        letterSpacing: -0.01,
-        color: color,
-      );
+  static TextStyle _labelStyle(Color color) => SettleTypography.body.copyWith(
+    fontWeight: FontWeight.w500,
+    letterSpacing: -0.01,
+    color: color,
+  );
 
   /// 0.5px specular highlight gradient (top edge)
   static const LinearGradient _specularGradient = LinearGradient(
@@ -69,7 +70,8 @@ class _GlassPillState extends State<GlassPill> {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = widget.variant == GlassPillVariant.primaryLight ||
+    final isLight =
+        widget.variant == GlassPillVariant.primaryLight ||
         widget.variant == GlassPillVariant.secondaryLight;
     final (Color fill, Color border, Color textColor, double blur) =
         _resolveVariant(isLight);
@@ -98,63 +100,64 @@ class _GlassPillState extends State<GlassPill> {
                 splashColor: _splashColor(isLight),
                 highlightColor: _highlightColor(isLight),
                 borderRadius: radius,
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-                child: Container(
-                  constraints: const BoxConstraints(minHeight: _minHeight),
-                  width: widget.expanded ? double.infinity : null,
-                  padding: _padding,
-                  decoration: BoxDecoration(
-                    color: fill,
-                    borderRadius: radius,
-                    border: Border.all(color: border, width: 0.5),
-                    boxShadow: _innerGlow(widget.variant),
-                  ),
-                  child: Stack(
-                    children: [
-                      // 0.5px specular highlight on top (same technique as GlassCard)
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: 1,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: _specularGradient,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(SettleRadii.pill),
-                              topRight: Radius.circular(SettleRadii.pill),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+                  child: Container(
+                    constraints: const BoxConstraints(minHeight: _minHeight),
+                    width: widget.expanded ? double.infinity : null,
+                    padding: _padding,
+                    decoration: BoxDecoration(
+                      color: fill,
+                      borderRadius: radius,
+                      border: Border.all(color: border, width: 0.5),
+                      boxShadow: _innerGlow(widget.variant),
+                    ),
+                    child: Stack(
+                      children: [
+                        // 0.5px specular highlight on top (same technique as GlassCard)
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: 1,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: _specularGradient,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(SettleRadii.pill),
+                                topRight: Radius.circular(SettleRadii.pill),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Row(
-                        mainAxisSize:
-                            widget.expanded ? MainAxisSize.max : MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (widget.icon != null) ...[
-                            widget.icon!,
-                            const SizedBox(width: SettleSpacing.sm),
-                          ],
-                          Flexible(
-                            child: Text(
-                              widget.label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: _labelStyle(textColor),
+                        Row(
+                          mainAxisSize: widget.expanded
+                              ? MainAxisSize.max
+                              : MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (widget.icon != null) ...[
+                              widget.icon!,
+                              const SizedBox(width: SettleSpacing.sm),
+                            ],
+                            Flexible(
+                              child: Text(
+                                widget.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: _labelStyle(textColor),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -163,42 +166,43 @@ class _GlassPillState extends State<GlassPill> {
     switch (widget.variant) {
       case GlassPillVariant.primaryLight:
         return (
-          const Color(0xD12A303A), // rgba(42,48,58) 82%
-          const Color(0x0FFFFFFF), // white 6%
-          Colors.white,
-          16,
+          Colors.white.withValues(alpha: 0.70),
+          SettleColors.ink400.withValues(alpha: 0.26),
+          SettleColors.ink800,
+          24,
         );
       case GlassPillVariant.secondaryLight:
         return (
-          SettleGlassLight.background,
-          SettleGlassLight.border,
+          Colors.white.withValues(alpha: 0.54),
+          SettleColors.ink400.withValues(alpha: 0.20),
           SettleColors.ink700,
-          SettleGlassLight.blur,
+          24,
         );
       case GlassPillVariant.primaryDark:
         return (
-          const Color(0x4088AACC), // rgba(136,170,204) 25%
-          const Color(0x3388AACC), // nightAccent 20%
-          SettleColors.nightAccent,
+          Colors.white.withValues(alpha: 0.16),
+          Colors.white.withValues(alpha: 0.20),
+          SettleColors.nightText,
           20,
         );
       case GlassPillVariant.secondaryDark:
         return (
-          SettleGlassDark.background,
-          SettleGlassDark.border,
-          SettleColors.nightMuted,
-          SettleGlassDark.blur,
+          Colors.white.withValues(alpha: 0.08),
+          Colors.white.withValues(alpha: 0.14),
+          SettleColors.nightSoft,
+          20,
         );
     }
   }
 
   List<BoxShadow>? _innerGlow(GlassPillVariant variant) {
-    if (variant == GlassPillVariant.primaryLight) {
+    if (variant == GlassPillVariant.primaryLight ||
+        variant == GlassPillVariant.secondaryLight) {
       return [
         BoxShadow(
-          color: Colors.white.withValues(alpha: 0.06),
-          blurRadius: 8,
-          spreadRadius: -2,
+          color: Colors.white.withValues(alpha: 0.10),
+          blurRadius: 10,
+          spreadRadius: -3,
         ),
       ];
     }

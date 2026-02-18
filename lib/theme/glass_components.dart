@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -193,10 +195,26 @@ class _GlassPillState extends State<GlassPill> {
 
   @override
   Widget build(BuildContext context) {
-    final baseFill = widget.fill ?? T.glass.fill;
+    final mode = SurfaceModeResolver.resolveForContext(context);
+    final isDay = mode == SurfaceMode.day;
+    final baseFill =
+        widget.fill ??
+        switch (mode) {
+          SurfaceMode.day => T.glass.fillDay.withValues(alpha: 0.62),
+          SurfaceMode.night => T.glass.fillNight,
+          SurfaceMode.focus => T.glass.fillDark,
+        };
     final fill = _pressed
         ? baseFill.withValues(alpha: (baseFill.a + 0.08).clamp(0.0, 1.0))
         : baseFill;
+    final defaultTextColor = isDay ? T.pal.bgDeep : T.pal.textPrimary;
+    final borderColor = _pressed
+        ? (isDay
+              ? T.pal.bgDeep.withValues(alpha: 0.24)
+              : T.pal.textPrimary.withValues(alpha: 0.22))
+        : (isDay
+              ? T.pal.bgDeep.withValues(alpha: 0.14)
+              : T.glass.border.withValues(alpha: 0.65));
 
     return Opacity(
       opacity: widget.enabled ? 1 : 0.55,
@@ -239,12 +257,7 @@ class _GlassPillState extends State<GlassPill> {
                   decoration: BoxDecoration(
                     color: fill,
                     borderRadius: BorderRadius.circular(T.radius.pill),
-                    border: Border.all(
-                      color: _pressed
-                          ? T.pal.textPrimary.withValues(alpha: 0.22)
-                          : T.glass.border.withValues(alpha: 0.65),
-                      width: 1,
-                    ),
+                    border: Border.all(color: borderColor, width: 1),
                     boxShadow: _pressed
                         ? const []
                         : [
@@ -285,7 +298,7 @@ class _GlassPillState extends State<GlassPill> {
                           if (widget.icon != null) ...[
                             Icon(
                               widget.icon,
-                              color: widget.textColor ?? T.pal.textPrimary,
+                              color: widget.textColor ?? defaultTextColor,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
@@ -297,7 +310,7 @@ class _GlassPillState extends State<GlassPill> {
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,
                               style: T.type.label.copyWith(
-                                color: widget.textColor ?? T.pal.textPrimary,
+                                color: widget.textColor ?? defaultTextColor,
                               ),
                             ),
                           ),
@@ -352,19 +365,31 @@ class _GlassCtaState extends State<GlassCta> {
 
   @override
   Widget build(BuildContext context) {
+    final mode = SurfaceModeResolver.resolveForContext(context);
+    final isDay = mode == SurfaceMode.day;
     final radius = BorderRadius.circular(T.radius.pill);
-    final normalFill = widget.enabled
-        ? T.glass.fillAccent.withValues(alpha: 0.26)
-        : T.glass.fillAccent.withValues(alpha: 0.14);
-    final pressedFill = widget.enabled
-        ? T.glass.fillAccent.withValues(alpha: 0.34)
-        : normalFill;
+    final normalFill = isDay
+        ? (widget.enabled
+              ? Colors.white.withValues(alpha: 0.70)
+              : Colors.white.withValues(alpha: 0.52))
+        : (widget.enabled
+              ? T.glass.fillAccent.withValues(alpha: 0.26)
+              : T.glass.fillAccent.withValues(alpha: 0.14));
+    final pressedFill = isDay
+        ? (widget.enabled ? Colors.white.withValues(alpha: 0.80) : normalFill)
+        : (widget.enabled
+              ? T.glass.fillAccent.withValues(alpha: 0.34)
+              : normalFill);
     final borderColor = widget.enabled
-        ? T.pal.accent.withValues(alpha: _pressed ? 0.40 : 0.22)
+        ? (isDay
+              ? T.pal.bgDeep.withValues(alpha: _pressed ? 0.24 : 0.16)
+              : T.pal.accent.withValues(alpha: _pressed ? 0.40 : 0.22))
         : T.glass.border.withValues(alpha: 0.4);
-    final fg = widget.enabled
-        ? T.pal.textPrimary
-        : T.pal.textPrimary.withValues(alpha: 0.7);
+    final fg = isDay
+        ? (widget.enabled ? T.pal.bgDeep : T.pal.bgDeep.withValues(alpha: 0.62))
+        : (widget.enabled
+              ? T.pal.textPrimary
+              : T.pal.textPrimary.withValues(alpha: 0.7));
 
     return Semantics(
       button: true,

@@ -7,7 +7,9 @@ enum SurfaceMode { day, night, focus }
 /// Use [settle_design_system.dart] (System B) instead: SettleColors, SettleTypography,
 /// SettleSpacing, SettleRadii, SettleGlass. Access via the convenience alias `T`:
 ///   T.pal.accent, T.type.h1, T.space.md, etc.
-@Deprecated('Use settle_design_system.dart (System B) instead. T.* will be removed.')
+@Deprecated(
+  'Use settle_design_system.dart (System B) instead. T.* will be removed.',
+)
 class T {
   T._();
   static const pal = _Palette();
@@ -79,7 +81,8 @@ class _Palette {
   );
 
   // Accent & semantic
-  final Color accent = const Color(0xFFE8A94A);
+  // Neutral slate accent to avoid warm/orange drift across legacy surfaces.
+  final Color accent = const Color(0xFF5F6B80);
   final Color teal = const Color(0xFF5AB5A0);
   final Color rose = const Color(0x1FC86464); // rgba(200,100,100,0.12)
 
@@ -112,11 +115,11 @@ class _Palette {
 class _Arc {
   const _Arc();
 
-  final Color ok = const Color(0xFF6EE7B7); // 0–55%
-  final Color watch = const Color(0xFFFBBF24); // 55–75%
-  final Color soon = const Color(0xFFF59E0B); // 75–90%
-  final Color now = const Color(0xFFE89A3D); // 90%+ (high attention)
-  final Color critical = const Color(0xFFEF4444); // urgent only
+  final Color ok = const Color(0xFF86C3A8); // 0–55%
+  final Color watch = const Color(0xFFD6B476); // 55–75%
+  final Color soon = const Color(0xFFC99563); // 75–90%
+  final Color now = const Color(0xFFAF7E5A); // 90%+ (high attention)
+  final Color critical = const Color(0xFFC06F6F); // urgent only
 
   /// Returns the correct arc color for a given progress (0.0–1.0).
   Color forProgress(double p) {
@@ -138,9 +141,9 @@ class _Glass {
   // Background fills
   final Color fill = const Color(0x12FFFFFF); // white 7%
   final Color fillDark = const Color(0x4D000000); // black 30%
-  final Color fillAccent = const Color(0x1AE8A94A); // accent 10%
-  final Color fillRose = const Color(0x1FC86464); // rose 12%
-  final Color fillTeal = const Color(0x1A5AB5A0); // teal 10%
+  final Color fillAccent = const Color(0x1A5F6B80); // accent 10%
+  final Color fillRose = const Color(0x1A9A7A7A); // rose 10%
+  final Color fillTeal = const Color(0x1A6F8C84); // teal 10%
 
   // V3 mode-specific fills (higher opacity by mode for readability).
   final Color fillDay = const Color(0x2AFFFFFF); // white 16%
@@ -288,7 +291,9 @@ class _Radius {
 //  Animation Durations
 // ─────────────────────────────────────────────
 
-@Deprecated('Animation tokens: consider migrating to settle_design_system or keep T.anim until System B adds equivalents.')
+@Deprecated(
+  'Animation tokens: consider migrating to settle_design_system or keep T.anim until System B adds equivalents.',
+)
 class _Anim {
   const _Anim();
 
