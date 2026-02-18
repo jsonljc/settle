@@ -8,8 +8,35 @@ import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
+
+class _MiT {
+  _MiT._();
+
+  static final type = _MiTypeTokens();
+  static const pal = _MiPaletteTokens();
+}
+
+class _MiTypeTokens {
+  TextStyle get h2 => SettleTypography.heading.copyWith(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+}
+
+class _MiPaletteTokens {
+  const _MiPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+}
 
 /// Transition / bedtime / regulation summary for the current month.
 class MonthlyInsightScreen extends ConsumerWidget {
@@ -45,7 +72,9 @@ class MonthlyInsightScreen extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -97,7 +126,7 @@ class MonthlyInsightScreen extends ConsumerWidget {
                             ),
                             if (usageByTrigger.isNotEmpty) ...[
                               const SizedBox(height: 16),
-                              Text('By situation', style: T.type.h3),
+                              Text('By situation', style: _MiT.type.h3),
                               const SizedBox(height: 8),
                               ...usageByTrigger.entries.map(
                                 (e) => Padding(
@@ -108,13 +137,13 @@ class MonthlyInsightScreen extends ConsumerWidget {
                                         Expanded(
                                           child: Text(
                                             _formatTrigger(e.key),
-                                            style: T.type.body,
+                                            style: _MiT.type.body,
                                           ),
                                         ),
                                         Text(
                                           '${e.value}',
-                                          style: T.type.label.copyWith(
-                                            color: T.pal.accent,
+                                          style: _MiT.type.label.copyWith(
+                                            color: _MiT.pal.accent,
                                           ),
                                         ),
                                       ],
@@ -168,20 +197,23 @@ class _SummaryCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 24, color: T.pal.accent),
+          Icon(icon, size: 24, color: _MiT.pal.accent),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: T.type.h3),
+                Text(title, style: _MiT.type.h3),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: T.type.body.copyWith(color: T.pal.textSecondary),
+                  style: _MiT.type.body.copyWith(color: _MiT.pal.textSecondary),
                 ),
                 const SizedBox(height: 8),
-                Text(value, style: T.type.h2.copyWith(color: T.pal.accent)),
+                Text(
+                  value,
+                  style: _MiT.type.h2.copyWith(color: _MiT.pal.accent),
+                ),
               ],
             ),
           ),

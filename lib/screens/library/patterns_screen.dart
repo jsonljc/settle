@@ -5,9 +5,34 @@ import '../../models/pattern_insight.dart';
 import '../../providers/patterns_provider.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
+
+class _PsT {
+  _PsT._();
+
+  static final type = _PsTypeTokens();
+  static const pal = _PsPaletteTokens();
+}
+
+class _PsTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _PsPaletteTokens {
+  const _PsPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
 
 class PatternsScreen extends ConsumerWidget {
   const PatternsScreen({super.key});
@@ -20,7 +45,9 @@ class PatternsScreen extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -65,18 +92,18 @@ class _PatternCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_typeLabel(pattern), style: T.type.h3),
+          Text(_typeLabel(pattern), style: _PsT.type.h3),
           const SizedBox(height: 8),
-          Text(pattern.insight, style: T.type.body),
+          Text(pattern.insight, style: _PsT.type.body),
           const SizedBox(height: 10),
           Text(
             '${confidencePercent.toStringAsFixed(0)}% confidence · ${pattern.basedOnEvents} events',
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: _PsT.type.caption.copyWith(color: _PsT.pal.textSecondary),
           ),
           const SizedBox(height: 3),
           Text(
             'Generated ${_formatDate(pattern.createdAt)}',
-            style: T.type.caption.copyWith(color: T.pal.textTertiary),
+            style: _PsT.type.caption.copyWith(color: _PsT.pal.textTertiary),
           ),
         ],
       ),
@@ -105,9 +132,9 @@ class _EmptyPatternsState extends StatelessWidget {
     return Center(
       child: Text(
         'Pattern insights will appear here after more usage.',
-        style: T.type.body.copyWith(
+        style: _PsT.type.body.copyWith(
           fontSize: 14,
-          color: T.pal.textSecondary,
+          color: _PsT.pal.textSecondary,
         ),
         textAlign: TextAlign.center,
       ),
