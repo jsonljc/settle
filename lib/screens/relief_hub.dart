@@ -7,9 +7,34 @@ import '../services/spec_policy.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
+
+class _RhT {
+  _RhT._();
+
+  static final type = _RhTypeTokens();
+  static const pal = _RhPaletteTokens();
+}
+
+class _RhTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _RhPaletteTokens {
+  const _RhPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
 
 class ReliefHubScreen extends ConsumerWidget {
   const ReliefHubScreen({super.key});
@@ -25,7 +50,9 @@ class ReliefHubScreen extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -126,8 +153,8 @@ class ReliefHubScreen extends ConsumerWidget {
                             padding: const EdgeInsets.only(top: 14),
                             child: Text(
                               'Some routes are taking a short break.',
-                              style: T.type.caption.copyWith(
-                                color: T.pal.textTertiary,
+                              style: _RhT.type.caption.copyWith(
+                                color: _RhT.pal.textTertiary,
                               ),
                             ),
                           ),
@@ -173,19 +200,19 @@ class _ReliefTile extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: highlighted ? T.pal.accent : T.pal.textSecondary,
+                color: highlighted ? _RhT.pal.accent : _RhT.pal.textSecondary,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label, style: T.type.h3),
+                    Text(label, style: _RhT.type.h3),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: T.type.caption.copyWith(
-                        color: T.pal.textSecondary,
+                      style: _RhT.type.caption.copyWith(
+                        color: _RhT.pal.textSecondary,
                       ),
                     ),
                   ],
@@ -195,7 +222,7 @@ class _ReliefTile extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,
-                color: T.pal.textTertiary,
+                color: _RhT.pal.textTertiary,
               ),
             ],
           ),
