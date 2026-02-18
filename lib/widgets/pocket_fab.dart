@@ -38,7 +38,7 @@ class PocketFAB extends StatelessWidget {
 
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     const navBarHeight = 64.0;
-    const fabMargin = 16.0;
+    const fabMargin = SettleSpacing.lg;
     final top =
         MediaQuery.of(context).size.height -
         bottomPadding -
@@ -49,21 +49,33 @@ class PocketFAB extends StatelessWidget {
     return Positioned(
       top: top,
       right: fabMargin,
-      child: GestureDetector(
-        onTap: onTap,
+      child: Semantics(
+        button: true,
+        label: 'Open Pocket',
         child: ClipRRect(
           borderRadius: BorderRadius.circular(_size / 2),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: _blurSigma, sigmaY: _blurSigma),
-            child: Container(
-              width: _size,
-              height: _size,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: fill,
-                border: Border.all(color: border, width: 1),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onTap,
+                customBorder: const CircleBorder(),
+                child: Container(
+                  width: _size,
+                  height: _size,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: fill,
+                    border: Border.all(color: border, width: 1),
+                  ),
+                  child: Icon(
+                    Icons.menu_book_rounded,
+                    color: iconColor,
+                    size: 28,
+                  ),
+                ),
               ),
-              child: Icon(Icons.menu_book_rounded, color: iconColor, size: 28),
             ),
           ),
         ),

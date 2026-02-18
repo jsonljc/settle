@@ -64,7 +64,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                   const ScreenHeader(
                     title: 'Family',
                     subtitle: 'Keep everyone aligned with the same scripts.',
-                    fallbackRoute: '/family',
+                    fallbackRoute: '/plan',
                   ),
                   const SizedBox(height: 12),
                   if (isPartnerLayout) ...[

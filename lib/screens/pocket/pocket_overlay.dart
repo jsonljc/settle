@@ -9,6 +9,8 @@ import '../../widgets/micro_celebration.dart';
 import '../../widgets/output_card.dart';
 import '../../widgets/script_card.dart';
 import '../../widgets/settle_disclosure.dart';
+import '../../widgets/settle_gap.dart';
+import '../../widgets/settle_tappable.dart';
 import 'pocket_after_log.dart';
 import 'pocket_inline_breathe.dart';
 
@@ -77,7 +79,9 @@ class PocketOverlay extends StatelessWidget {
         SettleSpacing.screenPadding,
         SettleSpacing.screenPadding,
         SettleSpacing.screenPadding,
-        MediaQuery.of(context).padding.bottom + 24,
+        MediaQuery.of(context).padding.bottom +
+            SettleSpacing.lg +
+            SettleSpacing.sm,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -87,8 +91,9 @@ class PocketOverlay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Pocket', style: _PoT.type.h3),
-              GestureDetector(
+              SettleTappable(
                 onTap: onClose,
+                semanticLabel: 'Close Pocket overlay',
                 child: Text(
                   'Done',
                   style: _PoT.type.label.copyWith(color: _PoT.pal.accent),
@@ -96,7 +101,7 @@ class PocketOverlay extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SettleGap.md(),
           OutputCard(
             scenarioLabel: content.triggerType,
             prevent: content.prevent,
@@ -106,26 +111,26 @@ class PocketOverlay extends StatelessWidget {
             context: ScriptCardContext.pocket,
             onPrimary: () => onThisHelped(card.cardId),
           ),
-          const SizedBox(height: 16),
+          const SettleGap.lg(),
           GlassCta(
             label: 'This helped',
             onTap: () => onThisHelped(card.cardId),
           ),
-          const SizedBox(height: 12),
+          const SettleGap.md(),
           SettleDisclosure(
             title: 'More options',
             subtitle: 'Use only if needed',
             children: [
-              const SizedBox(height: 8),
+              const SettleGap.sm(),
               GlassPill(
                 label: 'Didn\'t work this time',
                 onTap: () => onDidntWork(card.cardId),
               ),
               if (pinnedCards.length > 1) ...[
-                const SizedBox(height: 8),
+                const SettleGap.sm(),
                 GlassPill(label: 'Different script', onTap: onDifferentScript),
               ],
-              const SizedBox(height: 8),
+              const SettleGap.sm(),
               GlassPill(
                 label: 'I need to regulate first',
                 onTap: onRegulateFirst,
@@ -154,8 +159,9 @@ class _EmptyPocketContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Pocket', style: _PoT.type.h3),
-              GestureDetector(
+              SettleTappable(
                 onTap: onClose,
+                semanticLabel: 'Close Pocket overlay',
                 child: Text(
                   'Done',
                   style: _PoT.type.label.copyWith(color: _PoT.pal.accent),
@@ -163,12 +169,12 @@ class _EmptyPocketContent extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: SettleSpacing.lg + SettleSpacing.sm),
           Text(
             'Pin a script from Plan or Library to see it here in the moment.',
             style: _PoT.type.body.copyWith(color: _PoT.pal.textSecondary),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: SettleSpacing.lg + SettleSpacing.sm),
           GlassCta(label: 'Done', onTap: onClose),
         ],
       ),

@@ -13,9 +13,11 @@ import 'screens/family/invite_screen.dart';
 import 'screens/family_rules.dart';
 import 'screens/learn.dart';
 import 'screens/library/library_home_screen.dart';
+import 'screens/library/library_logs_screen.dart';
 import 'screens/library/monthly_insight_screen.dart';
 import 'screens/library/patterns_screen.dart';
 import 'screens/library/playbook_card_detail_screen.dart';
+import 'screens/library/library_progress_screen.dart';
 import 'screens/library/saved_playbook_screen.dart';
 import 'screens/onboarding/onboarding_v2_screen.dart';
 import 'screens/plan/plan_home_screen.dart';
@@ -32,26 +34,20 @@ import 'screens/sleep/sleep_mini_onboarding.dart';
 import 'screens/sleep_tonight.dart';
 import 'screens/sos.dart';
 import 'screens/splash.dart';
-import 'screens/today.dart';
 import 'screens/update_rhythm_screen.dart';
+import 'theme/settle_design_system.dart';
 import 'widgets/release_surfaces.dart';
 import 'widgets/nav_item.dart';
 
-const int _v2TabPlan = 0;
-const int _v2TabFamily = 1;
-const int _v2TabSleep = 2;
-const int _v2TabLibrary = 3;
+const int _v2TabNow = 0;
+const int _v2TabSleep = 1;
+const int _v2TabLibrary = 2;
 
 const _v2NavItems = [
   SettleBottomNavItem(
-    label: 'Home',
+    label: 'Now',
     icon: Icons.home_outlined,
     activeIcon: Icons.home_rounded,
-  ),
-  SettleBottomNavItem(
-    label: 'Family',
-    icon: Icons.group_outlined,
-    activeIcon: Icons.group,
   ),
   SettleBottomNavItem(
     label: 'Sleep',
@@ -124,7 +120,31 @@ GoRouter buildRouter({required bool regulateEnabled}) {
       ),
       GoRoute(
         path: '/settings',
-        pageBuilder: (context, state) => _slide(state, const SettingsScreen()),
+        pageBuilder: (context, state) =>
+            _overlaySheet(state, const SettingsScreen()),
+      ),
+      GoRoute(
+        path: '/family',
+        pageBuilder: (context, state) =>
+            _overlaySheet(state, const FamilyHomeScreen()),
+        routes: [
+          GoRoute(path: 'home', redirect: (_, __) => '/family'),
+          GoRoute(
+            path: 'shared',
+            pageBuilder: (context, state) =>
+                _overlaySheet(state, const FamilyRulesScreen()),
+          ),
+          GoRoute(
+            path: 'invite',
+            pageBuilder: (context, state) =>
+                _overlaySheet(state, const InviteScreen()),
+          ),
+          GoRoute(
+            path: 'activity',
+            pageBuilder: (context, state) =>
+                _overlaySheet(state, const ActivityFeedScreen()),
+          ),
+        ],
       ),
       GoRoute(path: '/rules', redirect: (_, __) => '/family/shared'),
       GoRoute(
@@ -150,8 +170,7 @@ GoRouter buildRouter({required bool regulateEnabled}) {
 
 StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
   final shellNavigatorKeys = [
-    GlobalKey<NavigatorState>(debugLabel: 'plan'),
-    GlobalKey<NavigatorState>(debugLabel: 'family'),
+    GlobalKey<NavigatorState>(debugLabel: 'now'),
     GlobalKey<NavigatorState>(debugLabel: 'sleep_v2'),
     GlobalKey<NavigatorState>(debugLabel: 'library'),
   ];
@@ -182,9 +201,9 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
       );
     },
     branches: [
-      // Tab 0: Plan
+      // Tab 0: Now
       StatefulShellBranch(
-        navigatorKey: shellNavigatorKeys[_v2TabPlan],
+        navigatorKey: shellNavigatorKeys[_v2TabNow],
         routes: [
           GoRoute(
             path: '/plan',
@@ -242,64 +261,36 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
           ),
         ],
       ),
-      // Tab 1: Family
-      StatefulShellBranch(
-        navigatorKey: shellNavigatorKeys[_v2TabFamily],
-        routes: [
-          GoRoute(
-            path: '/family',
-            pageBuilder: (context, state) =>
-                _slide(state, const FamilyHomeScreen()),
-            routes: [
-              GoRoute(path: 'home', redirect: (_, __) => '/family'),
-              GoRoute(
-                path: 'shared',
-                pageBuilder: (context, state) =>
-                    _slide(state, const FamilyRulesScreen()),
-              ),
-              GoRoute(
-                path: 'invite',
-                pageBuilder: (context, state) =>
-                    _slide(state, const InviteScreen()),
-              ),
-              GoRoute(
-                path: 'activity',
-                pageBuilder: (context, state) =>
-                    _slide(state, const ActivityFeedScreen()),
-              ),
-            ],
-          ),
-        ],
-      ),
-      // Tab 2: Sleep (unchanged)
+      // Tab 1: Sleep
       StatefulShellBranch(
         navigatorKey: shellNavigatorKeys[_v2TabSleep],
         routes: [
           GoRoute(
             path: '/sleep',
             pageBuilder: (context, state) =>
-                _slide(state, const SleepMiniOnboardingGate()),
+                _slide(state, const CurrentRhythmScreen()),
             routes: [
               GoRoute(
                 path: 'tonight',
                 pageBuilder: (context, state) =>
                     _slide(state, const SleepTonightScreen()),
               ),
-              GoRoute(
-                path: 'rhythm',
-                pageBuilder: (context, state) =>
-                    _slide(state, const CurrentRhythmScreen()),
-              ),
+              GoRoute(path: 'rhythm', redirect: (_, __) => '/sleep'),
               GoRoute(
                 path: 'update',
                 pageBuilder: (context, state) =>
                     _slide(state, const UpdateRhythmScreen()),
               ),
+              GoRoute(
+                path: 'setup',
+                pageBuilder: (context, state) =>
+                    _slide(state, const SleepMiniOnboardingScreen()),
+              ),
             ],
           ),
         ],
       ),
-      // Tab 3: Library
+      // Tab 2: Library
       StatefulShellBranch(
         navigatorKey: shellNavigatorKeys[_v2TabLibrary],
         routes: [
@@ -314,9 +305,14 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
                     _slide(state, const LearnScreen()),
               ),
               GoRoute(
+                path: 'progress',
+                pageBuilder: (context, state) =>
+                    _slide(state, const LibraryProgressScreen()),
+              ),
+              GoRoute(
                 path: 'logs',
                 pageBuilder: (context, state) =>
-                    _slide(state, const TodayScreen()),
+                    _slide(state, const LibraryLogsScreen()),
               ),
               GoRoute(
                 path: 'saved',
@@ -406,10 +402,10 @@ List<RouteBase> _compatibilityRoutes({required bool regulateEnabled}) {
       redirect: (context, state) =>
           _redirectWithMergedQuery(state, path: '/sleep/update'),
     ),
-    GoRoute(path: '/plan-progress', redirect: (_, __) => '/library'),
+    GoRoute(path: '/plan-progress', redirect: (_, __) => '/library/progress'),
     GoRoute(
       path: '/progress',
-      redirect: (_, __) => '/library',
+      redirect: (_, __) => '/library/progress',
       routes: [
         GoRoute(path: 'logs', redirect: (_, __) => '/library/logs'),
         GoRoute(path: 'learn', redirect: (_, __) => '/library/learn'),
@@ -520,4 +516,56 @@ CustomTransitionPage<void> _fade(
       );
     },
   );
+}
+
+/// Modal overlay page used by Family and Settings.
+CustomTransitionPage<void> _overlaySheet(GoRouterState state, Widget child) {
+  const duration = Duration(milliseconds: 220);
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    opaque: false,
+    barrierDismissible: true,
+    barrierLabel: 'Dismiss overlay',
+    barrierColor: Colors.black.withValues(alpha: 0.28),
+    transitionDuration: duration,
+    reverseTransitionDuration: duration,
+    child: _OverlayPageFrame(child: child),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final fade = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final slide = Tween<Offset>(
+        begin: const Offset(0, 0.04),
+        end: Offset.zero,
+      ).animate(fade);
+      return FadeTransition(
+        opacity: fade,
+        child: SlideTransition(position: slide, child: child),
+      );
+    },
+  );
+}
+
+class _OverlayPageFrame extends StatelessWidget {
+  const _OverlayPageFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      minimum: const EdgeInsets.fromLTRB(
+        SettleSpacing.sm,
+        SettleSpacing.lg,
+        SettleSpacing.sm,
+        SettleSpacing.sm,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(SettleRadii.card),
+        child: Material(color: Colors.transparent, child: child),
+      ),
+    );
+  }
 }

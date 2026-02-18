@@ -213,7 +213,7 @@ class _OnboardingV2ScreenState extends ConsumerState<OnboardingV2Screen> {
     }
 
     if (!mounted) return;
-    context.go('/plan');
+    context.go('/sleep');
   }
 
   @override

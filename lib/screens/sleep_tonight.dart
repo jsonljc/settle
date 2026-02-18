@@ -14,7 +14,7 @@ import '../services/card_content_service.dart';
 import '../services/event_bus_service.dart';
 import '../services/sleep_guidance_service.dart';
 import '../services/spec_policy.dart';
-import '../theme/glass_components.dart' hide GlassCard;
+import '../theme/glass_components.dart' as legacy_glass;
 import '../theme/settle_design_system.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/glass_card.dart';
@@ -27,7 +27,6 @@ class _StTokens {
 
   static const type = _StTypeTokens();
   static const pal = _StPaletteTokens();
-  static const radius = _StRadiusTokens();
   static const space = _StSpaceTokens();
 }
 
@@ -49,12 +48,6 @@ class _StPaletteTokens {
   Color get textTertiary => SettleColors.ink400;
 }
 
-class _StRadiusTokens {
-  const _StRadiusTokens();
-
-  double get md => 18;
-}
-
 class _StSpaceTokens {
   const _StSpaceTokens();
 
@@ -70,10 +63,8 @@ class SleepTonightScreen extends ConsumerStatefulWidget {
 
 class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
   String _scenario = 'night_wakes';
-  bool _feedingAssociation = false;
+  final bool _feedingAssociation = false;
   final String _feedMode = 'keep_feeds';
-  TimeOfDay? _lastFeedTime;
-  TimeOfDay? _lastNapEndTime;
 
   String? _loadedChildId;
   bool _loadScheduled = false;
@@ -311,7 +302,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
   }) async {
     var outcome = state.lastRecapOutcome ?? SleepRecapOutcome.settled;
     var timeBucket = state.lastTimeToSettleBucket;
-    final noteController = TextEditingController();
 
     await showModalBottomSheet<void>(
       context: context,
@@ -361,24 +351,8 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           labelBuilder: (v) => '$v min',
                           onChanged: (v) => setModalState(() => timeBucket = v),
                         ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: noteController,
-                          style: _StTokens.type.caption,
-                          decoration: InputDecoration(
-                            labelText: 'Note (optional)',
-                            labelStyle: _StTokens.type.caption.copyWith(
-                              color: _StTokens.pal.textTertiary,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                _StTokens.radius.md,
-                              ),
-                            ),
-                          ),
-                        ),
                         const SizedBox(height: 12),
-                        GlassCta(
+                        legacy_glass.GlassCta(
                           label: 'Save recap',
                           compact: true,
                           onTap: () async {
@@ -388,7 +362,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   childId: childId,
                                   outcome: outcome,
                                   timeToSettleBucket: timeBucket,
-                                  note: noteController.text.trim(),
                                 );
                             await EventBusService.emit(
                               childId: childId,
@@ -413,7 +386,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
         );
       },
     );
-    noteController.dispose();
   }
 
   Future<void> _showApproachSwitchSheet({
@@ -498,7 +470,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        GlassCta(
+                        legacy_glass.GlassCta(
                           label: 'Confirm switch',
                           compact: true,
                           onTap: () async {
@@ -648,7 +620,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                               setModalState(() => nightFeedsExpected = v),
                         ),
                         const SizedBox(height: 10),
-                        GlassCta(
+                        legacy_glass.GlassCta(
                           label: 'Save setup',
                           compact: true,
                           onTap: () async {
@@ -726,13 +698,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
     required Approach approach,
     required int ageMonths,
     required List<String> evidenceRefs,
-    VoidCallback? onShare,
   }) async {
     var selectedScenario =
         state.activePlan?['scenario']?.toString() ?? _scenario;
-    var localComfortMode = state.comfortMode;
-    var quickDone = state.quickDoneEnabled;
-    var safeSleepConfirmed = state.safeSleepConfirmed;
 
     EventBusService.emit(
       childId: childId,
@@ -768,17 +736,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                         children: [
                           Text('More options', style: _StTokens.type.h3),
                           const SizedBox(height: 12),
-                          if (onShare != null) ...[
-                            GlassPill(
-                              label: 'Send plan',
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                onShare();
-                              },
-                              icon: Icons.share_outlined,
-                            ),
-                            const SizedBox(height: 12),
-                          ],
                           Text('Switch scenario', style: _StTokens.type.label),
                           const SizedBox(height: 8),
                           SettleSegmentedChoice<String>(
@@ -802,166 +759,27 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                               );
                             },
                           ),
-                          const SizedBox(height: 10),
-                          ExpansionTile(
-                            tilePadding: EdgeInsets.zero,
-                            title: Text(
-                              'Optional inputs',
-                              style: _StTokens.type.label,
-                            ),
-                            children: [
-                              const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      _lastFeedTime == null
-                                          ? 'Last feed: not set'
-                                          : 'Last feed: ${_lastFeedTime!.format(context)}',
-                                      style: _StTokens.type.caption.copyWith(
-                                        color: _StTokens.pal.textSecondary,
-                                      ),
-                                    ),
-                                  ),
-                                  GlassPill(
-                                    label: 'Set',
-                                    onTap: () async {
-                                      final picked = await showTimePicker(
-                                        context: context,
-                                        initialTime:
-                                            _lastFeedTime ?? TimeOfDay.now(),
-                                      );
-                                      if (picked != null && mounted) {
-                                        setState(() => _lastFeedTime = picked);
-                                        setModalState(() {});
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      _lastNapEndTime == null
-                                          ? 'Last nap end: not set'
-                                          : 'Last nap end: ${_lastNapEndTime!.format(context)}',
-                                      style: _StTokens.type.caption.copyWith(
-                                        color: _StTokens.pal.textSecondary,
-                                      ),
-                                    ),
-                                  ),
-                                  GlassPill(
-                                    label: 'Set',
-                                    onTap: () async {
-                                      final picked = await showTimePicker(
-                                        context: context,
-                                        initialTime:
-                                            _lastNapEndTime ?? TimeOfDay.now(),
-                                      );
-                                      if (picked != null && mounted) {
-                                        setState(
-                                          () => _lastNapEndTime = picked,
-                                        );
-                                        setModalState(() {});
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
-                              SwitchListTile.adaptive(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(
-                                  'Feeding-to-sleep pattern',
-                                  style: _StTokens.type.caption,
-                                ),
-                                value: _feedingAssociation,
-                                onChanged: (v) {
-                                  setState(() => _feedingAssociation = v);
-                                  setModalState(() {});
-                                },
-                              ),
-                            ],
+                          const SizedBox(height: 12),
+                          legacy_glass.GlassPill(
+                            label: 'Why this works',
+                            enabled: evidenceRefs.isNotEmpty,
+                            onTap: evidenceRefs.isNotEmpty
+                                ? () => _showEvidenceSheet(evidenceRefs)
+                                : () {},
                           ),
-                          const SizedBox(height: 10),
-                          if (evidenceRefs.isNotEmpty)
-                            GlassPill(
-                              label: 'Why this works',
-                              onTap: () => _showEvidenceSheet(evidenceRefs),
-                            ),
-                          Text('Log & recap', style: _StTokens.type.label),
                           const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              GlassPill(
-                                label: 'Mark done',
-                                onTap: () async {
-                                  if (quickDone &&
-                                      state.lastRecapOutcome != null) {
-                                    await ref
-                                        .read(sleepTonightProvider.notifier)
-                                        .completeWithRecap(
-                                          childId: childId,
-                                          outcome: state.lastRecapOutcome!,
-                                          timeToSettleBucket:
-                                              state.lastTimeToSettleBucket,
-                                        );
-                                  } else {
-                                    await _openRecapSheet(
-                                      childId: childId,
-                                      state: state,
-                                    );
-                                  }
-                                },
-                              ),
-                              GlassPill(
-                                label: 'Add note',
-                                onTap: () => _openRecapSheet(
-                                  childId: childId,
-                                  state: state,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SwitchListTile.adaptive(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              'Quick done uses last recap defaults',
-                              style: _StTokens.type.caption,
-                            ),
-                            value: quickDone,
-                            onChanged: (v) async {
-                              setModalState(() => quickDone = v);
-                              await ref
-                                  .read(sleepTonightProvider.notifier)
-                                  .setQuickDoneEnabled(
-                                    childId: childId,
-                                    enabled: v,
-                                  );
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          Text('Mode', style: _StTokens.type.label),
-                          const SizedBox(height: 8),
-                          SettleSegmentedChoice<String>(
-                            options: const ['training', 'comfort'],
-                            selected: localComfortMode ? 'comfort' : 'training',
-                            labelBuilder: (v) =>
-                                v == 'comfort' ? 'Comfort' : 'Training',
-                            onChanged: (v) async {
-                              final nextComfort = v == 'comfort';
-                              setModalState(
-                                () => localComfortMode = nextComfort,
+                          legacy_glass.GlassPill(
+                            label: 'Mark done',
+                            onTap: () async {
+                              Navigator.of(context).pop();
+                              await _openRecapSheet(
+                                childId: childId,
+                                state: state,
                               );
-                              await ref
-                                  .read(sleepTonightProvider.notifier)
-                                  .setComfortMode(nextComfort);
                             },
                           ),
-                          const SizedBox(height: 10),
-                          GlassPill(
+                          const SizedBox(height: 8),
+                          legacy_glass.GlassPill(
                             label: 'Change approach',
                             onTap: () async {
                               await EventBusService.emit(
@@ -978,44 +796,12 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                               );
                             },
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 12),
                           Text(
-                            'If you suspect illness or pain, pause training and comfort first tonight.',
+                            'Use these only if needed.',
                             style: _StTokens.type.caption.copyWith(
                               color: _StTokens.pal.textSecondary,
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          SwitchListTile.adaptive(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              'Sleep space is safe',
-                              style: _StTokens.type.caption,
-                            ),
-                            value: safeSleepConfirmed,
-                            onChanged: (v) {
-                              setModalState(() => safeSleepConfirmed = v);
-                              ref
-                                  .read(sleepTonightProvider.notifier)
-                                  .updateSafetyGate(
-                                    breathingDifficulty:
-                                        state.breathingDifficulty,
-                                    dehydrationSigns: state.dehydrationSigns,
-                                    repeatedVomiting: state.repeatedVomiting,
-                                    severePainIndicators:
-                                        state.severePainIndicators,
-                                    feedingRefusalWithPainSigns:
-                                        state.feedingRefusalWithPainSigns,
-                                    safeSleepConfirmed: v,
-                                  );
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          GlassPill(
-                            label: 'Something feels off',
-                            onTap: () => ref
-                                .read(sleepTonightProvider.notifier)
-                                .markSomethingFeelsOff(),
                           ),
                         ],
                       ),
@@ -1139,7 +925,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                         style: _StTokens.type.label,
                                       ),
                                       const SizedBox(height: 8),
-                                      GlassCta(
+                                      legacy_glass.GlassCta(
                                         label: 'Sleep setup',
                                         compact: true,
                                         onTap: () => _showHomeContextSheet(
@@ -1163,7 +949,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                 ),
                               if (!state.safeSleepConfirmed) ...[
-                                GlassCardRose(
+                                legacy_glass.GlassCardRose(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -1180,7 +966,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 10),
-                                      GlassCta(
+                                      legacy_glass.GlassCta(
                                         label: 'Confirm sleep space is safe',
                                         compact: true,
                                         onTap: () => ref
@@ -1281,8 +1067,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                     approach: approach,
                                     ageMonths: ageMonths,
                                     evidenceRefs: evidenceRefs,
-                                    onShare: () =>
-                                        _shareSleepPlan(plan, approach),
                                   ),
                                 )
                               else
@@ -1294,7 +1078,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 ),
                               if (state.lastError != null) ...[
                                 const SizedBox(height: 10),
-                                GlassCardRose(
+                                legacy_glass.GlassCardRose(
                                   child: Text(
                                     state.lastError!,
                                     style: _StTokens.type.caption.copyWith(
@@ -1325,11 +1109,11 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: [
-                                  GlassPill(
+                                  legacy_glass.GlassPill(
                                     label: 'View rhythm',
                                     onTap: () => context.push('/sleep/rhythm'),
                                   ),
-                                  GlassPill(
+                                  legacy_glass.GlassPill(
                                     label: 'Update rhythm',
                                     onTap: () => context.push('/sleep/update'),
                                   ),
@@ -1644,7 +1428,7 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
       'Pause and switch to comfort-first if things escalate.',
     );
 
-    return GlassCardAccent(
+    return legacy_glass.GlassCardAccent(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1677,7 +1461,7 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: GlassCta(
+                  child: legacy_glass.GlassCta(
                     label: 'Close',
                     onTap: onClose,
                     compact: true,
@@ -1685,7 +1469,7 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: GlassCta(
+                  child: legacy_glass.GlassCta(
                     label: 'Save to Playbook',
                     onTap: onSaveToPlaybook,
                     compact: true,
@@ -1695,12 +1479,16 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
             ),
             if (onShare != null) ...[
               const SizedBox(height: 8),
-              GlassCta(label: 'Send', onTap: onShare!, compact: true),
+              legacy_glass.GlassCta(
+                label: 'Send',
+                onTap: onShare!,
+                compact: true,
+              ),
             ],
           ] else
-            GlassCta(label: 'Next step', onTap: onNextStep),
+            legacy_glass.GlassCta(label: 'Next step', onTap: onNextStep),
           const SizedBox(height: 8),
-          GlassPill(label: 'More options', onTap: onMoreOptions),
+          legacy_glass.GlassPill(label: 'More options', onTap: onMoreOptions),
         ],
       ),
     );

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../models/user_card.dart';
 import '../../models/v2_enums.dart';
 import '../../providers/usage_events_provider.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../services/card_content_service.dart';
+import '../../services/spec_policy.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../widgets/pocket_fab.dart';
 import 'pocket_overlay.dart';
 
@@ -66,67 +70,95 @@ class _PocketFABAndOverlayState extends ConsumerState<PocketFABAndOverlay> {
     _close();
   }
 
-  void _onDifferentScript() {
-    final pinned = ref.read(pinnedUserCardsProvider);
-    if (pinned.length <= 1) return;
-    setState(() => _currentIndex = (_currentIndex + 1) % pinned.length);
+  void _onDifferentScript(int totalCards) {
+    if (totalCards <= 1) return;
+    setState(() => _currentIndex = (_currentIndex + 1) % totalCards);
   }
 
   @override
   Widget build(BuildContext context) {
     final pinnedCards = ref.watch(pinnedUserCardsProvider);
+    final path = GoRouter.of(context).routeInformationProvider.value.uri.path;
+    final isNightContext = SpecPolicy.isNight(DateTime.now());
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        PocketFAB(onTap: () => setState(() => _open = true)),
+        PocketFAB(
+          onTap: () => setState(() {
+            _open = true;
+            _view = PocketOverlayView.script;
+            _currentIndex = 0;
+          }),
+        ),
         if (_open)
           Positioned.fill(
-            child: GestureDetector(
-              onTap: _close,
-              behavior: HitTestBehavior.opaque,
-              child: Container(
-                color: Colors.black54,
-                child: SafeArea(
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: FutureBuilder<List<CardContent>>(
-                        future: CardContentService.instance.getCards(),
-                        builder: (context, snapshot) {
-                          final allCards = snapshot.data ?? [];
-                          final byId = {for (final c in allCards) c.id: c};
-                          final resolvedContent = pinnedCards
-                              .map((uc) => byId[uc.cardId])
-                              .toList();
+            child: Semantics(
+              label: 'Dismiss Pocket overlay',
+              button: true,
+              child: GestureDetector(
+                onTap: _close,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  color: Colors.black54,
+                  child: SafeArea(
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: FutureBuilder<List<CardContent>>(
+                          future: CardContentService.instance.getCards(),
+                          builder: (context, snapshot) {
+                            final allCards = snapshot.data ?? [];
+                            final byId = {for (final c in allCards) c.id: c};
+                            final orderedCandidates = _orderPocketCandidates(
+                              pinnedCards: pinnedCards,
+                              byId: byId,
+                              path: path,
+                              isNightContext: isNightContext,
+                            );
+                            final orderedPinnedCards = orderedCandidates
+                                .map((candidate) => candidate.card)
+                                .toList();
+                            final orderedResolvedContent = orderedCandidates
+                                .map((candidate) => candidate.content)
+                                .toList();
+                            final safeIndex =
+                                _currentIndex < orderedPinnedCards.length
+                                ? _currentIndex
+                                : 0;
 
-                          return GlassCard(
-                            padding: const EdgeInsets.all(20),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: 400,
-                                maxHeight:
-                                    MediaQuery.of(context).size.height * 0.75,
+                            return GlassCard(
+                              padding: const EdgeInsets.all(
+                                SettleSpacing.cardPadding,
                               ),
-                              child: PocketOverlayBody(
-                                view: _view,
-                                pinnedCards: pinnedCards,
-                                resolvedContent: resolvedContent,
-                                currentIndex: _currentIndex,
-                                afterLogCardId: _afterLogCardId,
-                                afterLogOutcome: _afterLogOutcome,
-                                onClose: _close,
-                                onThisHelped: _onThisHelped,
-                                onDidntWork: _onDidntWork,
-                                onRegulateFirst: _onRegulateFirst,
-                                onDifferentScript: _onDifferentScript,
-                                onBackToScript: _onBackToScript,
-                                onAfterLogSubmitted: _onAfterLogSubmitted,
-                                onCelebrationDismiss: _close,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: 400,
+                                  maxHeight:
+                                      MediaQuery.of(context).size.height * 0.75,
+                                ),
+                                child: PocketOverlayBody(
+                                  view: _view,
+                                  pinnedCards: orderedPinnedCards,
+                                  resolvedContent: orderedResolvedContent,
+                                  currentIndex: safeIndex,
+                                  afterLogCardId: _afterLogCardId,
+                                  afterLogOutcome: _afterLogOutcome,
+                                  onClose: _close,
+                                  onThisHelped: _onThisHelped,
+                                  onDidntWork: _onDidntWork,
+                                  onRegulateFirst: _onRegulateFirst,
+                                  onDifferentScript: () => _onDifferentScript(
+                                    orderedPinnedCards.length,
+                                  ),
+                                  onBackToScript: _onBackToScript,
+                                  onAfterLogSubmitted: _onAfterLogSubmitted,
+                                  onCelebrationDismiss: _close,
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -137,4 +169,77 @@ class _PocketFABAndOverlayState extends ConsumerState<PocketFABAndOverlay> {
       ],
     );
   }
+}
+
+class _PocketCandidate {
+  const _PocketCandidate({
+    required this.card,
+    required this.content,
+    required this.sourceIndex,
+    required this.contextRank,
+  });
+
+  final UserCard card;
+  final CardContent? content;
+  final int sourceIndex;
+  final int contextRank;
+}
+
+List<_PocketCandidate> _orderPocketCandidates({
+  required List<UserCard> pinnedCards,
+  required Map<String, CardContent> byId,
+  required String path,
+  required bool isNightContext,
+}) {
+  final preferredTriggers = _preferredTriggersForContext(
+    path: path,
+    isNightContext: isNightContext,
+  );
+  final fallbackRank = preferredTriggers.length + 1;
+
+  final candidates = <_PocketCandidate>[
+    for (var i = 0; i < pinnedCards.length; i++)
+      _PocketCandidate(
+        card: pinnedCards[i],
+        content: byId[pinnedCards[i].cardId],
+        sourceIndex: i,
+        contextRank: () {
+          final trigger = byId[pinnedCards[i].cardId]?.triggerType;
+          if (trigger == null) return fallbackRank;
+          final rank = preferredTriggers.indexOf(trigger);
+          return rank == -1 ? fallbackRank : rank;
+        }(),
+      ),
+  ];
+
+  candidates.sort((a, b) {
+    final contextCmp = a.contextRank.compareTo(b.contextRank);
+    if (contextCmp != 0) return contextCmp;
+    return a.sourceIndex.compareTo(b.sourceIndex);
+  });
+  return candidates;
+}
+
+List<String> _preferredTriggersForContext({
+  required String path,
+  required bool isNightContext,
+}) {
+  final normalizedPath = path.toLowerCase();
+  if (normalizedPath.contains('/plan/moment') ||
+      normalizedPath.contains('/plan/regulate') ||
+      normalizedPath == '/breathe') {
+    return const ['overwhelmed', 'transitions', 'bedtime_battles'];
+  }
+
+  if (isNightContext || normalizedPath.contains('/sleep')) {
+    return const ['bedtime_battles', 'transitions', 'overwhelmed'];
+  }
+
+  return const [
+    'public_meltdowns',
+    'no_to_everything',
+    'sibling_conflict',
+    'transitions',
+    'overwhelmed',
+  ];
 }

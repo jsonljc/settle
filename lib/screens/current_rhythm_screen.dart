@@ -358,6 +358,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
     final schedule = state.todaySchedule;
     final ageMonths = _ageMonthsFor(profile.ageBracket);
     final shift = state.shiftAssessment;
+    final needsSleepSetup = profile.sleepProfileComplete != true;
 
     if (state.isLoading) {
       return Scaffold(
@@ -467,6 +468,26 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (needsSleepSetup) ...[
+                          GlassCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Finish sleep setup to personalize tonight guidance.',
+                                  style: _CrT.type.body,
+                                ),
+                                const SizedBox(height: 8),
+                                GlassCta(
+                                  label: 'Complete sleep setup',
+                                  compact: true,
+                                  onTap: () => context.push('/sleep/setup'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
                         GlassCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

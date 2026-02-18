@@ -8,12 +8,11 @@ import '../../providers/playbook_provider.dart';
 import '../../utils/share_text.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
-import '../../theme/glass_components.dart' hide GlassCard;
 import '../../widgets/calm_loading.dart';
 import '../../widgets/error_state.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_chip.dart';
+import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
 
 /// Playbook: saved cards from Reset. Light themed; SettleGradients.playbook + warmth blob.
@@ -36,15 +35,15 @@ class SavedPlaybookScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 8),
+                const SettleGap.sm(),
                 Text(
                   'Playbook',
-                  style: T.type.h1.copyWith(
+                  style: SettleTypography.display.copyWith(
                     fontWeight: FontWeight.w400,
                     color: SettleColors.ink900,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SettleGap.xs(),
                 Text(
                   'Cards that worked for you',
                   style: SettleTypography.caption.copyWith(
@@ -139,13 +138,13 @@ class _PlaybookCard extends StatelessWidget {
                   onTap: onShare,
                   child: Icon(
                     Icons.ios_share,
-                    size: 15,
+                    size: SettleSpacing.md,
                     color: SettleColors.ink300,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SettleGap.sm(),
             Text(
               card.body,
               style: SettleTypography.caption.copyWith(
@@ -155,8 +154,12 @@ class _PlaybookCard extends StatelessWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 10),
-            Wrap(spacing: 5, runSpacing: 5, children: _chipsForCard(card)),
+            const SettleGap.sm(),
+            Wrap(
+              spacing: SettleSpacing.xs,
+              runSpacing: SettleSpacing.xs,
+              children: _chipsForCard(card),
+            ),
           ],
         ),
       ),
@@ -227,9 +230,7 @@ class _PlaybookEmptyState extends StatelessWidget {
     return Center(
       child: Text(
         'Cards you keep from Reset will appear here.',
-        style: SettleTypography.body.copyWith(
-          color: SettleColors.ink400,
-        ),
+        style: SettleTypography.body.copyWith(color: SettleColors.ink400),
         textAlign: TextAlign.center,
       ),
     );

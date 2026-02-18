@@ -85,7 +85,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       context.go('/onboard');
       return;
     }
-    context.go('/plan');
+    context.go('/sleep');
   }
 
   @override

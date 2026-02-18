@@ -9,6 +9,8 @@ import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
+import '../../widgets/settle_gap.dart';
+import '../../widgets/settle_tappable.dart';
 
 class _AfT {
   _AfT._();
@@ -63,7 +65,7 @@ class ActivityFeedScreen extends ConsumerWidget {
                   subtitle: 'Recent script use (local only).',
                   fallbackRoute: '/family',
                 ),
-                const SizedBox(height: 12),
+                const SettleGap.md(),
                 Expanded(
                   child: events.isEmpty
                       ? Center(
@@ -89,13 +91,15 @@ class ActivityFeedScreen extends ConsumerWidget {
                                 final triggerLabel =
                                     card?.triggerType ?? event.cardId;
                                 return Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
+                                  padding: const EdgeInsets.only(
+                                    bottom: SettleSpacing.sm,
+                                  ),
                                   child: GlassCard(
                                     child: ListTile(
                                       contentPadding:
                                           const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 4,
+                                            horizontal: SettleSpacing.md,
+                                            vertical: SettleSpacing.xs,
                                           ),
                                       title: Text(
                                         _triggerDisplayName(triggerLabel),
@@ -182,8 +186,9 @@ class ActivityFeedPreview extends ConsumerWidget {
             children: [
               Text('Activity', style: _AfT.type.h3),
               if (events.isNotEmpty)
-                GestureDetector(
+                SettleTappable(
                   onTap: () => context.push('/family/activity'),
+                  semanticLabel: 'Open all family activity',
                   child: Text(
                     'See all',
                     style: _AfT.type.label.copyWith(color: _AfT.pal.accent),
@@ -191,7 +196,7 @@ class ActivityFeedPreview extends ConsumerWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SettleGap.sm(),
           if (recent.isEmpty)
             Text(
               'Recent script use will appear here.',
@@ -200,7 +205,7 @@ class ActivityFeedPreview extends ConsumerWidget {
           else
             ...recent.map(
               (e) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
+                padding: const EdgeInsets.only(bottom: SettleSpacing.xs),
                 child: Row(
                   children: [
                     Icon(
@@ -210,7 +215,7 @@ class ActivityFeedPreview extends ConsumerWidget {
                       size: 16,
                       color: _AfT.pal.textTertiary,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: SettleSpacing.sm),
                     Expanded(
                       child: Text(
                         e.cardId,

@@ -32,7 +32,7 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
   Widget build(BuildContext context) {
     final profile = ref.watch(profileProvider);
     if (profile == null) {
-      return const ProfileRequiredView(title: 'Plan');
+      return const ProfileRequiredView(title: 'Now');
     }
 
     if (!_nudgeScheduled) {
@@ -86,37 +86,37 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                     const SettleGap.lg(),
                     _GreetingCluster(
                       greeting: _greetingText(context),
-                      isNight: _isNighttime(),
-                      headlineColor: headlineColor,
-                      supportingColor: supportingColor,
-                    ),
-                    const SettleGap.xl(),
-                    _SleepTonightHeroCard(
-                      onOpen: () => context.push('/sleep/tonight'),
                       headlineColor: headlineColor,
                       supportingColor: supportingColor,
                     ),
                     const SettleGap.lg(),
+                    _PrimaryCrisisCard(
+                      onOpen: () =>
+                          context.push('/sleep/tonight?scenario=night_wakes'),
+                      headlineColor: headlineColor,
+                      supportingColor: supportingColor,
+                    ),
+                    const SettleGap.md(),
                     Row(
                       children: [
                         Expanded(
                           child: _QuickActionCard(
-                            icon: Icons.mood_rounded,
+                            icon: Icons.crisis_alert_rounded,
                             iconColor: SettleColors.ink500,
-                            title: 'Reset',
-                            subtitle: 'Calm body cues',
+                            title: 'Tantrum now',
+                            subtitle: 'Open reset guidance',
                             eta: '~15s',
                             onTap: () =>
-                                context.push('/plan/reset?context=general'),
+                                context.push('/plan/reset?context=tantrum'),
                           ),
                         ),
                         const SettleGap.sm(),
                         Expanded(
                           child: _QuickActionCard(
-                            icon: Icons.gps_fixed_rounded,
+                            icon: Icons.self_improvement_rounded,
                             iconColor: SettleColors.ink500,
-                            title: 'Moment',
-                            subtitle: 'One script now',
+                            title: 'I need to regulate',
+                            subtitle: 'Open moment guidance',
                             eta: '~10s',
                             onTap: () =>
                                 context.push('/plan/moment?context=general'),
@@ -124,11 +124,21 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                         ),
                       ],
                     ),
-                    const SettleGap.lg(),
-                    _RhythmBridgeCard(
-                      supportingColor: supportingColor,
-                      onOpenSleep: () => context.go('/sleep'),
-                      onOpenLibrary: () => context.go('/library/logs'),
+                    const SettleGap.md(),
+                    Center(
+                      child: SettleTappable(
+                        semanticLabel:
+                            'Need bedtime or early wake? Open Sleep Tonight',
+                        onTap: () => context.push('/sleep/tonight'),
+                        child: Text(
+                          'Need bedtime or early wake? Open Sleep Tonight',
+                          style: SettleTypography.caption.copyWith(
+                            color: supportingColor,
+                            decoration: TextDecoration.underline,
+                            decorationColor: supportingColor,
+                          ),
+                        ),
+                      ),
                     ),
                     const SettleGap.xxl(),
                   ],
@@ -152,30 +162,21 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
     return isDark ? 'Late night' : 'Good evening';
   }
 
-  bool _isNighttime() {
-    final hour = DateTime.now().hour;
-    return hour >= 21 || hour < 5;
-  }
 }
 
 class _GreetingCluster extends StatelessWidget {
   const _GreetingCluster({
     required this.greeting,
-    required this.isNight,
     required this.headlineColor,
     required this.supportingColor,
   });
 
   final String greeting;
-  final bool isNight;
   final Color headlineColor;
   final Color supportingColor;
 
   @override
   Widget build(BuildContext context) {
-    final chipTint = isNight ? SettleColors.ink500 : SettleColors.ink700;
-    final chipLabel = isNight ? 'Night support' : 'Day rhythm';
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -183,15 +184,19 @@ class _GreetingCluster extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.34),
             borderRadius: BorderRadius.circular(SettleRadii.pill),
-            border: Border.all(color: chipTint.withValues(alpha: 0.18)),
+            border: Border.all(
+              color: SettleColors.ink700.withValues(alpha: 0.18),
+            ),
           ),
           padding: const EdgeInsets.symmetric(
             horizontal: SettleSpacing.md,
             vertical: SettleSpacing.xs,
           ),
           child: Text(
-            chipLabel,
-            style: SettleTypography.caption.copyWith(color: chipTint),
+            'Now',
+            style: SettleTypography.caption.copyWith(
+              color: SettleColors.ink700,
+            ),
           ),
         ),
         const SettleGap.sm(),
@@ -201,7 +206,7 @@ class _GreetingCluster extends StatelessWidget {
         ),
         const SettleGap.xs(),
         Text(
-          'Pick one next step. We’ll keep it simple.',
+          'Choose what is happening right now.',
           style: SettleTypography.body.copyWith(color: supportingColor),
         ),
       ],
@@ -232,9 +237,9 @@ class _AmbientOrb extends StatelessWidget {
   }
 }
 
-/// Sleep Tonight hero: glass card with dusk icon circle, eyebrow, title, desc, CTA.
-class _SleepTonightHeroCard extends StatelessWidget {
-  const _SleepTonightHeroCard({
+/// Dominant primary action for Now: start Night Wake guidance in one tap.
+class _PrimaryCrisisCard extends StatelessWidget {
+  const _PrimaryCrisisCard({
     required this.onOpen,
     required this.headlineColor,
     required this.supportingColor,
@@ -249,78 +254,32 @@ class _SleepTonightHeroCard extends StatelessWidget {
     return GlassCard(
       variant: GlassCardVariant.lightStrong,
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-      child: Stack(
-        clipBehavior: Clip.none,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: SettleSpacing.xs,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(SettleRadii.card),
-                color: SettleColors.ink500.withValues(alpha: 0.14),
-              ),
+          Text(
+            'PRIMARY',
+            style: SettleTypography.caption.copyWith(
+              letterSpacing: 0.7,
+              color: SettleColors.ink500,
             ),
           ),
-          Positioned(
-            top: SettleSpacing.sm,
-            right: 0,
-            child: Container(
-              width: SettleSpacing.xxl * 2,
-              height: SettleSpacing.xxl * 2,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.46),
-              ),
-              child: Icon(
-                Icons.nightlight_round,
-                size: SettleSpacing.lg + SettleSpacing.sm,
-                color: SettleColors.ink700,
-              ),
-            ),
+          const SettleGap.sm(),
+          Text(
+            'Night wake right now',
+            style: SettleTypography.heading.copyWith(color: headlineColor),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SettleGap.sm(),
-              Text(
-                'SLEEP TONIGHT',
-                style: SettleTypography.caption.copyWith(
-                  letterSpacing: 0.7,
-                  color: SettleColors.ink500,
-                ),
-              ),
-              const SettleGap.sm(),
-              Text(
-                'Open Sleep Tonight',
-                style: SettleTypography.heading.copyWith(color: headlineColor),
-              ),
-              const SettleGap.xs(),
-              Text(
-                'Night wake, bedtime protest, or early wake.\nOne clear step at a time.',
-                style: SettleTypography.body.copyWith(color: supportingColor),
-              ),
-              const SettleGap.md(),
-              Wrap(
-                spacing: SettleSpacing.sm,
-                runSpacing: SettleSpacing.sm,
-                children: const [
-                  _HeroTag(label: 'No setup'),
-                  _HeroTag(label: 'Fast entry'),
-                  _HeroTag(label: 'Guided beats'),
-                ],
-              ),
-              const SettleGap.md(),
-              GlassPill(
-                label: 'Open Sleep Tonight',
-                onTap: onOpen,
-                variant: GlassPillVariant.secondaryLight,
-                expanded: true,
-              ),
-            ],
+          const SettleGap.xs(),
+          Text(
+            'Get one immediate step for a middle-of-the-night wake.',
+            style: SettleTypography.body.copyWith(color: supportingColor),
+          ),
+          const SettleGap.md(),
+          GlassPill(
+            label: 'Open Night Wake',
+            onTap: onOpen,
+            variant: GlassPillVariant.primaryLight,
+            expanded: true,
           ),
         ],
       ),
@@ -404,90 +363,6 @@ class _QuickActionCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _HeroTag extends StatelessWidget {
-  const _HeroTag({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: SettleColors.stone100.withValues(alpha: 0.82),
-        borderRadius: BorderRadius.circular(SettleRadii.pill),
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: SettleSpacing.md,
-        vertical: SettleSpacing.xs,
-      ),
-      child: Text(
-        label,
-        style: SettleTypography.caption.copyWith(
-          color: SettleColors.ink500,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
-class _RhythmBridgeCard extends StatelessWidget {
-  const _RhythmBridgeCard({
-    required this.supportingColor,
-    required this.onOpenSleep,
-    required this.onOpenLibrary,
-  });
-
-  final Color supportingColor;
-  final VoidCallback onOpenSleep;
-  final VoidCallback onOpenLibrary;
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassCard(
-      variant: GlassCardVariant.lightStrong,
-      padding: const EdgeInsets.symmetric(
-        horizontal: SettleSpacing.lg,
-        vertical: SettleSpacing.md,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Keep today visible',
-            style: SettleTypography.body.copyWith(
-              color: SettleColors.ink900,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SettleGap.xs(),
-          Text(
-            'Sleep holds your rhythm plan. Library keeps your logs.',
-            style: SettleTypography.caption.copyWith(color: supportingColor),
-          ),
-          const SettleGap.md(),
-          Wrap(
-            spacing: SettleSpacing.sm,
-            runSpacing: SettleSpacing.sm,
-            children: [
-              GlassPill(
-                label: 'Open Sleep tab',
-                onTap: onOpenSleep,
-                variant: GlassPillVariant.secondaryLight,
-              ),
-              GlassPill(
-                label: 'Open logs',
-                onTap: onOpenLibrary,
-                variant: GlassPillVariant.secondaryLight,
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

@@ -5,6 +5,8 @@ import '../../models/v2_enums.dart';
 import '../../providers/usage_events_provider.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
+import '../../widgets/settle_gap.dart';
+import '../../widgets/settle_tappable.dart';
 
 class _PalT {
   _PalT._();
@@ -107,12 +109,12 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('Quick log', style: _PalT.type.h3),
-          const SizedBox(height: 6),
+          const SettleGap.xs(),
           Text(
             _outcomeLabel(widget.outcome),
             style: _PalT.type.body.copyWith(color: _PalT.pal.textSecondary),
           ),
-          const SizedBox(height: 16),
+          const SettleGap.lg(),
           TextField(
             controller: _contextController,
             decoration: InputDecoration(
@@ -130,7 +132,7 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
             maxLines: 2,
             style: _PalT.type.body,
           ),
-          const SizedBox(height: 16),
+          const SettleGap.lg(),
           Row(
             children: [
               SizedBox(
@@ -146,11 +148,12 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
                   checkColor: _PalT.pal.accent,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: SettleSpacing.sm),
               Expanded(
-                child: GestureDetector(
+                child: SettleTappable(
                   onTap: () =>
                       setState(() => _regulationUsed = !_regulationUsed),
+                  semanticLabel: 'Toggle breathing reset used',
                   child: Text(
                     'I used the breathing reset',
                     style: _PalT.type.body.copyWith(
@@ -161,7 +164,7 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: SettleSpacing.lg + SettleSpacing.sm),
           GlassCta(
             label: _submitting ? 'Saving…' : 'Done',
             onTap: _submitting ? () {} : _submit,
