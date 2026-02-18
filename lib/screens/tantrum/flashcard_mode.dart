@@ -9,8 +9,43 @@ import '../../providers/tantrum_providers.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import 'tantrum_unavailable.dart';
+
+class _FmT {
+  _FmT._();
+
+  static final type = _FmTypeTokens();
+  static const pal = _FmPaletteTokens();
+  static const anim = _FmAnimTokens();
+
+  static bool reduceMotion(BuildContext context) =>
+      MediaQuery.of(context).disableAnimations;
+}
+
+class _FmTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _FmPaletteTokens {
+  const _FmPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _FmAnimTokens {
+  const _FmAnimTokens();
+
+  Duration get normal => const Duration(milliseconds: 250);
+}
 
 // Deprecated in IA cleanup PR6. This legacy tantrum surface is no longer
 // reachable from production routes and is retained only for internal reference.
@@ -63,7 +98,9 @@ class _FlashcardModeScreenState extends ConsumerState<FlashcardModeScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               children: [
                 const SizedBox(height: 12),
@@ -74,7 +111,9 @@ class _FlashcardModeScreenState extends ConsumerState<FlashcardModeScreen> {
                         context.canPop() ? context.pop() : context.go('/now'),
                     child: Text(
                       'back',
-                      style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                      style: _FmT.type.caption.copyWith(
+                        color: _FmT.pal.textTertiary,
+                      ),
                     ),
                   ),
                 ),
@@ -82,7 +121,7 @@ class _FlashcardModeScreenState extends ConsumerState<FlashcardModeScreen> {
                 Expanded(
                   child: Center(
                     child: AnimatedSwitcher(
-                      duration: T.anim.normal,
+                      duration: _FmT.anim.normal,
                       child: _showBreathingGate
                           ? _BreathingGate(secondsLeft: _secondsLeft)
                           : Semantics(
@@ -101,7 +140,7 @@ class _FlashcardModeScreenState extends ConsumerState<FlashcardModeScreen> {
                                     for (final line in lines) ...[
                                       Text(
                                         line,
-                                        style: T.type.h3.copyWith(
+                                        style: _FmT.type.h3.copyWith(
                                           fontSize: 20,
                                           height: 1.35,
                                         ),
@@ -128,8 +167,8 @@ class _FlashcardModeScreenState extends ConsumerState<FlashcardModeScreen> {
                     onTap: () => context.go('/now'),
                     child: Text(
                       'Not now',
-                      style: T.type.caption.copyWith(
-                        color: T.pal.textSecondary,
+                      style: _FmT.type.caption.copyWith(
+                        color: _FmT.pal.textSecondary,
                       ),
                     ),
                   ),
@@ -168,7 +207,7 @@ class _BreathingGate extends StatelessWidget {
                 width: 12,
                 height: 12,
                 decoration: BoxDecoration(
-                  color: T.pal.accent,
+                  color: _FmT.pal.accent,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -176,11 +215,11 @@ class _BreathingGate extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
-        Text('One breath first', style: T.type.h3),
+        Text('One breath first', style: _FmT.type.h3),
         const SizedBox(height: 4),
         Text(
           '$secondsLeft s',
-          style: T.type.caption.copyWith(color: T.pal.textSecondary),
+          style: _FmT.type.caption.copyWith(color: _FmT.pal.textSecondary),
         ),
       ],
     );
@@ -200,11 +239,11 @@ class _Pulse extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: T.pal.accent.withValues(alpha: alpha),
+        color: _FmT.pal.accent.withValues(alpha: alpha),
         shape: BoxShape.circle,
       ),
     );
-    if (T.reduceMotion(context)) return circle;
+    if (_FmT.reduceMotion(context)) return circle;
     return circle
         .animate(onPlay: (c) => c.repeat(reverse: true), delay: delayMs.ms)
         .scale(

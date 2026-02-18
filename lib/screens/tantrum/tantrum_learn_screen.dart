@@ -7,9 +7,47 @@ import '../../tantrum/providers/tantrum_module_providers.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/tantrum_sub_nav.dart';
+
+class _TlT {
+  _TlT._();
+
+  static final type = _TlTypeTokens();
+  static const pal = _TlPaletteTokens();
+  static const glass = _TlGlassTokens();
+}
+
+class _TlTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _TlPaletteTokens {
+  const _TlPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _TlGlassTokens {
+  const _TlGlassTokens();
+
+  Color get fillAccent => SettleColors.nightAccent.withValues(alpha: 0.10);
+}
 
 /// LEARN: micro-lessons that link back to cards (by lessonId / cardIds).
 class TantrumLearnScreen extends ConsumerWidget {
@@ -23,7 +61,9 @@ class TantrumLearnScreen extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -56,7 +96,9 @@ class TantrumLearnScreen extends ConsumerWidget {
                     error: (e, _) => Center(
                       child: Text(
                         'Could not load lessons.',
-                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                        style: _TlT.type.body.copyWith(
+                          color: _TlT.pal.textSecondary,
+                        ),
                       ),
                     ),
                   ),
@@ -83,17 +125,17 @@ class _LessonCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(lesson.title, style: T.type.h3),
+          Text(lesson.title, style: _TlT.type.h3),
           const SizedBox(height: 10),
           Text(
             lesson.body,
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _TlT.type.body.copyWith(color: _TlT.pal.textSecondary),
           ),
           if (lesson.cardIds.isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(
               'Related cards',
-              style: T.type.overline.copyWith(color: T.pal.textTertiary),
+              style: _TlT.type.overline.copyWith(color: _TlT.pal.textTertiary),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -132,22 +174,22 @@ class _CardChip extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: T.glass.fillAccent,
-          borderRadius: BorderRadius.circular(T.radius.pill),
-          border: Border.all(color: T.pal.accent.withValues(alpha: 0.5)),
+          color: _TlT.glass.fillAccent,
+          borderRadius: BorderRadius.circular(SettleRadii.pill),
+          border: Border.all(color: _TlT.pal.accent.withValues(alpha: 0.5)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               title,
-              style: T.type.caption.copyWith(
-                color: T.pal.accent,
+              style: _TlT.type.caption.copyWith(
+                color: _TlT.pal.accent,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(width: 4),
-            Icon(Icons.arrow_forward_rounded, size: 14, color: T.pal.accent),
+            Icon(Icons.arrow_forward_rounded, size: 14, color: _TlT.pal.accent),
           ],
         ),
       ),
