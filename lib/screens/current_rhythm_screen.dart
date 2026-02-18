@@ -12,11 +12,46 @@ import '../services/sleep_ai_explainer_service.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_chip.dart';
+
+class _CrT {
+  _CrT._();
+
+  static final type = _CrTypeTokens();
+  static const pal = _CrPaletteTokens();
+  static const radius = _CrRadiusTokens();
+  static const space = _CrSpaceTokens();
+}
+
+class _CrTypeTokens {
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption;
+}
+
+class _CrPaletteTokens {
+  const _CrPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _CrRadiusTokens {
+  const _CrRadiusTokens();
+
+  double get md => 18;
+}
+
+class _CrSpaceTokens {
+  const _CrSpaceTokens();
+
+  double get md => SettleSpacing.md;
+}
 
 class CurrentRhythmScreen extends ConsumerStatefulWidget {
   const CurrentRhythmScreen({super.key});
@@ -121,7 +156,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   SettleSpacing.screenPadding,
-                  T.space.md,
+                  _CrT.space.md,
                   SettleSpacing.screenPadding,
                   SettleSpacing.screenPadding,
                 ),
@@ -130,9 +165,9 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Quick recap', style: T.type.h3),
+                      Text('Quick recap', style: _CrT.type.h3),
                       const SizedBox(height: 10),
-                      Text('Outcome', style: T.type.label),
+                      Text('Outcome', style: _CrT.type.label),
                       const SizedBox(height: 8),
                       _ChoiceWrap(
                         options: const {
@@ -146,7 +181,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      Text('Time to settle (optional)', style: T.type.label),
+                      Text('Time to settle (optional)', style: _CrT.type.label),
                       const SizedBox(height: 8),
                       _ChoiceWrap(
                         options: const {
@@ -163,14 +198,14 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                       const SizedBox(height: 10),
                       TextField(
                         controller: noteController,
-                        style: T.type.caption,
+                        style: _CrT.type.caption,
                         decoration: InputDecoration(
                           labelText: 'Note (optional)',
-                          labelStyle: T.type.caption.copyWith(
-                            color: T.pal.textTertiary,
+                          labelStyle: _CrT.type.caption.copyWith(
+                            color: _CrT.pal.textTertiary,
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(T.radius.md),
+                            borderRadius: BorderRadius.circular(_CrT.radius.md),
                           ),
                         ),
                       ),
@@ -329,7 +364,9 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
         body: GradientBackgroundFromRoute(
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+              padding: EdgeInsets.symmetric(
+                horizontal: SettleSpacing.screenPadding,
+              ),
               child: CalmLoading(message: 'Loading current rhythm…'),
             ),
           ),
@@ -342,7 +379,9 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
         body: GradientBackgroundFromRoute(
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+              padding: EdgeInsets.symmetric(
+                horizontal: SettleSpacing.screenPadding,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -353,7 +392,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                   GlassCard(
                     child: Text(
                       'We could not load a rhythm right now. Try recalculating in a moment.',
-                      style: T.type.body,
+                      style: _CrT.type.body,
                     ),
                   ),
                 ],
@@ -412,7 +451,9 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -432,34 +473,34 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                             children: [
                               Text(
                                 'Current Rhythm (this week)',
-                                style: T.type.h3,
+                                style: _CrT.type.h3,
                               ),
                               const SizedBox(height: 6),
                               Text(
                                 'Typical for $ageMonths months',
-                                style: T.type.caption.copyWith(
-                                  color: T.pal.textSecondary,
+                                style: _CrT.type.caption.copyWith(
+                                  color: _CrT.pal.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'Bedtime anchor: ${_formatClock(context, rhythm.bedtimeAnchorMinutes)}${rhythm.locks.bedtimeAnchorLocked ? ' (locked)' : ''}',
-                                style: T.type.caption.copyWith(
-                                  color: T.pal.textSecondary,
+                                style: _CrT.type.caption.copyWith(
+                                  color: _CrT.pal.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               Text(
                                 'How sure are we? ${schedule.confidence.label}',
-                                style: T.type.caption.copyWith(
-                                  color: T.pal.textSecondary,
+                                style: _CrT.type.caption.copyWith(
+                                  color: _CrT.pal.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 'Based on recent logging and pattern stability.',
-                                style: T.type.caption.copyWith(
-                                  color: T.pal.textSecondary,
+                                style: _CrT.type.caption.copyWith(
+                                  color: _CrT.pal.textSecondary,
                                 ),
                               ),
                             ],
@@ -474,10 +515,10 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                               children: [
                                 Text(
                                   'Update Rhythm suggested',
-                                  style: T.type.h3,
+                                  style: _CrT.type.h3,
                                 ),
                                 const SizedBox(height: 6),
-                                Text(shift.explanation, style: T.type.body),
+                                Text(shift.explanation, style: _CrT.type.body),
                                 const SizedBox(height: 8),
                                 SettleChip(
                                   variant: SettleChipVariant.action,
@@ -495,21 +536,24 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(aiSummary.headline, style: T.type.h3),
+                                Text(aiSummary.headline, style: _CrT.type.h3),
                                 const SizedBox(height: 6),
-                                Text(aiSummary.whatChanged, style: T.type.body),
+                                Text(
+                                  aiSummary.whatChanged,
+                                  style: _CrT.type.body,
+                                ),
                                 const SizedBox(height: 6),
                                 Text(
                                   aiSummary.why,
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textSecondary,
+                                  style: _CrT.type.caption.copyWith(
+                                    color: _CrT.pal.textSecondary,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
                                   aiSummary.patternSummary,
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textSecondary,
+                                  style: _CrT.type.caption.copyWith(
+                                    color: _CrT.pal.textSecondary,
                                   ),
                                 ),
                               ],
@@ -522,7 +566,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Today at a glance', style: T.type.h3),
+                                Text('Today at a glance', style: _CrT.type.h3),
                                 const SizedBox(height: 10),
                                 _AnchorRow(
                                   label: 'Wake',
@@ -550,8 +594,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                 const SizedBox(height: 10),
                                 Text(
                                   'Next up: ${_relaxedLabel(nextUp ?? bedtime)} around ${_formatClock(context, (nextUp ?? bedtime).centerlineMinutes)}',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textSecondary,
+                                  style: _CrT.type.caption.copyWith(
+                                    color: _CrT.pal.textSecondary,
                                   ),
                                 ),
                                 const SizedBox(height: 12),
@@ -570,8 +614,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                 const SizedBox(height: 6),
                                 GlassPill(
                                   label: 'Morning recap',
-                                  onTap: () =>
-                                      _openMorningRecapSheet(childId),
+                                  onTap: () => _openMorningRecapSheet(childId),
                                 ),
                                 const SizedBox(height: 2),
                                 GlassPill(
@@ -591,7 +634,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Today timeline', style: T.type.label),
+                                Text('Today timeline', style: _CrT.type.label),
                                 const SizedBox(height: 10),
                                 ...blocks.map((block) {
                                   final center = _formatClock(
@@ -615,14 +658,14 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                       children: [
                                         Text(
                                           block.label,
-                                          style: T.type.caption.copyWith(
-                                            color: T.pal.textSecondary,
+                                          style: _CrT.type.caption.copyWith(
+                                            color: _CrT.pal.textSecondary,
                                           ),
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
                                           '$center (soft: $soft)$duration',
-                                          style: T.type.body,
+                                          style: _CrT.type.body,
                                         ),
                                       ],
                                     ),
@@ -631,8 +674,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                 const SizedBox(height: 8),
                                 Text(
                                   'Bedtime window: ${_formatClock(context, bedtime.windowStartMinutes)}–${_formatClock(context, bedtime.windowEndMinutes)}',
-                                  style: T.type.caption.copyWith(
-                                    color: T.pal.textSecondary,
+                                  style: _CrT.type.caption.copyWith(
+                                    color: _CrT.pal.textSecondary,
                                   ),
                                 ),
                               ],
@@ -641,8 +684,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                           const SizedBox(height: 10),
                           Text(
                             'Day taps (optional)',
-                            style: T.type.caption.copyWith(
-                              color: T.pal.textSecondary,
+                            style: _CrT.type.caption.copyWith(
+                              color: _CrT.pal.textSecondary,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -770,8 +813,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                           const SizedBox(height: 8),
                           Text(
                             state.lastHint!,
-                            style: T.type.caption.copyWith(
-                              color: T.pal.textSecondary,
+                            style: _CrT.type.caption.copyWith(
+                              color: _CrT.pal.textSecondary,
                             ),
                           ),
                         ],
@@ -831,10 +874,10 @@ class _AnchorRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: _CrT.type.caption.copyWith(color: _CrT.pal.textSecondary),
           ),
         ),
-        Text(value, style: T.type.label),
+        Text(value, style: _CrT.type.label),
       ],
     );
   }
