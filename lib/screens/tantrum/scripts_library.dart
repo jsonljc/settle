@@ -4,9 +4,31 @@ import '../../providers/tantrum_providers.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
+
+class _SlT {
+  _SlT._();
+
+  static final type = _SlTypeTokens();
+  static const pal = _SlPaletteTokens();
+}
+
+class _SlTypeTokens {
+  TextStyle get body => SettleTypography.body;
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _SlPaletteTokens {
+  const _SlPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
 
 // Deprecated in IA cleanup PR6. This legacy tantrum surface is no longer
 // reachable from production routes and is retained only for internal reference.
@@ -60,7 +82,9 @@ class ScriptsLibraryScreen extends ConsumerWidget {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
                 child: const ScreenHeader(title: 'Scripts library'),
               ),
               const SizedBox(height: 18),
@@ -102,7 +126,7 @@ class _Section extends StatelessWidget {
         children: [
           Text(
             title,
-            style: T.type.overline.copyWith(color: T.pal.textTertiary),
+            style: _SlT.type.overline.copyWith(color: _SlT.pal.textTertiary),
           ),
           const SizedBox(height: 8),
           ...lines.asMap().entries.map(
@@ -112,7 +136,7 @@ class _Section extends StatelessWidget {
               ),
               child: Text(
                 entry.value,
-                style: T.type.body.copyWith(color: T.pal.textSecondary),
+                style: _SlT.type.body.copyWith(color: _SlT.pal.textSecondary),
               ),
             ),
           ),
