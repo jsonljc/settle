@@ -13,13 +13,54 @@ import '../services/spec_policy.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
 import '../widgets/settle_chip.dart';
 import '../widgets/settle_gap.dart';
+
+class _PpT {
+  _PpT._();
+
+  static final type = _PpTypeTokens();
+  static const pal = _PpPaletteTokens();
+  static const radius = _PpRadiusTokens();
+  static const space = _PpSpaceTokens();
+}
+
+class _PpTypeTokens {
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption;
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _PpPaletteTokens {
+  const _PpPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+}
+
+class _PpRadiusTokens {
+  const _PpRadiusTokens();
+
+  double get md => 18;
+}
+
+class _PpSpaceTokens {
+  const _PpSpaceTokens();
+
+  double get md => SettleSpacing.md;
+}
 
 class PlanProgressScreen extends ConsumerStatefulWidget {
   const PlanProgressScreen({super.key});
@@ -164,7 +205,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
           child: Padding(
             padding: EdgeInsets.fromLTRB(
               SettleSpacing.screenPadding,
-              T.space.md,
+              _PpT.space.md,
               SettleSpacing.screenPadding,
               SettleSpacing.screenPadding,
             ),
@@ -181,14 +222,17 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: Text('Evidence Details', style: T.type.h3),
+                            child: Text(
+                              'Evidence Details',
+                              style: _PpT.type.h3,
+                            ),
                           ),
                           GestureDetector(
                             onTap: () => Navigator.of(context).pop(),
                             child: Icon(
                               Icons.close_rounded,
                               size: 18,
-                              color: T.pal.textTertiary,
+                              color: _PpT.pal.textTertiary,
                             ),
                           ),
                         ],
@@ -196,16 +240,16 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                       SettleGap.sm(),
                       Text(
                         'Day planner suggestions are linked to evidence records.',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
+                        style: _PpT.type.caption.copyWith(
+                          color: _PpT.pal.textSecondary,
                         ),
                       ),
                       SettleGap.md(),
                       if (items.isEmpty)
                         Text(
                           'No evidence records were found.',
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textSecondary,
+                          style: _PpT.type.caption.copyWith(
+                            color: _PpT.pal.textSecondary,
                           ),
                         )
                       else
@@ -217,19 +261,19 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(item.title, style: T.type.label),
+                                  Text(item.title, style: _PpT.type.label),
                                   SettleGap.xs(),
                                   Text(
                                     item.claim,
-                                    style: T.type.caption.copyWith(
-                                      color: T.pal.textSecondary,
+                                    style: _PpT.type.caption.copyWith(
+                                      color: _PpT.pal.textSecondary,
                                     ),
                                   ),
                                   SettleGap.sm(),
                                   Text(
                                     '${item.sources.length} source(s)',
-                                    style: T.type.caption.copyWith(
-                                      color: T.pal.textTertiary,
+                                    style: _PpT.type.caption.copyWith(
+                                      color: _PpT.pal.textTertiary,
                                     ),
                                   ),
                                   SettleGap.xs(),
@@ -242,8 +286,8 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                           ),
                                           child: Text(
                                             '• ${source.citation}',
-                                            style: T.type.caption.copyWith(
-                                              color: T.pal.textSecondary,
+                                            style: _PpT.type.caption.copyWith(
+                                              color: _PpT.pal.textSecondary,
                                             ),
                                           ),
                                         ),
@@ -333,7 +377,9 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -358,24 +404,24 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                   children: [
                                     Text(
                                       'This week\'s focus',
-                                      style: T.type.h3,
+                                      style: _PpT.type.h3,
                                     ),
                                     SettleGap.md(),
                                     if (!state.insightEligible &&
                                         bottleneck == null)
                                       Text(
                                         'Need a little more data. Choose one friction point this week.',
-                                        style: T.type.body.copyWith(
-                                          color: T.pal.textSecondary,
+                                        style: _PpT.type.body.copyWith(
+                                          color: _PpT.pal.textSecondary,
                                         ),
                                       )
                                     else if (bottleneck != null)
-                                      Text(bottleneck, style: T.type.label)
+                                      Text(bottleneck, style: _PpT.type.label)
                                     else
                                       Text(
                                         'Choose the biggest friction point for this week.',
-                                        style: T.type.caption.copyWith(
-                                          color: T.pal.textSecondary,
+                                        style: _PpT.type.caption.copyWith(
+                                          color: _PpT.pal.textSecondary,
                                         ),
                                       ),
                                     SettleGap.md(),
@@ -412,24 +458,24 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                   children: [
                                     Text(
                                       'One experiment',
-                                      style: T.type.h3.copyWith(
-                                        color: T.pal.accent,
+                                      style: _PpT.type.h3.copyWith(
+                                        color: _PpT.pal.accent,
                                       ),
                                     ),
                                     SettleGap.sm(),
                                     if (!state.insightEligible)
                                       Text(
                                         'Keep logging for a few days. We\'ll suggest one experiment.',
-                                        style: T.type.caption.copyWith(
-                                          color: T.pal.textSecondary,
+                                        style: _PpT.type.caption.copyWith(
+                                          color: _PpT.pal.textSecondary,
                                         ),
                                       )
                                     else ...[
                                       Text(
                                         experiment ??
                                             'We\'re still learning your pattern. Pick one focus for this week.',
-                                        style: T.type.body.copyWith(
-                                          color: T.pal.textSecondary,
+                                        style: _PpT.type.body.copyWith(
+                                          color: _PpT.pal.textSecondary,
                                         ),
                                       ),
                                       if (experiment != null) ...[
@@ -508,8 +554,8 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                           SettleGap.xs(),
                                           Text(
                                             'Tiny evidence',
-                                            style: T.type.overline.copyWith(
-                                              color: T.pal.textTertiary,
+                                            style: _PpT.type.overline.copyWith(
+                                              color: _PpT.pal.textTertiary,
                                             ),
                                           ),
                                           SettleGap.sm(),
@@ -518,22 +564,22 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                 ? (evidence ??
                                                       'Pattern still emerging.')
                                                 : 'Need a little more data.',
-                                            style: T.type.body.copyWith(
-                                              color: T.pal.textSecondary,
+                                            style: _PpT.type.body.copyWith(
+                                              color: _PpT.pal.textSecondary,
                                             ),
                                           ),
                                           SettleGap.md(),
                                           Text(
                                             'Daily rhythm details',
-                                            style: T.type.overline.copyWith(
-                                              color: T.pal.textTertiary,
+                                            style: _PpT.type.overline.copyWith(
+                                              color: _PpT.pal.textTertiary,
                                             ),
                                           ),
                                           SettleGap.sm(),
                                           Text(
                                             'Use this only when tuning your plan feels useful.',
-                                            style: T.type.caption.copyWith(
-                                              color: T.pal.textSecondary,
+                                            style: _PpT.type.caption.copyWith(
+                                              color: _PpT.pal.textSecondary,
                                             ),
                                           ),
                                           SettleGap.md(),
@@ -561,31 +607,33 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                     profile.ageBracket,
                                                   );
                                                 },
-                                                style: T.type.caption,
+                                                style: _PpT.type.caption,
                                                 decoration: InputDecoration(
                                                   labelText: key.replaceAll(
                                                     '_',
                                                     ' ',
                                                   ),
-                                                  labelStyle: T.type.caption
+                                                  labelStyle: _PpT.type.caption
                                                       .copyWith(
-                                                        color:
-                                                            T.pal.textTertiary,
+                                                        color: _PpT
+                                                            .pal
+                                                            .textTertiary,
                                                       ),
                                                   border: OutlineInputBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                          T.radius.md,
+                                                          _PpT.radius.md,
                                                         ),
                                                   ),
                                                   focusedBorder:
                                                       OutlineInputBorder(
                                                         borderRadius:
                                                             BorderRadius.circular(
-                                                              T.radius.md,
+                                                              _PpT.radius.md,
                                                             ),
                                                         borderSide: BorderSide(
-                                                          color: T.pal.accent,
+                                                          color:
+                                                              _PpT.pal.accent,
                                                         ),
                                                       ),
                                                 ),
@@ -595,33 +643,33 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                           SettleGap.md(),
                                           Text(
                                             'Day planner runtime',
-                                            style: T.type.label,
+                                            style: _PpT.type.label,
                                           ),
                                           SettleGap.sm(),
                                           if (_dayRuntimeError != null)
                                             Text(
                                               'Could not load day rhythm details right now.',
-                                              style: T.type.caption.copyWith(
-                                                color: T.pal.textSecondary,
+                                              style: _PpT.type.caption.copyWith(
+                                                color: _PpT.pal.textSecondary,
                                               ),
                                             )
                                           else if (_dayRuntime == null)
                                             Text(
                                               'No day rhythm output yet.',
-                                              style: T.type.caption.copyWith(
-                                                color: T.pal.textSecondary,
+                                              style: _PpT.type.caption.copyWith(
+                                                color: _PpT.pal.textSecondary,
                                               ),
                                             )
                                           else ...[
                                             Text(
                                               'Template: ${_dayRuntime!.templateId}',
-                                              style: T.type.caption,
+                                              style: _PpT.type.caption,
                                             ),
                                             SettleGap.xs(),
                                             Text(
                                               'Bedtime window: ${_formatClock(_dayRuntime!.bedtimeWindowEarliest)}–${_formatClock(_dayRuntime!.bedtimeWindowLatest)}',
-                                              style: T.type.caption.copyWith(
-                                                color: T.pal.textSecondary,
+                                              style: _PpT.type.caption.copyWith(
+                                                color: _PpT.pal.textSecondary,
                                               ),
                                             ),
                                             SettleGap.sm(),
@@ -635,9 +683,9 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                         ),
                                                     child: Text(
                                                       '${nap.slotId}: ${_formatClock(nap.startWindowMinutes)}–${_formatClock(nap.endWindowMinutes)} (${nap.targetDurationMinutes}m)',
-                                                      style: T.type.caption
+                                                      style: _PpT.type.caption
                                                           .copyWith(
-                                                            color: T
+                                                            color: _PpT
                                                                 .pal
                                                                 .textSecondary,
                                                           ),
@@ -647,8 +695,8 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                             SettleGap.sm(),
                                             Text(
                                               'Rules: ${_dayRuntime!.appliedRuleIds.length} • Constraints: ${_dayRuntime!.appliedConstraintIds.length}',
-                                              style: T.type.caption.copyWith(
-                                                color: T.pal.textTertiary,
+                                              style: _PpT.type.caption.copyWith(
+                                                color: _PpT.pal.textTertiary,
                                               ),
                                             ),
                                             if (_dayRuntime!
@@ -675,7 +723,7 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                           Icons
                                                               .menu_book_outlined,
                                                           size: 14,
-                                                          color: T
+                                                          color: _PpT
                                                               .pal
                                                               .textTertiary,
                                                         ),
@@ -684,9 +732,11 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
                                                         ),
                                                         Text(
                                                           'Why this? (${_dayRuntime!.evidenceRefs.length})',
-                                                          style: T.type.caption
+                                                          style: _PpT
+                                                              .type
+                                                              .caption
                                                               .copyWith(
-                                                                color: T
+                                                                color: _PpT
                                                                     .pal
                                                                     .textTertiary,
                                                               ),
@@ -730,10 +780,10 @@ class _SecondaryLink extends StatelessWidget {
       onTap: onTap,
       child: Text(
         label,
-        style: T.type.caption.copyWith(
-          color: T.pal.textTertiary,
+        style: _PpT.type.caption.copyWith(
+          color: _PpT.pal.textTertiary,
           decoration: TextDecoration.underline,
-          decorationColor: T.pal.textTertiary,
+          decorationColor: _PpT.pal.textTertiary,
         ),
       ),
     );

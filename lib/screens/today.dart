@@ -10,12 +10,58 @@ import '../providers/session_provider.dart';
 import '../theme/glass_components.dart';
 import '../theme/reduce_motion.dart';
 import '../theme/settle_design_system.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
+
+class _TodayT {
+  _TodayT._();
+
+  static final type = _TodayTypeTokens();
+  static const pal = _TodayPaletteTokens();
+  static const glass = _TodayGlassTokens();
+  static const radius = _TodayRadiusTokens();
+}
+
+class _TodayTypeTokens {
+  TextStyle get h3 => SettleTypography.heading;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption;
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+  TextStyle get body => SettleTypography.body;
+}
+
+class _TodayPaletteTokens {
+  const _TodayPaletteTokens();
+
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+  Color get teal => SettleColors.sage400;
+}
+
+class _TodayGlassTokens {
+  const _TodayGlassTokens();
+
+  Color get fill => SettleGlassDark.backgroundStrong;
+  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
+  Color get fillTeal => SettleColors.sage600.withValues(alpha: 0.16);
+  Color get border => SettleGlassDark.borderStrong;
+}
+
+class _TodayRadiusTokens {
+  const _TodayRadiusTokens();
+
+  double get pill => SettleRadii.pill;
+}
 
 final _sleepHistoryProvider = FutureProvider<List<SleepSession>>((ref) async {
   ref.watch(sessionProvider);
@@ -58,7 +104,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -84,12 +132,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Next step', style: T.type.h3),
+                      Text('Next step', style: _TodayT.type.h3),
                       const SizedBox(height: 8),
                       Text(
                         'Adjust this week\'s plan or review why it works.',
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
+                        style: _TodayT.type.caption.copyWith(
+                          color: _TodayT.pal.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -104,10 +152,10 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
                             context.push(isPlanTab ? learnRoute : planRoute),
                         child: Text(
                           isPlanTab ? 'Open Learn Q&A' : 'Open Plan Focus',
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textTertiary,
+                          style: _TodayT.type.caption.copyWith(
+                            color: _TodayT.pal.textTertiary,
                             decoration: TextDecoration.underline,
-                            decorationColor: T.pal.textTertiary,
+                            decorationColor: _TodayT.pal.textTertiary,
                           ),
                         ),
                       ),
@@ -133,21 +181,21 @@ class _GlassTabBar extends StatelessWidget {
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: T.glass.fill,
-        borderRadius: BorderRadius.circular(T.radius.pill),
+        color: _TodayT.glass.fill,
+        borderRadius: BorderRadius.circular(_TodayT.radius.pill),
       ),
       child: TabBar(
         controller: controller,
         indicator: BoxDecoration(
-          color: T.glass.fillAccent,
-          borderRadius: BorderRadius.circular(T.radius.pill),
-          border: Border.all(color: T.pal.accent.withValues(alpha: 0.3)),
+          color: _TodayT.glass.fillAccent,
+          borderRadius: BorderRadius.circular(_TodayT.radius.pill),
+          border: Border.all(color: _TodayT.pal.accent.withValues(alpha: 0.3)),
         ),
         dividerColor: Colors.transparent,
-        labelColor: T.pal.textPrimary,
-        unselectedLabelColor: T.pal.textTertiary,
+        labelColor: _TodayT.pal.textPrimary,
+        unselectedLabelColor: _TodayT.pal.textTertiary,
         labelStyle: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
-        unselectedLabelStyle: T.type.caption,
+        unselectedLabelStyle: _TodayT.type.caption,
         indicatorSize: TabBarIndicatorSize.tab,
         tabs: const [
           Tab(text: 'Plan'),
@@ -205,8 +253,8 @@ class _PlanTab extends StatelessWidget {
                   children: [
                     Text(
                       'TARGET',
-                      style: T.type.overline.copyWith(
-                        color: T.pal.textTertiary,
+                      style: _TodayT.type.overline.copyWith(
+                        color: _TodayT.pal.textTertiary,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -224,7 +272,9 @@ class _PlanTab extends StatelessWidget {
                     const SizedBox(height: 10),
                     Text(
                       bracket.label,
-                      style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                      style: _TodayT.type.caption.copyWith(
+                        color: _TodayT.pal.textTertiary,
+                      ),
                     ),
                   ],
                 ),
@@ -237,19 +287,21 @@ class _PlanTab extends StatelessWidget {
                   children: [
                     Text(
                       'TODAY SO FAR',
-                      style: T.type.overline.copyWith(
-                        color: T.pal.textTertiary,
+                      style: _TodayT.type.overline.copyWith(
+                        color: _TodayT.pal.textTertiary,
                       ),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       '${todaySessions.length} sleep sessions logged',
-                      style: T.type.h3,
+                      style: _TodayT.type.h3,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       _formatDuration(totalToday),
-                      style: T.type.body.copyWith(color: T.pal.textSecondary),
+                      style: _TodayT.type.body.copyWith(
+                        color: _TodayT.pal.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -262,8 +314,8 @@ class _PlanTab extends StatelessWidget {
                   children: [
                     Text(
                       'TIMELINE',
-                      style: T.type.overline.copyWith(
-                        color: T.pal.textTertiary,
+                      style: _TodayT.type.overline.copyWith(
+                        color: _TodayT.pal.textTertiary,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -335,13 +387,13 @@ class _WeekTab extends StatelessWidget {
                                 Icon(
                                   Icons.trending_up_rounded,
                                   size: 20,
-                                  color: T.pal.teal,
+                                  color: _TodayT.pal.teal,
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
                                   'Sleep trending upward this week',
                                   style: SettleTypography.body.copyWith(
-                                    color: T.pal.teal,
+                                    color: _TodayT.pal.teal,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -358,13 +410,13 @@ class _WeekTab extends StatelessWidget {
                                     Icon(
                                       Icons.trending_flat_rounded,
                                       size: 20,
-                                      color: T.pal.textSecondary,
+                                      color: _TodayT.pal.textSecondary,
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
                                       'Building consistency this week',
                                       style: SettleTypography.body.copyWith(
-                                        color: T.pal.textSecondary,
+                                        color: _TodayT.pal.textSecondary,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -397,19 +449,21 @@ class _WeekTab extends StatelessWidget {
                   children: [
                     Text(
                       'WEEKLY SUMMARY',
-                      style: T.type.overline.copyWith(
-                        color: T.pal.textTertiary,
+                      style: _TodayT.type.overline.copyWith(
+                        color: _TodayT.pal.textTertiary,
                       ),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       '${avgHours.toStringAsFixed(1)}h average/day',
-                      style: T.type.h3,
+                      style: _TodayT.type.h3,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${weekData.fold<int>(0, (sum, d) => sum + d.sessions)} sessions in 7 days',
-                      style: T.type.body.copyWith(color: T.pal.textSecondary),
+                      style: _TodayT.type.body.copyWith(
+                        color: _TodayT.pal.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -422,8 +476,8 @@ class _WeekTab extends StatelessWidget {
                   children: [
                     Text(
                       'SLEEP HOURS (LAST 7 DAYS)',
-                      style: T.type.overline.copyWith(
-                        color: T.pal.textTertiary,
+                      style: _TodayT.type.overline.copyWith(
+                        color: _TodayT.pal.textTertiary,
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -435,7 +489,7 @@ class _WeekTab extends StatelessWidget {
                         todayIdx: 6,
                         maxY: 12,
                         suffix: 'h',
-                        barColor: T.pal.accent,
+                        barColor: _TodayT.pal.accent,
                       ),
                     ),
                   ],
@@ -454,8 +508,8 @@ class _WeekTab extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       'SESSION COUNT (LAST 7 DAYS)',
-                      style: T.type.overline.copyWith(
-                        color: T.pal.textTertiary,
+                      style: _TodayT.type.overline.copyWith(
+                        color: _TodayT.pal.textTertiary,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -469,7 +523,7 @@ class _WeekTab extends StatelessWidget {
                         todayIdx: 6,
                         maxY: 6,
                         suffix: '',
-                        barColor: T.pal.textSecondary,
+                        barColor: _TodayT.pal.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -509,11 +563,13 @@ class _SessionRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$start → $end', style: T.type.label),
+              Text('$start → $end', style: _TodayT.type.label),
               const SizedBox(height: 2),
               Text(
                 _formatDuration(session.duration),
-                style: T.type.caption.copyWith(color: T.pal.textSecondary),
+                style: _TodayT.type.caption.copyWith(
+                  color: _TodayT.pal.textSecondary,
+                ),
               ),
             ],
           ),
@@ -521,13 +577,15 @@ class _SessionRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: session.isNight ? T.glass.fillTeal : T.glass.fillAccent,
-            borderRadius: BorderRadius.circular(T.radius.pill),
+            color: session.isNight
+                ? _TodayT.glass.fillTeal
+                : _TodayT.glass.fillAccent,
+            borderRadius: BorderRadius.circular(_TodayT.radius.pill),
           ),
           child: Text(
             session.isNight ? 'Night' : 'Nap',
-            style: T.type.caption.copyWith(
-              color: session.isNight ? T.pal.teal : T.pal.accent,
+            style: _TodayT.type.caption.copyWith(
+              color: session.isNight ? _TodayT.pal.teal : _TodayT.pal.accent,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -547,9 +605,14 @@ class _StatBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: T.type.h3),
+        Text(value, style: _TodayT.type.h3),
         const SizedBox(height: 2),
-        Text(label, style: T.type.caption.copyWith(color: T.pal.textSecondary)),
+        Text(
+          label,
+          style: _TodayT.type.caption.copyWith(
+            color: _TodayT.pal.textSecondary,
+          ),
+        ),
       ],
     );
   }
@@ -565,7 +628,7 @@ class _ErrorCard extends StatelessWidget {
       child: GlassCard(
         child: Text(
           message,
-          style: T.type.body.copyWith(color: T.pal.textSecondary),
+          style: _TodayT.type.body.copyWith(color: _TodayT.pal.textSecondary),
           textAlign: TextAlign.center,
         ),
       ),
@@ -600,7 +663,7 @@ class _BarChart extends StatelessWidget {
           drawVerticalLine: false,
           horizontalInterval: maxY / 3,
           getDrawingHorizontalLine: (value) {
-            return FlLine(color: T.glass.border, strokeWidth: 0.5);
+            return FlLine(color: _TodayT.glass.border, strokeWidth: 0.5);
           },
         ),
         borderData: FlBorderData(show: false),
@@ -619,8 +682,8 @@ class _BarChart extends StatelessWidget {
                 if (value == 0) return const SizedBox.shrink();
                 return Text(
                   '${value.toInt()}$suffix',
-                  style: T.type.overline.copyWith(
-                    color: T.pal.textTertiary,
+                  style: _TodayT.type.overline.copyWith(
+                    color: _TodayT.pal.textTertiary,
                   ),
                 );
               },
@@ -634,10 +697,10 @@ class _BarChart extends StatelessWidget {
                 if (i < 0 || i >= labels.length) return const SizedBox.shrink();
                 return Text(
                   labels[i],
-                  style: T.type.overline.copyWith(
+                  style: _TodayT.type.overline.copyWith(
                     color: i == todayIdx
-                        ? T.pal.textPrimary
-                        : T.pal.textTertiary,
+                        ? _TodayT.pal.textPrimary
+                        : _TodayT.pal.textTertiary,
                     fontWeight: i == todayIdx
                         ? FontWeight.w700
                         : FontWeight.w400,
