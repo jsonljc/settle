@@ -6,9 +6,38 @@ import '../../providers/tantrum_providers.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
+
+class _ThT {
+  _ThT._();
+
+  static final type = _ThTypeTokens();
+  static const pal = _ThPaletteTokens();
+}
+
+class _ThTypeTokens {
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _ThPaletteTokens {
+  const _ThPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+}
 
 // Deprecated in IA cleanup PR6. This legacy tantrum surface is no longer
 // reachable from production routes and is retained only for internal reference.
@@ -32,7 +61,9 @@ class TantrumHubScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
                 child: const ScreenHeader(title: 'Now: Incident'),
               ),
               const SizedBox(height: 20),
@@ -75,8 +106,8 @@ class TantrumHubScreen extends ConsumerWidget {
                     const SizedBox(height: 18),
                     Text(
                       'Current prevention playbook',
-                      style: T.type.overline.copyWith(
-                        color: T.pal.textTertiary,
+                      style: _ThT.type.overline.copyWith(
+                        color: _ThT.pal.textTertiary,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -84,8 +115,8 @@ class TantrumHubScreen extends ConsumerWidget {
                       GlassCard(
                         child: Text(
                           'Log a few events to unlock trigger-aware prevention tips.',
-                          style: T.type.caption.copyWith(
-                            color: T.pal.textSecondary,
+                          style: _ThT.type.caption.copyWith(
+                            color: _ThT.pal.textSecondary,
                           ),
                         ),
                       )
@@ -100,8 +131,8 @@ class TantrumHubScreen extends ConsumerWidget {
                             ),
                             child: Text(
                               item,
-                              style: T.type.body.copyWith(
-                                color: T.pal.textSecondary,
+                              style: _ThT.type.body.copyWith(
+                                color: _ThT.pal.textSecondary,
                               ),
                             ),
                           ),
@@ -139,22 +170,24 @@ class _HubNavCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: T.pal.accent),
+            Icon(icon, size: 20, color: _ThT.pal.accent),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: T.type.label),
+                  Text(title, style: _ThT.type.label),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: T.type.caption.copyWith(color: T.pal.textSecondary),
+                    style: _ThT.type.caption.copyWith(
+                      color: _ThT.pal.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: T.pal.textTertiary),
+            Icon(Icons.chevron_right_rounded, color: _ThT.pal.textTertiary),
           ],
         ),
       ),

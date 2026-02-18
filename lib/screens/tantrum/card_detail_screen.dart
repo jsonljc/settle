@@ -6,9 +6,42 @@ import 'package:go_router/go_router.dart';
 import '../../tantrum/providers/tantrum_module_providers.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
+
+class _CdT {
+  _CdT._();
+
+  static final type = _CdTypeTokens();
+  static const pal = _CdPaletteTokens();
+}
+
+class _CdTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _CdPaletteTokens {
+  const _CdPaletteTokens();
+
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
 
 /// Deck card detail with save/favorite/pin/share controls.
 class CardDetailScreen extends ConsumerWidget {
@@ -26,7 +59,9 @@ class CardDetailScreen extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: cardAsync.when(
               data: (card) {
                 if (card == null) {
@@ -40,7 +75,9 @@ class CardDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
                       Text(
                         'Card not found.',
-                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                        style: _CdT.type.body.copyWith(
+                          color: _CdT.pal.textSecondary,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       GlassCta(
@@ -86,13 +123,13 @@ class CardDetailScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 'This card is in a premium pack',
-                                style: T.type.label,
+                                style: _CdT.type.label,
                               ),
                               const SizedBox(height: 6),
                               Text(
                                 'Unlock this pack to save, pin, and use this card in your deck.',
-                                style: T.type.body.copyWith(
-                                  color: T.pal.textSecondary,
+                                style: _CdT.type.body.copyWith(
+                                  color: _CdT.pal.textSecondary,
                                 ),
                               ),
                             ],
@@ -159,8 +196,8 @@ class CardDetailScreen extends ConsumerWidget {
                           const SizedBox(height: 8),
                           Text(
                             'Pinned deck is full (max $maxPinnedCards). Unpin one card first.',
-                            style: T.type.caption.copyWith(
-                              color: T.pal.textSecondary,
+                            style: _CdT.type.caption.copyWith(
+                              color: _CdT.pal.textSecondary,
                             ),
                           ),
                         ],
@@ -192,9 +229,9 @@ class CardDetailScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Something went wrong.',
-                          style: T.type.body.copyWith(
+                          style: _CdT.type.body.copyWith(
                             fontSize: 14,
-                            color: T.pal.textSecondary,
+                            color: _CdT.pal.textSecondary,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -250,12 +287,15 @@ class _Section extends StatelessWidget {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: T.type.overline.copyWith(color: T.pal.textTertiary)),
+        Text(
+          title,
+          style: _CdT.type.overline.copyWith(color: _CdT.pal.textTertiary),
+        ),
         const SizedBox(height: 8),
         Text(
           body,
-          style: (accent ? T.type.h3 : T.type.body).copyWith(
-            color: T.pal.textPrimary,
+          style: (accent ? _CdT.type.h3 : _CdT.type.body).copyWith(
+            color: _CdT.pal.textPrimary,
           ),
         ),
       ],
