@@ -3,8 +3,33 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../models/approach.dart';
 import '../../theme/reduce_motion.dart';
-import '../../theme/settle_tokens.dart';
+import '../../theme/settle_design_system.dart';
 import '../../widgets/option_button.dart';
+
+class _SsuT {
+  _SsuT._();
+
+  static final type = _SsuTypeTokens();
+  static const pal = _SsuPaletteTokens();
+}
+
+class _SsuTypeTokens {
+  TextStyle get h1 => SettleTypography.heading.copyWith(
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _SsuPaletteTokens {
+  const _SsuPaletteTokens();
+
+  Color get textTertiary => SettleColors.nightMuted;
+}
 
 /// Step 2: Your setup. Two mini-sections on one screen:
 ///   - Family structure (2×2 compact grid)
@@ -41,7 +66,7 @@ class StepSetup extends StatelessWidget {
       children: [
         Text(
           'Your setup',
-          style: T.type.h1,
+          style: _SsuT.type.h1,
         ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 24),
 
@@ -49,7 +74,7 @@ class StepSetup extends StatelessWidget {
           // — Family structure section —
           Text(
             'Family',
-            style: T.type.overline.copyWith(color: T.pal.textTertiary),
+            style: _SsuT.type.overline.copyWith(color: _SsuT.pal.textTertiary),
           ).entryFadeOnly(context, delay: 100.ms),
           const SizedBox(height: 12),
           _buildFamilyGrid(context),
@@ -59,7 +84,7 @@ class StepSetup extends StatelessWidget {
         // — Sleep philosophy section —
         Text(
           'Sleep philosophy',
-          style: T.type.overline.copyWith(color: T.pal.textTertiary),
+          style: _SsuT.type.overline.copyWith(color: _SsuT.pal.textTertiary),
         ).entryFadeOnly(context, delay: 200.ms),
         const SizedBox(height: 12),
         ..._buildPhilosophyList(context),

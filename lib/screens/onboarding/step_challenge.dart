@@ -3,9 +3,41 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../models/approach.dart';
 import '../../theme/reduce_motion.dart';
-import '../../theme/settle_tokens.dart';
+import '../../theme/settle_design_system.dart';
 import '../../widgets/settle_disclosure.dart';
 import '../../widgets/option_button.dart';
+
+class _SchT {
+  _SchT._();
+
+  static final type = _SchTypeTokens();
+  static const pal = _SchPaletteTokens();
+}
+
+class _SchTypeTokens {
+  TextStyle get h1 => SettleTypography.heading.copyWith(
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _SchPaletteTokens {
+  const _SchPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
 
 /// Step 3: What is hardest + feeding type.
 /// Primary required decision: biggest challenge.
@@ -45,14 +77,14 @@ class StepChallenge extends StatelessWidget {
       children: [
         Text(
           'What is\nhardest?',
-          style: T.type.h1,
+          style: _SchT.type.h1,
         ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 24),
 
         // — Primary challenge —
         Text(
           'Biggest challenge',
-          style: T.type.overline.copyWith(color: T.pal.textTertiary),
+          style: _SchT.type.overline.copyWith(color: _SchT.pal.textTertiary),
         ).entryFadeOnly(context, delay: 100.ms),
         const SizedBox(height: 12),
         ...PrimaryChallenge.values.asMap().entries.map((entry) {
@@ -71,13 +103,15 @@ class StepChallenge extends StatelessWidget {
         const SizedBox(height: 20),
         SettleDisclosure(
           title: 'Feeding context (optional)',
-          titleStyle: T.type.label.copyWith(color: T.pal.textSecondary),
+          titleStyle: _SchT.type.label.copyWith(color: _SchT.pal.textSecondary),
           children: [
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Add this only if it helps personalize your plan.',
-                style: T.type.caption.copyWith(color: T.pal.textSecondary),
+                style: _SchT.type.caption.copyWith(
+                  color: _SchT.pal.textSecondary,
+                ),
               ),
             ),
             const SizedBox(height: 12),
