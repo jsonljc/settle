@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/v2_enums.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/option_button.dart';
 
@@ -40,7 +41,7 @@ class RegulateStepAcknowledge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+      padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

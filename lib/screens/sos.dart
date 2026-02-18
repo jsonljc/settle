@@ -6,7 +6,9 @@ import 'package:go_router/go_router.dart';
 
 import '../theme/glass_components.dart';
 import '../widgets/settle_disclosure.dart';
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
+import '../widgets/gradient_background.dart';
 
 /// SOS Screen — ZERO interaction required. Auto-cycles everything.
 ///
@@ -56,14 +58,14 @@ class _SosScreenState extends State<SosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: T.pal.focusBackground,
-      body: SafeArea(
-        child: Column(
+      body: GradientBackgroundFromRoute(
+        child: SafeArea(
+          child: Column(
           children: [
             const SizedBox(height: 12),
             // Exit — keep this low-emphasis in calm/overnight contexts.
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
@@ -78,7 +80,7 @@ class _SosScreenState extends State<SosScreen> {
             ),
             const SizedBox(height: 6),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen + 8),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding + 8),
               child: Column(
                 children: [Text('Take a Breath', style: T.type.h2)],
               ),
@@ -93,12 +95,12 @@ class _SosScreenState extends State<SosScreen> {
 
             // ── Box breathing phase labels ──
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: _BreathingLabels(phase: _phase),
             ),
             const SizedBox(height: 16),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen + 8),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding + 8),
               child: AnimatedSwitcher(
                 duration: T.anim.normal,
                 child: Text(
@@ -116,7 +118,7 @@ class _SosScreenState extends State<SosScreen> {
 
             // ── Permission statement ──
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen + 8),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding + 8),
               child: Text(
                 'If you need a pause, it is okay to place baby in a safe crib '
                 'and step away for a few minutes.',
@@ -132,7 +134,7 @@ class _SosScreenState extends State<SosScreen> {
 
             // ── Crisis resources ──
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: GlassCard(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -163,6 +165,7 @@ class _SosScreenState extends State<SosScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 }
@@ -328,7 +331,6 @@ class _CrisisResource extends StatelessWidget {
                   name,
                   style: T.type.label.copyWith(
                     color: T.pal.textPrimary,
-                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -348,7 +350,10 @@ class _CrisisResource extends StatelessWidget {
             ),
             child: Text(
               number,
-              style: T.type.label.copyWith(color: T.pal.accent, fontSize: 14),
+              style: SettleTypography.body.copyWith(
+                color: T.pal.accent,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

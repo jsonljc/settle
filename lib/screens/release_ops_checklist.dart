@@ -6,7 +6,9 @@ import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
 import '../services/release_ops_service.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
+import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 
@@ -74,10 +76,10 @@ class _ReleaseOpsChecklistScreenState
     final rollout = ref.watch(releaseRolloutProvider);
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -354,7 +356,7 @@ class _HeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ready = data.rolloutReady;
-    final color = ready ? T.pal.teal : const Color(0xFFC86464);
+    final color = ready ? T.pal.teal : SettleColors.blush400;
 
     return GlassCardAccent(
       child: Column(
@@ -398,7 +400,7 @@ class _GateSection extends StatelessWidget {
           Text(title, style: T.type.h3),
           const SizedBox(height: 8),
           ...gates.map((gate) {
-            final color = gate.passed ? T.pal.teal : const Color(0xFFC86464);
+            final color = gate.passed ? T.pal.teal : SettleColors.blush400;
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(

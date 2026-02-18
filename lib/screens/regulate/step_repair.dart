@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 
 /// Step 5: Repair — shown when trigger was [RegulationTrigger.alreadyYelled].
@@ -19,7 +20,7 @@ class RegulateStepRepair extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+      padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

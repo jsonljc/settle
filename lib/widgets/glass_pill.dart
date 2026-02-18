@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/settle_design_system.dart';
 
@@ -48,8 +47,8 @@ class _GlassPillState extends State<GlassPill> {
   static const double _pressedScale = 0.97;
 
   /// Inter 14, weight 500, letterSpacing -0.01
-  static TextStyle _labelStyle(Color color) => GoogleFonts.inter(
-        fontSize: 14,
+  static TextStyle _labelStyle(Color color) =>
+      SettleTypography.body.copyWith(
         fontWeight: FontWeight.w500,
         letterSpacing: -0.01,
         color: color,

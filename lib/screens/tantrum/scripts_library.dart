@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/tantrum_providers.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
@@ -53,19 +55,19 @@ class ScriptsLibraryScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                 child: const ScreenHeader(title: 'Scripts library'),
               ),
               const SizedBox(height: 18),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.symmetric(
-                    horizontal: T.space.screen,
+                    horizontal: SettleSpacing.screenPadding,
                   ).copyWith(bottom: 24),
                   children: const [
                     _Section(title: 'During big feelings', lines: _during),

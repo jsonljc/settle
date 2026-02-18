@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../models/repair_card.dart';
@@ -9,6 +8,8 @@ import '../../providers/playbook_provider.dart';
 import '../../utils/share_text.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../theme/settle_design_system.dart';
+import '../../theme/settle_tokens.dart';
+import '../../theme/glass_components.dart' hide GlassCard;
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_chip.dart';
 import '../../widgets/settle_tappable.dart';
@@ -36,20 +37,15 @@ class SavedPlaybookScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Playbook',
-                  style: GoogleFonts.fraunces(
-                    fontSize: 24,
+                  style: T.type.h1.copyWith(
                     fontWeight: FontWeight.w400,
-                    letterSpacing: -0.5,
                     color: SettleColors.ink900,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Cards that worked for you',
-                  style: GoogleFonts.inter(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: -0.006,
+                  style: SettleTypography.caption.copyWith(
                     color: SettleColors.ink400,
                   ),
                 ),
@@ -92,19 +88,16 @@ class SavedPlaybookScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 'Something went wrong.',
-                                style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  letterSpacing: -0.006,
+                                style: SettleTypography.body.copyWith(
                                   color: SettleColors.ink400,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: SettleSpacing.lg),
-                              TextButton(
-                                onPressed: () =>
+                              GlassPill(
+                                label: 'Try again',
+                                onTap: () =>
                                     ref.invalidate(playbookRepairCardsProvider),
-                                child: const Text('Try again'),
                               ),
                             ],
                           ),
@@ -157,10 +150,8 @@ class _PlaybookCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     card.title,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
+                    style: SettleTypography.body.copyWith(
                       fontWeight: FontWeight.w600,
-                      letterSpacing: -0.3,
                       color: SettleColors.ink800,
                     ),
                   ),
@@ -179,12 +170,9 @@ class _PlaybookCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               card.body,
-              style: GoogleFonts.inter(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w400,
+              style: SettleTypography.caption.copyWith(
                 color: SettleColors.ink400,
                 height: 1.5,
-                letterSpacing: -0.006,
               ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
@@ -261,10 +249,7 @@ class _PlaybookEmptyState extends StatelessWidget {
     return Center(
       child: Text(
         'Cards you keep from Reset will appear here.',
-        style: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          letterSpacing: -0.006,
+        style: SettleTypography.body.copyWith(
           color: SettleColors.ink400,
         ),
         textAlign: TextAlign.center,

@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../models/tantrum_profile.dart';
 import '../providers/profile_provider.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
+import '../widgets/gradient_background.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/screen_header.dart';
 
@@ -153,13 +155,13 @@ class LearnScreen extends ConsumerWidget {
     final questions = useTantrum ? _tantrumQuestions : _sleepQuestions;
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                 child: ScreenHeader(
                   title: 'Learn',
                   subtitle: useTantrum
@@ -171,7 +173,7 @@ class LearnScreen extends ConsumerWidget {
               Expanded(
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(
-                    horizontal: T.space.screen,
+                    horizontal: SettleSpacing.screenPadding,
                   ).copyWith(bottom: 24),
                   physics: const BouncingScrollPhysics(),
                   itemCount: questions.length + 1,
@@ -294,12 +296,9 @@ class _QuestionCardState extends State<_QuestionCard> {
                       style: T.type.body.copyWith(color: T.pal.textSecondary),
                     ),
                     const SizedBox(height: 12),
-                    Container(
+                    GlassCard(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: T.glass.fillAccent,
-                        borderRadius: BorderRadius.circular(T.radius.sm),
-                      ),
+                      fill: T.glass.fillAccent,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

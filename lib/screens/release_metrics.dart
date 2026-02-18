@@ -4,7 +4,9 @@ import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
 import '../services/release_metrics_service.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
+import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 
@@ -51,10 +53,10 @@ class _ReleaseMetricsScreenState extends ConsumerState<ReleaseMetricsScreen> {
     final childName = ref.watch(profileProvider)?.name ?? 'Current child';
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -234,7 +236,7 @@ class _MetricCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusColor = switch (pass) {
       true => T.pal.teal,
-      false => const Color(0xFFC86464),
+      false => SettleColors.blush400,
       null => T.pal.textTertiary,
     };
     final statusLabel = switch (pass) {

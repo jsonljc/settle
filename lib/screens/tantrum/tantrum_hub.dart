@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../providers/tantrum_providers.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
@@ -24,20 +26,20 @@ class TantrumHubScreen extends ConsumerWidget {
     final pattern = ref.watch(patternProvider);
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                 child: const ScreenHeader(title: 'Now: Incident'),
               ),
               const SizedBox(height: 20),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.symmetric(
-                    horizontal: T.space.screen,
+                    horizontal: SettleSpacing.screenPadding,
                   ).copyWith(bottom: 24),
                   physics: const BouncingScrollPhysics(),
                   children: [

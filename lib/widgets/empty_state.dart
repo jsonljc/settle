@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/settle_design_system.dart';
 
@@ -20,12 +19,8 @@ class EmptyState extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
 
-  static TextStyle get _emptyTextStyle => GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        letterSpacing: -0.006,
-        color: SettleColors.ink400,
-      );
+  static TextStyle get _emptyTextStyle =>
+      SettleTypography.body.copyWith(color: SettleColors.ink400);
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +43,8 @@ class EmptyState extends StatelessWidget {
               onTap: onAction,
               child: Text(
                 '$actionLabel →',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
+                style: SettleTypography.body.copyWith(
                   fontWeight: FontWeight.w500,
-                  letterSpacing: -0.1,
                   color: isDark ? SettleColors.nightAccent : SettleColors.sage600,
                 ),
               ),

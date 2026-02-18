@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../providers/tantrum_providers.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
@@ -30,18 +32,18 @@ class _PracticeModeScreenState extends ConsumerState<PracticeModeScreen> {
     final scenario = ref.watch(scenarioProvider);
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                 child: const ScreenHeader(title: 'Practice mode'),
               ),
               const SizedBox(height: 16),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                  padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                   child: scenario == null
                       ? GlassCard(
                           child: Text(

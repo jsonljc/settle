@@ -8,6 +8,8 @@ import '../../providers/usage_events_provider.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
@@ -82,8 +84,8 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
       builder: (context, snapshot) {
         final card = snapshot.data;
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: SettleBackground(
+          return Scaffold(
+            body: GradientBackgroundFromRoute(
               child: Center(child: CircularProgressIndicator.adaptive()),
             ),
           );
@@ -96,10 +98,10 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
         }
 
         return Scaffold(
-          body: SettleBackground(
+          body: GradientBackgroundFromRoute(
             child: SafeArea(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

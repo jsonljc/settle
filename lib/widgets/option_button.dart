@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
 
 /// A selectable option tile used throughout onboarding.
@@ -151,8 +152,9 @@ class OptionButtonCompact extends StatelessWidget {
                 Flexible(
                   child: Text(
                     label,
-                    style: T.type.label.copyWith(
-                      fontSize: dense ? 13 : 14,
+                    style: (dense ? T.type.caption : SettleTypography.body)
+                        .copyWith(
+                      fontWeight: FontWeight.w600,
                       color: selected ? T.pal.textPrimary : T.pal.textSecondary,
                     ),
                     textAlign: TextAlign.center,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 
 const int _vagalCycleSeconds = 10; // 4 in + 6 out
@@ -58,7 +59,7 @@ class _PocketInlineBreatheState extends State<PocketInlineBreathe> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+      padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

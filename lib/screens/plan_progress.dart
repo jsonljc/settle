@@ -11,6 +11,8 @@ import '../services/plan_progress_guidance_service.dart';
 import '../services/sleep_guidance_service.dart';
 import '../services/spec_policy.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
+import '../widgets/gradient_background.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/calm_loading.dart';
@@ -161,10 +163,10 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
         return SafeArea(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              T.space.screen,
+              SettleSpacing.screenPadding,
               T.space.md,
-              T.space.screen,
-              T.space.screen,
+              SettleSpacing.screenPadding,
+              SettleSpacing.screenPadding,
             ),
             child: GlassCard(
               child: ConstrainedBox(
@@ -328,10 +330,10 @@ class _PlanProgressScreenState extends ConsumerState<PlanProgressScreen> {
     final experiment = state.experiment ?? _recommendedExperiment;
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

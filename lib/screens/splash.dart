@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/profile_provider.dart';
-import '../theme/glass_components.dart';
 import '../theme/reduce_motion.dart';
 import '../theme/settle_tokens.dart';
+import '../widgets/gradient_background.dart';
 
 /// Splash screen — app name + tagline, auto-redirects after a short minimum.
 /// Goes to /home if a profile already exists, /onboard otherwise.
@@ -69,8 +69,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SettleBackground(
-        gradient: T.pal.bgSplash,
+      body: GradientBackgroundFromRoute(
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

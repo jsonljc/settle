@@ -4,6 +4,7 @@ import '../../models/user_card.dart';
 import '../../models/v2_enums.dart';
 import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/micro_celebration.dart';
 import '../../widgets/output_card.dart';
@@ -50,9 +51,9 @@ class PocketOverlay extends StatelessWidget {
 
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
-        T.space.screen,
-        T.space.screen,
-        T.space.screen,
+        SettleSpacing.screenPadding,
+        SettleSpacing.screenPadding,
+        SettleSpacing.screenPadding,
         MediaQuery.of(context).padding.bottom + 24,
       ),
       child: Column(
@@ -121,7 +122,7 @@ class _EmptyPocketContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+      padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/moment_script_repository.dart';
 import '../../models/moment_script.dart';
 import '../../theme/settle_design_system.dart';
+import '../../theme/settle_tokens.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/settle_tappable.dart';
 
@@ -169,10 +169,8 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         Text(
           'Place one hand on your chest',
           textAlign: TextAlign.center,
-          style: GoogleFonts.fraunces(
-            fontSize: 26,
+          style: T.type.h1.copyWith(
             fontWeight: FontWeight.w400,
-            letterSpacing: -0.5,
             color: SettleColors.ink900,
           ),
         ),
@@ -180,10 +178,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         Text(
           "You're here now. That's enough.",
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            fontWeight: FontWeight.w400,
-            letterSpacing: -0.006,
+          style: T.type.caption.copyWith(
             color: SettleColors.ink500.withValues(alpha: 0.6),
           ),
         ),
@@ -196,9 +191,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
       return Center(
         child: Text(
           'Loading…',
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            letterSpacing: -0.006,
+          style: SettleTypography.body.copyWith(
             color: SettleColors.ink500,
           ),
         ),
@@ -264,19 +257,14 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
             onTap: _close,
             child: Text(
               'Close',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                letterSpacing: -0.006,
+              style: SettleTypography.caption.copyWith(
                 color: SettleColors.ink400.withValues(alpha: 0.6),
               ),
             ),
           ),
           Text(
             ' · ',
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              letterSpacing: -0.006,
+            style: SettleTypography.caption.copyWith(
               color: SettleColors.ink400.withValues(alpha: 0.6),
             ),
           ),
@@ -285,10 +273,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
             onTap: _openReset,
             child: Text(
               'Need more? Reset →',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                letterSpacing: -0.006,
+              style: SettleTypography.caption.copyWith(
                 color: SettleColors.ink400.withValues(alpha: 0.6),
                 decoration: TextDecoration.underline,
               ),
@@ -313,10 +298,8 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
           child: Text(
             script.lines.join(' '),
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 20,
+            style: T.type.h2.copyWith(
               fontWeight: FontWeight.w600,
-              letterSpacing: -0.3,
               height: 1.35,
               color: SettleColors.ink900,
             ),
@@ -347,9 +330,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
             onTap: _openReset,
             child: Text(
               'Need more? → Reset (15s)',
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                letterSpacing: -0.006,
+              style: T.type.caption.copyWith(
                 color: SettleColors.ink500,
                 decoration: TextDecoration.underline,
               ),
@@ -420,18 +401,18 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Base: white 22%, border 0.5 white 40%
+              // Base: glass fill, border
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0x38FFFFFF), // white 22%
+                  color: T.glass.fillDay,
                   border: Border.all(
-                    color: const Color(0x66FFFFFF), // white 40%
+                    color: SettleGlassLight.border,
                     width: 0.5,
                   ),
                 ),
               ),
-              // Inner shadow overlay: top white 50%, bottom black 3%
+              // Inner shadow overlay: top highlight, bottom depth
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -439,7 +420,7 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      const Color(0x80FFFFFF), // white 50%
+                      SettleGlassLight.border,
                       Colors.transparent,
                       Colors.black.withValues(alpha: 0.03),
                     ],
@@ -447,7 +428,7 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
                   ),
                 ),
               ),
-              // Specular arc: top 45% of circle, white 40% → transparent
+              // Specular arc: top 45% of circle
               Align(
                 alignment: Alignment.topCenter,
                 child: Container(
@@ -457,7 +438,7 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        const Color(0x66FFFFFF), // white 40%
+                        SettleGlassLight.backgroundSubtle,
                         Colors.transparent,
                       ],
                     ),
@@ -517,10 +498,8 @@ class _MomentChoiceCard extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: SettleTypography.body.copyWith(
                 fontWeight: FontWeight.w600,
-                letterSpacing: -0.3,
                 color: SettleColors.ink900,
               ),
             ),
@@ -528,10 +507,7 @@ class _MomentChoiceCard extends StatelessWidget {
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w400,
-                letterSpacing: -0.006,
+              style: SettleTypography.caption.copyWith(
                 color: SettleColors.ink400,
               ),
             ),

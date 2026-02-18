@@ -10,6 +10,8 @@ import '../providers/sleep_tonight_provider.dart';
 import '../services/spec_policy.dart';
 import '../widgets/settle_disclosure.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
+import '../widgets/gradient_background.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/settle_gap.dart';
@@ -82,10 +84,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final rulesEnabled = !rolloutReady || rollout.familyRulesEnabled;
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -271,13 +273,9 @@ class _MoreActionTile extends StatelessWidget {
       opacity: enabled ? 1 : 0.58,
       child: GestureDetector(
         onTap: enabled ? onTap : null,
-        child: Container(
+        child: GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: T.glass.fill,
-            borderRadius: BorderRadius.circular(T.radius.lg),
-            border: Border.all(color: T.glass.border),
-          ),
+          fill: T.glass.fill,
           child: Row(
             children: [
               Expanded(

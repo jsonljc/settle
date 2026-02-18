@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 
@@ -16,10 +18,10 @@ class TantrumUnavailableView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               children: [
                 ScreenHeader(title: title),

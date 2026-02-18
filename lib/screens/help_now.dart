@@ -10,6 +10,8 @@ import '../services/event_bus_service.dart';
 import '../services/help_now_guidance_service.dart';
 import '../services/spec_policy.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
+import '../widgets/gradient_background.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
@@ -120,10 +122,10 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
         return SafeArea(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              T.space.screen,
+              SettleSpacing.screenPadding,
               T.space.md,
-              T.space.screen,
-              T.space.screen,
+              SettleSpacing.screenPadding,
+              SettleSpacing.screenPadding,
             ),
             child: GlassCard(
               child: Column(
@@ -314,10 +316,10 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
     final ageKnown = _ageBand != null;
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -946,7 +948,7 @@ class _IncidentGrid extends StatelessWidget {
                 Text(
                   option.label,
                   textAlign: TextAlign.center,
-                  style: T.type.label.copyWith(fontSize: 14),
+                  style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -1123,13 +1125,11 @@ class _SmallChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: GlassCard(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? T.glass.fillAccent : T.glass.fill,
-          borderRadius: BorderRadius.circular(T.radius.pill),
-          border: Border.all(color: selected ? T.pal.accent : T.glass.border),
-        ),
+        fill: selected ? T.glass.fillAccent : T.glass.fill,
+        borderRadius: T.radius.pill,
+        border: true,
         child: Text(
           label,
           style: T.type.caption.copyWith(

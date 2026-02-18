@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/approach.dart';
 import '../../providers/nudge_settings_provider.dart';
@@ -71,10 +70,10 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
         return SafeArea(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              T.space.screen,
+              SettleSpacing.screenPadding,
               T.space.md,
-              T.space.screen,
-              T.space.screen,
+              SettleSpacing.screenPadding,
+              SettleSpacing.screenPadding,
             ),
             child: GlassCard(
               child: Column(
@@ -151,10 +150,7 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
               // 1. Greeting (no glass)
               Text(
                 _greetingText(context),
-                style: GoogleFonts.fraunces(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.5,
+                style: SettleTypography.display.copyWith(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? SettleColors.nightText
                       : SettleColors.ink900,
@@ -163,9 +159,7 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
               const SizedBox(height: 2),
               Text(
                 'What do you need right now?',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
+                style: T.type.caption.copyWith(
                   color: SettleColors.ink400,
                 ),
               ),
@@ -260,10 +254,7 @@ class _SleepTonightHeroCard extends StatelessWidget {
               // Eyebrow: SLEEP TONIGHT
               Text(
                 'SLEEP TONIGHT',
-                style: GoogleFonts.inter(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.6,
+                style: T.type.overline.copyWith(
                   color: SettleColors.dusk600.withValues(alpha: 0.75),
                 ),
               ),
@@ -271,8 +262,7 @@ class _SleepTonightHeroCard extends StatelessWidget {
               // Title: Ready when you need it
               Text(
                 'Ready when you need it',
-                style: GoogleFonts.fraunces(
-                  fontSize: 20,
+                style: SettleTypography.heading.copyWith(
                   fontWeight: FontWeight.w400,
                   color: SettleColors.ink900,
                 ),
@@ -281,9 +271,7 @@ class _SleepTonightHeroCard extends StatelessWidget {
               // Desc
               Text(
                 '3 short guides for whatever tonight brings.',
-                style: GoogleFonts.inter(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w400,
+                style: SettleTypography.caption.copyWith(
                   color: SettleColors.ink400,
                 ),
               ),
@@ -334,8 +322,7 @@ class _QuickActionCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               title,
-              style: GoogleFonts.inter(
-                fontSize: 13,
+              style: T.type.caption.copyWith(
                 fontWeight: FontWeight.w600,
                 color: SettleColors.ink900,
               ),
@@ -343,9 +330,7 @@ class _QuickActionCard extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: FontWeight.w400,
+              style: T.type.overline.copyWith(
                 color: SettleColors.ink400,
               ),
             ),
@@ -387,7 +372,7 @@ class PlanCardScreen extends StatelessWidget {
         return Scaffold(
           body: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

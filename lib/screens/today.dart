@@ -9,7 +9,9 @@ import '../providers/profile_provider.dart';
 import '../providers/session_provider.dart';
 import '../theme/glass_components.dart';
 import '../theme/reduce_motion.dart';
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
+import '../widgets/gradient_background.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/screen_header.dart';
@@ -53,10 +55,10 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
     const learnRoute = '/library/learn';
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -144,7 +146,7 @@ class _GlassTabBar extends StatelessWidget {
         dividerColor: Colors.transparent,
         labelColor: T.pal.textPrimary,
         unselectedLabelColor: T.pal.textTertiary,
-        labelStyle: T.type.label.copyWith(fontSize: 14),
+        labelStyle: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
         unselectedLabelStyle: T.type.caption,
         indicatorSize: TabBarIndicatorSize.tab,
         tabs: const [
@@ -338,9 +340,9 @@ class _WeekTab extends StatelessWidget {
                                 const SizedBox(width: 10),
                                 Text(
                                   'Sleep trending upward this week',
-                                  style: T.type.label.copyWith(
+                                  style: SettleTypography.body.copyWith(
                                     color: T.pal.teal,
-                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
@@ -361,9 +363,9 @@ class _WeekTab extends StatelessWidget {
                                     const SizedBox(width: 10),
                                     Text(
                                       'Building consistency this week',
-                                      style: T.type.label.copyWith(
+                                      style: SettleTypography.body.copyWith(
                                         color: T.pal.textSecondary,
-                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ],
@@ -617,9 +619,8 @@ class _BarChart extends StatelessWidget {
                 if (value == 0) return const SizedBox.shrink();
                 return Text(
                   '${value.toInt()}$suffix',
-                  style: T.type.caption.copyWith(
+                  style: T.type.overline.copyWith(
                     color: T.pal.textTertiary,
-                    fontSize: 10,
                   ),
                 );
               },
@@ -633,11 +634,10 @@ class _BarChart extends StatelessWidget {
                 if (i < 0 || i >= labels.length) return const SizedBox.shrink();
                 return Text(
                   labels[i],
-                  style: T.type.caption.copyWith(
+                  style: T.type.overline.copyWith(
                     color: i == todayIdx
                         ? T.pal.textPrimary
                         : T.pal.textTertiary,
-                    fontSize: 10,
                     fontWeight: i == todayIdx
                         ? FontWeight.w700
                         : FontWeight.w400,

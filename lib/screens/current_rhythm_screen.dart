@@ -10,6 +10,8 @@ import '../providers/rhythm_provider.dart';
 import '../services/notification_service.dart';
 import '../services/sleep_ai_explainer_service.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
+import '../widgets/gradient_background.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/release_surfaces.dart';
@@ -118,10 +120,10 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  T.space.screen,
+                  SettleSpacing.screenPadding,
                   T.space.md,
-                  T.space.screen,
-                  T.space.screen,
+                  SettleSpacing.screenPadding,
+                  SettleSpacing.screenPadding,
                 ),
                 child: GlassCard(
                   child: Column(
@@ -323,11 +325,11 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
     final shift = state.shiftAssessment;
 
     if (state.isLoading) {
-      return const Scaffold(
-        body: SettleBackground(
+      return Scaffold(
+        body: GradientBackgroundFromRoute(
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: CalmLoading(message: 'Loading current rhythm…'),
             ),
           ),
@@ -337,10 +339,10 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
 
     if (rhythm == null || schedule == null) {
       return Scaffold(
-        body: SettleBackground(
+        body: GradientBackgroundFromRoute(
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -407,10 +409,10 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
     );
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -559,36 +561,27 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                   compact: true,
                                 ),
                                 const SizedBox(height: 8),
-                                OutlinedButton(
-                                  onPressed: () => ref
+                                GlassPill(
+                                  label: 'Recalculate schedule',
+                                  onTap: () => ref
                                       .read(rhythmProvider.notifier)
                                       .recalculate(childId: childId),
-                                  style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size.fromHeight(44),
-                                    side: BorderSide(color: T.glass.border),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        T.radius.pill,
-                                      ),
-                                    ),
-                                  ),
-                                  child: const Text('Recalculate schedule'),
                                 ),
                                 const SizedBox(height: 6),
-                                TextButton(
-                                  onPressed: () =>
+                                GlassPill(
+                                  label: 'Morning recap',
+                                  onTap: () =>
                                       _openMorningRecapSheet(childId),
-                                  child: const Text('Morning recap'),
                                 ),
                                 const SizedBox(height: 2),
-                                TextButton(
-                                  onPressed: () => ref
+                                GlassPill(
+                                  label: 'Advanced',
+                                  onTap: () => ref
                                       .read(rhythmProvider.notifier)
                                       .setPreciseView(
                                         childId: childId,
                                         precise: true,
                                       ),
-                                  child: const Text('Advanced'),
                                 ),
                               ],
                             ),
@@ -763,14 +756,14 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                             ],
                           ),
                           const SizedBox(height: 6),
-                          TextButton(
-                            onPressed: () => ref
+                          GlassPill(
+                            label: 'Back to relaxed',
+                            onTap: () => ref
                                 .read(rhythmProvider.notifier)
                                 .setPreciseView(
                                   childId: childId,
                                   precise: false,
                                 ),
-                            child: const Text('Back to relaxed'),
                           ),
                         ],
                         if (state.lastHint != null) ...[

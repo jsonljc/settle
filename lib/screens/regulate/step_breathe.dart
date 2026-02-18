@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/settle_disclosure.dart';
 
@@ -74,7 +75,7 @@ class _RegulateStepBreatheState extends State<RegulateStepBreathe> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+      padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -90,7 +91,7 @@ class _RegulateStepBreatheState extends State<RegulateStepBreathe> {
           _BreathingLabel(isInhale: _isInhale),
           const SizedBox(height: 32),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: GlassCard(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: SettleDisclosure(
@@ -233,9 +234,9 @@ class _CrisisResource extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: T.type.label.copyWith(
+                  style: SettleTypography.body.copyWith(
                     color: T.pal.textPrimary,
-                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -255,7 +256,10 @@ class _CrisisResource extends StatelessWidget {
             ),
             child: Text(
               number,
-              style: T.type.label.copyWith(color: T.pal.accent, fontSize: 14),
+              style: SettleTypography.body.copyWith(
+                color: T.pal.accent,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

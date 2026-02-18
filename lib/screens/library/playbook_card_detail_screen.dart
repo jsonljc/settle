@@ -8,7 +8,9 @@ import '../../providers/card_repository_provider.dart';
 import '../../utils/share_text.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
@@ -29,7 +31,7 @@ class PlaybookCardDetailScreen extends ConsumerWidget {
         final card = snapshot.data;
         if (snapshot.connectionState != ConnectionState.done) {
           return Scaffold(
-            body: SettleBackground(
+            body: GradientBackgroundFromRoute(
               child: Center(
                 child: CircularProgressIndicator(color: T.pal.accent),
               ),
@@ -38,10 +40,10 @@ class PlaybookCardDetailScreen extends ConsumerWidget {
         }
         if (card == null) {
           return Scaffold(
-            body: SettleBackground(
+            body: GradientBackgroundFromRoute(
               child: SafeArea(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                  padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -80,10 +82,10 @@ class _Content extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

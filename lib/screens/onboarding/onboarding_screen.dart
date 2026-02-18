@@ -9,7 +9,9 @@ import '../../models/baby_profile.dart';
 import '../../models/tantrum_profile.dart';
 import '../../providers/profile_provider.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/gradient_background.dart';
 import 'focus_selector.dart';
 import 'step_age.dart';
 import 'step_challenge.dart';
@@ -187,7 +189,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final currentStep = _step.clamp(0, steps.length - 1);
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
             children: [
@@ -198,7 +200,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                  padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                   physics: const BouncingScrollPhysics(),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 120),
@@ -290,7 +292,7 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: T.space.screen, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding, vertical: 12),
       child: Row(
         children: [
           SizedBox(
@@ -355,7 +357,7 @@ class _BottomCta extends StatelessWidget {
     final label = isLast ? 'Get started' : 'Continue';
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(T.space.screen, 0, T.space.screen, 16),
+      padding: EdgeInsets.fromLTRB(SettleSpacing.screenPadding, 0, SettleSpacing.screenPadding, 16),
       child: AnimatedOpacity(
         opacity: canProceed ? 1.0 : 0.4,
         duration: T.anim.fast,

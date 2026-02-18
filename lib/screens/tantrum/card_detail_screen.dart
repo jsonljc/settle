@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../tantrum/providers/tantrum_module_providers.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 
 /// Deck card detail with save/favorite/pin/share controls.
@@ -21,10 +23,10 @@ class CardDetailScreen extends ConsumerWidget {
     final notifier = ref.read(deckStateProvider.notifier);
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: cardAsync.when(
               data: (card) {
                 if (card == null) {

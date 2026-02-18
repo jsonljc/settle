@@ -7,6 +7,8 @@ import '../../models/family_member.dart';
 import '../../providers/family_members_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
@@ -47,10 +49,10 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
         structure == FamilyStructure.blended;
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
@@ -189,13 +191,10 @@ class _MemberChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: T.glass.fillAccent,
-        borderRadius: BorderRadius.circular(T.radius.pill),
-        border: Border.all(color: T.glass.border),
-      ),
+      fill: T.glass.fillAccent,
+      borderRadius: T.radius.pill,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

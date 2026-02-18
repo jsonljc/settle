@@ -6,6 +6,7 @@ import '../../models/pattern_insight.dart';
 import '../../providers/patterns_provider.dart';
 import '../../providers/playbook_provider.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 import '../../providers/weekly_reflection_provider.dart';
 import '../../widgets/screen_header.dart';
@@ -22,7 +23,7 @@ class LibraryHomeScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+          padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -219,8 +220,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                   children: [
                     Text(
                       'Your playbook is empty.',
-                      style: T.type.body.copyWith(
-                        fontSize: 14,
+                      style: SettleTypography.body.copyWith(
                         color: T.pal.textSecondary,
                       ),
                     ),
@@ -242,14 +242,9 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                         onTap: () => context.push(
                           '/library/saved/card/${entry.repairCard.id}',
                         ),
-                        child: Container(
-                          width: double.infinity,
+                        child: GlassCard(
                           padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: T.glass.fillAccent,
-                            borderRadius: BorderRadius.circular(T.radius.md),
-                            border: Border.all(color: T.glass.border),
-                          ),
+                          fill: T.glass.fillAccent,
                           child: Text(
                             entry.repairCard.title,
                             style: T.type.label,
@@ -275,8 +270,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
               children: [
                 Text(
                   'Something went wrong.',
-                  style: T.type.body.copyWith(
-                    fontSize: 14,
+                  style: SettleTypography.body.copyWith(
                     color: T.pal.textSecondary,
                   ),
                 ),

@@ -126,8 +126,7 @@ class _WakeArcPainter extends CustomPainter {
 
     // --- Background arc: white 4%, full circle ---
     final bgPaint = Paint()
-      ..color =
-          const Color(0x0AFFFFFF) // white ~4%
+      ..color = T.glass.border
       ..strokeWidth = _strokeWidth
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;

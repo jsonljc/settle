@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../models/v2_enums.dart';
 import '../../providers/regulation_events_provider.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/gradient_background.dart';
 import 'step_acknowledge.dart';
 import 'step_action.dart';
 import 'step_breathe.dart';
@@ -82,13 +84,13 @@ class _RegulateFlowScreenState extends ConsumerState<RegulateFlowScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: T.pal.focusBackground,
-      body: SafeArea(
-        child: Column(
+      body: GradientBackgroundFromRoute(
+        child: SafeArea(
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
@@ -116,6 +118,7 @@ class _RegulateFlowScreenState extends ConsumerState<RegulateFlowScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 

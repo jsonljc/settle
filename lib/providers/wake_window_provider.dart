@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/approach.dart';
 import '../models/sleep_session.dart';
+import '../theme/settle_design_system.dart';
 import '../services/wake_engine.dart';
 import 'adaptive_provider.dart';
 import 'disruption_provider.dart';
@@ -95,7 +96,7 @@ class WakeWindowState {
     progress: 0,
     isSleeping: false,
     zone: WakeZone.ok,
-    arcColor: Color(0xFF6EE7B7),
+    arcColor: SettleColors.arcOk,
     text: '',
     subtext: '',
     ctaLabel: 'Log sleep',

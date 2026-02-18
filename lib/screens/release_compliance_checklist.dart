@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/release_rollout_provider.dart';
 import '../services/safety_compliance_service.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
+import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 
@@ -34,10 +36,10 @@ class _ReleaseComplianceChecklistScreenState
     }
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -105,7 +107,7 @@ class _ReleaseComplianceChecklistScreenState
                           ...data.items.map((item) {
                             final color = item.passed
                                 ? T.pal.teal
-                                : const Color(0xFFC86464);
+                                : SettleColors.blush400;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10),
                               child: GlassCard(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
 
 /// Short celebratory moment after "worked great" — dismiss by tap or after [duration].
@@ -36,7 +37,7 @@ class _MicroCelebrationState extends State<MicroCelebration> {
       behavior: HitTestBehavior.opaque,
       child: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+          padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
           child: GlassCardAccent(
             child: Column(
               mainAxisSize: MainAxisSize.min,

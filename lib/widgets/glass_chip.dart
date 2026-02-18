@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/settle_design_system.dart';
+import '../theme/settle_tokens.dart';
 
 /// Domain for chip tint (general/child → sage, self → blush, sleep → dusk, tantrum → warmth).
 enum GlassChipDomain {
@@ -27,11 +27,8 @@ class GlassChip extends StatelessWidget {
       EdgeInsets.symmetric(vertical: 4, horizontal: 12);
 
   /// Inter 11px, weight 500
-  static TextStyle _labelStyle(Color color) => GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w500,
-        color: color,
-      );
+  static TextStyle _labelStyle(Color color) =>
+      T.type.overline.copyWith(fontWeight: FontWeight.w500, color: color);
 
   (Color fill, Color border, Color text) _resolveColors() {
     final (Color base, Color text600) = _domainColors();

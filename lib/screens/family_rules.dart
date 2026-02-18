@@ -6,6 +6,8 @@ import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
 import '../providers/sleep_tonight_provider.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
+import '../widgets/gradient_background.dart';
 import '../widgets/calm_loading.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
@@ -44,10 +46,10 @@ class FamilyRulesScreen extends ConsumerWidget {
     final author = 'Primary caregiver';
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -320,13 +322,9 @@ class _RulesEditorState extends State<_RulesEditor> {
     );
 
     if (widget.embedded) {
-      return Container(
+      return GlassCard(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: T.glass.fill,
-          borderRadius: BorderRadius.circular(T.radius.xl),
-          border: Border.all(color: T.glass.border),
-        ),
+        fill: T.glass.fill,
         child: content,
       );
     }

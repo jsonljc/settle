@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../models/approach.dart';
@@ -21,7 +20,6 @@ import '../theme/settle_tokens.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/release_surfaces.dart';
-import '../widgets/screen_header.dart';
 import '../widgets/settle_segmented_choice.dart';
 import '../widgets/settle_tappable.dart';
 
@@ -221,10 +219,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
         return SafeArea(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              T.space.screen,
+              SettleSpacing.screenPadding,
               T.space.md,
-              T.space.screen,
-              T.space.screen,
+              SettleSpacing.screenPadding,
+              SettleSpacing.screenPadding,
             ),
             child: GlassCard(
               child: ConstrainedBox(
@@ -287,10 +285,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  T.space.screen,
+                  SettleSpacing.screenPadding,
                   T.space.md,
-                  T.space.screen,
-                  T.space.screen + MediaQuery.viewInsetsOf(context).bottom,
+                  SettleSpacing.screenPadding,
+                  SettleSpacing.screenPadding + MediaQuery.viewInsetsOf(context).bottom,
                 ),
                 child: GlassCard(
                   child: SingleChildScrollView(
@@ -394,10 +392,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  T.space.screen,
+                  SettleSpacing.screenPadding,
                   T.space.md,
-                  T.space.screen,
-                  T.space.screen + MediaQuery.viewInsetsOf(context).bottom,
+                  SettleSpacing.screenPadding,
+                  SettleSpacing.screenPadding + MediaQuery.viewInsetsOf(context).bottom,
                 ),
                 child: GlassCard(
                   child: SingleChildScrollView(
@@ -525,10 +523,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  T.space.screen,
+                  SettleSpacing.screenPadding,
                   T.space.md,
-                  T.space.screen,
-                  T.space.screen + MediaQuery.viewInsetsOf(context).bottom,
+                  SettleSpacing.screenPadding,
+                  SettleSpacing.screenPadding + MediaQuery.viewInsetsOf(context).bottom,
                 ),
                 child: GlassCard(
                   child: SingleChildScrollView(
@@ -696,10 +694,10 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  T.space.screen,
+                  SettleSpacing.screenPadding,
                   T.space.md,
-                  T.space.screen,
-                  T.space.screen,
+                  SettleSpacing.screenPadding,
+                  SettleSpacing.screenPadding,
                 ),
                 child: GlassCard(
                   child: ConstrainedBox(
@@ -713,13 +711,13 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           Text('More options', style: T.type.h3),
                           const SizedBox(height: 12),
                           if (onShare != null) ...[
-                            OutlinedButton.icon(
-                              onPressed: () {
+                            GlassPill(
+                              label: 'Send plan',
+                              onTap: () {
                                 Navigator.of(context).pop();
                                 onShare();
                               },
-                              icon: const Icon(Icons.share_outlined, size: 18),
-                              label: const Text('Send plan'),
+                              icon: Icons.share_outlined,
                             ),
                             const SizedBox(height: 12),
                           ],
@@ -764,8 +762,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                       ),
                                     ),
                                   ),
-                                  TextButton(
-                                    onPressed: () async {
+                                  GlassPill(
+                                    label: 'Set',
+                                    onTap: () async {
                                       final picked = await showTimePicker(
                                         context: context,
                                         initialTime:
@@ -776,7 +775,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                         setModalState(() {});
                                       }
                                     },
-                                    child: const Text('Set'),
                                   ),
                                 ],
                               ),
@@ -792,8 +790,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                       ),
                                     ),
                                   ),
-                                  TextButton(
-                                    onPressed: () async {
+                                  GlassPill(
+                                    label: 'Set',
+                                    onTap: () async {
                                       final picked = await showTimePicker(
                                         context: context,
                                         initialTime:
@@ -806,7 +805,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                         setModalState(() {});
                                       }
                                     },
-                                    child: const Text('Set'),
                                   ),
                                 ],
                               ),
@@ -826,9 +824,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                           ),
                           const SizedBox(height: 10),
                           if (evidenceRefs.isNotEmpty)
-                            TextButton(
-                              onPressed: () => _showEvidenceSheet(evidenceRefs),
-                              child: const Text('Why this works'),
+                            GlassPill(
+                              label: 'Why this works',
+                              onTap: () => _showEvidenceSheet(evidenceRefs),
                             ),
                           Text('Log & recap', style: T.type.label),
                           const SizedBox(height: 8),
@@ -836,8 +834,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                             spacing: 8,
                             runSpacing: 8,
                             children: [
-                              OutlinedButton(
-                                onPressed: () async {
+                              GlassPill(
+                                label: 'Mark done',
+                                onTap: () async {
                                   if (quickDone &&
                                       state.lastRecapOutcome != null) {
                                     await ref
@@ -855,14 +854,13 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                     );
                                   }
                                 },
-                                child: const Text('Mark done'),
                               ),
-                              OutlinedButton(
-                                onPressed: () => _openRecapSheet(
+                              GlassPill(
+                                label: 'Add note',
+                                onTap: () => _openRecapSheet(
                                   childId: childId,
                                   state: state,
                                 ),
-                                child: const Text('Add note'),
                               ),
                             ],
                           ),
@@ -902,8 +900,9 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                             },
                           ),
                           const SizedBox(height: 10),
-                          OutlinedButton(
-                            onPressed: () async {
+                          GlassPill(
+                            label: 'Change approach',
+                            onTap: () async {
                               await EventBusService.emit(
                                 childId: childId,
                                 pillar: 'SLEEP_TONIGHT',
@@ -917,7 +916,6 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 currentScenario: selectedScenario,
                               );
                             },
-                            child: const Text('Change approach'),
                           ),
                           const SizedBox(height: 10),
                           Text(
@@ -952,11 +950,11 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                             },
                           ),
                           const SizedBox(height: 8),
-                          TextButton(
-                            onPressed: () => ref
+                          GlassPill(
+                            label: 'Something feels off',
+                            onTap: () => ref
                                 .read(sleepTonightProvider.notifier)
                                 .markSomethingFeelsOff(),
-                            child: const Text('Something feels off'),
                           ),
                         ],
                       ),
@@ -1253,10 +1251,7 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                   ),
                                   child: Text(
                                     'In the moment? → Moment',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      letterSpacing: -0.006,
+                                    style: T.type.caption.copyWith(
                                       color: SettleColors.nightAccent
                                           .withValues(alpha: 0.5),
                                       decoration: TextDecoration.underline,
@@ -1265,43 +1260,19 @@ class _SleepTonightScreenState extends ConsumerState<SleepTonightScreen> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              Row(
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
                                 children: [
-                                  TextButton(
-                                    onPressed: () =>
+                                  GlassPill(
+                                    label: 'View rhythm',
+                                    onTap: () =>
                                         context.push('/sleep/rhythm'),
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: const Size(48, 48),
-                                    ),
-                                    child: Text(
-                                      'View rhythm',
-                                      style: T.type.caption.copyWith(
-                                        color: T.pal.textTertiary,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
                                   ),
-                                  Text(
-                                    ' · ',
-                                    style: T.type.caption.copyWith(
-                                      color: T.pal.textTertiary,
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
+                                  GlassPill(
+                                    label: 'Update rhythm',
+                                    onTap: () =>
                                         context.push('/sleep/update'),
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: const Size(48, 48),
-                                    ),
-                                    child: Text(
-                                      'Update rhythm',
-                                      style: T.type.caption.copyWith(
-                                        color: T.pal.textTertiary,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
                                   ),
                                 ],
                               ),
@@ -1402,10 +1373,8 @@ class _SleepTonightSceneHeader extends StatelessWidget {
         Text(
           'Sleep tonight',
           textAlign: TextAlign.center,
-          style: GoogleFonts.fraunces(
-            fontSize: 22,
+          style: T.type.h2.copyWith(
             fontWeight: FontWeight.w400,
-            letterSpacing: -0.5,
             color: SettleColors.nightText,
           ),
         ),
@@ -1413,10 +1382,7 @@ class _SleepTonightSceneHeader extends StatelessWidget {
         Text(
           "What's happening?",
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
-            fontSize: 12.5,
-            fontWeight: FontWeight.w400,
-            letterSpacing: -0.006,
+          style: SettleTypography.caption.copyWith(
             color: SettleColors.nightMuted,
           ),
         ),
@@ -1474,13 +1440,10 @@ class _SleepTonightSituationPicker extends StatelessWidget {
             onTap: () => context.push('/plan/moment?context=sleep'),
             child: Text(
               'In the moment? → Moment',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                letterSpacing: -0.006,
-                color: SettleColors.nightAccent.withValues(alpha: 0.5),
-                decoration: TextDecoration.underline,
-              ),
+            style: T.type.caption.copyWith(
+              color: SettleColors.nightAccent.withValues(alpha: 0.5),
+              decoration: TextDecoration.underline,
+            ),
             ),
           ),
         ),
@@ -1525,7 +1488,7 @@ class _SleepOptionCard extends StatelessWidget {
                 ),
               ),
               alignment: Alignment.center,
-              child: Text(emoji, style: const TextStyle(fontSize: 20)),
+              child: Text(emoji, style: SettleTypography.heading),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -1535,20 +1498,15 @@ class _SleepOptionCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
+                    style: SettleTypography.body.copyWith(
                       fontWeight: FontWeight.w600,
-                      letterSpacing: -0.3,
                       color: SettleColors.nightText,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: GoogleFonts.inter(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w400,
-                      letterSpacing: -0.006,
+                    style: SettleTypography.caption.copyWith(
                       color: SettleColors.nightMuted,
                     ),
                   ),
@@ -1557,8 +1515,7 @@ class _SleepOptionCard extends StatelessWidget {
             ),
             Text(
               '›',
-              style: GoogleFonts.inter(
-                fontSize: 16,
+              style: T.type.body.copyWith(
                 fontWeight: FontWeight.w300,
                 color: SettleColors.nightMuted.withValues(alpha: 0.3),
               ),
@@ -1741,9 +1698,9 @@ class _ThreeLineGuidanceCard extends StatelessWidget {
           ] else
             GlassCta(label: 'Next step', onTap: onNextStep),
           const SizedBox(height: 8),
-          TextButton(
-            onPressed: onMoreOptions,
-            child: const Text('More options'),
+          GlassPill(
+            label: 'More options',
+            onTap: onMoreOptions,
           ),
         ],
       ),

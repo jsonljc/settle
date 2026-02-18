@@ -13,6 +13,8 @@ import '../services/focus_mode_rules.dart';
 import '../services/nudge_scheduler.dart';
 import '../services/notification_service.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
+import '../widgets/gradient_background.dart';
 import '../theme/reduce_motion.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/screen_header.dart';
@@ -49,12 +51,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final showInternalTools = InternalToolsGate.enabled;
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                 child: const ScreenHeader(title: 'Settings'),
               ),
               const SizedBox(height: 20),
@@ -62,7 +64,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.symmetric(
-                    horizontal: T.space.screen,
+                    horizontal: SettleSpacing.screenPadding,
                   ).copyWith(bottom: 32),
                   physics: const BouncingScrollPhysics(),
                   children: [
@@ -414,13 +416,9 @@ class _ToggleCard extends StatelessWidget {
     );
 
     if (embedded) {
-      return Container(
+      return GlassCard(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: T.glass.fill,
-          borderRadius: BorderRadius.circular(T.radius.lg),
-          border: Border.all(color: T.glass.border),
-        ),
+        fill: T.glass.fill,
         child: content,
       );
     }
@@ -591,13 +589,9 @@ class _InlineActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: T.glass.fill,
-        borderRadius: BorderRadius.circular(T.radius.lg),
-        border: Border.all(color: T.glass.border),
-      ),
+      fill: T.glass.fill,
       child: Row(
         children: [
           Icon(icon, size: 18, color: T.pal.textSecondary),

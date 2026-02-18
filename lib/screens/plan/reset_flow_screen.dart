@@ -2,13 +2,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../models/repair_card.dart';
 import '../../providers/reset_flow_provider.dart';
 import '../../utils/share_text.dart';
 import '../../theme/settle_design_system.dart';
+import '../../theme/settle_tokens.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_pill.dart';
 import '../../widgets/settle_tappable.dart';
@@ -89,10 +89,8 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
           Text(
             'Who needs the reset?',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 16,
+            style: T.type.body.copyWith(
               fontWeight: FontWeight.w600,
-              letterSpacing: -0.3,
               color: SettleColors.nightText,
             ),
           ),
@@ -108,10 +106,8 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                 children: [
                   Text(
                     'For you',
-                    style: GoogleFonts.fraunces(
-                      fontSize: 22,
+                    style: T.type.h2.copyWith(
                       fontWeight: FontWeight.w400,
-                      letterSpacing: -0.5,
                       color: SettleColors.nightText,
                     ),
                   ),
@@ -131,10 +127,8 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                 children: [
                   Text(
                     'For them',
-                    style: GoogleFonts.fraunces(
-                      fontSize: 22,
+                    style: T.type.h2.copyWith(
                       fontWeight: FontWeight.w400,
-                      letterSpacing: -0.5,
                       color: SettleColors.nightText,
                     ),
                   ),
@@ -178,9 +172,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                   padding: const EdgeInsets.all(22),
                   child: Text(
                     'No card for this combination right now.',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      letterSpacing: -0.006,
+                    style: SettleTypography.body.copyWith(
                       color: SettleColors.nightSoft,
                       height: 1.7,
                     ),
@@ -211,10 +203,8 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
           Text(
             stateLabel,
             textAlign: TextAlign.center,
-            style: GoogleFonts.fraunces(
-              fontSize: 22,
+            style: T.type.h2.copyWith(
               fontWeight: FontWeight.w400,
-              letterSpacing: -0.5,
               color: SettleColors.nightText,
             ),
           ),
@@ -222,10 +212,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
           Text(
             counterText,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w400,
-              letterSpacing: 0.02,
+            style: SettleTypography.caption.copyWith(
               color: SettleColors.nightMuted,
             ),
           ),
@@ -238,20 +225,15 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
               children: [
                 Text(
                   card.title,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
+                  style: T.type.body.copyWith(
                     fontWeight: FontWeight.w600,
-                    letterSpacing: -0.3,
                     color: SettleColors.nightText,
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   _maxSentences(card.body),
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: -0.006,
+                  style: SettleTypography.body.copyWith(
                     color: SettleColors.nightSoft,
                     height: 1.7,
                   ),
@@ -301,10 +283,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     String? cardIdKept,
     RepairCard? card,
   ) {
-    final linkStyle = GoogleFonts.inter(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
-      letterSpacing: -0.006,
+    final linkStyle = SettleTypography.caption.copyWith(
       color: SettleColors.nightMuted.withValues(alpha: 0.45),
     );
     return Padding(

@@ -53,6 +53,9 @@ class SettleColors {
   static const Color warmth400 = Color(0xFFBEA070);
   static const Color warmth600 = Color(0xFF8A7048);
   static const Color warmth100 = Color(0xFFF0E8DC);
+
+  /// Wake-window arc "ok" zone (0–55% progress). Matches T.arc.ok.
+  static const Color arcOk = Color(0xFF6EE7B7);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

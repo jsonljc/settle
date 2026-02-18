@@ -5,6 +5,8 @@ import '../../models/tantrum_profile.dart';
 import '../../providers/tantrum_providers.dart';
 import '../../tantrum/services/tantrum_insights_service.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/tantrum_sub_nav.dart';
@@ -21,10 +23,10 @@ class TantrumInsightsScreen extends ConsumerWidget {
         .clamp(0, 99);
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

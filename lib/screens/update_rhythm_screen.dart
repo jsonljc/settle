@@ -10,7 +10,9 @@ import '../providers/rhythm_provider.dart';
 import '../services/event_bus_service.dart';
 import '../services/rhythm_engine_service.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
+import '../widgets/gradient_background.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
@@ -251,11 +253,11 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
     final previewPlan = _buildPreviewPlan(state: state, ageMonths: ageMonths);
 
     if (state.isLoading) {
-      return const Scaffold(
-        body: SettleBackground(
+      return Scaffold(
+        body: GradientBackgroundFromRoute(
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: CalmLoading(message: 'Preparing update flow…'),
             ),
           ),
@@ -265,10 +267,10 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
 
     if (rhythm == null) {
       return Scaffold(
-        body: SettleBackground(
+        body: GradientBackgroundFromRoute(
           child: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -291,10 +293,10 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
     }
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -320,13 +322,11 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                               if (_step == 0) ...[
                                 Text('Wake time', style: T.type.h3),
                                 const SizedBox(height: 8),
-                                OutlinedButton(
-                                  onPressed: () => _pickWakeTime(context),
-                                  child: Text(
-                                    _wakeTime == null
-                                        ? 'Pick wake time'
-                                        : 'Wake at ${_wakeTime!.format(context)}',
-                                  ),
+                                GlassPill(
+                                  label: _wakeTime == null
+                                      ? 'Pick wake time'
+                                      : 'Wake at ${_wakeTime!.format(context)}',
+                                  onTap: () => _pickWakeTime(context),
                                 ),
                                 SwitchListTile.adaptive(
                                   contentPadding: EdgeInsets.zero,
@@ -365,45 +365,39 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                 ),
                                 if (_napToday == 'yes') ...[
                                   const SizedBox(height: 8),
-                                  OutlinedButton(
-                                    onPressed: () => _pickTime(
+                                  GlassPill(
+                                    label: _napStart == null
+                                        ? 'Nap start (optional)'
+                                        : 'Nap start ${_napStart!.format(context)}',
+                                    onTap: () => _pickTime(
                                       context,
                                       current: _napStart,
                                       onPicked: (v) =>
                                           setState(() => _napStart = v),
                                     ),
-                                    child: Text(
-                                      _napStart == null
-                                          ? 'Nap start (optional)'
-                                          : 'Nap start ${_napStart!.format(context)}',
-                                    ),
                                   ),
                                   const SizedBox(height: 6),
-                                  OutlinedButton(
-                                    onPressed: () => _pickTime(
+                                  GlassPill(
+                                    label: _napEnd == null
+                                        ? 'Nap end (optional)'
+                                        : 'Nap end ${_napEnd!.format(context)}',
+                                    onTap: () => _pickTime(
                                       context,
                                       current: _napEnd,
                                       onPicked: (v) =>
                                           setState(() => _napEnd = v),
                                     ),
-                                    child: Text(
-                                      _napEnd == null
-                                          ? 'Nap end (optional)'
-                                          : 'Nap end ${_napEnd!.format(context)}',
-                                    ),
                                   ),
                                   const SizedBox(height: 6),
-                                  OutlinedButton(
-                                    onPressed: () => _pickTime(
+                                  GlassPill(
+                                    label: _typicalNap == null
+                                        ? 'Typical nap time'
+                                        : 'Typical ${_typicalNap!.format(context)}',
+                                    onTap: () => _pickTime(
                                       context,
                                       current: _typicalNap,
                                       onPicked: (v) =>
                                           setState(() => _typicalNap = v),
-                                    ),
-                                    child: Text(
-                                      _typicalNap == null
-                                          ? 'Typical nap time'
-                                          : 'Typical ${_typicalNap!.format(context)}',
                                     ),
                                   ),
                                 ],
@@ -495,9 +489,9 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                               Row(
                                 children: [
                                   if (_step > 0)
-                                    TextButton(
-                                      onPressed: () => setState(() => _step--),
-                                      child: const Text('Back'),
+                                    GlassPill(
+                                      label: 'Back',
+                                      onTap: () => setState(() => _step--),
                                     ),
                                   const Spacer(),
                                   GlassCta(

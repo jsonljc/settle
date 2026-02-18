@@ -9,6 +9,8 @@ import '../providers/rhythm_provider.dart';
 import '../providers/sleep_tonight_provider.dart';
 import '../services/spec_policy.dart';
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
+import '../widgets/gradient_background.dart';
 import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
@@ -123,10 +125,10 @@ class _SleepHubScreenState extends ConsumerState<SleepHubScreen> {
     final commitmentTotal = tonightState.commitmentNightsDefault;
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -170,40 +172,18 @@ class _SleepHubScreenState extends ConsumerState<SleepHubScreen> {
                         const SizedBox(height: 14),
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: TextButton(
-                            onPressed: () => context.push('/progress/logs'),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              alignment: Alignment.centerLeft,
-                            ),
-                            child: Text(
-                              'History & logs',
-                              style: T.type.caption.copyWith(
-                                color: T.pal.textSecondary,
-                                decoration: TextDecoration.underline,
-                                decorationColor: T.pal.textSecondary,
-                              ),
-                            ),
+                          child: GlassPill(
+                            label: 'History & logs',
+                            onTap: () => context.push('/progress/logs'),
                           ),
                         ),
                         const SizedBox(height: 6),
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: TextButton(
-                            onPressed: () =>
+                          child: GlassPill(
+                            label: 'Sleep setup',
+                            onTap: () =>
                                 context.push('/sleep/tonight?open_setup=1'),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              alignment: Alignment.centerLeft,
-                            ),
-                            child: Text(
-                              'Sleep setup',
-                              style: T.type.caption.copyWith(
-                                color: T.pal.textSecondary,
-                                decoration: TextDecoration.underline,
-                                decorationColor: T.pal.textSecondary,
-                              ),
-                            ),
                           ),
                         ),
                         const SizedBox(height: 24),

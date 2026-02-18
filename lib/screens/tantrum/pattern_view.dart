@@ -5,7 +5,9 @@ import '../../providers/profile_provider.dart';
 import '../../providers/tantrum_providers.dart';
 import '../../services/tantrum_engine.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
 
@@ -26,19 +28,19 @@ class PatternViewScreen extends ConsumerWidget {
     final events = ref.watch(tantrumEventsProvider);
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                 child: const ScreenHeader(title: 'Patterns'),
               ),
               const SizedBox(height: 18),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.symmetric(
-                    horizontal: T.space.screen,
+                    horizontal: SettleSpacing.screenPadding,
                   ).copyWith(bottom: 24),
                   children: [
                     GlassCard(
@@ -226,16 +228,16 @@ class _SevenDayDots extends StatelessWidget {
         const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text('6d', style: TextStyle(fontSize: 11, color: Colors.white54)),
-            Text('5d', style: TextStyle(fontSize: 11, color: Colors.white54)),
-            Text('4d', style: TextStyle(fontSize: 11, color: Colors.white54)),
-            Text('3d', style: TextStyle(fontSize: 11, color: Colors.white54)),
-            Text('2d', style: TextStyle(fontSize: 11, color: Colors.white54)),
-            Text('1d', style: TextStyle(fontSize: 11, color: Colors.white54)),
+          children: [
+            Text('6d', style: T.type.caption.copyWith(color: T.pal.textTertiary)),
+            Text('5d', style: T.type.caption.copyWith(color: T.pal.textTertiary)),
+            Text('4d', style: T.type.caption.copyWith(color: T.pal.textTertiary)),
+            Text('3d', style: T.type.caption.copyWith(color: T.pal.textTertiary)),
+            Text('2d', style: T.type.caption.copyWith(color: T.pal.textTertiary)),
+            Text('1d', style: T.type.caption.copyWith(color: T.pal.textTertiary)),
             Text(
               'Today',
-              style: TextStyle(fontSize: 11, color: Colors.white54),
+              style: T.type.caption.copyWith(color: T.pal.textTertiary),
             ),
           ],
         ),

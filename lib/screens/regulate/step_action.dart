@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 
 /// Step 4: Actionable next step — context-aware Say/Do script from [CardContentService].
@@ -21,13 +22,13 @@ class RegulateStepAction extends StatelessWidget {
         final card = snapshot.data;
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: const Center(child: CircularProgressIndicator()),
           );
         }
         if (card == null) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -44,7 +45,7 @@ class RegulateStepAction extends StatelessWidget {
           );
         }
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+          padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

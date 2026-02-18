@@ -8,6 +8,8 @@ import '../../providers/profile_provider.dart';
 import '../../providers/tantrum_providers.dart';
 import '../../services/tantrum_engine.dart';
 import '../../theme/glass_components.dart';
+import '../../theme/settle_design_system.dart';
+import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/option_button.dart';
 import 'tantrum_unavailable.dart';
@@ -120,13 +122,13 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
             .toList();
 
     return Scaffold(
-      body: SettleBackground(
+      body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
             children: [
               const SizedBox(height: 12),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: T.space.screen),
+                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
                 child: Row(
                   children: [
                     GestureDetector(
@@ -150,7 +152,7 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(
-                    horizontal: T.space.screen,
+                    horizontal: SettleSpacing.screenPadding,
                   ).copyWith(bottom: 24),
                   physics: const BouncingScrollPhysics(),
                   child: _saved
@@ -166,9 +168,9 @@ class _DebriefModeScreenState extends ConsumerState<DebriefModeScreen> {
               if (!_saved)
                 Padding(
                   padding: EdgeInsets.fromLTRB(
-                    T.space.screen,
+                    SettleSpacing.screenPadding,
                     0,
-                    T.space.screen,
+                    SettleSpacing.screenPadding,
                     16,
                   ),
                   child: Column(

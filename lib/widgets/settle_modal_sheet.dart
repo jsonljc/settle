@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../theme/glass_components.dart';
+import '../theme/settle_design_system.dart';
 import '../theme/settle_tokens.dart';
 import 'settle_gap.dart';
 
@@ -132,10 +133,10 @@ Future<TResult?> showSettleSheet<TResult>(
       top: false,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          T.space.screen,
+          SettleSpacing.screenPadding,
           T.space.md,
-          T.space.screen,
-          T.space.screen + MediaQuery.viewInsetsOf(context).bottom,
+          SettleSpacing.screenPadding,
+          SettleSpacing.screenPadding + MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: child,
       ),
