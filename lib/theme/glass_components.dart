@@ -1,12 +1,69 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'settle_design_system.dart';
+import 'settle_tokens.dart' show SurfaceMode;
 import 'surface_mode_resolver.dart';
-import 'settle_tokens.dart';
+
+class _GcTokens {
+  _GcTokens._();
+
+  static const double radiusXl = 26;
+  static const double radiusPill = 100;
+
+  static const double sigma = 12;
+  static const double sigmaDay = 8;
+  static const double sigmaNight = 10;
+  static const double sigmaFocus = 6;
+
+  static const Color fillDark = Color(0x4D000000);
+  static const Color fillAccent = Color(0x1A5F6B80);
+  static const Color fillTeal = Color(0x1A6F8C84);
+  static const Color fillRose = Color(0x1A9A7A7A);
+  static const Color fillDay = Color(0x2AFFFFFF);
+  static const Color fillNight = Color(0x16FFFFFF);
+  static const Color border = Color(0x0AFFFFFF);
+  static const Color borderDay = Color(0x2FFFFFFF);
+  static const Color borderNight = Color(0x1AFFFFFF);
+
+  static const Color bgDeep = Color(0xFF0F1724);
+  static const Color textPrimary = Color(0xFFF2F5F8);
+  static const Color accent = Color(0xFF5F6B80);
+
+  static const LinearGradient specular = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0x08FFFFFF), Color(0x00FFFFFF)],
+    stops: [0.0, 0.4],
+  );
+
+  static const Duration modeSwitch = Duration(milliseconds: 800);
+
+  static TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+
+  static LinearGradient gradientFor(SurfaceMode mode) {
+    return switch (mode) {
+      SurfaceMode.day => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF1A2433), Color(0xFF253245), Color(0xFF2E3D53)],
+      ),
+      SurfaceMode.night => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF07090E), Color(0xFF0A0E17), Color(0xFF07090E)],
+      ),
+      SurfaceMode.focus => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF000000), Color(0xFF000000)],
+      ),
+    };
+  }
+}
 
 /// A frosted-glass card following the Settle glass morphism pattern:
 ///   ClipRRect → BackdropFilter → Container(fill + border + specular)
@@ -45,24 +102,24 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mode = SurfaceModeResolver.resolveForContext(context);
-    final r = borderRadius ?? T.radius.xl;
+    final r = borderRadius ?? _GcTokens.radiusXl;
     final br = BorderRadius.circular(r);
     final sigma = switch (mode) {
-      SurfaceMode.day => T.glass.sigmaDay,
-      SurfaceMode.night => T.glass.sigmaNight,
-      SurfaceMode.focus => T.glass.sigmaFocus,
+      SurfaceMode.day => _GcTokens.sigmaDay,
+      SurfaceMode.night => _GcTokens.sigmaNight,
+      SurfaceMode.focus => _GcTokens.sigmaFocus,
     };
     final resolvedFill =
         fill ??
         switch (mode) {
-          SurfaceMode.day => T.glass.fillDay,
-          SurfaceMode.night => T.glass.fillNight,
-          SurfaceMode.focus => T.glass.fillDark,
+          SurfaceMode.day => _GcTokens.fillDay,
+          SurfaceMode.night => _GcTokens.fillNight,
+          SurfaceMode.focus => _GcTokens.fillDark,
         };
     final resolvedBorder = switch (mode) {
-      SurfaceMode.day => T.glass.borderDay,
-      SurfaceMode.night => T.glass.borderNight,
-      SurfaceMode.focus => T.glass.borderNight,
+      SurfaceMode.day => _GcTokens.borderDay,
+      SurfaceMode.night => _GcTokens.borderNight,
+      SurfaceMode.focus => _GcTokens.borderNight,
     };
 
     return ClipRRect(
@@ -86,7 +143,7 @@ class GlassCard extends StatelessWidget {
                   height: 40,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      gradient: T.glass.specular,
+                      gradient: _GcTokens.specular,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(r),
                         topRight: Radius.circular(r),
@@ -115,7 +172,7 @@ class GlassCardDark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(fill: T.glass.fillDark, padding: padding, child: child);
+    return GlassCard(fill: _GcTokens.fillDark, padding: padding, child: child);
   }
 }
 
@@ -128,7 +185,11 @@ class GlassCardAccent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(fill: T.glass.fillAccent, padding: padding, child: child);
+    return GlassCard(
+      fill: _GcTokens.fillAccent,
+      padding: padding,
+      child: child,
+    );
   }
 }
 
@@ -141,7 +202,7 @@ class GlassCardTeal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(fill: T.glass.fillTeal, padding: padding, child: child);
+    return GlassCard(fill: _GcTokens.fillTeal, padding: padding, child: child);
   }
 }
 
@@ -154,7 +215,7 @@ class GlassCardRose extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(fill: T.glass.fillRose, padding: padding, child: child);
+    return GlassCard(fill: _GcTokens.fillRose, padding: padding, child: child);
   }
 }
 
@@ -200,21 +261,21 @@ class _GlassPillState extends State<GlassPill> {
     final baseFill =
         widget.fill ??
         switch (mode) {
-          SurfaceMode.day => T.glass.fillDay.withValues(alpha: 0.62),
-          SurfaceMode.night => T.glass.fillNight,
-          SurfaceMode.focus => T.glass.fillDark,
+          SurfaceMode.day => _GcTokens.fillDay.withValues(alpha: 0.62),
+          SurfaceMode.night => _GcTokens.fillNight,
+          SurfaceMode.focus => _GcTokens.fillDark,
         };
     final fill = _pressed
         ? baseFill.withValues(alpha: (baseFill.a + 0.08).clamp(0.0, 1.0))
         : baseFill;
-    final defaultTextColor = isDay ? T.pal.bgDeep : T.pal.textPrimary;
+    final defaultTextColor = isDay ? _GcTokens.bgDeep : _GcTokens.textPrimary;
     final borderColor = _pressed
         ? (isDay
-              ? T.pal.bgDeep.withValues(alpha: 0.24)
-              : T.pal.textPrimary.withValues(alpha: 0.22))
+              ? _GcTokens.bgDeep.withValues(alpha: 0.24)
+              : _GcTokens.textPrimary.withValues(alpha: 0.22))
         : (isDay
-              ? T.pal.bgDeep.withValues(alpha: 0.14)
-              : T.glass.border.withValues(alpha: 0.65));
+              ? _GcTokens.bgDeep.withValues(alpha: 0.14)
+              : _GcTokens.border.withValues(alpha: 0.65));
 
     return Opacity(
       opacity: widget.enabled ? 1 : 0.55,
@@ -222,7 +283,7 @@ class _GlassPillState extends State<GlassPill> {
         button: true,
         enabled: widget.enabled,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(T.radius.pill),
+          borderRadius: BorderRadius.circular(_GcTokens.radiusPill),
           child: AnimatedScale(
             duration: const Duration(milliseconds: 100),
             curve: Curves.easeOutCubic,
@@ -244,8 +305,8 @@ class _GlassPillState extends State<GlassPill> {
                   : null,
               child: BackdropFilter(
                 filter: ImageFilter.blur(
-                  sigmaX: T.glass.sigma + 2,
-                  sigmaY: T.glass.sigma + 2,
+                  sigmaX: _GcTokens.sigma + 2,
+                  sigmaY: _GcTokens.sigma + 2,
                 ),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 160),
@@ -256,7 +317,7 @@ class _GlassPillState extends State<GlassPill> {
                   ),
                   decoration: BoxDecoration(
                     color: fill,
-                    borderRadius: BorderRadius.circular(T.radius.pill),
+                    borderRadius: BorderRadius.circular(_GcTokens.radiusPill),
                     border: Border.all(color: borderColor, width: 1),
                     boxShadow: _pressed
                         ? const []
@@ -275,7 +336,7 @@ class _GlassPillState extends State<GlassPill> {
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(
-                                T.radius.pill,
+                                _GcTokens.radiusPill,
                               ),
                               gradient: LinearGradient(
                                 begin: Alignment.topCenter,
@@ -309,7 +370,7 @@ class _GlassPillState extends State<GlassPill> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,
-                              style: T.type.label.copyWith(
+                              style: _GcTokens.label.copyWith(
                                 color: widget.textColor ?? defaultTextColor,
                               ),
                             ),
@@ -367,29 +428,31 @@ class _GlassCtaState extends State<GlassCta> {
   Widget build(BuildContext context) {
     final mode = SurfaceModeResolver.resolveForContext(context);
     final isDay = mode == SurfaceMode.day;
-    final radius = BorderRadius.circular(T.radius.pill);
+    final radius = BorderRadius.circular(_GcTokens.radiusPill);
     final normalFill = isDay
         ? (widget.enabled
               ? Colors.white.withValues(alpha: 0.70)
               : Colors.white.withValues(alpha: 0.52))
         : (widget.enabled
-              ? T.glass.fillAccent.withValues(alpha: 0.26)
-              : T.glass.fillAccent.withValues(alpha: 0.14));
+              ? _GcTokens.fillAccent.withValues(alpha: 0.26)
+              : _GcTokens.fillAccent.withValues(alpha: 0.14));
     final pressedFill = isDay
         ? (widget.enabled ? Colors.white.withValues(alpha: 0.80) : normalFill)
         : (widget.enabled
-              ? T.glass.fillAccent.withValues(alpha: 0.34)
+              ? _GcTokens.fillAccent.withValues(alpha: 0.34)
               : normalFill);
     final borderColor = widget.enabled
         ? (isDay
-              ? T.pal.bgDeep.withValues(alpha: _pressed ? 0.24 : 0.16)
-              : T.pal.accent.withValues(alpha: _pressed ? 0.40 : 0.22))
-        : T.glass.border.withValues(alpha: 0.4);
+              ? _GcTokens.bgDeep.withValues(alpha: _pressed ? 0.24 : 0.16)
+              : _GcTokens.accent.withValues(alpha: _pressed ? 0.40 : 0.22))
+        : _GcTokens.border.withValues(alpha: 0.4);
     final fg = isDay
-        ? (widget.enabled ? T.pal.bgDeep : T.pal.bgDeep.withValues(alpha: 0.62))
+        ? (widget.enabled
+              ? _GcTokens.bgDeep
+              : _GcTokens.bgDeep.withValues(alpha: 0.62))
         : (widget.enabled
-              ? T.pal.textPrimary
-              : T.pal.textPrimary.withValues(alpha: 0.7));
+              ? _GcTokens.textPrimary
+              : _GcTokens.textPrimary.withValues(alpha: 0.7));
 
     return Semantics(
       button: true,
@@ -416,8 +479,8 @@ class _GlassCtaState extends State<GlassCta> {
                 : null,
             child: BackdropFilter(
               filter: ImageFilter.blur(
-                sigmaX: T.glass.sigma + 2,
-                sigmaY: T.glass.sigma + 2,
+                sigmaX: _GcTokens.sigma + 2,
+                sigmaY: _GcTokens.sigma + 2,
               ),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
@@ -433,14 +496,14 @@ class _GlassCtaState extends State<GlassCta> {
                   boxShadow: _pressed
                       ? [
                           BoxShadow(
-                            color: T.pal.accent.withValues(alpha: 0.06),
+                            color: _GcTokens.accent.withValues(alpha: 0.06),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
                         ]
                       : [
                           BoxShadow(
-                            color: T.pal.accent.withValues(alpha: 0.06),
+                            color: _GcTokens.accent.withValues(alpha: 0.06),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -450,7 +513,7 @@ class _GlassCtaState extends State<GlassCta> {
                   alignment: widget.alignment,
                   child: Text(
                     widget.label,
-                    style: T.type.label.copyWith(color: fg),
+                    style: _GcTokens.label.copyWith(color: fg),
                   ),
                 ),
               ),
@@ -491,10 +554,10 @@ class SettleBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final routeMode = mode ?? SurfaceModeResolver.resolveForContext(context);
     final customGradient = gradientOverride ?? gradient;
-    final resolvedGradient = customGradient ?? T.pal.gradientFor(routeMode);
+    final resolvedGradient = customGradient ?? _GcTokens.gradientFor(routeMode);
 
     return AnimatedContainer(
-      duration: T.anim.modeSwitch,
+      duration: _GcTokens.modeSwitch,
       curve: Curves.easeInOut,
       decoration: BoxDecoration(gradient: resolvedGradient),
       child: child,
