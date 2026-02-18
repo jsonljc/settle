@@ -7,8 +7,56 @@ import 'package:go_router/go_router.dart';
 import '../theme/glass_components.dart';
 import '../widgets/settle_disclosure.dart';
 import '../theme/settle_design_system.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/gradient_background.dart';
+
+class _SosT {
+  _SosT._();
+
+  static final type = _SosTypeTokens();
+  static const pal = _SosPaletteTokens();
+  static const glass = _SosGlassTokens();
+  static const radius = _SosRadiusTokens();
+  static const anim = _SosAnimTokens();
+
+  static bool reduceMotion(BuildContext context) =>
+      MediaQuery.of(context).disableAnimations;
+}
+
+class _SosTypeTokens {
+  TextStyle get h2 => SettleTypography.heading.copyWith(fontSize: 22);
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption;
+}
+
+class _SosPaletteTokens {
+  const _SosPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _SosGlassTokens {
+  const _SosGlassTokens();
+
+  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
+}
+
+class _SosRadiusTokens {
+  const _SosRadiusTokens();
+
+  double get pill => SettleRadii.pill;
+}
+
+class _SosAnimTokens {
+  const _SosAnimTokens();
+
+  Duration get normal => const Duration(milliseconds: 250);
+  Duration get sosBreathe => const Duration(milliseconds: 8000);
+}
 
 /// SOS Screen — ZERO interaction required. Auto-cycles everything.
 ///
@@ -61,111 +109,125 @@ class _SosScreenState extends State<SosScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Column(
-          children: [
-            const SizedBox(height: 12),
-            // Exit — keep this low-emphasis in calm/overnight contexts.
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () =>
-                      context.canPop() ? context.pop() : context.go('/now'),
+            children: [
+              const SizedBox(height: 12),
+              // Exit — keep this low-emphasis in calm/overnight contexts.
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: () =>
+                        context.canPop() ? context.pop() : context.go('/now'),
+                    child: Text(
+                      'back',
+                      style: _SosT.type.caption.copyWith(
+                        color: _SosT.pal.textTertiary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding + 8,
+                ),
+                child: Column(
+                  children: [Text('Take a Breath', style: _SosT.type.h2)],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // ── Breathing circles ──
+              Expanded(
+                flex: 3,
+                child: Center(child: _BreathingCircles(phase: _phase)),
+              ),
+
+              // ── Box breathing phase labels ──
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
+                child: _BreathingLabels(phase: _phase),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding + 8,
+                ),
+                child: AnimatedSwitcher(
+                  duration: _SosT.anim.normal,
                   child: Text(
-                    'back',
-                    style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                    _selfRegScripts[_scriptIndex],
+                    key: ValueKey(_scriptIndex),
+                    textAlign: TextAlign.center,
+                    style: _SosT.type.caption.copyWith(
+                      color: _SosT.pal.textSecondary,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding + 8),
-              child: Column(
-                children: [Text('Take a Breath', style: T.type.h2)],
-              ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 32),
 
-            // ── Breathing circles ──
-            Expanded(
-              flex: 3,
-              child: Center(child: _BreathingCircles(phase: _phase)),
-            ),
-
-            // ── Box breathing phase labels ──
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
-              child: _BreathingLabels(phase: _phase),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding + 8),
-              child: AnimatedSwitcher(
-                duration: T.anim.normal,
+              // ── Permission statement ──
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding + 8,
+                ),
                 child: Text(
-                  _selfRegScripts[_scriptIndex],
-                  key: ValueKey(_scriptIndex),
+                  'If you need a pause, it is okay to place baby in a safe crib '
+                  'and step away for a few minutes.',
                   textAlign: TextAlign.center,
-                  style: T.type.caption.copyWith(
-                    color: T.pal.textSecondary,
-                    fontStyle: FontStyle.italic,
+                  style: _SosT.type.body.copyWith(
+                    color: _SosT.pal.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    height: 1.5,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
+              const SizedBox(height: 28),
 
-            // ── Permission statement ──
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding + 8),
-              child: Text(
-                'If you need a pause, it is okay to place baby in a safe crib '
-                'and step away for a few minutes.',
-                textAlign: TextAlign.center,
-                style: T.type.body.copyWith(
-                  color: T.pal.textPrimary,
-                  fontWeight: FontWeight.w600,
-                  height: 1.5,
+              // ── Crisis resources ──
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
+                child: GlassCard(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: SettleDisclosure(
+                    title: 'Need to talk to someone?',
+                    subtitle: 'Open to view call or text options.',
+                    children: const [
+                      SizedBox(height: 8),
+                      _CrisisResource(
+                        name: '988 Suicide & Crisis Lifeline',
+                        number: '988',
+                        note: '24/7 · call or text',
+                      ),
+                      SizedBox(height: 10),
+                      _CrisisResource(
+                        name: 'Postpartum Support International',
+                        number: '1-800-944-4773',
+                        note: '24/7 · call or text',
+                      ),
+                      SizedBox(height: 4),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 28),
-
-            // ── Crisis resources ──
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
-              child: GlassCard(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: SettleDisclosure(
-                  title: 'Need to talk to someone?',
-                  subtitle: 'Open to view call or text options.',
-                  children: const [
-                    SizedBox(height: 8),
-                    _CrisisResource(
-                      name: '988 Suicide & Crisis Lifeline',
-                      number: '988',
-                      note: '24/7 · call or text',
-                    ),
-                    SizedBox(height: 10),
-                    _CrisisResource(
-                      name: 'Postpartum Support International',
-                      number: '1-800-944-4773',
-                      note: '24/7 · call or text',
-                    ),
-                    SizedBox(height: 4),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-          ],
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
@@ -191,19 +253,19 @@ class _BreathingCircles extends StatelessWidget {
           _PulsingCircle(
             size: 220,
             delay: 0,
-            color: T.pal.accent.withValues(alpha: 0.08),
+            color: _SosT.pal.accent.withValues(alpha: 0.08),
           ),
           // Middle circle
           _PulsingCircle(
             size: 160,
             delay: 1500,
-            color: T.pal.accent.withValues(alpha: 0.12),
+            color: _SosT.pal.accent.withValues(alpha: 0.12),
           ),
           // Inner circle
           _PulsingCircle(
             size: 100,
             delay: 3000,
-            color: T.pal.accent.withValues(alpha: 0.18),
+            color: _SosT.pal.accent.withValues(alpha: 0.18),
           ),
           // Center dot
           Container(
@@ -211,7 +273,7 @@ class _BreathingCircles extends StatelessWidget {
             height: 12,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: T.pal.accent,
+              color: _SosT.pal.accent,
             ),
           ),
         ],
@@ -238,7 +300,7 @@ class _PulsingCircle extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
-    if (T.reduceMotion(context)) return circle;
+    if (_SosT.reduceMotion(context)) return circle;
     return circle
         .animate(
           onPlay: (controller) => controller.repeat(reverse: true),
@@ -247,7 +309,7 @@ class _PulsingCircle extends StatelessWidget {
         .scale(
           begin: const Offset(0.85, 0.85),
           end: const Offset(1.0, 1.0),
-          duration: T.anim.sosBreathe,
+          duration: _SosT.anim.sosBreathe,
           curve: Curves.easeInOut,
         );
   }
@@ -276,7 +338,7 @@ class _BreathingLabels extends StatelessWidget {
       children: List.generate(4, (i) {
         final isActive = i == phase;
         return AnimatedOpacity(
-          duration: T.anim.normal,
+          duration: _SosT.anim.normal,
           opacity: isActive ? 1.0 : 0.25,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -284,13 +346,17 @@ class _BreathingLabels extends StatelessWidget {
               Icon(
                 _icons[i],
                 size: 20,
-                color: isActive ? T.pal.textPrimary : T.pal.textTertiary,
+                color: isActive
+                    ? _SosT.pal.textPrimary
+                    : _SosT.pal.textTertiary,
               ),
               const SizedBox(height: 4),
               Text(
                 _labels[i],
-                style: T.type.caption.copyWith(
-                  color: isActive ? T.pal.textPrimary : T.pal.textTertiary,
+                style: _SosT.type.caption.copyWith(
+                  color: isActive
+                      ? _SosT.pal.textPrimary
+                      : _SosT.pal.textTertiary,
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),
@@ -329,14 +395,16 @@ class _CrisisResource extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: T.type.label.copyWith(
-                    color: T.pal.textPrimary,
+                  style: _SosT.type.label.copyWith(
+                    color: _SosT.pal.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   note,
-                  style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                  style: _SosT.type.caption.copyWith(
+                    color: _SosT.pal.textTertiary,
+                  ),
                 ),
               ],
             ),
@@ -345,13 +413,13 @@ class _CrisisResource extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: T.glass.fillAccent,
-              borderRadius: BorderRadius.circular(T.radius.pill),
+              color: _SosT.glass.fillAccent,
+              borderRadius: BorderRadius.circular(_SosT.radius.pill),
             ),
             child: Text(
               number,
               style: SettleTypography.body.copyWith(
-                color: T.pal.accent,
+                color: _SosT.pal.accent,
                 fontWeight: FontWeight.w600,
               ),
             ),
