@@ -14,6 +14,7 @@ enum GlassCardVariant {
 
 /// Apple Liquid Glass–style card: heavy backdrop blur, specular highlight,
 /// inner depth, and outer shadow. Pixel-perfect for the glass effect.
+/// When [onTap] is set, press feedback: opacity 0.85 (ease-out).
 class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,
@@ -22,6 +23,7 @@ class GlassCard extends StatelessWidget {
     this.padding,
     this.borderRadius,
     this.margin,
+    this.onTap,
   });
 
   final Widget child;
@@ -29,6 +31,7 @@ class GlassCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double? borderRadius;
   final EdgeInsetsGeometry? margin;
+  final VoidCallback? onTap;
 
   static const double _blurSigma = 40;
   static const double _specularHeight = 0.5;
@@ -121,6 +124,9 @@ class GlassCard extends StatelessWidget {
     if (margin != null) {
       card = Padding(padding: margin!, child: card);
     }
+    if (onTap != null) {
+      card = _GlassCardTapWrapper(onTap: onTap!, child: card);
+    }
     return card;
   }
 
@@ -207,6 +213,43 @@ class GlassCard extends StatelessWidget {
       Color(0x00FFFFFF),
     ],
   );
+}
+
+/// Applies opacity 0.85 on press when card is tappable. No animation on nav.
+class _GlassCardTapWrapper extends StatefulWidget {
+  const _GlassCardTapWrapper({
+    required this.onTap,
+    required this.child,
+  });
+
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  State<_GlassCardTapWrapper> createState() => _GlassCardTapWrapperState();
+}
+
+class _GlassCardTapWrapperState extends State<_GlassCardTapWrapper> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: (_) => setState(() => _pressed = true),
+      onPointerUp: (_) => setState(() => _pressed = false),
+      onPointerCancel: (_) => setState(() => _pressed = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+          opacity: _pressed ? 0.85 : 1,
+          child: widget.child,
+        ),
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

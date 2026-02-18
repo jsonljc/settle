@@ -1,41 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
-/// Guided empty state with optional CTA.
+/// Empty state: single line, Inter 14px, ink400, centered.
 ///
-/// Pattern: calm message + optional action link.
-/// Used wherever a list or section has no data yet.
+/// Optional action link below the message. No tutorial, no icons unless needed.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
     required this.message,
-    this.icon,
     this.actionLabel,
     this.onAction,
   });
 
   final String message;
-  final IconData? icon;
 
   /// If provided, renders a tappable CTA below the message.
   final String? actionLabel;
   final VoidCallback? onAction;
 
+  static TextStyle get _emptyTextStyle => GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        letterSpacing: -0.006,
+        color: SettleColors.ink400,
+      );
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isDark ? SettleColors.nightMuted : SettleColors.ink400;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 28, color: T.pal.textTertiary),
-            const SizedBox(height: 10),
-          ],
           Text(
             message,
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _emptyTextStyle.copyWith(color: color),
             textAlign: TextAlign.center,
           ),
           if (actionLabel != null && onAction != null) ...[
@@ -44,7 +48,12 @@ class EmptyState extends StatelessWidget {
               onTap: onAction,
               child: Text(
                 '$actionLabel →',
-                style: T.type.label.copyWith(color: T.pal.accent),
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: -0.1,
+                  color: isDark ? SettleColors.nightAccent : SettleColors.sage600,
+                ),
               ),
             ),
           ],

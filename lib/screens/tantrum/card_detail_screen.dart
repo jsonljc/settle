@@ -184,14 +184,25 @@ class CardDetailScreen extends ConsumerWidget {
                     fallbackRoute: '/tantrum/deck',
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    'Something went wrong.',
-                    style: T.type.body.copyWith(color: T.pal.textSecondary),
-                  ),
-                  const SizedBox(height: 16),
-                  GlassCta(
-                    label: 'Back to Deck',
-                    onTap: () => context.go('/tantrum/deck'),
+                  GlassCard(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Something went wrong.',
+                          style: T.type.body.copyWith(
+                            fontSize: 14,
+                            color: T.pal.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        GlassCta(
+                          label: 'Back to Deck',
+                          onTap: () => context.go('/tantrum/deck'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

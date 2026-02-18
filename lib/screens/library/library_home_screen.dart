@@ -218,8 +218,11 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Your playbook is empty. Save cards from Reset to get started.',
-                      style: T.type.body.copyWith(color: T.pal.textSecondary),
+                      'Your playbook is empty.',
+                      style: T.type.body.copyWith(
+                        fontSize: 14,
+                        color: T.pal.textSecondary,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     GlassPill(
@@ -271,8 +274,11 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'We couldn\'t load your playbook right now.',
-                  style: T.type.body.copyWith(color: T.pal.textSecondary),
+                  'Something went wrong.',
+                  style: T.type.body.copyWith(
+                    fontSize: 14,
+                    color: T.pal.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 GlassPill(

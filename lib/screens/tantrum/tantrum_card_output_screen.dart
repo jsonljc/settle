@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../tantrum/providers/tantrum_module_providers.dart';
 import '../../theme/glass_components.dart';
+import '../../utils/share_text.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/output_card.dart';
 import '../../widgets/screen_header.dart';
@@ -83,8 +84,13 @@ class TantrumCardOutputScreen extends ConsumerWidget {
                           );
                         },
                         onShare: () async {
+                          final body = [
+                            'Remember: ${card.remember}',
+                            'Say: ${card.say}',
+                            'Do: ${card.doStep}',
+                          ].join('\n\n');
                           final payload =
-                              '${card.title}\n\nRemember: ${card.remember}\n\nSay: ${card.say}\n\nDo: ${card.doStep}\n\n— from Settle';
+                              buildCardShareText(card.title, body);
                           await Share.share(payload);
                         },
                       ),
@@ -102,14 +108,25 @@ class TantrumCardOutputScreen extends ConsumerWidget {
                     fallbackRoute: '/tantrum/capture',
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    'Could not load card.',
-                    style: T.type.body.copyWith(color: T.pal.textSecondary),
-                  ),
-                  const SizedBox(height: 16),
-                  GlassCta(
-                    label: 'Back to Capture',
-                    onTap: () => context.go('/tantrum/capture'),
+                  GlassCard(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Something went wrong.',
+                          style: T.type.body.copyWith(
+                            fontSize: 14,
+                            color: T.pal.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        GlassCta(
+                          label: 'Back to Capture',
+                          onTap: () => context.go('/tantrum/capture'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

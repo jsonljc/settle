@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../models/pattern_insight.dart';
 import '../../providers/patterns_provider.dart';
@@ -101,19 +100,14 @@ class _PatternCard extends StatelessWidget {
 class _EmptyPatternsState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('No patterns yet', style: T.type.h3),
-          const SizedBox(height: 8),
-          Text(
-            'Pattern detection will populate here after more usage events are logged.',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
-          ),
-          const SizedBox(height: 12),
-          GlassCta(label: 'Open plan', onTap: () => context.push('/plan')),
-        ],
+    return Center(
+      child: Text(
+        'Pattern insights will appear here after more usage.',
+        style: T.type.body.copyWith(
+          fontSize: 14,
+          color: T.pal.textSecondary,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

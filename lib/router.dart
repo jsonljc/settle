@@ -102,12 +102,12 @@ GoRouter buildRouter({required bool regulateEnabled}) {
     routes: [
       GoRoute(
         path: '/',
-        pageBuilder: (context, state) => _fade(state, const SplashScreen()),
+        pageBuilder: (context, state) => _slide(state, const SplashScreen()),
       ),
       GoRoute(
         path: '/onboard',
         pageBuilder: (context, state) =>
-            _fade(state, const OnboardingV2Screen()),
+            _slide(state, const OnboardingV2Screen()),
       ),
 
       _buildV2ShellRoute(regulateEnabled: regulateEnabled),
@@ -120,11 +120,11 @@ GoRouter buildRouter({required bool regulateEnabled}) {
           }
           return null;
         },
-        pageBuilder: (context, state) => _fade(state, const SosScreen()),
+        pageBuilder: (context, state) => _slide(state, const SosScreen()),
       ),
       GoRoute(
         path: '/settings',
-        pageBuilder: (context, state) => _fade(state, const SettingsScreen()),
+        pageBuilder: (context, state) => _slide(state, const SettingsScreen()),
       ),
       GoRoute(path: '/rules', redirect: (_, __) => '/family/shared'),
       GoRoute(
@@ -189,25 +189,25 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
           GoRoute(
             path: '/plan',
             pageBuilder: (context, state) =>
-                _fade(state, const PlanHomeScreen()),
+                _slide(state, const PlanHomeScreen()),
             routes: [
               GoRoute(
                 path: 'regulate',
                 pageBuilder: (context, state) =>
-                    _fade(state, const RegulateFlowScreen()),
+                    _slide(state, const RegulateFlowScreen()),
               ),
               GoRoute(
                 path: 'card/:id',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id'] ?? '';
-                  return _fade(state, PlanCardScreen(cardId: id));
+                  return _slide(state, PlanCardScreen(cardId: id));
                 },
               ),
               GoRoute(
                 path: 'log',
                 pageBuilder: (context, state) {
                   final cardId = state.uri.queryParameters['card_id'] ?? '';
-                  return _fade(state, PlanScriptLogScreen(cardId: cardId));
+                  return _slide(state, PlanScriptLogScreen(cardId: cardId));
                 },
               ),
               GoRoute(
@@ -218,6 +218,7 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
                   return _fade(
                     state,
                     ResetFlowScreen(contextQuery: contextQuery),
+                    duration: const Duration(milliseconds: 300),
                   );
                 },
               ),
@@ -229,6 +230,7 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
                   return _fade(
                     state,
                     MomentFlowScreen(contextQuery: contextQuery),
+                    duration: const Duration(milliseconds: 300),
                   );
                 },
               ),
@@ -247,23 +249,23 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
           GoRoute(
             path: '/family',
             pageBuilder: (context, state) =>
-                _fade(state, const FamilyHomeScreen()),
+                _slide(state, const FamilyHomeScreen()),
             routes: [
               GoRoute(path: 'home', redirect: (_, __) => '/family'),
               GoRoute(
                 path: 'shared',
                 pageBuilder: (context, state) =>
-                    _fade(state, const FamilyRulesScreen()),
+                    _slide(state, const FamilyRulesScreen()),
               ),
               GoRoute(
                 path: 'invite',
                 pageBuilder: (context, state) =>
-                    _fade(state, const InviteScreen()),
+                    _slide(state, const InviteScreen()),
               ),
               GoRoute(
                 path: 'activity',
                 pageBuilder: (context, state) =>
-                    _fade(state, const ActivityFeedScreen()),
+                    _slide(state, const ActivityFeedScreen()),
               ),
             ],
           ),
@@ -276,22 +278,22 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
           GoRoute(
             path: '/sleep',
             pageBuilder: (context, state) =>
-                _fade(state, const SleepMiniOnboardingGate()),
+                _slide(state, const SleepMiniOnboardingGate()),
             routes: [
               GoRoute(
                 path: 'tonight',
                 pageBuilder: (context, state) =>
-                    _fade(state, const SleepTonightScreen()),
+                    _slide(state, const SleepTonightScreen()),
               ),
               GoRoute(
                 path: 'rhythm',
                 pageBuilder: (context, state) =>
-                    _fade(state, const CurrentRhythmScreen()),
+                    _slide(state, const CurrentRhythmScreen()),
               ),
               GoRoute(
                 path: 'update',
                 pageBuilder: (context, state) =>
-                    _fade(state, const UpdateRhythmScreen()),
+                    _slide(state, const UpdateRhythmScreen()),
               ),
             ],
           ),
@@ -304,28 +306,28 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
           GoRoute(
             path: '/library',
             pageBuilder: (context, state) =>
-                _fade(state, const LibraryHomeScreen()),
+                _slide(state, const LibraryHomeScreen()),
             routes: [
               GoRoute(
                 path: 'learn',
                 pageBuilder: (context, state) =>
-                    _fade(state, const LearnScreen()),
+                    _slide(state, const LearnScreen()),
               ),
               GoRoute(
                 path: 'logs',
                 pageBuilder: (context, state) =>
-                    _fade(state, const TodayScreen()),
+                    _slide(state, const TodayScreen()),
               ),
               GoRoute(
                 path: 'saved',
                 pageBuilder: (context, state) =>
-                    _fade(state, const SavedPlaybookScreen()),
+                    _slide(state, const SavedPlaybookScreen()),
                 routes: [
                   GoRoute(
                     path: 'card/:id',
                     pageBuilder: (context, state) {
                       final id = state.pathParameters['id'] ?? '';
-                      return _fade(state, PlaybookCardDetailScreen(cardId: id));
+                      return _slide(state, PlaybookCardDetailScreen(cardId: id));
                     },
                   ),
                 ],
@@ -333,18 +335,18 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
               GoRoute(
                 path: 'patterns',
                 pageBuilder: (context, state) =>
-                    _fade(state, const PatternsScreen()),
+                    _slide(state, const PatternsScreen()),
               ),
               GoRoute(
                 path: 'insights',
                 pageBuilder: (context, state) =>
-                    _fade(state, const MonthlyInsightScreen()),
+                    _slide(state, const MonthlyInsightScreen()),
               ),
               GoRoute(
                 path: 'cards/:id',
                 pageBuilder: (context, state) {
                   final id = state.pathParameters['id'] ?? '';
-                  return _fade(
+                  return _slide(
                     state,
                     PlanCardScreen(cardId: id, fallbackRoute: '/library'),
                   );
@@ -476,17 +478,49 @@ CustomTransitionPage<void> _internalOnly(GoRouterState state, Widget child) {
   return _fade(state, child);
 }
 
+/// Default: iOS-style slide from right (ease-out). Back: slide left.
+const _slideDuration = Duration(milliseconds: 300);
+
+CustomTransitionPage<void> _slide(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: _slideDuration,
+    reverseTransitionDuration: _slideDuration,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(1, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOut,
+        )),
+        child: child,
+      );
+    },
+  );
+}
+
+/// Fade in (e.g. moment, reset). 300ms ease-out; no bouncy/spring.
 CustomTransitionPage<void> _fade(
   GoRouterState state,
   Widget child, {
-  Duration duration = const Duration(milliseconds: 250),
+  Duration duration = const Duration(milliseconds: 300),
 }) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
     transitionDuration: duration,
+    reverseTransitionDuration: duration,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return FadeTransition(opacity: animation, child: child);
+      return FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOut,
+        ),
+        child: child,
+      );
     },
   );
 }

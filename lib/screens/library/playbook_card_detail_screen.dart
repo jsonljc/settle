@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../models/repair_card.dart';
 import '../../providers/card_repository_provider.dart';
+import '../../utils/share_text.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_tokens.dart';
@@ -157,7 +158,7 @@ class _Content extends ConsumerWidget {
   }
 
   void _share(BuildContext context) {
-    final text = '${card.title}\n${card.body}\n— from Settle';
+    final text = buildCardShareText(card.title, card.body);
     Share.share(text);
   }
 

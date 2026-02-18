@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../models/repair_card.dart';
 import '../../providers/playbook_provider.dart';
+import '../../utils/share_text.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/glass_card.dart';
@@ -81,27 +82,32 @@ class SavedPlaybookScreen extends ConsumerWidget {
                     error: (_, __) => Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: SettleSpacing.lg,
+                          horizontal: SettleSpacing.screenPadding,
                         ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'We couldn\'t load your playbook right now.',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                letterSpacing: -0.006,
-                                color: SettleColors.ink500,
+                        child: GlassCard(
+                          variant: GlassCardVariant.light,
+                          padding: const EdgeInsets.all(SettleSpacing.lg),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Something went wrong.',
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  letterSpacing: -0.006,
+                                  color: SettleColors.ink400,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: SettleSpacing.lg),
-                            TextButton(
-                              onPressed: () =>
-                                  ref.invalidate(playbookRepairCardsProvider),
-                              child: const Text('Try again'),
-                            ),
-                          ],
+                              const SizedBox(height: SettleSpacing.lg),
+                              TextButton(
+                                onPressed: () =>
+                                    ref.invalidate(playbookRepairCardsProvider),
+                                child: const Text('Try again'),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -116,7 +122,7 @@ class SavedPlaybookScreen extends ConsumerWidget {
   }
 
   void _shareCard(RepairCard card) {
-    final text = '${card.title}\n${card.body}\n— from Settle';
+    final text = buildCardShareText(card.title, card.body);
     Share.share(text);
   }
 }
@@ -253,18 +259,15 @@ class _PlaybookEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 240),
-        child: Text(
-          'Cards you keep from Reset will appear here',
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            letterSpacing: -0.006,
-            color: SettleColors.ink400,
-          ),
-          textAlign: TextAlign.center,
+      child: Text(
+        'Cards you keep from Reset will appear here.',
+        style: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          letterSpacing: -0.006,
+          color: SettleColors.ink400,
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }

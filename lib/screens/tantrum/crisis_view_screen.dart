@@ -87,14 +87,25 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
                     fallbackRoute: '/tantrum/capture',
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    'Something went wrong. Try again.',
-                    style: T.type.body.copyWith(color: T.pal.textSecondary),
-                  ),
-                  const SizedBox(height: 16),
-                  GlassCta(
-                    label: 'Back to Now',
-                    onTap: () => context.go('/tantrum/capture'),
+                  GlassCard(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Something went wrong.',
+                          style: T.type.body.copyWith(
+                            fontSize: 14,
+                            color: T.pal.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        GlassCta(
+                          label: 'Back to Now',
+                          onTap: () => context.go('/tantrum/capture'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

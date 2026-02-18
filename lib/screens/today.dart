@@ -268,7 +268,6 @@ class _PlanTab extends StatelessWidget {
                     if (todaySessions.isEmpty)
                       EmptyState(
                         message: 'No sleep logs yet today.',
-                        icon: Icons.bedtime_outlined,
                         actionLabel: 'Log a session',
                         onAction: () => context.push('/sleep'),
                       )
@@ -384,7 +383,6 @@ class _WeekTab extends StatelessWidget {
                   child: EmptyState(
                     message:
                         'Log sleep sessions this week to unlock trend insights.',
-                    icon: Icons.insights_outlined,
                     actionLabel: 'Start logging',
                     onAction: () => context.push('/sleep'),
                   ),

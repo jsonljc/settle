@@ -206,9 +206,9 @@ class _GlassPillState extends State<GlassPill> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(T.radius.pill),
           child: AnimatedScale(
-            duration: const Duration(milliseconds: 140),
+            duration: const Duration(milliseconds: 100),
             curve: Curves.easeOutCubic,
-            scale: _pressed ? 0.985 : 1,
+            scale: _pressed ? 0.97 : 1,
             child: GestureDetector(
               onTapDown: widget.enabled
                   ? (_) {

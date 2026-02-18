@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../models/repair_card.dart';
 import '../../providers/reset_flow_provider.dart';
+import '../../utils/share_text.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_pill.dart';
@@ -50,6 +51,10 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     return hour >= 21 || hour < 5;
   }
 
+  bool get _isTantrumContext =>
+      ResetFlowScreen.contextFromQuery(widget.contextQuery) ==
+      RepairCardContext.tantrum;
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(resetFlowProvider);
@@ -79,7 +84,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
       child: Column(
         children: [
           const SizedBox(height: 32),
-          const _ResetCharacterBlob(),
+          _ResetCharacterBlob(tantrumContext: _isTantrumContext),
           const SizedBox(height: 20),
           Text(
             'Who needs the reset?',
@@ -164,7 +169,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
         child: Column(
           children: [
             const SizedBox(height: 32),
-            const _ResetCharacterBlob(),
+            _ResetCharacterBlob(tantrumContext: _isTantrumContext),
             const SizedBox(height: 24),
             Expanded(
               child: Center(
@@ -201,7 +206,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
       child: Column(
         children: [
           const SizedBox(height: 24),
-          const _ResetCharacterBlob(),
+          _ResetCharacterBlob(tantrumContext: _isTantrumContext),
           const SizedBox(height: 16),
           Text(
             stateLabel,
@@ -281,28 +286,47 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
               ),
             ],
           ),
-          _buildCloseLink(notifier, null),
+          _buildCloseAndShareLinks(notifier, null, card),
         ],
       ),
     );
   }
 
   Widget _buildCloseLink(ResetFlowNotifier notifier, String? cardIdKept) {
+    return _buildCloseAndShareLinks(notifier, cardIdKept, null);
+  }
+
+  Widget _buildCloseAndShareLinks(
+    ResetFlowNotifier notifier,
+    String? cardIdKept,
+    RepairCard? card,
+  ) {
+    final linkStyle = GoogleFonts.inter(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      letterSpacing: -0.006,
+      color: SettleColors.nightMuted.withValues(alpha: 0.45),
+    );
     return Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 16),
       child: Center(
-        child: SettleTappable(
-          semanticLabel: 'Close',
-          onTap: () => _close(notifier, cardIdKept),
-          child: Text(
-            'Close',
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              letterSpacing: -0.006,
-              color: SettleColors.nightMuted.withValues(alpha: 0.45),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SettleTappable(
+              semanticLabel: 'Close',
+              onTap: () => _close(notifier, cardIdKept),
+              child: Text('Close', style: linkStyle),
             ),
-          ),
+            if (card != null) ...[
+              Text(' · ', style: linkStyle),
+              SettleTappable(
+                semanticLabel: 'Share',
+                onTap: () => _share(card),
+                child: Text('Share', style: linkStyle),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -330,7 +354,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
   }
 
   void _share(RepairCard card) {
-    final text = '${card.title}\n${card.body}\n— from Settle';
+    final text = buildCardShareText(card.title, card.body);
     Share.share(text);
   }
 
@@ -347,12 +371,17 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
   }
 }
 
-/// 88px glass circle: nightAccent 15%, blur 24, border 10%, specular top 35%, face inside.
+/// 88px glass circle: nightAccent (or warmth for tantrum) 15%, blur 24, specular, face inside.
 class _ResetCharacterBlob extends StatelessWidget {
-  const _ResetCharacterBlob();
+  const _ResetCharacterBlob({this.tantrumContext = false});
+
+  final bool tantrumContext;
 
   static const double _size = 88;
   static const double _blurSigma = 24;
+
+  Color get _tint =>
+      tantrumContext ? SettleColors.warmth400 : SettleColors.nightAccent;
 
   @override
   Widget build(BuildContext context) {
@@ -368,9 +397,9 @@ class _ResetCharacterBlob extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: SettleColors.nightAccent.withValues(alpha: 0.15),
+                  color: _tint.withValues(alpha: 0.15),
                   border: Border.all(
-                    color: SettleColors.nightAccent.withValues(alpha: 0.10),
+                    color: _tint.withValues(alpha: 0.10),
                     width: 0.5,
                   ),
                 ),
@@ -395,7 +424,7 @@ class _ResetCharacterBlob extends StatelessWidget {
               Center(
                 child: CustomPaint(
                   size: const Size(48, 48),
-                  painter: _ResetFacePainter(),
+                  painter: _ResetFacePainter(tint: _tint),
                 ),
               ),
             ],
@@ -406,12 +435,17 @@ class _ResetCharacterBlob extends StatelessWidget {
   }
 }
 
-/// Simple face: two closed eyes (arcs), gentle smile (arc). stroke 1.8, nightAccent.
+/// Simple face: two closed eyes (arcs), gentle smile (arc). stroke 1.8, tint (nightAccent or warmth).
 class _ResetFacePainter extends CustomPainter {
+  _ResetFacePainter({Color? tint})
+      : tint = tint ?? SettleColors.nightAccent;
+
+  final Color tint;
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = SettleColors.nightAccent
+      ..color = tint
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.8
       ..strokeCap = StrokeCap.round;

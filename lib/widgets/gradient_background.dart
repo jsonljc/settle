@@ -108,10 +108,20 @@ class GradientBackgroundPresets {
   GradientBackgroundPresets._();
 
   static ({LinearGradient gradient, List<AmbientBlob> blobs}) forPath(
-      String path) {
+    String path, {
+    Map<String, String>? queryParameters,
+  }) {
     final p = path.toLowerCase();
+    final contextQuery =
+        queryParameters?['context']?.toLowerCase().trim() ?? '';
+    final isTantrumJustHappened =
+        p.contains('/plan/reset') && contextQuery == 'tantrum';
+
     if (p.contains('/plan/moment')) {
       return (gradient: SettleGradients.moment, blobs: _momentBlobs);
+    }
+    if (isTantrumJustHappened) {
+      return (gradient: SettleGradients.resetDark, blobs: _tantrumBlobs);
     }
     if (p.contains('/plan/reset')) {
       return (gradient: SettleGradients.resetDark, blobs: _resetBlobs);
@@ -165,6 +175,16 @@ class GradientBackgroundPresets {
     ),
   ];
 
+  /// Tantrum Just Happened: same gradient as Reset, warmth tint for subtle distinction.
+  static final List<AmbientBlob> _tantrumBlobs = [
+    AmbientBlob(
+      color: SettleColors.warmth400.withValues(alpha: 0.25),
+      size: 140,
+      position: Alignment.topLeft,
+      blur: 2.0,
+    ),
+  ];
+
   static final List<AmbientBlob> _sleepBlobs = [
     AmbientBlob(
       color: SettleColors.dusk400.withValues(alpha: 0.3),
@@ -202,7 +222,11 @@ class GradientBackgroundFromRoute extends StatelessWidget {
       builder: (context, _) {
         final path = goRouter.routerDelegate.currentConfiguration.fullPath;
         final pathStr = path.isEmpty ? '/plan' : path;
-        final presets = GradientBackgroundPresets.forPath(pathStr);
+        final uri = goRouter.routeInformationProvider.value.uri;
+        final presets = GradientBackgroundPresets.forPath(
+          pathStr,
+          queryParameters: uri.queryParameters,
+        );
         return GradientBackground(
           gradient: presets.gradient,
           ambientBlobs: presets.blobs,

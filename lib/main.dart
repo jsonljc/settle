@@ -25,6 +25,7 @@ import 'providers/profile_provider.dart';
 import 'router.dart';
 import 'services/event_bus_service.dart';
 import 'services/notification_service.dart';
+import 'services/spec_policy.dart';
 import 'theme/settle_design_system.dart';
 
 Future<void> main() async {
@@ -223,13 +224,88 @@ class _SettleAppState extends ConsumerState<SettleApp>
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Settle',
-      debugShowCheckedModeBanner: false,
-      theme: SettleTheme.light,
-      darkTheme: SettleTheme.dark,
-      themeMode: ThemeMode.system,
-      routerConfig: router,
+    return const _SmartThemeWrapper();
+  }
+}
+
+/// Wraps the app so theme is driven by smart dark mode:
+/// - Sleep Tonight and Reset routes always dark
+/// - After 7 PM or before 6 AM: dark (time-of-day fallback)
+/// - 6 AM–7 PM: follow system brightness
+/// Transition between modes: 300ms fade (via AnimatedTheme).
+class _SmartThemeWrapper extends StatefulWidget {
+  const _SmartThemeWrapper();
+
+  @override
+  State<_SmartThemeWrapper> createState() => _SmartThemeWrapperState();
+}
+
+class _SmartThemeWrapperState extends State<_SmartThemeWrapper> {
+  static const _themeTransitionDuration = Duration(milliseconds: 300);
+
+  static bool _forceDarkForRoute(String path) {
+    final p = path.toLowerCase();
+    return p.contains('sleep/tonight') || p.contains('plan/reset');
+  }
+
+  static bool _resolveIsDark({
+    required String path,
+    required Brightness platformBrightness,
+    required DateTime now,
+  }) {
+    if (_forceDarkForRoute(path)) return true;
+    if (SpecPolicy.isNight(now)) return true;
+    return platformBrightness == Brightness.dark;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final platformBrightness = MediaQuery.platformBrightnessOf(context);
+    return ListenableBuilder(
+      listenable: router.routeInformationProvider,
+      builder: (context, _) {
+        final path = router.routerDelegate.currentConfiguration.fullPath;
+        final pathStr = path.isEmpty ? '/' : path;
+        final now = DateTime.now();
+        final isDark = _resolveIsDark(
+          path: pathStr,
+          platformBrightness: platformBrightness,
+          now: now,
+        );
+        final themeData =
+            isDark ? SettleTheme.dark : SettleTheme.light;
+        return AnimatedTheme(
+          data: themeData,
+          duration: _themeTransitionDuration,
+          curve: Curves.easeInOut,
+          child: MaterialApp.router(
+            title: 'Settle',
+            debugShowCheckedModeBanner: false,
+            theme: themeData,
+            darkTheme: themeData,
+            themeMode: ThemeMode.dark,
+            routerConfig: router,
+            scrollBehavior: const _SettleScrollBehavior(),
+          ),
+        );
+      },
     );
   }
+}
+
+/// iOS-style bounce, no overscroll glow (Android).
+class _SettleScrollBehavior extends MaterialScrollBehavior {
+  const _SettleScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const BouncingScrollPhysics();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) =>
+      child;
 }

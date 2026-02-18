@@ -194,22 +194,25 @@ class CardsLibraryScreen extends ConsumerWidget {
                         padding: EdgeInsets.symmetric(
                           horizontal: T.space.screen,
                         ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'We couldn\'t load your deck right now.',
-                              style: T.type.body.copyWith(
-                                color: T.pal.textSecondary,
+                        child: GlassCard(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Something went wrong.',
+                                style: T.type.body.copyWith(
+                                  fontSize: 14,
+                                  color: T.pal.textSecondary,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SettleGap.lg(),
-                            GlassCta(
-                              label: 'Back to Incident',
-                              onTap: () => context.go('/tantrum'),
-                            ),
-                          ],
+                              SettleGap.lg(),
+                              GlassCta(
+                                label: 'Back to Incident',
+                                onTap: () => context.go('/tantrum'),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -314,9 +317,14 @@ class _EmptyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Text(
         message,
-        style: T.type.body.copyWith(color: T.pal.textSecondary),
+        style: T.type.body.copyWith(
+          fontSize: 14,
+          color: T.pal.textSecondary,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }
