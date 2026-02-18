@@ -10,7 +10,6 @@ import '../../models/tantrum_profile.dart';
 import '../../providers/profile_provider.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/gradient_background.dart';
 import 'focus_selector.dart';
 import 'step_age.dart';
@@ -19,6 +18,28 @@ import 'step_family.dart';
 import 'step_name.dart';
 import 'step_setup.dart';
 import 'tantrum_profile_step.dart';
+
+class _ObT {
+  _ObT._();
+
+  static const pal = _ObPaletteTokens();
+  static const anim = _ObAnimTokens();
+}
+
+class _ObPaletteTokens {
+  const _ObPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _ObAnimTokens {
+  const _ObAnimTokens();
+
+  Duration get fast => const Duration(milliseconds: 150);
+  Duration get normal => const Duration(milliseconds: 250);
+}
 
 enum _OnboardingStep {
   name,
@@ -200,12 +221,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SettleSpacing.screenPadding,
+                  ),
                   physics: const BouncingScrollPhysics(),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 120),
                     child: AnimatedSwitcher(
-                      duration: T.anim.normal,
+                      duration: _ObT.anim.normal,
                       switchInCurve: Curves.easeOut,
                       switchOutCurve: Curves.easeIn,
                       child: _buildStep(steps[currentStep]),
@@ -292,7 +315,10 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: SettleSpacing.screenPadding,
+        vertical: 12,
+      ),
       child: Row(
         children: [
           SizedBox(
@@ -303,7 +329,7 @@ class _TopBar extends StatelessWidget {
                     child: Icon(
                       Icons.arrow_back_ios_rounded,
                       size: 20,
-                      color: T.pal.textSecondary,
+                      color: _ObT.pal.textSecondary,
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -315,16 +341,16 @@ class _TopBar extends StatelessWidget {
                 final isActive = i == step;
                 final isDone = i < step;
                 return AnimatedContainer(
-                  duration: T.anim.fast,
+                  duration: _ObT.anim.fast,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   width: isActive ? 24 : 8,
                   height: 8,
                   decoration: BoxDecoration(
                     color: isActive
-                        ? T.pal.accent
+                        ? _ObT.pal.accent
                         : isDone
-                        ? T.pal.accent.withValues(alpha: 0.4)
-                        : T.pal.textTertiary.withValues(alpha: 0.3),
+                        ? _ObT.pal.accent.withValues(alpha: 0.4)
+                        : _ObT.pal.textTertiary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );
@@ -357,10 +383,15 @@ class _BottomCta extends StatelessWidget {
     final label = isLast ? 'Get started' : 'Continue';
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(SettleSpacing.screenPadding, 0, SettleSpacing.screenPadding, 16),
+      padding: EdgeInsets.fromLTRB(
+        SettleSpacing.screenPadding,
+        0,
+        SettleSpacing.screenPadding,
+        16,
+      ),
       child: AnimatedOpacity(
         opacity: canProceed ? 1.0 : 0.4,
-        duration: T.anim.fast,
+        duration: _ObT.anim.fast,
         child: GlassCta(label: label, onTap: onNext, enabled: canProceed),
       ),
     );

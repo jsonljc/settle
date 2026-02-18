@@ -13,7 +13,6 @@ import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import 'steps/step_challenge_v2.dart';
 import 'steps/step_child_name_age.dart';
 import 'steps/step_instant_value.dart';
@@ -21,6 +20,28 @@ import 'steps/step_parent_type.dart';
 import 'steps/step_partner_invite.dart';
 import 'steps/step_pricing.dart';
 import 'steps/step_regulation_check.dart';
+
+class _Obv2T {
+  _Obv2T._();
+
+  static const pal = _Obv2PaletteTokens();
+  static const anim = _Obv2AnimTokens();
+}
+
+class _Obv2PaletteTokens {
+  const _Obv2PaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _Obv2AnimTokens {
+  const _Obv2AnimTokens();
+
+  Duration get fast => const Duration(milliseconds: 150);
+  Duration get normal => const Duration(milliseconds: 250);
+}
 
 enum _V2OnboardingStep {
   childNameAge,
@@ -214,11 +235,13 @@ class _OnboardingV2ScreenState extends ConsumerState<OnboardingV2Screen> {
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: SettleSpacing.screenPadding,
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 116),
                     child: AnimatedSwitcher(
-                      duration: T.anim.normal,
+                      duration: _Obv2T.anim.normal,
                       switchInCurve: Curves.easeOut,
                       switchOutCurve: Curves.easeIn,
                       child: _buildStep(currentStep),
@@ -305,7 +328,10 @@ class _V2TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: SettleSpacing.screenPadding,
+        vertical: 12,
+      ),
       child: Row(
         children: [
           SizedBox(
@@ -317,7 +343,7 @@ class _V2TopBar extends StatelessWidget {
                     child: Icon(
                       Icons.arrow_back_ios_rounded,
                       size: 20,
-                      color: T.pal.textSecondary,
+                      color: _Obv2T.pal.textSecondary,
                     ),
                   ),
           ),
@@ -328,16 +354,16 @@ class _V2TopBar extends StatelessWidget {
                 final active = index == step;
                 final done = index < step;
                 return AnimatedContainer(
-                  duration: T.anim.fast,
+                  duration: _Obv2T.anim.fast,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   width: active ? 24 : 8,
                   height: 8,
                   decoration: BoxDecoration(
                     color: active
-                        ? T.pal.accent
+                        ? _Obv2T.pal.accent
                         : done
-                        ? T.pal.accent.withValues(alpha: 0.38)
-                        : T.pal.textTertiary.withValues(alpha: 0.3),
+                        ? _Obv2T.pal.accent.withValues(alpha: 0.38)
+                        : _Obv2T.pal.textTertiary.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );
@@ -376,10 +402,15 @@ class _V2BottomCta extends StatelessWidget {
         : 'Continue';
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(SettleSpacing.screenPadding, 0, SettleSpacing.screenPadding, 16),
+      padding: EdgeInsets.fromLTRB(
+        SettleSpacing.screenPadding,
+        0,
+        SettleSpacing.screenPadding,
+        16,
+      ),
       child: AnimatedOpacity(
         opacity: canProceed && !busy ? 1 : 0.45,
-        duration: T.anim.fast,
+        duration: _Obv2T.anim.fast,
         child: IgnorePointer(
           ignoring: !canProceed || busy,
           child: GlassCta(
