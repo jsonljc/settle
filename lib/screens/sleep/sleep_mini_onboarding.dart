@@ -7,11 +7,30 @@ import '../../providers/profile_provider.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/option_button.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
 import '../sleep_tonight.dart';
+
+class _SmoT {
+  _SmoT._();
+
+  static final type = _SmoTypeTokens();
+  static const anim = _SmoAnimTokens();
+}
+
+class _SmoTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+}
+
+class _SmoAnimTokens {
+  const _SmoAnimTokens();
+
+  Duration get fast => const Duration(milliseconds: 150);
+}
 
 /// Gate: profile required, sleep setup required. When complete, lands on
 /// Sleep Tonight (situation picker) as the Sleep tab default.
@@ -85,7 +104,9 @@ class _SleepMiniOnboardingScreenState
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -101,7 +122,7 @@ class _SleepMiniOnboardingScreenState
                       children: [
                         Text(
                           'Which approach fits your family?',
-                          style: T.type.h3,
+                          style: _SmoT.type.h3,
                         ),
                         const SizedBox(height: 10),
                         ...Approach.values.map((approach) {
@@ -116,7 +137,7 @@ class _SleepMiniOnboardingScreenState
                           );
                         }),
                         const SizedBox(height: 10),
-                        Text('Feeding mode', style: T.type.h3),
+                        Text('Feeding mode', style: _SmoT.type.h3),
                         const SizedBox(height: 10),
                         Wrap(
                           spacing: 10,
@@ -137,7 +158,7 @@ class _SleepMiniOnboardingScreenState
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: AnimatedOpacity(
-                    duration: T.anim.fast,
+                    duration: _SmoT.anim.fast,
                     opacity: _approach != null && _feeding != null && !_saving
                         ? 1
                         : 0.45,
