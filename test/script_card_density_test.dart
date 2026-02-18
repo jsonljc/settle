@@ -80,6 +80,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('More actions'), findsOneWidget);
-    expect(find.text('Share with partner'), findsOneWidget);
+    expect(find.text('Send to partner'), findsOneWidget);
   });
 }

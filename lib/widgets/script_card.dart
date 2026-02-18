@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/glass_components.dart';
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 import 'settle_disclosure.dart';
 import 'settle_gap.dart';
 import 'settle_modal_sheet.dart';
@@ -181,7 +181,7 @@ class _ScriptCardState extends State<ScriptCard> {
                   onPressed: _openActionsSheet,
                   icon: Icon(
                     Icons.more_horiz_rounded,
-                    color: T.pal.textSecondary,
+                    color: SettleColors.nightSoft,
                   ),
                   tooltip: 'More actions',
                 ),
@@ -194,10 +194,10 @@ class _ScriptCardState extends State<ScriptCard> {
               onTap: () => _setStage(ScriptCardStage.action),
               child: Text(
                 'Show script details',
-                style: T.type.caption.copyWith(
-                  color: T.pal.textSecondary,
+                style: SettleTypography.caption.copyWith(
+                  color: SettleColors.nightSoft,
                   decoration: TextDecoration.underline,
-                  decorationColor: T.pal.textSecondary,
+                  decorationColor: SettleColors.nightSoft,
                 ),
               ),
             ),
@@ -205,18 +205,22 @@ class _ScriptCardState extends State<ScriptCard> {
           if (_stage == ScriptCardStage.summary && _isCrisisLike) ...[
             Text(
               'Say',
-              style: T.type.caption.copyWith(color: T.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(
+                color: SettleColors.nightMuted,
+              ),
             ),
             const SizedBox(height: 2),
-            Text(widget.say, style: T.type.h3),
+            Text(widget.say, style: SettleTypography.heading),
           ],
           if (_stage == ScriptCardStage.action) ...[
             Text(
               'Say',
-              style: T.type.caption.copyWith(color: T.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(
+                color: SettleColors.nightMuted,
+              ),
             ),
             const SizedBox(height: 2),
-            Text(widget.say, style: T.type.h3),
+            Text(widget.say, style: SettleTypography.heading),
             const SizedBox(height: 10),
             _LineBlock(label: 'Do', text: widget.doStep),
             if (_isCrisisLike) ...[
@@ -228,7 +232,9 @@ class _ScriptCardState extends State<ScriptCard> {
                   SettleGap.sm(),
                   Text(
                     widget.prevent,
-                    style: T.type.body.copyWith(color: T.pal.textSecondary),
+                    style: SettleTypography.body.copyWith(
+                      color: SettleColors.nightSoft,
+                    ),
                   ),
                 ],
               ),
@@ -241,7 +247,9 @@ class _ScriptCardState extends State<ScriptCard> {
                   SettleGap.sm(),
                   Text(
                     escalates,
-                    style: T.type.body.copyWith(color: T.pal.textSecondary),
+                    style: SettleTypography.body.copyWith(
+                      color: SettleColors.nightSoft,
+                    ),
                   ),
                 ],
               ),
@@ -271,13 +279,13 @@ class _ScenarioBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(T.radius.pill),
-        color: T.glass.fillAccent,
+        borderRadius: BorderRadius.circular(SettleRadii.pill),
+        color: SettleColors.dusk600.withValues(alpha: 0.16),
       ),
       child: Text(
         label,
-        style: T.type.caption.copyWith(
-          color: T.pal.accent,
+        style: SettleTypography.caption.copyWith(
+          color: SettleColors.nightText,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -301,12 +309,17 @@ class _LineBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: T.type.caption.copyWith(color: T.pal.textTertiary)),
+        Text(
+          label,
+          style: SettleTypography.caption.copyWith(
+            color: SettleColors.nightMuted,
+          ),
+        ),
         const SizedBox(height: 2),
         Text(
           text,
-          style: T.type.body.copyWith(
-            color: T.pal.textSecondary,
+          style: SettleTypography.body.copyWith(
+            color: SettleColors.nightSoft,
             fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
