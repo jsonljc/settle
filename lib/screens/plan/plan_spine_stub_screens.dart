@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
+
+class _PssT {
+  _PssT._();
+
+  static final type = _PssTypeTokens();
+  static const pal = _PssPaletteTokens();
+}
+
+class _PssTypeTokens {
+  TextStyle get body => SettleTypography.body;
+}
+
+class _PssPaletteTokens {
+  const _PssPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+}
 
 /// Stub for Reset entry point. Reaches correct screen and can exit cleanly (back/close).
 class ResetStubScreen extends StatelessWidget {
@@ -15,7 +31,9 @@ class ResetStubScreen extends StatelessWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -23,7 +41,9 @@ class ResetStubScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 Text(
                   'Open the full Reset flow from Plan.',
-                  style: T.type.body.copyWith(color: T.pal.textSecondary),
+                  style: _PssT.type.body.copyWith(
+                    color: _PssT.pal.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -44,7 +64,9 @@ class MomentStubScreen extends StatelessWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -52,7 +74,9 @@ class MomentStubScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 Text(
                   'Open the full Moment flow from Plan.',
-                  style: T.type.body.copyWith(color: T.pal.textSecondary),
+                  style: _PssT.type.body.copyWith(
+                    color: _PssT.pal.textSecondary,
+                  ),
                 ),
               ],
             ),
