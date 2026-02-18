@@ -1,6 +1,42 @@
 import 'package:flutter/material.dart';
 
-import '../../../theme/settle_tokens.dart';
+import '../../../theme/settle_design_system.dart';
+
+class _ScnT {
+  _ScnT._();
+
+  static final type = _ScnTypeTokens();
+  static const pal = _ScnPaletteTokens();
+}
+
+class _ScnTypeTokens {
+  TextStyle get h1 => SettleTypography.heading.copyWith(
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+  TextStyle get overline => SettleTypography.caption.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+  );
+}
+
+class _ScnPaletteTokens {
+  const _ScnPaletteTokens();
+
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+}
 
 class StepChildNameAge extends StatelessWidget {
   const StepChildNameAge({
@@ -19,55 +55,60 @@ class StepChildNameAge extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Tell us about your child', style: T.type.h1),
+        Text('Tell us about your child', style: _ScnT.type.h1),
         const SizedBox(height: 10),
         Text(
           'Name is optional. We\'ll personalize scripts either way.',
-          style: T.type.caption.copyWith(color: T.pal.textSecondary),
+          style: _ScnT.type.caption.copyWith(color: _ScnT.pal.textSecondary),
         ),
         const SizedBox(height: 20),
         TextField(
           controller: nameController,
           textInputAction: TextInputAction.next,
-          style: T.type.h3.copyWith(color: T.pal.textPrimary),
-          cursorColor: T.pal.accent,
+          style: _ScnT.type.h3.copyWith(color: _ScnT.pal.textPrimary),
+          cursorColor: _ScnT.pal.accent,
           decoration: InputDecoration(
             hintText: 'Child name (optional)',
-            hintStyle: T.type.h3.copyWith(color: T.pal.textTertiary),
+            hintStyle: _ScnT.type.h3.copyWith(color: _ScnT.pal.textTertiary),
             border: InputBorder.none,
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: T.pal.textTertiary.withValues(alpha: 0.35),
+                color: _ScnT.pal.textTertiary.withValues(alpha: 0.35),
               ),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: T.pal.accent, width: 2),
+              borderSide: BorderSide(color: _ScnT.pal.accent, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(vertical: 12),
           ),
         ),
         const SizedBox(height: 28),
-        Text('Age', style: T.type.overline.copyWith(color: T.pal.textTertiary)),
+        Text(
+          'Age',
+          style: _ScnT.type.overline.copyWith(color: _ScnT.pal.textTertiary),
+        ),
         const SizedBox(height: 8),
         Row(
           children: [
             Text(
               _ageLabel(ageMonths),
-              style: T.type.h3.copyWith(color: T.pal.textPrimary),
+              style: _ScnT.type.h3.copyWith(color: _ScnT.pal.textPrimary),
             ),
             const Spacer(),
             Text(
               '$ageMonths months',
-              style: T.type.caption.copyWith(color: T.pal.textSecondary),
+              style: _ScnT.type.caption.copyWith(
+                color: _ScnT.pal.textSecondary,
+              ),
             ),
           ],
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: T.pal.accent,
-            inactiveTrackColor: T.pal.textTertiary.withValues(alpha: 0.25),
-            thumbColor: T.pal.accent,
-            overlayColor: T.pal.accent.withValues(alpha: 0.16),
+            activeTrackColor: _ScnT.pal.accent,
+            inactiveTrackColor: _ScnT.pal.textTertiary.withValues(alpha: 0.25),
+            thumbColor: _ScnT.pal.accent,
+            overlayColor: _ScnT.pal.accent.withValues(alpha: 0.16),
             trackHeight: 4,
           ),
           child: Slider(

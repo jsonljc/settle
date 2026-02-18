@@ -11,9 +11,50 @@ import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/calm_loading.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
+
+class _PslT {
+  _PslT._();
+
+  static final type = _PslTypeTokens();
+  static const pal = _PslPaletteTokens();
+  static const glass = _PslGlassTokens();
+  static const radius = _PslRadiusTokens();
+}
+
+class _PslTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _PslPaletteTokens {
+  const _PslPaletteTokens();
+
+  Color get textPrimary => SettleColors.nightText;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+}
+
+class _PslGlassTokens {
+  const _PslGlassTokens();
+
+  Color get fillAccent => SettleColors.nightAccent.withValues(alpha: 0.10);
+}
+
+class _PslRadiusTokens {
+  const _PslRadiusTokens();
+
+  double get md => 18;
+}
 
 class PlanScriptLogScreen extends ConsumerStatefulWidget {
   const PlanScriptLogScreen({super.key, required this.cardId});
@@ -88,8 +129,8 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
           return Scaffold(
             body: GradientBackgroundFromRoute(
               child: const Center(
-              child: CalmLoading(message: 'Loading session log…'),
-            ),
+                child: CalmLoading(message: 'Loading session log…'),
+              ),
             ),
           );
         }
@@ -104,7 +145,9 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
           body: GradientBackgroundFromRoute(
             child: SafeArea(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -124,17 +167,17 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Scenario', style: T.type.caption),
+                                  Text('Scenario', style: _PslT.type.caption),
                                   const SizedBox(height: 4),
                                   Text(
                                     _triggerLabel(card.triggerType),
-                                    style: T.type.h3,
+                                    style: _PslT.type.h3,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     card.say,
-                                    style: T.type.body.copyWith(
-                                      color: T.pal.textSecondary,
+                                    style: _PslT.type.body.copyWith(
+                                      color: _PslT.pal.textSecondary,
                                     ),
                                   ),
                                 ],
@@ -145,7 +188,7 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Outcome', style: T.type.h3),
+                                  Text('Outcome', style: _PslT.type.h3),
                                   const SizedBox(height: 10),
                                   Wrap(
                                     spacing: 8,
@@ -155,11 +198,11 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                                       return GlassPill(
                                         label: _outcomeLabel(value),
                                         fill: selected
-                                            ? T.glass.fillAccent
+                                            ? _PslT.glass.fillAccent
                                             : null,
                                         textColor: selected
-                                            ? T.pal.accent
-                                            : T.pal.textPrimary,
+                                            ? _PslT.pal.accent
+                                            : _PslT.pal.textPrimary,
                                         onTap: () =>
                                             setState(() => _outcome = value),
                                       );
@@ -169,15 +212,15 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                                   TextField(
                                     controller: _contextController,
                                     maxLines: 2,
-                                    style: T.type.body,
+                                    style: _PslT.type.body,
                                     decoration: InputDecoration(
                                       hintText: 'What happened? (optional)',
-                                      hintStyle: T.type.body.copyWith(
-                                        color: T.pal.textTertiary,
+                                      hintStyle: _PslT.type.body.copyWith(
+                                        color: _PslT.pal.textTertiary,
                                       ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(
-                                          T.radius.md,
+                                          _PslT.radius.md,
                                         ),
                                       ),
                                     ),
@@ -200,8 +243,8 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                                           ),
                                           child: Text(
                                             'I used regulate support first',
-                                            style: T.type.body.copyWith(
-                                              color: T.pal.textSecondary,
+                                            style: _PslT.type.body.copyWith(
+                                              color: _PslT.pal.textSecondary,
                                             ),
                                           ),
                                         ),
