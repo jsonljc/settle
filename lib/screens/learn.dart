@@ -7,8 +7,51 @@ import '../providers/profile_provider.dart';
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
-import '../theme/settle_tokens.dart';
 import '../widgets/screen_header.dart';
+
+class _LrnT {
+  _LrnT._();
+
+  static final type = _LrnTypeTokens();
+  static const pal = _LrnPaletteTokens();
+  static const glass = _LrnGlassTokens();
+  static const anim = _LrnAnimTokens();
+}
+
+class _LrnTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _LrnPaletteTokens {
+  const _LrnPaletteTokens();
+
+  Color get accent => SettleColors.nightAccent;
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+}
+
+class _LrnGlassTokens {
+  const _LrnGlassTokens();
+
+  Color get fillAccent => SettleColors.nightAccent.withValues(alpha: 0.10);
+}
+
+class _LrnAnimTokens {
+  const _LrnAnimTokens();
+
+  Duration get fast => const Duration(milliseconds: 150);
+  Duration get normal => const Duration(milliseconds: 250);
+}
 
 /// Learn Screen — Q&A format. Questions parents actually ask.
 /// Written in first-person parent voice.
@@ -161,7 +204,9 @@ class LearnScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: SettleSpacing.screenPadding,
+                ),
                 child: ScreenHeader(
                   title: 'Learn',
                   subtitle: useTantrum
@@ -205,11 +250,14 @@ class _LearnNextActionsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Next step', style: T.type.h3.copyWith(color: T.pal.accent)),
+          Text(
+            'Next step',
+            style: _LrnT.type.h3.copyWith(color: _LrnT.pal.accent),
+          ),
           const SizedBox(height: 8),
           Text(
             'Apply one change now, then check logs for proof.',
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: _LrnT.type.caption.copyWith(color: _LrnT.pal.textSecondary),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -269,17 +317,17 @@ class _QuestionCardState extends State<_QuestionCard> {
                 Expanded(
                   child: Text(
                     widget.qa.question,
-                    style: T.type.label.copyWith(height: 1.35),
+                    style: _LrnT.type.label.copyWith(height: 1.35),
                   ),
                 ),
                 const SizedBox(width: 12),
                 AnimatedRotation(
                   turns: _expanded ? 0.5 : 0,
-                  duration: T.anim.fast,
+                  duration: _LrnT.anim.fast,
                   child: Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 22,
-                    color: T.pal.textTertiary,
+                    color: _LrnT.pal.textTertiary,
                   ),
                 ),
               ],
@@ -293,26 +341,28 @@ class _QuestionCardState extends State<_QuestionCard> {
                   children: [
                     Text(
                       widget.qa.answer,
-                      style: T.type.body.copyWith(color: T.pal.textSecondary),
+                      style: _LrnT.type.body.copyWith(
+                        color: _LrnT.pal.textSecondary,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     GlassCard(
                       padding: const EdgeInsets.all(12),
-                      fill: T.glass.fillAccent,
+                      fill: _LrnT.glass.fillAccent,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(
                             Icons.menu_book_rounded,
                             size: 14,
-                            color: T.pal.accent,
+                            color: _LrnT.pal.accent,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               widget.qa.citation,
-                              style: T.type.caption.copyWith(
-                                color: T.pal.accent,
+                              style: _LrnT.type.caption.copyWith(
+                                color: _LrnT.pal.accent,
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
@@ -326,7 +376,7 @@ class _QuestionCardState extends State<_QuestionCard> {
               crossFadeState: _expanded
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
-              duration: T.anim.normal,
+              duration: _LrnT.anim.normal,
               sizeCurve: Curves.easeInOut,
             ),
           ],

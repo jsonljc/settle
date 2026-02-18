@@ -8,8 +8,37 @@ import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/screen_header.dart';
+
+class _AfT {
+  _AfT._();
+
+  static final type = _AfTypeTokens();
+  static const pal = _AfPaletteTokens();
+}
+
+class _AfTypeTokens {
+  TextStyle get h3 => SettleTypography.heading.copyWith(
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+  TextStyle get label =>
+      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
+  TextStyle get caption => SettleTypography.caption.copyWith(
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+}
+
+class _AfPaletteTokens {
+  const _AfPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+  Color get textTertiary => SettleColors.nightMuted;
+  Color get accent => SettleColors.nightAccent;
+  Color get teal => SettleColors.sage400;
+}
 
 /// Local activity feed: recent [UsageEvent]s (card uses). MVP, no backend.
 class ActivityFeedScreen extends ConsumerWidget {
@@ -23,7 +52,9 @@ class ActivityFeedScreen extends ConsumerWidget {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -38,8 +69,8 @@ class ActivityFeedScreen extends ConsumerWidget {
                       ? Center(
                           child: Text(
                             'When you use scripts from Plan or Pocket, they\'ll show here.',
-                            style: T.type.body.copyWith(
-                              color: T.pal.textSecondary,
+                            style: _AfT.type.body.copyWith(
+                              color: _AfT.pal.textSecondary,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -68,12 +99,12 @@ class ActivityFeedScreen extends ConsumerWidget {
                                           ),
                                       title: Text(
                                         _triggerDisplayName(triggerLabel),
-                                        style: T.type.label,
+                                        style: _AfT.type.label,
                                       ),
                                       subtitle: Text(
                                         '${_outcomeLabel(event.outcome)} · ${_formatTime(event.timestamp)}',
-                                        style: T.type.caption.copyWith(
-                                          color: T.pal.textTertiary,
+                                        style: _AfT.type.caption.copyWith(
+                                          color: _AfT.pal.textTertiary,
                                         ),
                                       ),
                                       trailing:
@@ -81,7 +112,7 @@ class ActivityFeedScreen extends ConsumerWidget {
                                           ? Icon(
                                               Icons.thumb_up_rounded,
                                               size: 18,
-                                              color: T.pal.teal,
+                                              color: _AfT.pal.teal,
                                             )
                                           : null,
                                       onTap: () => context.push(
@@ -149,13 +180,13 @@ class ActivityFeedPreview extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Activity', style: T.type.h3),
+              Text('Activity', style: _AfT.type.h3),
               if (events.isNotEmpty)
                 GestureDetector(
                   onTap: () => context.push('/family/activity'),
                   child: Text(
                     'See all',
-                    style: T.type.label.copyWith(color: T.pal.accent),
+                    style: _AfT.type.label.copyWith(color: _AfT.pal.accent),
                   ),
                 ),
             ],
@@ -164,7 +195,7 @@ class ActivityFeedPreview extends ConsumerWidget {
           if (recent.isEmpty)
             Text(
               'Recent script use will appear here.',
-              style: T.type.body.copyWith(color: T.pal.textSecondary),
+              style: _AfT.type.body.copyWith(color: _AfT.pal.textSecondary),
             )
           else
             ...recent.map(
@@ -177,14 +208,14 @@ class ActivityFeedPreview extends ConsumerWidget {
                           ? Icons.thumb_up_rounded
                           : Icons.description_outlined,
                       size: 16,
-                      color: T.pal.textTertiary,
+                      color: _AfT.pal.textTertiary,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         e.cardId,
-                        style: T.type.caption.copyWith(
-                          color: T.pal.textSecondary,
+                        style: _AfT.type.caption.copyWith(
+                          color: _AfT.pal.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
