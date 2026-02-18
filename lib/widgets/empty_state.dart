@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../theme/settle_design_system.dart';
+import 'settle_tappable.dart';
 
 /// Empty state: single line, Inter 14px, ink400, centered.
 ///
 /// Optional action link below the message. No tutorial, no icons unless needed.
+/// Action uses SettleTappable (48px min target, haptics, semantics).
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
@@ -28,7 +30,7 @@ class EmptyState extends StatelessWidget {
     final color = isDark ? SettleColors.nightMuted : SettleColors.ink400;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: SettleSpacing.md),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -38,14 +40,23 @@ class EmptyState extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: onAction,
-              child: Text(
-                '$actionLabel →',
-                style: SettleTypography.body.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? SettleColors.nightAccent : SettleColors.sage600,
+            const SizedBox(height: SettleSpacing.md),
+            SettleTappable(
+              semanticLabel: actionLabel!,
+              onTap: onAction!,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: SettleSpacing.sm,
+                  horizontal: SettleSpacing.sm,
+                ),
+                child: Text(
+                  '$actionLabel →',
+                  style: SettleTypography.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: isDark
+                        ? SettleColors.nightAccent
+                        : SettleColors.sage600,
+                  ),
                 ),
               ),
             ),

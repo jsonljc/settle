@@ -9,6 +9,7 @@ import '../../providers/reset_flow_provider.dart';
 import '../../utils/share_text.dart';
 import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/calm_loading.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_pill.dart';
 import '../../widgets/settle_tappable.dart';
@@ -147,8 +148,8 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     ResetFlowNotifier notifier,
   ) {
     if (state.loading) {
-      return Center(
-        child: CircularProgressIndicator(color: SettleColors.nightAccent),
+      return const Center(
+        child: CalmLoading(message: 'Preparing your reset…'),
       );
     }
 

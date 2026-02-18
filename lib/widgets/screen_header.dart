@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 import 'settle_tappable.dart';
 
-/// Standardized screen header: optional back arrow + h2 title + optional subtitle
+/// Standardized screen header: optional back arrow + heading title + optional subtitle
 /// and optional trailing widget.
 ///
 /// Use [showBackButton: false] for root screens (e.g. Home) so the title stands alone.
-/// Spacing: 12px top, 8px below title row, 4px below subtitle if present.
+/// Spacing: SettleSpacing.md top, sm below title row, xs below subtitle if present.
 class ScreenHeader extends StatelessWidget {
   const ScreenHeader({
     super.key,
     required this.title,
     this.subtitle,
     this.trailing,
-    this.fallbackRoute = '/now',
+    this.fallbackRoute = '/plan',
     this.showBackButton = true,
   });
 
@@ -31,10 +31,12 @@ class ScreenHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryColor = isDark ? SettleColors.nightSoft : SettleColors.ink500;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 12),
+        SizedBox(height: SettleSpacing.md),
         Row(
           children: [
             if (showBackButton) ...[
@@ -46,17 +48,17 @@ class ScreenHeader extends StatelessWidget {
                 child: Icon(
                   Icons.arrow_back_ios_rounded,
                   size: 20,
-                  color: T.pal.textSecondary,
+                  color: secondaryColor,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: SettleSpacing.md),
             ],
             Expanded(
               child: Semantics(
                 header: true,
                 child: Text(
                   title,
-                  style: T.type.h2,
+                  style: SettleTypography.heading,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -65,10 +67,10 @@ class ScreenHeader extends StatelessWidget {
           ],
         ),
         if (subtitle != null) ...[
-          const SizedBox(height: 8),
+          SizedBox(height: SettleSpacing.sm),
           Text(
             subtitle!,
-            style: T.type.caption.copyWith(color: T.pal.textSecondary),
+            style: SettleTypography.caption.copyWith(color: secondaryColor),
           ),
         ],
       ],

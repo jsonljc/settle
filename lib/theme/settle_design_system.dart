@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SETTLE DESIGN SYSTEM — Single source of truth for colors, glass, typography,
-// spacing, radii, gradients, and theme.
+// SETTLE DESIGN SYSTEM — CANONICAL
+// Single source of truth for colors, glass, typography, spacing, radii,
+// gradients, and theme. All new UI code MUST use this file only.
+// Do not import settle_tokens.dart (T.*) in new code.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/settle_design_system.dart';
 
@@ -57,13 +56,9 @@ class GlassNavBar extends StatelessWidget {
     }
   }
 
-  /// Label: 10px, weight 500, letterSpacing 0.02
-  static TextStyle _labelStyle(Color color) => GoogleFonts.inter(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.02,
-    color: color,
-  );
+  /// Label: SettleTypography.caption (Inter 11.5 w500), letterSpacing 0.02
+  static TextStyle _labelStyle(Color color) =>
+      SettleTypography.caption.copyWith(letterSpacing: 0.02, color: color);
 
   @override
   Widget build(BuildContext context) {

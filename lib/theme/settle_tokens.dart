@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 enum SurfaceMode { day, night, focus }
 
-/// Settle Design Tokens — single source of truth for all visual constants.
+/// Settle Design Tokens — System A (DEPRECATED).
 ///
-/// Access via the convenience alias `T`:
+/// Use [settle_design_system.dart] (System B) instead: SettleColors, SettleTypography,
+/// SettleSpacing, SettleRadii, SettleGlass. Access via the convenience alias `T`:
 ///   T.pal.accent, T.type.h1, T.space.md, etc.
+@Deprecated('Use settle_design_system.dart (System B) instead. T.* will be removed.')
 class T {
   T._();
   static const pal = _Palette();
@@ -25,6 +27,7 @@ class T {
 //  Color Palette
 // ─────────────────────────────────────────────
 
+@Deprecated('Use SettleColors from settle_design_system.dart instead.')
 class _Palette {
   const _Palette();
 
@@ -105,6 +108,7 @@ class _Palette {
 //  Wake-Window Arc Colors
 // ─────────────────────────────────────────────
 
+@Deprecated('Use settle_design_system.dart for colors.')
 class _Arc {
   const _Arc();
 
@@ -127,6 +131,7 @@ class _Arc {
 //  Glass Surface Tokens
 // ─────────────────────────────────────────────
 
+@Deprecated('Use SettleGlass from settle_design_system.dart instead.')
 class _Glass {
   const _Glass();
 
@@ -166,6 +171,7 @@ class _Glass {
 //  Typography Tokens
 // ─────────────────────────────────────────────
 
+@Deprecated('Use SettleTypography from settle_design_system.dart instead.')
 class _Type {
   const _Type();
 
@@ -247,6 +253,7 @@ class _Type {
 //  Spacing & Radii (4px base grid)
 // ─────────────────────────────────────────────
 
+@Deprecated('Use SettleSpacing from settle_design_system.dart instead.')
 class _Space {
   const _Space();
 
@@ -266,6 +273,7 @@ class _Space {
   final double cardMax = 26;
 }
 
+@Deprecated('Use SettleRadii from settle_design_system.dart instead.')
 class _Radius {
   const _Radius();
 
@@ -280,6 +288,7 @@ class _Radius {
 //  Animation Durations
 // ─────────────────────────────────────────────
 
+@Deprecated('Animation tokens: consider migrating to settle_design_system or keep T.anim until System B adds equivalents.')
 class _Anim {
   const _Anim();
 

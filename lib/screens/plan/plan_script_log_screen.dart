@@ -9,6 +9,7 @@ import '../../providers/user_cards_provider.dart';
 import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
+import '../../widgets/calm_loading.dart';
 import '../../widgets/gradient_background.dart';
 import '../../theme/settle_tokens.dart';
 import '../../widgets/release_surfaces.dart';
@@ -86,7 +87,9 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
         if (snapshot.connectionState != ConnectionState.done) {
           return Scaffold(
             body: GradientBackgroundFromRoute(
-              child: Center(child: CircularProgressIndicator.adaptive()),
+              child: const Center(
+              child: CalmLoading(message: 'Loading session log…'),
+            ),
             ),
           );
         }

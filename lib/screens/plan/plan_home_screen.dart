@@ -14,6 +14,7 @@ import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart' hide GlassCard, GlassPill;
 import '../../theme/settle_tokens.dart';
 import '../../theme/settle_design_system.dart';
+import '../../widgets/calm_loading.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_pill.dart';
 import '../../widgets/output_card.dart';
@@ -359,7 +360,9 @@ class PlanCardScreen extends StatelessWidget {
         final card = snapshot.data;
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: const Center(
+              child: CalmLoading(message: 'Finding the right approach…'),
+            ),
           );
         }
         if (card == null) {

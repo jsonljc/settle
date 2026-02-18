@@ -5,10 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../models/pattern_insight.dart';
 import '../../providers/patterns_provider.dart';
 import '../../providers/playbook_provider.dart';
-import '../../theme/glass_components.dart';
+import '../../theme/glass_components.dart' hide GlassCard, GlassPill;
 import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 import '../../providers/weekly_reflection_provider.dart';
+import '../../widgets/calm_loading.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/weekly_reflection.dart';
 
@@ -54,7 +57,11 @@ class LibraryHomeScreen extends ConsumerWidget {
                         const SizedBox(height: 10),
                         _PatternsPreviewCard(patterns: patterns),
                         const SizedBox(height: 10),
-                        _SavedPlaybookPreviewCard(playbookAsync: playbookAsync),
+                        _SavedPlaybookPreviewCard(
+                          playbookAsync: playbookAsync,
+                          onRetry: () =>
+                              ref.invalidate(playbookRepairCardsProvider),
+                        ),
                         const SizedBox(height: 10),
                         GlassCard(
                           child: Column(
@@ -183,6 +190,7 @@ class _PatternsPreviewCard extends StatelessWidget {
           GlassPill(
             label: 'Open patterns',
             onTap: () => context.push('/library/patterns'),
+            variant: GlassPillVariant.secondaryLight,
           ),
         ],
       ),
@@ -200,9 +208,13 @@ class _PatternsPreviewCard extends StatelessWidget {
 }
 
 class _SavedPlaybookPreviewCard extends StatelessWidget {
-  const _SavedPlaybookPreviewCard({required this.playbookAsync});
+  const _SavedPlaybookPreviewCard({
+    required this.playbookAsync,
+    this.onRetry,
+  });
 
   final AsyncValue<List<PlaybookEntry>> playbookAsync;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -228,6 +240,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                     GlassPill(
                       label: 'Open playbook',
                       onTap: () => context.push('/library/saved'),
+                      variant: GlassPillVariant.secondaryLight,
                     ),
                   ],
                 );
@@ -243,8 +256,8 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                           '/library/saved/card/${entry.repairCard.id}',
                         ),
                         child: GlassCard(
+                          variant: GlassCardVariant.lightStrong,
                           padding: const EdgeInsets.all(10),
-                          fill: T.glass.fillAccent,
                           child: Text(
                             entry.repairCard.title,
                             style: T.type.label,
@@ -257,30 +270,45 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                   GlassPill(
                     label: 'Open playbook',
                     onTap: () => context.push('/library/saved'),
+                    variant: GlassPillVariant.secondaryLight,
                   ),
                 ],
               );
             },
             loading: () => const SizedBox(
               height: 56,
-              child: Center(child: CircularProgressIndicator.adaptive()),
+              child: Center(
+                child: CalmLoading(message: 'Loading library…'),
+              ),
             ),
-            error: (_, __) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Something went wrong.',
-                  style: SettleTypography.body.copyWith(
-                    color: T.pal.textSecondary,
+            error: (_, __) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              final color = isDark ? SettleColors.nightSoft : SettleColors.ink500;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Something went wrong.',
+                    style: SettleTypography.body.copyWith(color: color),
                   ),
-                ),
-                const SizedBox(height: 12),
+                const SizedBox(height: SettleSpacing.md),
+                if (onRetry != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: SettleSpacing.sm),
+                    child: GlassPill(
+                      label: 'Try again',
+                      onTap: onRetry!,
+                      variant: GlassPillVariant.primaryLight,
+                    ),
+                  ),
                 GlassPill(
                   label: 'Open playbook',
                   onTap: () => context.push('/library/saved'),
+                  variant: GlassPillVariant.secondaryLight,
                 ),
               ],
-            ),
+            );
+            },
           ),
         ],
       ),

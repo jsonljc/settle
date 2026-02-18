@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
 /// Calm loading indicator — reassuring text with a subtle opacity pulse.
 ///
@@ -35,7 +35,7 @@ class _CalmLoadingState extends State<CalmLoading>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (T.reduceMotion(context)) {
+    if (MediaQuery.of(context).disableAnimations) {
       _controller.stop();
       _controller.value = 1.0;
     } else if (!_controller.isAnimating) {
@@ -51,12 +51,14 @@ class _CalmLoadingState extends State<CalmLoading>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryColor = isDark ? SettleColors.nightSoft : SettleColors.ink500;
     return Center(
       child: FadeTransition(
         opacity: _opacity,
         child: Text(
           widget.message,
-          style: T.type.body.copyWith(color: T.pal.textSecondary),
+          style: SettleTypography.body.copyWith(color: secondaryColor),
           textAlign: TextAlign.center,
         ),
       ),

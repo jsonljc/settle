@@ -4,12 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'settle_tokens.dart';
 
-/// Builds the app-wide ThemeData for Settle.
+/// Legacy theme builder (System A). DEPRECATED.
 ///
-/// Usage in MaterialApp:
-///   theme: SettleTheme.data,
-class SettleTheme {
-  SettleTheme._();
+/// App uses [SettleTheme] from settle_design_system.dart (light/dark) instead.
+@Deprecated('Use SettleTheme.light / SettleTheme.dark from settle_design_system.dart instead.')
+class _LegacySettleTheme {
+  _LegacySettleTheme._();
 
   static ThemeData get data => _build(v3Enabled: false);
 

@@ -4,6 +4,7 @@ import '../../services/card_content_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/calm_loading.dart';
 
 /// Step 4: Actionable next step — context-aware Say/Do script from [CardContentService].
 /// Uses "overwhelmed" trigger for parent-focused script.
@@ -23,7 +24,9 @@ class RegulateStepAction extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
-            child: const Center(child: CircularProgressIndicator()),
+            child: const Center(
+                child: CalmLoading(message: 'Getting your next step…'),
+              ),
           );
         }
         if (card == null) {

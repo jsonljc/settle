@@ -13,6 +13,7 @@ import '../theme/settle_tokens.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
+import '../widgets/error_state.dart';
 
 String _ruleLabel(String ruleId) {
   return switch (ruleId) {
@@ -79,10 +80,18 @@ class FamilyRulesScreen extends ConsumerWidget {
                 Expanded(
                   child: rulesState.isLoading
                       ? const CalmLoading(message: 'Loading shared scripts…')
-                      : ListView(
+                      : rulesState.error != null
+                          ? SettleErrorState(
+                              message: rulesState.error!,
+                              onRetry: () => ref
+                                  .read(familyRulesProvider.notifier)
+                                  .load(),
+                            )
+                          : ListView(
                           physics: const BouncingScrollPhysics(),
                           children: [
-                            _PendingDiffs(childId: childId, state: rulesState),
+                            _PendingDiffs(
+                                childId: childId, state: rulesState),
                             const SizedBox(height: 10),
                             _RulesEditor(
                               title: 'Boundary scripts',

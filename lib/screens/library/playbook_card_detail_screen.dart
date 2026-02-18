@@ -10,6 +10,7 @@ import '../../providers/user_cards_provider.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
+import '../../widgets/calm_loading.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/settle_gap.dart';
@@ -32,8 +33,8 @@ class PlaybookCardDetailScreen extends ConsumerWidget {
         if (snapshot.connectionState != ConnectionState.done) {
           return Scaffold(
             body: GradientBackgroundFromRoute(
-              child: Center(
-                child: CircularProgressIndicator(color: T.pal.accent),
+              child: const Center(
+                child: CalmLoading(message: 'Loading card…'),
               ),
             ),
           );

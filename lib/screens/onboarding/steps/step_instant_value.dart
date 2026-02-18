@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../services/card_content_service.dart';
 import '../../../theme/glass_components.dart';
 import '../../../theme/settle_tokens.dart';
+import '../../../widgets/calm_loading.dart';
 import '../../../widgets/output_card.dart';
 import '../../../widgets/script_card.dart';
 
@@ -38,7 +39,9 @@ class StepInstantValue extends StatelessWidget {
           const GlassCard(
             child: SizedBox(
               height: 140,
-              child: Center(child: CircularProgressIndicator.adaptive()),
+              child: const Center(
+                child: CalmLoading(message: 'Almost there…'),
+              ),
             ),
           )
         else if (card == null)

@@ -106,6 +106,9 @@ class FamilyRulesNotifier extends StateNotifier<FamilyRulesState> {
     _load();
   }
 
+  /// Reload rules from storage. Use for retry after error.
+  Future<void> load() => _load();
+
   Box<dynamic>? _box;
   final FamilyRulesGuidanceService _guidance =
       FamilyRulesGuidanceService.instance;

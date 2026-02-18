@@ -10,6 +10,8 @@ import '../../providers/user_cards_provider.dart';
 import '../../theme/settle_design_system.dart';
 import '../../theme/settle_tokens.dart';
 import '../../theme/glass_components.dart' hide GlassCard;
+import '../../widgets/calm_loading.dart';
+import '../../widgets/error_state.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_chip.dart';
 import '../../widgets/settle_tappable.dart';
@@ -71,37 +73,13 @@ class SavedPlaybookScreen extends ConsumerWidget {
                             },
                           ),
                     loading: () => const Center(
-                      child: CircularProgressIndicator(
-                        color: SettleColors.sage600,
-                      ),
+                      child: CalmLoading(message: 'Loading your playbook…'),
                     ),
                     error: (_, __) => Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: SettleSpacing.screenPadding,
-                        ),
-                        child: GlassCard(
-                          variant: GlassCardVariant.light,
-                          padding: const EdgeInsets.all(SettleSpacing.lg),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Something went wrong.',
-                                style: SettleTypography.body.copyWith(
-                                  color: SettleColors.ink400,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: SettleSpacing.lg),
-                              GlassPill(
-                                label: 'Try again',
-                                onTap: () =>
-                                    ref.invalidate(playbookRepairCardsProvider),
-                              ),
-                            ],
-                          ),
-                        ),
+                      child: SettleErrorState(
+                        message: 'Something went wrong.',
+                        onRetry: () =>
+                            ref.invalidate(playbookRepairCardsProvider),
                       ),
                     ),
                   ),
