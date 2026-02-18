@@ -5,14 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../models/pattern_insight.dart';
 import '../../providers/patterns_provider.dart';
 import '../../providers/playbook_provider.dart';
-import '../../theme/glass_components.dart' hide GlassCard, GlassPill;
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../providers/weekly_reflection_provider.dart';
 import '../../widgets/calm_loading.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/glass_pill.dart';
 import '../../widgets/screen_header.dart';
+import '../../widgets/settle_tappable.dart';
 import '../../widgets/weekly_reflection.dart';
 
 class LibraryHomeScreen extends ConsumerWidget {
@@ -26,93 +25,99 @@ class LibraryHomeScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+          padding: EdgeInsets.symmetric(
+            horizontal: SettleSpacing.screenPadding,
+          ),
           child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ScreenHeader(
-                  title: 'Library',
-                  subtitle: 'Saved scripts, learning, and patterns.',
-                  fallbackRoute: '/library',
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (WeeklyReflectionBanner.shouldShow() &&
-                            !ref.watch(
-                              weeklyReflectionDismissedThisWeekProvider,
-                            )) ...[
-                          WeeklyReflectionBanner(
-                            onDismiss: () => ref
-                                .read(weeklyReflectionProvider.notifier)
-                                .dismissThisWeek(),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                        _MonthlyInsightCard(),
-                        const SizedBox(height: 10),
-                        _PatternsPreviewCard(patterns: patterns),
-                        const SizedBox(height: 10),
-                        _SavedPlaybookPreviewCard(
-                          playbookAsync: playbookAsync,
-                          onRetry: () =>
-                              ref.invalidate(playbookRepairCardsProvider),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ScreenHeader(
+                title: 'Library',
+                subtitle: 'Saved scripts, learning, and patterns.',
+                fallbackRoute: '/library',
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (WeeklyReflectionBanner.shouldShow() &&
+                          !ref.watch(
+                            weeklyReflectionDismissedThisWeekProvider,
+                          )) ...[
+                        WeeklyReflectionBanner(
+                          onDismiss: () => ref
+                              .read(weeklyReflectionProvider.notifier)
+                              .dismissThisWeek(),
                         ),
                         const SizedBox(height: 10),
-                        GlassCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Learn', style: T.type.h3),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Review evidence-backed guidance.',
-                                style: T.type.body.copyWith(
-                                  color: T.pal.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              GlassCta(
-                                label: 'Open learn',
-                                onTap: () => context.push('/library/learn'),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        GlassCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Logs', style: T.type.h3),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Review day and week outcomes quietly over time.',
-                                style: T.type.body.copyWith(
-                                  color: T.pal.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              GlassCta(
-                                label: 'Open logs',
-                                onTap: () => context.push('/library/logs'),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
                       ],
-                    ),
+                      _MonthlyInsightCard(),
+                      const SizedBox(height: 10),
+                      _PatternsPreviewCard(patterns: patterns),
+                      const SizedBox(height: 10),
+                      _SavedPlaybookPreviewCard(
+                        playbookAsync: playbookAsync,
+                        onRetry: () =>
+                            ref.invalidate(playbookRepairCardsProvider),
+                      ),
+                      const SizedBox(height: 10),
+                      GlassCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Learn', style: SettleTypography.heading),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Review evidence-backed guidance.',
+                              style: SettleTypography.body.copyWith(
+                                color: _supportingTextColor(context),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            GlassPill(
+                              label: 'Open learn',
+                              onTap: () => context.push('/library/learn'),
+                              variant: GlassPillVariant.primaryLight,
+                              expanded: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      GlassCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Logs', style: SettleTypography.heading),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Review day and week outcomes quietly over time.',
+                              style: SettleTypography.body.copyWith(
+                                color: _supportingTextColor(context),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            GlassPill(
+                              label: 'Open logs',
+                              onTap: () => context.push('/library/logs'),
+                              variant: GlassPillVariant.primaryLight,
+                              expanded: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }
@@ -126,16 +131,20 @@ class _MonthlyInsightCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Monthly insight', style: T.type.h3),
+          Text('Monthly insight', style: SettleTypography.heading),
           const SizedBox(height: 8),
           Text(
             'A quiet look at scripts, wins, and regulation this month.',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: SettleTypography.body.copyWith(
+              color: _supportingTextColor(context),
+            ),
           ),
           const SizedBox(height: 12),
-          GlassCta(
+          GlassPill(
             label: 'Open monthly insight',
             onTap: () => context.push('/library/insights'),
+            variant: GlassPillVariant.primaryLight,
+            expanded: true,
           ),
         ],
       ),
@@ -156,12 +165,14 @@ class _PatternsPreviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your patterns', style: T.type.h3),
+          Text('Your patterns', style: SettleTypography.heading),
           const SizedBox(height: 8),
           if (preview.isEmpty)
             Text(
               'Pattern insights will appear once enough usage events accumulate.',
-              style: T.type.body.copyWith(color: T.pal.textSecondary),
+              style: SettleTypography.body.copyWith(
+                color: _supportingTextColor(context),
+              ),
             )
           else
             ...preview.map((pattern) {
@@ -173,14 +184,18 @@ class _PatternsPreviewCard extends StatelessWidget {
                   children: [
                     Text(
                       _patternLabel(pattern),
-                      style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                      style: SettleTypography.caption.copyWith(
+                        color: _mutedTextColor(context),
+                      ),
                     ),
                     const SizedBox(height: 3),
-                    Text(pattern.insight, style: T.type.body),
+                    Text(pattern.insight, style: SettleTypography.body),
                     const SizedBox(height: 2),
                     Text(
                       '${confidence.toStringAsFixed(0)}% confidence',
-                      style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                      style: SettleTypography.caption.copyWith(
+                        color: _mutedTextColor(context),
+                      ),
                     ),
                   ],
                 ),
@@ -208,10 +223,7 @@ class _PatternsPreviewCard extends StatelessWidget {
 }
 
 class _SavedPlaybookPreviewCard extends StatelessWidget {
-  const _SavedPlaybookPreviewCard({
-    required this.playbookAsync,
-    this.onRetry,
-  });
+  const _SavedPlaybookPreviewCard({required this.playbookAsync, this.onRetry});
 
   final AsyncValue<List<PlaybookEntry>> playbookAsync;
   final VoidCallback? onRetry;
@@ -222,7 +234,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('My Playbook', style: T.type.h3),
+          Text('My Playbook', style: SettleTypography.heading),
           const SizedBox(height: 8),
           playbookAsync.when(
             data: (list) {
@@ -233,7 +245,7 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                     Text(
                       'Your playbook is empty.',
                       style: SettleTypography.body.copyWith(
-                        color: T.pal.textSecondary,
+                        color: _supportingTextColor(context),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -251,16 +263,24 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                   ...list.take(3).map((entry) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: GestureDetector(
-                        onTap: () => context.push(
-                          '/library/saved/card/${entry.repairCard.id}',
-                        ),
-                        child: GlassCard(
-                          variant: GlassCardVariant.lightStrong,
-                          padding: const EdgeInsets.all(10),
-                          child: Text(
-                            entry.repairCard.title,
-                            style: T.type.label,
+                      child: Semantics(
+                        button: true,
+                        label: 'Open ${entry.repairCard.title} playbook card',
+                        child: SettleTappable(
+                          onTap: () => context.push(
+                            '/library/saved/card/${entry.repairCard.id}',
+                          ),
+                          semanticLabel: 'Open ${entry.repairCard.title}',
+                          excludeSemantics: true,
+                          child: GlassCard(
+                            variant: GlassCardVariant.lightStrong,
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                              entry.repairCard.title,
+                              style: SettleTypography.body.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -277,13 +297,13 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
             },
             loading: () => const SizedBox(
               height: 56,
-              child: Center(
-                child: CalmLoading(message: 'Loading library…'),
-              ),
+              child: Center(child: CalmLoading(message: 'Loading library…')),
             ),
             error: (_, __) {
               final isDark = Theme.of(context).brightness == Brightness.dark;
-              final color = isDark ? SettleColors.nightSoft : SettleColors.ink500;
+              final color = isDark
+                  ? SettleColors.nightSoft
+                  : SettleColors.ink500;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -291,27 +311,38 @@ class _SavedPlaybookPreviewCard extends StatelessWidget {
                     'Something went wrong.',
                     style: SettleTypography.body.copyWith(color: color),
                   ),
-                const SizedBox(height: SettleSpacing.md),
-                if (onRetry != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: SettleSpacing.sm),
-                    child: GlassPill(
-                      label: 'Try again',
-                      onTap: onRetry!,
-                      variant: GlassPillVariant.primaryLight,
+                  const SizedBox(height: SettleSpacing.md),
+                  if (onRetry != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: SettleSpacing.sm),
+                      child: GlassPill(
+                        label: 'Try again',
+                        onTap: onRetry!,
+                        variant: GlassPillVariant.primaryLight,
+                        expanded: true,
+                      ),
                     ),
+                  GlassPill(
+                    label: 'Open playbook',
+                    onTap: () => context.push('/library/saved'),
+                    variant: GlassPillVariant.secondaryLight,
                   ),
-                GlassPill(
-                  label: 'Open playbook',
-                  onTap: () => context.push('/library/saved'),
-                  variant: GlassPillVariant.secondaryLight,
-                ),
-              ],
-            );
+                ],
+              );
             },
           ),
         ],
       ),
     );
   }
+}
+
+Color _supportingTextColor(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  return isDark ? SettleColors.nightSoft : SettleColors.ink500;
+}
+
+Color _mutedTextColor(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  return isDark ? SettleColors.nightMuted : SettleColors.ink400;
 }

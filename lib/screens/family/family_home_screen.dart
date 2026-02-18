@@ -6,12 +6,13 @@ import '../../models/approach.dart';
 import '../../models/family_member.dart';
 import '../../providers/family_members_provider.dart';
 import '../../providers/profile_provider.dart';
-import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
+import '../../widgets/settle_tappable.dart';
 import 'activity_feed.dart';
 
 class FamilyHomeScreen extends ConsumerStatefulWidget {
@@ -52,7 +53,9 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
       body: GradientBackgroundFromRoute(
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: SettleSpacing.screenPadding,
+            ),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Column(
@@ -72,12 +75,15 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Your support network', style: T.type.h3),
+                          Text(
+                            'Your support network',
+                            style: SettleTypography.heading,
+                          ),
                           const SizedBox(height: 6),
                           Text(
                             'Invite grandparents, babysitters, or other caregivers to stay on the same page.',
-                            style: T.type.body.copyWith(
-                              color: T.pal.textSecondary,
+                            style: SettleTypography.body.copyWith(
+                              color: _supportingTextColor(context),
                             ),
                           ),
                         ],
@@ -89,18 +95,23 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Shared playbook', style: T.type.h3),
+                        Text(
+                          'Shared playbook',
+                          style: SettleTypography.heading,
+                        ),
                         const SizedBox(height: 8),
                         Text(
                           'Open caregiver scripts and agreement notes.',
-                          style: T.type.body.copyWith(
-                            color: T.pal.textSecondary,
+                          style: SettleTypography.body.copyWith(
+                            color: _supportingTextColor(context),
                           ),
                         ),
                         const SizedBox(height: 12),
-                        GlassCta(
+                        GlassPill(
                           label: 'Open shared scripts',
                           onTap: () => context.push('/family/shared'),
+                          variant: GlassPillVariant.primaryLight,
+                          expanded: true,
                         ),
                       ],
                     ),
@@ -110,18 +121,20 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Invite', style: T.type.h3),
+                        Text('Invite', style: SettleTypography.heading),
                         const SizedBox(height: 8),
                         Text(
                           'Send an invite link so others can join your plan.',
-                          style: T.type.body.copyWith(
-                            color: T.pal.textSecondary,
+                          style: SettleTypography.body.copyWith(
+                            color: _supportingTextColor(context),
                           ),
                         ),
                         const SizedBox(height: 12),
-                        GlassCta(
+                        GlassPill(
                           label: 'Get invite link',
                           onTap: () => context.push('/family/invite'),
+                          variant: GlassPillVariant.primaryLight,
+                          expanded: true,
                         ),
                       ],
                     ),
@@ -153,12 +166,16 @@ class _MembersSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Family members', style: T.type.h3),
-              GestureDetector(
+              Text('Family members', style: SettleTypography.heading),
+              SettleTappable(
                 onTap: () => context.push('/family/invite'),
+                semanticLabel: 'Invite family member',
                 child: Text(
                   'Invite',
-                  style: T.type.label.copyWith(color: T.pal.accent),
+                  style: SettleTypography.body.copyWith(
+                    color: SettleColors.ink700,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -167,7 +184,9 @@ class _MembersSection extends StatelessWidget {
           if (members.isEmpty)
             Text(
               'You\'ll appear here. Invite others to add them.',
-              style: T.type.body.copyWith(color: T.pal.textSecondary),
+              style: SettleTypography.body.copyWith(
+                color: _supportingTextColor(context),
+              ),
             )
           else
             Wrap(
@@ -192,18 +211,21 @@ class _MemberChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
+      variant: GlassCardVariant.lightStrong,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      fill: T.glass.fillAccent,
-      borderRadius: T.radius.pill,
+      borderRadius: SettleRadii.pill,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircleAvatar(
             radius: 14,
-            backgroundColor: T.pal.accent.withValues(alpha: 0.3),
+            backgroundColor: SettleColors.ink500.withValues(alpha: 0.18),
             child: Text(
               name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: T.type.label.copyWith(color: T.pal.accent),
+              style: SettleTypography.body.copyWith(
+                color: SettleColors.ink800,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -211,10 +233,17 @@ class _MemberChip extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(name, style: T.type.label),
+              Text(
+                name,
+                style: SettleTypography.body.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               Text(
                 role,
-                style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                style: SettleTypography.caption.copyWith(
+                  color: _mutedTextColor(context),
+                ),
               ),
             ],
           ),
@@ -222,4 +251,14 @@ class _MemberChip extends StatelessWidget {
       ),
     );
   }
+}
+
+Color _supportingTextColor(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  return isDark ? SettleColors.nightSoft : SettleColors.ink500;
+}
+
+Color _mutedTextColor(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  return isDark ? SettleColors.nightMuted : SettleColors.ink400;
 }

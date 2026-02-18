@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../models/approach.dart';
 import '../../providers/nudge_settings_provider.dart';
 import '../../providers/plan_ordering_provider.dart';
 import '../../providers/patterns_provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../services/nudge_scheduler.dart';
-import '../../providers/user_cards_provider.dart';
 import '../../services/card_content_service.dart';
-import '../../theme/glass_components.dart' hide GlassCard, GlassPill;
-import '../../theme/settle_tokens.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/calm_loading.dart';
 import '../../widgets/glass_card.dart';
@@ -21,6 +16,7 @@ import '../../widgets/output_card.dart';
 import '../../widgets/settle_tappable.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
+import '../../widgets/settle_gap.dart';
 
 class PlanHomeScreen extends ConsumerStatefulWidget {
   const PlanHomeScreen({super.key});
@@ -30,96 +26,7 @@ class PlanHomeScreen extends ConsumerStatefulWidget {
 }
 
 class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
-  String? _selectedTrigger;
-  CardContent? _selectedCard;
-  bool _loading = false;
   bool _nudgeScheduled = false;
-
-  Future<void> _selectTrigger(String trigger) async {
-    setState(() {
-      _selectedTrigger = trigger;
-      _loading = true;
-    });
-    final card = await CardContentService.instance.selectBestCard(
-      triggerType: trigger,
-    );
-    if (!mounted) return;
-    setState(() {
-      _selectedCard = card;
-      _loading = false;
-    });
-  }
-
-  Future<void> _saveCard(CardContent card) async {
-    await ref.read(userCardsProvider.notifier).save(card.id);
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Saved to playbook'),
-        duration: const Duration(milliseconds: 800),
-      ),
-    );
-  }
-
-  Future<void> _showEvidence(CardContent card) async {
-    final evidence =
-        card.evidence ?? 'This script follows co-regulation first.';
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              SettleSpacing.screenPadding,
-              T.space.md,
-              SettleSpacing.screenPadding,
-              SettleSpacing.screenPadding,
-            ),
-            child: GlassCard(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Why this works', style: T.type.h3),
-                  const SizedBox(height: 8),
-                  Text(
-                    evidence,
-                    style: T.type.body.copyWith(color: T.pal.textSecondary),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _copyScript(BuildContext context, CardContent card) {
-    final buffer = StringBuffer();
-    buffer.writeln('Prevent: ${card.prevent}');
-    buffer.writeln('Say: ${card.say}');
-    buffer.writeln('Do: ${card.doStep}');
-    if (card.ifEscalates != null && card.ifEscalates!.isNotEmpty) {
-      buffer.writeln('If it escalates: ${card.ifEscalates}');
-    }
-    Clipboard.setData(ClipboardData(text: buffer.toString()));
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Script copied to clipboard'),
-          duration: Duration(milliseconds: 800),
-        ),
-      );
-    }
-  }
-
-  bool _needsRegulateFirst(RegulationLevel? level) {
-    return level == RegulationLevel.stressed ||
-        level == RegulationLevel.anxious ||
-        level == RegulationLevel.angry;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,64 +48,94 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
 
     ref.watch(patternEngineRefreshProvider);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headlineColor = isDark ? SettleColors.nightText : SettleColors.ink900;
+    final supportingColor = isDark
+        ? SettleColors.nightSoft
+        : SettleColors.ink500;
+
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Greeting (no glass)
-              Text(
-                _greetingText(context),
-                style: SettleTypography.display.copyWith(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? SettleColors.nightText
-                      : SettleColors.ink900,
+        child: Stack(
+          children: [
+            const Positioned(
+              top: -80,
+              right: -30,
+              child: _AmbientOrb(
+                tint: SettleColors.dusk400,
+                size: SettleSpacing.xxl * 8,
+              ),
+            ),
+            const Positioned(
+              bottom: 40,
+              left: -70,
+              child: _AmbientOrb(
+                tint: SettleColors.sage400,
+                size: SettleSpacing.xxl * 7,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: SettleSpacing.screenPadding,
+              ),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SettleGap.lg(),
+                    _GreetingCluster(
+                      greeting: _greetingText(context),
+                      isNight: _isNighttime(),
+                      headlineColor: headlineColor,
+                      supportingColor: supportingColor,
+                    ),
+                    const SettleGap.xl(),
+                    _SleepTonightHeroCard(
+                      onOpen: () => context.push('/sleep/tonight'),
+                      headlineColor: headlineColor,
+                      supportingColor: supportingColor,
+                    ),
+                    const SettleGap.lg(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _QuickActionCard(
+                            icon: Icons.mood_rounded,
+                            iconColor: SettleColors.ink500,
+                            title: 'Reset',
+                            subtitle: 'Calm body cues',
+                            eta: '~15s',
+                            onTap: () =>
+                                context.push('/plan/reset?context=general'),
+                          ),
+                        ),
+                        const SettleGap.sm(),
+                        Expanded(
+                          child: _QuickActionCard(
+                            icon: Icons.gps_fixed_rounded,
+                            iconColor: SettleColors.ink500,
+                            title: 'Moment',
+                            subtitle: 'One script now',
+                            eta: '~10s',
+                            onTap: () =>
+                                context.push('/plan/moment?context=general'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SettleGap.lg(),
+                    _RhythmBridgeCard(
+                      supportingColor: supportingColor,
+                      onOpenSleep: () => context.go('/sleep'),
+                      onOpenLibrary: () => context.go('/library/logs'),
+                    ),
+                    const SettleGap.xxl(),
+                  ],
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                'What do you need right now?',
-                style: T.type.caption.copyWith(
-                  color: SettleColors.ink400,
-                ),
-              ),
-              const SizedBox(height: SettleSpacing.xl), // 20px to hero
-
-              // 2. Sleep Tonight hero card (GlassCard lightStrong)
-              _SleepTonightHeroCard(onOpen: () => context.push('/sleep/tonight')),
-
-              const SizedBox(height: 10), // 10px hero to quick row
-
-              // 3. Quick actions row (two GlassCard light, 8px gap)
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickActionCard(
-                      icon: Icons.mood_rounded,
-                      iconColor: SettleColors.sage600,
-                      title: 'Reset',
-                      subtitle: '~15s',
-                      onTap: () => context.push('/plan/reset?context=general'),
-                    ),
-                  ),
-                  const SizedBox(width: SettleSpacing.sm), // 8px gap
-                  Expanded(
-                    child: _QuickActionCard(
-                      icon: Icons.gps_fixed_rounded,
-                      iconColor: SettleColors.dusk600,
-                      title: 'Moment',
-                      subtitle: '~10s',
-                      onTap: () => context.push('/plan/moment?context=general'),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 10), // 10px quick row to nav
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -214,37 +151,133 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
     if (hour >= 17 && hour < 21) return 'Good evening';
     return isDark ? 'Late night' : 'Good evening';
   }
+
+  bool _isNighttime() {
+    final hour = DateTime.now().hour;
+    return hour >= 21 || hour < 5;
+  }
+}
+
+class _GreetingCluster extends StatelessWidget {
+  const _GreetingCluster({
+    required this.greeting,
+    required this.isNight,
+    required this.headlineColor,
+    required this.supportingColor,
+  });
+
+  final String greeting;
+  final bool isNight;
+  final Color headlineColor;
+  final Color supportingColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final chipTint = isNight ? SettleColors.ink500 : SettleColors.ink700;
+    final chipLabel = isNight ? 'Night support' : 'Day rhythm';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.34),
+            borderRadius: BorderRadius.circular(SettleRadii.pill),
+            border: Border.all(color: chipTint.withValues(alpha: 0.18)),
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: SettleSpacing.md,
+            vertical: SettleSpacing.xs,
+          ),
+          child: Text(
+            chipLabel,
+            style: SettleTypography.caption.copyWith(color: chipTint),
+          ),
+        ),
+        const SettleGap.sm(),
+        Text(
+          greeting,
+          style: SettleTypography.display.copyWith(color: headlineColor),
+        ),
+        const SettleGap.xs(),
+        Text(
+          'Pick one next step. We’ll keep it simple.',
+          style: SettleTypography.body.copyWith(color: supportingColor),
+        ),
+      ],
+    );
+  }
+}
+
+class _AmbientOrb extends StatelessWidget {
+  const _AmbientOrb({required this.tint, required this.size});
+
+  final Color tint;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [tint.withValues(alpha: 0.28), tint.withValues(alpha: 0.0)],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// Sleep Tonight hero: glass card with dusk icon circle, eyebrow, title, desc, CTA.
 class _SleepTonightHeroCard extends StatelessWidget {
-  const _SleepTonightHeroCard({required this.onOpen});
+  const _SleepTonightHeroCard({
+    required this.onOpen,
+    required this.headlineColor,
+    required this.supportingColor,
+  });
 
   final VoidCallback onOpen;
+  final Color headlineColor;
+  final Color supportingColor;
 
   @override
   Widget build(BuildContext context) {
     return GlassCard(
       variant: GlassCardVariant.lightStrong,
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Glass circle icon top-right: 48px, dusk tint 8%, moon 22px
           Positioned(
             top: 0,
+            left: 0,
             right: 0,
             child: Container(
-              width: 48,
-              height: 48,
+              height: SettleSpacing.xs,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(SettleRadii.card),
+                color: SettleColors.ink500.withValues(alpha: 0.14),
+              ),
+            ),
+          ),
+          Positioned(
+            top: SettleSpacing.sm,
+            right: 0,
+            child: Container(
+              width: SettleSpacing.xxl * 2,
+              height: SettleSpacing.xxl * 2,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: SettleColors.dusk400.withValues(alpha: 0.08),
+                color: Colors.white.withValues(alpha: 0.46),
               ),
               child: Icon(
                 Icons.nightlight_round,
-                size: 22,
-                color: SettleColors.dusk600,
+                size: SettleSpacing.lg + SettleSpacing.sm,
+                color: SettleColors.ink700,
               ),
             ),
           ),
@@ -252,35 +285,39 @@ class _SleepTonightHeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Eyebrow: SLEEP TONIGHT
+              const SettleGap.sm(),
               Text(
                 'SLEEP TONIGHT',
-                style: T.type.overline.copyWith(
-                  color: SettleColors.dusk600.withValues(alpha: 0.75),
-                ),
-              ),
-              const SizedBox(height: 6),
-              // Title: Ready when you need it
-              Text(
-                'Ready when you need it',
-                style: SettleTypography.heading.copyWith(
-                  fontWeight: FontWeight.w400,
-                  color: SettleColors.ink900,
-                ),
-              ),
-              const SizedBox(height: 4),
-              // Desc
-              Text(
-                '3 short guides for whatever tonight brings.',
                 style: SettleTypography.caption.copyWith(
-                  color: SettleColors.ink400,
+                  letterSpacing: 0.7,
+                  color: SettleColors.ink500,
                 ),
               ),
-              const SizedBox(height: 14),
+              const SettleGap.sm(),
+              Text(
+                'Open Sleep Tonight',
+                style: SettleTypography.heading.copyWith(color: headlineColor),
+              ),
+              const SettleGap.xs(),
+              Text(
+                'Night wake, bedtime protest, or early wake.\nOne clear step at a time.',
+                style: SettleTypography.body.copyWith(color: supportingColor),
+              ),
+              const SettleGap.md(),
+              Wrap(
+                spacing: SettleSpacing.sm,
+                runSpacing: SettleSpacing.sm,
+                children: const [
+                  _HeroTag(label: 'No setup'),
+                  _HeroTag(label: 'Fast entry'),
+                  _HeroTag(label: 'Guided beats'),
+                ],
+              ),
+              const SettleGap.md(),
               GlassPill(
-                label: 'Open',
+                label: 'Open Sleep Tonight',
                 onTap: onOpen,
-                variant: GlassPillVariant.primaryLight,
+                variant: GlassPillVariant.secondaryLight,
                 expanded: true,
               ),
             ],
@@ -298,6 +335,7 @@ class _QuickActionCard extends StatelessWidget {
     required this.iconColor,
     required this.title,
     required this.subtitle,
+    required this.eta,
     required this.onTap,
   });
 
@@ -305,6 +343,7 @@ class _QuickActionCard extends StatelessWidget {
   final Color iconColor;
   final String title;
   final String subtitle;
+  final String eta;
   final VoidCallback onTap;
 
   @override
@@ -313,30 +352,142 @@ class _QuickActionCard extends StatelessWidget {
       onTap: onTap,
       semanticLabel: '$title. $subtitle',
       child: GlassCard(
-        variant: GlassCardVariant.light,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+        variant: GlassCardVariant.lightStrong,
+        padding: const EdgeInsets.symmetric(
+          vertical: SettleSpacing.lg,
+          horizontal: SettleSpacing.md,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 24, color: iconColor),
-            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  width: SettleSpacing.xl + SettleSpacing.lg,
+                  height: SettleSpacing.xl + SettleSpacing.lg,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: iconColor.withValues(alpha: 0.14),
+                  ),
+                  child: Icon(icon, size: SettleSpacing.lg, color: iconColor),
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  size: SettleSpacing.lg,
+                  color: SettleColors.ink400,
+                ),
+              ],
+            ),
+            const SettleGap.sm(),
             Text(
               title,
-              style: T.type.caption.copyWith(
-                fontWeight: FontWeight.w600,
+              style: SettleTypography.body.copyWith(
+                fontWeight: FontWeight.w700,
                 color: SettleColors.ink900,
               ),
             ),
-            const SizedBox(height: 2),
+            const SettleGap.xs(),
             Text(
               subtitle,
-              style: T.type.overline.copyWith(
+              style: SettleTypography.caption.copyWith(
+                color: SettleColors.ink500,
+              ),
+            ),
+            const SettleGap.xs(),
+            Text(
+              eta,
+              style: SettleTypography.caption.copyWith(
                 color: SettleColors.ink400,
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HeroTag extends StatelessWidget {
+  const _HeroTag({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: SettleColors.stone100.withValues(alpha: 0.82),
+        borderRadius: BorderRadius.circular(SettleRadii.pill),
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: SettleSpacing.md,
+        vertical: SettleSpacing.xs,
+      ),
+      child: Text(
+        label,
+        style: SettleTypography.caption.copyWith(
+          color: SettleColors.ink500,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _RhythmBridgeCard extends StatelessWidget {
+  const _RhythmBridgeCard({
+    required this.supportingColor,
+    required this.onOpenSleep,
+    required this.onOpenLibrary,
+  });
+
+  final Color supportingColor;
+  final VoidCallback onOpenSleep;
+  final VoidCallback onOpenLibrary;
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassCard(
+      variant: GlassCardVariant.lightStrong,
+      padding: const EdgeInsets.symmetric(
+        horizontal: SettleSpacing.lg,
+        vertical: SettleSpacing.md,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Keep today visible',
+            style: SettleTypography.body.copyWith(
+              color: SettleColors.ink900,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SettleGap.xs(),
+          Text(
+            'Sleep holds your rhythm plan. Library keeps your logs.',
+            style: SettleTypography.caption.copyWith(color: supportingColor),
+          ),
+          const SettleGap.md(),
+          Wrap(
+            spacing: SettleSpacing.sm,
+            runSpacing: SettleSpacing.sm,
+            children: [
+              GlassPill(
+                label: 'Open Sleep tab',
+                onTap: onOpenSleep,
+                variant: GlassPillVariant.secondaryLight,
+              ),
+              GlassPill(
+                label: 'Open logs',
+                onTap: onOpenLibrary,
+                variant: GlassPillVariant.secondaryLight,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -360,7 +511,7 @@ class PlanCardScreen extends StatelessWidget {
         final card = snapshot.data;
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
-            body: const Center(
+            body: Center(
               child: CalmLoading(message: 'Finding the right approach…'),
             ),
           );
@@ -375,36 +526,38 @@ class PlanCardScreen extends StatelessWidget {
         return Scaffold(
           body: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: SettleSpacing.screenPadding),
+              padding: EdgeInsets.symmetric(
+                horizontal: SettleSpacing.screenPadding,
+              ),
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ScreenHeader(title: 'Script', fallbackRoute: fallbackRoute),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        child: OutputCard(
-                          scenarioLabel: card.triggerType,
-                          prevent: card.prevent,
-                          say: card.say,
-                          doStep: card.doStep,
-                          ifEscalates: card.ifEscalates,
-                          primaryLabel: 'Done',
-                          onPrimary: () {
-                            if (context.canPop()) {
-                              context.pop();
-                            } else {
-                              context.go(fallbackRoute);
-                            }
-                          },
-                        ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ScreenHeader(title: 'Script', fallbackRoute: fallbackRoute),
+                  const SettleGap.sm(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: OutputCard(
+                        scenarioLabel: card.triggerType,
+                        prevent: card.prevent,
+                        say: card.say,
+                        doStep: card.doStep,
+                        ifEscalates: card.ifEscalates,
+                        primaryLabel: 'Done',
+                        onPrimary: () {
+                          if (context.canPop()) {
+                            context.pop();
+                          } else {
+                            context.go(fallbackRoute);
+                          }
+                        },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
         );
       },
     );
