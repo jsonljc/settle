@@ -2,7 +2,27 @@ import 'package:flutter/material.dart';
 
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
+
+class _RsrT {
+  _RsrT._();
+
+  static final type = _RsrTypeTokens();
+  static const pal = _RsrPaletteTokens();
+}
+
+class _RsrTypeTokens {
+  TextStyle get h2 => SettleTypography.heading.copyWith(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+  );
+  TextStyle get body => SettleTypography.body;
+}
+
+class _RsrPaletteTokens {
+  const _RsrPaletteTokens();
+
+  Color get textSecondary => SettleColors.nightSoft;
+}
 
 /// Step 5: Repair — shown when trigger was [RegulationTrigger.alreadyYelled].
 /// Simple repair scripts for reconnecting after a rupture.
@@ -24,11 +44,11 @@ class RegulateStepRepair extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Repair when you\'re ready', style: T.type.h2),
+          Text('Repair when you\'re ready', style: _RsrT.type.h2),
           const SizedBox(height: 8),
           Text(
             'A short, genuine repair goes a long way. You don\'t have to be perfect.',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: _RsrT.type.body.copyWith(color: _RsrT.pal.textSecondary),
           ),
           const SizedBox(height: 20),
           ..._repairScripts.map(
@@ -42,7 +62,7 @@ class RegulateStepRepair extends StatelessWidget {
                   ),
                   child: Text(
                     script,
-                    style: T.type.body.copyWith(height: 1.45),
+                    style: _RsrT.type.body.copyWith(height: 1.45),
                   ),
                 ),
               ),
