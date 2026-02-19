@@ -354,10 +354,10 @@ class SettleTheme {
         color: SettleColors.ink400.withValues(alpha: 0.3),
         thickness: 0.5,
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(
+      pageTransitionsTheme: PageTransitionsTheme(
         builders: {
-          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: const _SettlePageTransitionsBuilder(),
+          TargetPlatform.android: const _SettlePageTransitionsBuilder(),
         },
       ),
       splashColor: SettleColors.sage400.withValues(alpha: 0.12),
@@ -423,10 +423,10 @@ class SettleTheme {
         color: SettleColors.nightMuted.withValues(alpha: 0.4),
         thickness: 0.5,
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(
+      pageTransitionsTheme: PageTransitionsTheme(
         builders: {
-          TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: const _SettlePageTransitionsBuilder(),
+          TargetPlatform.android: const _SettlePageTransitionsBuilder(),
         },
       ),
       splashColor: SettleColors.nightAccent.withValues(alpha: 0.12),
@@ -519,4 +519,69 @@ class SettleSemanticColors {
 
   static bool _isDark(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PAGE TRANSITION — gentle fade + upward slide (replaces FadeUpwards)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SettlePageTransitionsBuilder extends PageTransitionsBuilder {
+  const _SettlePageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return _SettlePageTransition(
+      animation: animation,
+      secondaryAnimation: secondaryAnimation,
+      child: child,
+    );
+  }
+}
+
+class _SettlePageTransition extends StatelessWidget {
+  const _SettlePageTransition({
+    required this.animation,
+    required this.secondaryAnimation,
+    required this.child,
+  });
+
+  final Animation<double> animation;
+  final Animation<double> secondaryAnimation;
+  final Widget child;
+
+  static final _fadeIn = CurveTween(curve: const Interval(0.0, 0.6, curve: Curves.easeOut));
+  static final _slideIn = Tween<Offset>(
+    begin: const Offset(0, 0.04),
+    end: Offset.zero,
+  ).chain(CurveTween(curve: Curves.easeOutCubic));
+
+  // Outgoing page fades slightly and scales down just a touch
+  static final _fadeOut = CurveTween(curve: const Interval(0.0, 0.3, curve: Curves.easeIn));
+  static final _scaleOut = Tween<double>(begin: 1.0, end: 0.97)
+      .chain(CurveTween(curve: Curves.easeIn));
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeIn.animate(animation),
+      child: SlideTransition(
+        position: _slideIn.animate(animation),
+        child: ScaleTransition(
+          scale: _scaleOut.animate(secondaryAnimation),
+          child: FadeTransition(
+            opacity: Tween<double>(begin: 1.0, end: 0.8)
+                .chain(_fadeOut)
+                .animate(secondaryAnimation),
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
 }
