@@ -16,6 +16,7 @@ enum SettleChipVariant {
 }
 
 /// Shared chip widget replacing ad-hoc _TagChip, _ActionChip, _FrequencyChip.
+/// Brightness-aware: works on both light and dark backgrounds.
 class SettleChip extends StatelessWidget {
   const SettleChip({
     super.key,
@@ -42,51 +43,10 @@ class SettleChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveLabel = semanticLabel ?? label;
     final hint = semanticHint ?? 'Double tap to select';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    Color fill;
-    Color borderColor;
-    Color textColor;
-    TextStyle textStyle;
-
-    switch (variant) {
-      case SettleChipVariant.tag:
-        fill = selected
-            ? SettleColors.dusk600.withValues(alpha: 0.18)
-            : SettleGlassDark.backgroundStrong;
-        borderColor = selected
-            ? SettleColors.dusk400.withValues(alpha: 0.50)
-            : SettleGlassDark.borderStrong;
-        textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
-        textStyle = SettleTypography.caption.copyWith(
-          color: textColor,
-          fontWeight: FontWeight.w600,
-        );
-        break;
-      case SettleChipVariant.action:
-        fill = selected
-            ? SettleColors.dusk600.withValues(alpha: 0.16)
-            : SettleGlassDark.background;
-        borderColor = SettleGlassDark.borderStrong;
-        textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
-        textStyle = SettleTypography.caption.copyWith(
-          color: textColor,
-          fontWeight: FontWeight.w600,
-        );
-        break;
-      case SettleChipVariant.frequency:
-        fill = selected
-            ? SettleColors.dusk600.withValues(alpha: 0.16)
-            : SettleGlassDark.background;
-        borderColor = selected
-            ? SettleColors.dusk400.withValues(alpha: 0.45)
-            : SettleGlassDark.borderStrong;
-        textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
-        textStyle = SettleTypography.body.copyWith(
-          color: textColor,
-          fontWeight: FontWeight.w600,
-        );
-        break;
-    }
+    final (Color fill, Color borderColor, Color textColor, TextStyle textStyle) =
+        _resolveColors(isDark);
 
     final displayLabel = count != null ? '$label ($count)' : label;
 
@@ -129,5 +89,69 @@ class SettleChip extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  (Color, Color, Color, TextStyle) _resolveColors(bool isDark) {
+    Color fill;
+    Color borderColor;
+    Color textColor;
+
+    if (isDark) {
+      switch (variant) {
+        case SettleChipVariant.tag:
+          fill = selected
+              ? SettleColors.dusk600.withValues(alpha: 0.18)
+              : SettleGlassDark.backgroundStrong;
+          borderColor = selected
+              ? SettleColors.dusk400.withValues(alpha: 0.50)
+              : SettleGlassDark.borderStrong;
+          textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
+        case SettleChipVariant.action:
+          fill = selected
+              ? SettleColors.dusk600.withValues(alpha: 0.16)
+              : SettleGlassDark.background;
+          borderColor = SettleGlassDark.borderStrong;
+          textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
+        case SettleChipVariant.frequency:
+          fill = selected
+              ? SettleColors.dusk600.withValues(alpha: 0.16)
+              : SettleGlassDark.background;
+          borderColor = selected
+              ? SettleColors.dusk400.withValues(alpha: 0.45)
+              : SettleGlassDark.borderStrong;
+          textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
+      }
+    } else {
+      switch (variant) {
+        case SettleChipVariant.tag:
+          fill = selected
+              ? SettleColors.sage600.withValues(alpha: 0.14)
+              : SettleGlassLight.backgroundSubtle;
+          borderColor = selected
+              ? SettleColors.sage400.withValues(alpha: 0.50)
+              : SettleGlassLight.border;
+          textColor = selected ? SettleColors.ink900 : SettleColors.ink700;
+        case SettleChipVariant.action:
+          fill = selected
+              ? SettleColors.sage600.withValues(alpha: 0.12)
+              : SettleGlassLight.backgroundSubtle;
+          borderColor = SettleGlassLight.border;
+          textColor = selected ? SettleColors.ink900 : SettleColors.ink700;
+        case SettleChipVariant.frequency:
+          fill = selected
+              ? SettleColors.sage600.withValues(alpha: 0.12)
+              : SettleGlassLight.backgroundSubtle;
+          borderColor = selected
+              ? SettleColors.sage400.withValues(alpha: 0.45)
+              : SettleGlassLight.border;
+          textColor = selected ? SettleColors.ink900 : SettleColors.ink700;
+      }
+    }
+
+    final isBodySize = variant == SettleChipVariant.frequency;
+    final textStyle = (isBodySize ? SettleTypography.body : SettleTypography.caption)
+        .copyWith(color: textColor, fontWeight: FontWeight.w600);
+
+    return (fill, borderColor, textColor, textStyle);
   }
 }

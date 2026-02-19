@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -49,10 +51,8 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
     ref.watch(patternEngineRefreshProvider);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final headlineColor = isDark ? SettleColors.nightText : SettleColors.ink900;
-    final supportingColor = isDark
-        ? SettleColors.nightSoft
-        : SettleColors.ink500;
+    final headlineColor = SettleSemanticColors.headline(context);
+    final supportingColor = SettleSemanticColors.supporting(context);
 
     return Scaffold(
       body: SafeArea(
@@ -93,8 +93,7 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                     _PrimaryCrisisCard(
                       onOpen: () =>
                           context.push('/sleep/tonight?scenario=night_wakes'),
-                      headlineColor: headlineColor,
-                      supportingColor: supportingColor,
+                      isDark: isDark,
                     ),
                     const SettleGap.md(),
                     Row(
@@ -102,7 +101,6 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                         Expanded(
                           child: _QuickActionCard(
                             icon: Icons.crisis_alert_rounded,
-                            iconColor: SettleColors.ink500,
                             title: 'Tantrum now',
                             subtitle: 'Open reset guidance',
                             eta: '~15s',
@@ -114,7 +112,6 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
                         Expanded(
                           child: _QuickActionCard(
                             icon: Icons.self_improvement_rounded,
-                            iconColor: SettleColors.ink500,
                             title: 'I need to regulate',
                             subtitle: 'Open moment guidance',
                             eta: '~10s',
@@ -177,15 +174,20 @@ class _GreetingCluster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.34),
+            color: isDark
+                ? SettleGlassDark.backgroundStrong
+                : Colors.white.withValues(alpha: 0.34),
             borderRadius: BorderRadius.circular(SettleRadii.pill),
             border: Border.all(
-              color: SettleColors.ink700.withValues(alpha: 0.18),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : SettleColors.ink700.withValues(alpha: 0.18),
             ),
           ),
           padding: const EdgeInsets.symmetric(
@@ -195,7 +197,7 @@ class _GreetingCluster extends StatelessWidget {
           child: Text(
             'Now',
             style: SettleTypography.caption.copyWith(
-              color: SettleColors.ink700,
+              color: isDark ? SettleColors.nightSoft : SettleColors.ink700,
             ),
           ),
         ),
@@ -223,13 +225,19 @@ class _AmbientOrb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [tint.withValues(alpha: 0.28), tint.withValues(alpha: 0.0)],
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                tint.withValues(alpha: 0.28),
+                tint.withValues(alpha: 0.0),
+              ],
+            ),
           ),
         ),
       ),
@@ -241,27 +249,27 @@ class _AmbientOrb extends StatelessWidget {
 class _PrimaryCrisisCard extends StatelessWidget {
   const _PrimaryCrisisCard({
     required this.onOpen,
-    required this.headlineColor,
-    required this.supportingColor,
+    required this.isDark,
   });
 
   final VoidCallback onOpen;
-  final Color headlineColor;
-  final Color supportingColor;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
+    final headlineColor = SettleSemanticColors.headline(context);
+    final supportingColor = SettleSemanticColors.supporting(context);
+
     return GlassCard(
-      variant: GlassCardVariant.lightStrong,
+      variant: isDark ? GlassCardVariant.darkStrong : GlassCardVariant.lightStrong,
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'PRIMARY',
-            style: SettleTypography.caption.copyWith(
-              letterSpacing: 0.7,
-              color: SettleColors.ink500,
+            style: SettleTypography.overline.copyWith(
+              color: SettleSemanticColors.muted(context),
             ),
           ),
           const SettleGap.sm(),
@@ -278,7 +286,9 @@ class _PrimaryCrisisCard extends StatelessWidget {
           GlassPill(
             label: 'Open Night Wake',
             onTap: onOpen,
-            variant: GlassPillVariant.primaryLight,
+            variant: isDark
+                ? GlassPillVariant.primaryDark
+                : GlassPillVariant.primaryLight,
             expanded: true,
           ),
         ],
@@ -287,11 +297,10 @@ class _PrimaryCrisisCard extends StatelessWidget {
   }
 }
 
-/// Quick action: icon, title, subtitle in a light GlassCard. Padding 16 vertical, 10 horizontal.
+/// Quick action: icon, title, subtitle in a GlassCard. Brightness-aware.
 class _QuickActionCard extends StatelessWidget {
   const _QuickActionCard({
     required this.icon,
-    required this.iconColor,
     required this.title,
     required this.subtitle,
     required this.eta,
@@ -299,7 +308,6 @@ class _QuickActionCard extends StatelessWidget {
   });
 
   final IconData icon;
-  final Color iconColor;
   final String title;
   final String subtitle;
   final String eta;
@@ -307,11 +315,19 @@ class _QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = SettleSemanticColors.supporting(context);
+    final titleColor = SettleSemanticColors.headline(context);
+    final subtitleColor = SettleSemanticColors.supporting(context);
+    final mutedColor = SettleSemanticColors.muted(context);
+
     return SettleTappable(
       onTap: onTap,
       semanticLabel: '$title. $subtitle',
       child: GlassCard(
-        variant: GlassCardVariant.lightStrong,
+        variant: isDark
+            ? GlassCardVariant.darkStrong
+            : GlassCardVariant.lightStrong,
         padding: const EdgeInsets.symmetric(
           vertical: SettleSpacing.lg,
           horizontal: SettleSpacing.md,
@@ -335,31 +351,24 @@ class _QuickActionCard extends StatelessWidget {
                 Icon(
                   Icons.arrow_forward_rounded,
                   size: SettleSpacing.lg,
-                  color: SettleColors.ink400,
+                  color: mutedColor,
                 ),
               ],
             ),
             const SettleGap.sm(),
             Text(
               title,
-              style: SettleTypography.body.copyWith(
-                fontWeight: FontWeight.w700,
-                color: SettleColors.ink900,
-              ),
+              style: SettleTypography.label.copyWith(color: titleColor),
             ),
             const SettleGap.xs(),
             Text(
               subtitle,
-              style: SettleTypography.caption.copyWith(
-                color: SettleColors.ink500,
-              ),
+              style: SettleTypography.caption.copyWith(color: subtitleColor),
             ),
             const SettleGap.xs(),
             Text(
               eta,
-              style: SettleTypography.caption.copyWith(
-                color: SettleColors.ink400,
-              ),
+              style: SettleTypography.caption.copyWith(color: mutedColor),
             ),
           ],
         ),

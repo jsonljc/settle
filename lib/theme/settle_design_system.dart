@@ -56,8 +56,20 @@ class SettleColors {
   static const Color warmth600 = Color(0xFF8A7048);
   static const Color warmth100 = Color(0xFFF0E8DC);
 
-  /// Wake-window arc "ok" zone (0–55% progress). Matches T.arc.ok.
-  static const Color arcOk = Color(0xFF6EE7B7);
+  // Wake-window arc colors
+  static const Color arcOk = Color(0xFF86C3A8);
+  static const Color arcWatch = Color(0xFFD6B476);
+  static const Color arcSoon = Color(0xFFC99563);
+  static const Color arcNow = Color(0xFFAF7E5A);
+  static const Color arcCritical = Color(0xFFC06F6F);
+
+  /// Returns the arc color for a given progress value (0.0–1.0).
+  static Color arcForProgress(double p) {
+    if (p < 0.55) return arcOk;
+    if (p < 0.75) return arcWatch;
+    if (p < 0.90) return arcSoon;
+    return arcNow;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -82,6 +94,12 @@ class SettleGlassLight {
   static const double blur = 40.0;
   /// For shader if available; otherwise annotation only.
   static const double saturation = 1.8;
+
+  // Domain-tinted glass fills (light)
+  static const Color backgroundSage = Color(0x1A8BB89E);
+  static const Color backgroundBlush = Color(0x1ABE8B8B);
+  static const Color backgroundWarmth = Color(0x1ABEA070);
+  static const Color backgroundDusk = Color(0x1A7B8FBE);
 }
 
 class SettleGlassDark {
@@ -92,6 +110,12 @@ class SettleGlassDark {
   static const Color border = Color(0x14FFFFFF); // white 8%
   static const Color borderStrong = Color(0x21FFFFFF); // white 13%
   static const double blur = 40.0;
+
+  // Domain-tinted glass fills (dark)
+  static const Color backgroundSage = Color(0x1A5A8A6E);
+  static const Color backgroundBlush = Color(0x1A946060);
+  static const Color backgroundWarmth = Color(0x1A8A7048);
+  static const Color backgroundDusk = Color(0x1A4A5F94);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -101,10 +125,20 @@ class SettleGlassDark {
 class SettleTypography {
   SettleTypography._();
 
+  static const double displayLargeSize = 34;
   static const double displaySize = 28;
   static const double headingSize = 20;
+  static const double subheadingSize = 17;
   static const double bodySize = 14;
   static const double captionSize = 11.5;
+  static const double overlineSize = 11;
+
+  /// Hero stats / large numbers — Fraunces, weight 700, letterSpacing -1.0
+  static TextStyle get displayLarge => GoogleFonts.fraunces(
+        fontSize: displayLargeSize,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -1.0,
+      );
 
   /// Moment / Reset / greetings — Fraunces, weight 400, letterSpacing -1.5
   static TextStyle get display => GoogleFonts.fraunces(
@@ -120,10 +154,24 @@ class SettleTypography {
         letterSpacing: -0.3,
       );
 
+  /// Card titles / h3-level — Inter, weight 700, letterSpacing -0.2
+  static TextStyle get subheading => GoogleFonts.inter(
+        fontSize: subheadingSize,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.2,
+      );
+
   /// Body — Inter, weight 400, letterSpacing -0.1
   static TextStyle get body => GoogleFonts.inter(
         fontSize: bodySize,
         fontWeight: FontWeight.w400,
+        letterSpacing: -0.1,
+      );
+
+  /// Bold body / toggle labels — Inter, weight 600, letterSpacing -0.1
+  static TextStyle get label => GoogleFonts.inter(
+        fontSize: bodySize,
+        fontWeight: FontWeight.w600,
         letterSpacing: -0.1,
       );
 
@@ -132,6 +180,13 @@ class SettleTypography {
         fontSize: captionSize,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.2,
+      );
+
+  /// Section headers — Inter, weight 600, letterSpacing 0.8
+  static TextStyle get overline => GoogleFonts.inter(
+        fontSize: overlineSize,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.8,
       );
 }
 
@@ -418,4 +473,50 @@ class SettleTheme {
       labelSmall: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
     );
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANIMATIONS — durations, curves, reduce-motion helper
+// ─────────────────────────────────────────────────────────────────────────────
+
+class SettleAnimations {
+  SettleAnimations._();
+
+  static const Duration fast = Duration(milliseconds: 150);
+  static const Duration normal = Duration(milliseconds: 250);
+  static const Duration slow = Duration(milliseconds: 400);
+  static const Duration modeSwitch = Duration(milliseconds: 800);
+  static const Duration breathe = Duration(milliseconds: 5500);
+  static const Duration sosBreathe = Duration(milliseconds: 8000);
+
+  static const Curve entryIn = Curves.easeOutCubic;
+  static const Curve entryOut = Curves.easeInCubic;
+
+  /// True when the platform requests reduced motion.
+  static bool reduceMotion(BuildContext context) =>
+      MediaQuery.of(context).disableAnimations;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEMANTIC COLORS — brightness-aware color resolvers
+// ─────────────────────────────────────────────────────────────────────────────
+
+class SettleSemanticColors {
+  SettleSemanticColors._();
+
+  static Color headline(BuildContext context) =>
+      _isDark(context) ? SettleColors.nightText : SettleColors.ink900;
+  static Color body(BuildContext context) =>
+      _isDark(context) ? SettleColors.nightSoft : SettleColors.ink700;
+  static Color supporting(BuildContext context) =>
+      _isDark(context) ? SettleColors.nightSoft : SettleColors.ink500;
+  static Color muted(BuildContext context) =>
+      _isDark(context) ? SettleColors.nightMuted : SettleColors.ink400;
+  static Color accent(BuildContext context) =>
+      _isDark(context) ? SettleColors.nightAccent : SettleColors.sage600;
+  static Color onGlass(BuildContext context) =>
+      _isDark(context) ? SettleColors.nightText : SettleColors.ink800;
+
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
 }

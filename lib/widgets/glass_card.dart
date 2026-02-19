@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/settle_design_system.dart';
 
@@ -215,7 +216,7 @@ class GlassCard extends StatelessWidget {
   );
 }
 
-/// Applies opacity 0.85 on press when card is tappable. No animation on nav.
+/// Applies opacity 0.85 + scale 0.985 on press, with haptic feedback.
 class _GlassCardTapWrapper extends StatefulWidget {
   const _GlassCardTapWrapper({
     required this.onTap,
@@ -232,20 +233,30 @@ class _GlassCardTapWrapper extends StatefulWidget {
 class _GlassCardTapWrapperState extends State<_GlassCardTapWrapper> {
   bool _pressed = false;
 
+  static const Duration _pressDuration = Duration(milliseconds: 100);
+
   @override
   Widget build(BuildContext context) {
     return Listener(
-      onPointerDown: (_) => setState(() => _pressed = true),
+      onPointerDown: (_) {
+        setState(() => _pressed = true);
+        HapticFeedback.selectionClick();
+      },
       onPointerUp: (_) => setState(() => _pressed = false),
       onPointerCancel: (_) => setState(() => _pressed = false),
       child: GestureDetector(
         onTap: widget.onTap,
         behavior: HitTestBehavior.opaque,
-        child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 100),
-          curve: Curves.easeOut,
-          opacity: _pressed ? 0.85 : 1,
-          child: widget.child,
+        child: AnimatedScale(
+          duration: _pressDuration,
+          curve: Curves.easeOutCubic,
+          scale: _pressed ? 0.985 : 1,
+          child: AnimatedOpacity(
+            duration: _pressDuration,
+            curve: Curves.easeOut,
+            opacity: _pressed ? 0.85 : 1,
+            child: widget.child,
+          ),
         ),
       ),
     );
