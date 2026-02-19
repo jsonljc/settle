@@ -7,6 +7,8 @@ import '../theme/settle_design_system.dart';
 import '../widgets/glass_nav_bar.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/nav_item.dart';
+import '../widgets/settle_gap.dart';
+import '../widgets/settle_modal_sheet.dart';
 
 /// Root scaffold for the bottom navigation shell.
 ///
@@ -45,12 +47,22 @@ class AppShell extends StatelessWidget {
         normalized == '/breathe';
   }
 
+  static bool _showOverlayMenuForPath(String path) {
+    final normalized = path.endsWith('/') && path.length > 1
+        ? path.substring(0, path.length - 1)
+        : path;
+    return normalized == '/plan' ||
+        normalized == '/sleep' ||
+        normalized == '/library';
+  }
+
   @override
   Widget build(BuildContext context) {
     final path = GoRouterState.of(context).uri.path;
     final navVariant = _useDarkNavForPath(path)
         ? GlassNavBarVariant.dark
         : GlassNavBarVariant.light;
+    final showOverlayMenu = _showOverlayMenuForPath(path);
 
     return Scaffold(
       body: GradientBackgroundFromRoute(
@@ -58,7 +70,10 @@ class AppShell extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             child,
-            _ShellOverlayActions(dark: navVariant == GlassNavBarVariant.dark),
+            _ShellOverlayActions(
+              dark: navVariant == GlassNavBarVariant.dark,
+              visible: showOverlayMenu,
+            ),
             if (overlay != null) overlay!,
           ],
         ),
@@ -74,12 +89,32 @@ class AppShell extends StatelessWidget {
 }
 
 class _ShellOverlayActions extends StatelessWidget {
-  const _ShellOverlayActions({required this.dark});
+  const _ShellOverlayActions({required this.dark, required this.visible});
 
   final bool dark;
+  final bool visible;
+
+  Future<void> _openQuickActions(BuildContext context) async {
+    final selected = await showSettleSheet<_ShellQuickAction>(
+      context,
+      child: const _ShellQuickActionsSheet(),
+    );
+    if (selected == null || !context.mounted) return;
+
+    switch (selected) {
+      case _ShellQuickAction.family:
+        context.push('/family');
+        break;
+      case _ShellQuickAction.settings:
+        context.push('/settings');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (!visible) return const SizedBox.shrink();
+
     return SafeArea(
       child: Align(
         alignment: Alignment.topRight,
@@ -88,23 +123,109 @@ class _ShellOverlayActions extends StatelessWidget {
             top: SettleSpacing.sm,
             right: SettleSpacing.sm,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _ShellOverlayActionButton(
-                icon: Icons.group_outlined,
-                semanticLabel: 'Open Family',
-                dark: dark,
-                onTap: () => context.push('/family'),
-              ),
-              const SizedBox(width: SettleSpacing.xs),
-              _ShellOverlayActionButton(
-                icon: Icons.tune_rounded,
-                semanticLabel: 'Open Settings',
-                dark: dark,
-                onTap: () => context.push('/settings'),
-              ),
-            ],
+          child: _ShellOverlayActionButton(
+            icon: Icons.more_horiz_rounded,
+            semanticLabel: 'Open quick actions',
+            dark: dark,
+            onTap: () => _openQuickActions(context),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum _ShellQuickAction { family, settings }
+
+class _ShellQuickActionsSheet extends StatelessWidget {
+  const _ShellQuickActionsSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettleModalSheet(
+      title: 'Quick actions',
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _ShellQuickActionTile(
+            icon: Icons.group_outlined,
+            title: 'Family',
+            subtitle: 'Shared rhythm, scripts, and activity.',
+            onTap: () => Navigator.of(context).pop(_ShellQuickAction.family),
+          ),
+          const SettleGap.sm(),
+          _ShellQuickActionTile(
+            icon: Icons.tune_rounded,
+            title: 'Settings',
+            subtitle: 'Child profile, methods, and notifications.',
+            onTap: () => Navigator.of(context).pop(_ShellQuickAction.settings),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ShellQuickActionTile extends StatelessWidget {
+  const _ShellQuickActionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Open $title',
+      child: Material(
+        color: SettleGlassLight.backgroundStrong,
+        borderRadius: BorderRadius.circular(SettleRadii.sm),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(SettleRadii.sm),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(SettleSpacing.md),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icon, color: SettleColors.ink700),
+                const SettleGap.md(),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: SettleTypography.label.copyWith(
+                          color: SettleColors.ink900,
+                        ),
+                      ),
+                      const SettleGap.xs(),
+                      Text(
+                        subtitle,
+                        style: SettleTypography.body.copyWith(
+                          color: SettleColors.ink500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SettleGap.sm(),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 16,
+                  color: SettleColors.ink400,
+                ),
+              ],
+            ),
           ),
         ),
       ),

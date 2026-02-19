@@ -167,6 +167,7 @@ void main() {
     await settleUi(tester);
 
     expect(find.text('Sleep tonight'), findsOneWidget);
+    expect(find.text('START HERE'), findsOneWidget);
     if (find.textContaining('Do now:').evaluate().isEmpty &&
         find.text('Night wake').evaluate().isNotEmpty) {
       await tapByText(tester, 'Night wake');
@@ -189,6 +190,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
+    expect(find.text('GUIDANCE'), findsOneWidget);
     expect(find.textContaining('Do now:'), findsOneWidget);
     expect(find.text('More options'), findsOneWidget);
     expect(find.text('Choose what is happening'), findsNothing);
@@ -208,7 +210,7 @@ void main() {
     await openMoreOptions(tester);
     expect(find.text('Switch scenario'), findsOneWidget);
     expect(find.text('Change approach'), findsOneWidget);
-    expect(find.text('Something feels off'), findsOneWidget);
+    expect(find.text('Use these only if needed.'), findsOneWidget);
   });
 }
 

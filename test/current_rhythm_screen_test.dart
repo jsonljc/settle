@@ -97,20 +97,30 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
 
-    expect(find.text('Current Rhythm (this week)'), findsOneWidget);
+    expect(find.text('Today rhythm'), findsOneWidget);
     expect(find.text('Precise view'), findsOneWidget);
     expect(find.text('Relaxed view'), findsOneWidget);
-    expect(find.text('Recalculate schedule'), findsOneWidget);
-    expect(find.text('OK nap'), findsOneWidget);
-    expect(find.text('Long nap'), findsOneWidget);
-    expect(find.text('Advanced mode: Off'), findsOneWidget);
-    expect(find.textContaining('Nap 1'), findsOneWidget);
+    expect(find.text('Late morning nap'), findsOneWidget);
 
     await tester.ensureVisible(find.text('Relaxed view'));
     await tester.tap(find.text('Relaxed view'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Late morning nap'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Adjust today'));
+    await tester.tap(find.text('Adjust today'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('OK nap'), findsOneWidget);
+    expect(find.text('Long nap'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Tools'));
+    await tester.tap(find.text('Tools'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Recalculate schedule'), findsOneWidget);
+    expect(find.text('Advanced mode: Off'), findsOneWidget);
 
     await tester.ensureVisible(find.text('Recalculate schedule'));
     await tester.tap(find.text('Recalculate schedule'));

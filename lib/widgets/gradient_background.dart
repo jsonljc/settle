@@ -205,7 +205,11 @@ class GradientBackgroundFromRoute extends StatelessWidget {
     try {
       uri = GoRouterState.of(context).uri;
     } catch (_) {
-      uri = GoRouter.of(context).routeInformationProvider.value.uri;
+      try {
+        uri = GoRouter.of(context).routeInformationProvider.value.uri;
+      } catch (_) {
+        uri = Uri(path: '/plan');
+      }
     }
     final pathStr = uri.path.isEmpty ? '/plan' : uri.path;
     final presets = GradientBackgroundPresets.forPath(

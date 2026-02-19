@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/screen_header.dart';
+import '../../widgets/settle_disclosure.dart';
 import '../../widgets/settle_gap.dart';
 
 class LibraryHomeScreen extends StatelessWidget {
@@ -23,21 +24,15 @@ class LibraryHomeScreen extends StatelessWidget {
             Positioned(
               top: -60,
               right: -40,
-              child: _AmbientOrb(
-                tint: SettleColors.sage400,
-                size: 240,
-              ),
+              child: _AmbientOrb(tint: SettleColors.sage400, size: 240),
             ),
             Positioned(
               bottom: 60,
               left: -50,
-              child: _AmbientOrb(
-                tint: SettleColors.warmth400,
-                size: 200,
-              ),
+              child: _AmbientOrb(tint: SettleColors.warmth400, size: 200),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: SettleSpacing.screenPadding,
               ),
               child: Column(
@@ -45,104 +40,104 @@ class LibraryHomeScreen extends StatelessWidget {
                 children: [
                   const ScreenHeader(
                     title: 'Library',
-                    subtitle:
-                        'After a hard moment: review progress and logs.',
+                    subtitle: 'Review what worked and choose your next step.',
                     fallbackRoute: '/library',
                     showBackButton: false,
                   ),
                   const SettleGap.lg(),
                   Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ── Track section ──
-                          _SectionHeader(label: 'TRACK'),
-                          const SettleGap.sm(),
-                          _HeroDestinationCard(
-                            title: 'Progress',
-                            description:
-                                'Supportive weekly trend framing from quick check-ins.',
-                            route: '/library/progress',
-                            icon: Icons.show_chart_rounded,
-                            accentColor: isDark
-                                ? SettleColors.sage400
-                                : SettleColors.sage600,
-                            tintColor: isDark
-                                ? SettleGlassDark.backgroundSage
-                                : SettleGlassLight.backgroundSage,
-                          ),
-                          const SettleGap.sm(),
-                          _LibraryDestinationCard(
-                            title: 'Logs',
-                            description:
-                                'Timeline-first view of script outcomes and sleep entries.',
-                            route: '/library/logs',
-                            icon: Icons.timeline_rounded,
-                            accentColor: isDark
-                                ? SettleColors.dusk400
-                                : SettleColors.dusk600,
-                          ),
-                          const SettleGap.xl(),
-
-                          // ── Explore section ──
-                          _SectionHeader(label: 'EXPLORE'),
-                          const SettleGap.sm(),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _CompactDestinationCard(
-                                  title: 'Learn',
-                                  icon: Icons.menu_book_rounded,
-                                  route: '/library/learn',
-                                  accentColor: isDark
-                                      ? SettleColors.warmth400
-                                      : SettleColors.warmth600,
-                                ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _HeroDestinationCard(
+                          title: 'Progress',
+                          description:
+                              'See if this week is getting easier and what is working most often.',
+                          route: '/library/progress',
+                          icon: Icons.show_chart_rounded,
+                          accentColor: isDark
+                              ? SettleColors.sage400
+                              : SettleColors.sage600,
+                          tintColor: isDark
+                              ? SettleGlassDark.backgroundSage
+                              : SettleGlassLight.backgroundSage,
+                        ),
+                        const SettleGap.lg(),
+                        _SectionHeader(label: 'REVIEW'),
+                        const SettleGap.sm(),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _CompactDestinationCard(
+                                title: 'Logs',
+                                icon: Icons.timeline_rounded,
+                                route: '/library/logs',
+                                accentColor: isDark
+                                    ? SettleColors.dusk400
+                                    : SettleColors.dusk600,
                               ),
+                            ),
+                            const SettleGap.sm(),
+                            Expanded(
+                              child: _CompactDestinationCard(
+                                title: 'Learn',
+                                icon: Icons.menu_book_rounded,
+                                route: '/library/learn',
+                                accentColor: isDark
+                                    ? SettleColors.warmth400
+                                    : SettleColors.warmth600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SettleGap.lg(),
+                        GlassCard(
+                          child: SettleDisclosure(
+                            title: 'More tools',
+                            subtitle: 'Saved cards and pattern trends',
+                            children: [
                               const SettleGap.sm(),
-                              Expanded(
-                                child: _CompactDestinationCard(
-                                  title: 'Saved',
-                                  icon: Icons.bookmark_outline_rounded,
-                                  route: '/library/saved',
-                                  accentColor: isDark
-                                      ? SettleColors.blush400
-                                      : SettleColors.blush600,
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _CompactDestinationCard(
+                                      title: 'Saved',
+                                      icon: Icons.bookmark_outline_rounded,
+                                      route: '/library/saved',
+                                      accentColor: isDark
+                                          ? SettleColors.blush400
+                                          : SettleColors.blush600,
+                                    ),
+                                  ),
+                                  const SettleGap.sm(),
+                                  Expanded(
+                                    child: _CompactDestinationCard(
+                                      title: 'Patterns',
+                                      icon: Icons.insights_rounded,
+                                      route: '/library/patterns',
+                                      accentColor: isDark
+                                          ? SettleColors.dusk400
+                                          : SettleColors.dusk600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          const SettleGap.sm(),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _CompactDestinationCard(
-                                  title: 'Patterns',
-                                  icon: Icons.insights_rounded,
-                                  route: '/library/patterns',
-                                  accentColor: isDark
-                                      ? SettleColors.dusk400
-                                      : SettleColors.dusk600,
-                                ),
-                              ),
-                              const SettleGap.sm(),
-                              Expanded(
-                                child: _CompactDestinationCard(
-                                  title: 'Monthly',
-                                  icon: Icons.calendar_month_rounded,
-                                  route: '/library/insights',
-                                  accentColor: isDark
-                                      ? SettleColors.sage400
-                                      : SettleColors.sage600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SettleGap.xl(),
-                        ],
-                      ),
+                        ),
+                        const SettleGap.sm(),
+                        _LibraryDestinationCard(
+                          title: 'Monthly',
+                          description:
+                              'Step back for a bigger-picture reflection and gentle plan tuning.',
+                          route: '/library/insights',
+                          icon: Icons.calendar_month_rounded,
+                          accentColor: isDark
+                              ? SettleColors.sage400
+                              : SettleColors.sage600,
+                        ),
+                        const SettleGap.md(),
+                      ],
                     ),
                   ),
                 ],
@@ -224,7 +219,7 @@ class _HeroDestinationCard extends StatelessWidget {
               ),
               child: Icon(icon, size: 22, color: accentColor),
             ),
-            const SizedBox(width: SettleSpacing.md),
+            const SettleGap.md(),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,7 +230,7 @@ class _HeroDestinationCard extends StatelessWidget {
                       color: SettleSemanticColors.headline(context),
                     ),
                   ),
-                  const SizedBox(height: SettleSpacing.xs),
+                  const SettleGap.xs(),
                   Text(
                     description,
                     style: SettleTypography.body.copyWith(
@@ -245,7 +240,7 @@ class _HeroDestinationCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: SettleSpacing.sm),
+            const SettleGap.sm(),
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Icon(
@@ -296,7 +291,7 @@ class _LibraryDestinationCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, size: 20, color: accentColor),
-            const SizedBox(width: SettleSpacing.sm),
+            const SettleGap.sm(),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,7 +302,7 @@ class _LibraryDestinationCard extends StatelessWidget {
                       color: SettleSemanticColors.headline(context),
                     ),
                   ),
-                  const SizedBox(height: SettleSpacing.xs),
+                  const SettleGap.xs(),
                   Text(
                     description,
                     style: SettleTypography.body.copyWith(
@@ -317,7 +312,7 @@ class _LibraryDestinationCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: SettleSpacing.sm),
+            const SettleGap.sm(),
             Icon(
               Icons.arrow_forward_ios_rounded,
               size: 14,
