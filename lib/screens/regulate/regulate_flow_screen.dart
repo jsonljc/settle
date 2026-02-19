@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../models/v2_enums.dart';
 import '../../providers/regulation_events_provider.dart';
 import '../../theme/settle_design_system.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/gradient_background.dart';
 import 'step_acknowledge.dart';
 import 'step_action.dart';
@@ -103,7 +102,9 @@ class _RegulateFlowScreenState extends ConsumerState<RegulateFlowScreen> {
                   },
                   child: Text(
                     'back',
-                    style: T.type.caption.copyWith(color: T.pal.textTertiary),
+                    style: SettleTypography.caption.copyWith(
+                      color: SettleSemanticColors.muted(context),
+                    ),
                   ),
                 ),
               ),

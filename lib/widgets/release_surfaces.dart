@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
-import '../theme/settle_tokens.dart';
 import 'gradient_background.dart';
 
 class FeatureFallbackTarget {
@@ -59,14 +58,17 @@ class FeaturePausedView extends StatelessWidget {
                       child: Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 20,
-                        color: T.pal.textSecondary,
+                        color: SettleSemanticColors.supporting(context),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         title,
-                        style: T.type.h2,
+                        style: SettleTypography.heading.copyWith(
+                          fontSize: 22,
+                          color: SettleSemanticColors.headline(context),
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -79,7 +81,9 @@ class FeaturePausedView extends StatelessWidget {
                     children: [
                       Text(
                         message,
-                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                        style: SettleTypography.body.copyWith(
+                          color: SettleSemanticColors.supporting(context),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       GlassCta(
@@ -105,7 +109,9 @@ class BehavioralScopeNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       'This app offers parenting support, not medical care.',
-      style: T.type.caption.copyWith(color: T.pal.textTertiary),
+      style: SettleTypography.caption.copyWith(
+        color: SettleSemanticColors.muted(context),
+      ),
     );
   }
 }
@@ -140,14 +146,17 @@ class ProfileRequiredView extends StatelessWidget {
                       child: Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 20,
-                        color: T.pal.textSecondary,
+                        color: SettleSemanticColors.supporting(context),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         title,
-                        style: T.type.h2,
+                        style: SettleTypography.heading.copyWith(
+                          fontSize: 22,
+                          color: SettleSemanticColors.headline(context),
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -160,7 +169,9 @@ class ProfileRequiredView extends StatelessWidget {
                     children: [
                       Text(
                         message,
-                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                        style: SettleTypography.body.copyWith(
+                          color: SettleSemanticColors.supporting(context),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       GlassCta(
@@ -208,14 +219,17 @@ class RouteUnavailableView extends StatelessWidget {
                       child: Icon(
                         Icons.arrow_back_ios_rounded,
                         size: 20,
-                        color: T.pal.textSecondary,
+                        color: SettleSemanticColors.supporting(context),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         title,
-                        style: T.type.h2,
+                        style: SettleTypography.heading.copyWith(
+                          fontSize: 22,
+                          color: SettleSemanticColors.headline(context),
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -228,7 +242,9 @@ class RouteUnavailableView extends StatelessWidget {
                     children: [
                       Text(
                         message,
-                        style: T.type.body.copyWith(color: T.pal.textSecondary),
+                        style: SettleTypography.body.copyWith(
+                          color: SettleSemanticColors.supporting(context),
+                        ),
                       ),
                       const SizedBox(height: 12),
                       GlassCta(

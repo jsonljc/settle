@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import '../models/approach.dart';
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
 /// Pure computation engine for wake window logic.
 ///
@@ -41,7 +41,7 @@ class WakeEngine {
         progress: 0,
         isSleeping: true,
         zone: WakeZone.sleeping,
-        arcColor: T.arc.ok,
+        arcColor: SettleColors.arcOk,
         text: '', // Sleeping state text handled by guidance provider
         subtext: '',
         ctaLabel: '',
@@ -97,11 +97,11 @@ class WakeEngine {
   }
 
   static Color _colorFor(WakeZone zone) => switch (zone) {
-    WakeZone.sleeping => T.arc.ok,
-    WakeZone.ok => T.arc.ok,
-    WakeZone.watch => T.arc.watch,
-    WakeZone.soon => T.arc.soon,
-    WakeZone.now => T.arc.now,
+    WakeZone.sleeping => SettleColors.arcOk,
+    WakeZone.ok => SettleColors.arcOk,
+    WakeZone.watch => SettleColors.arcWatch,
+    WakeZone.soon => SettleColors.arcSoon,
+    WakeZone.now => SettleColors.arcNow,
   };
 
   static String _textFor(WakeZone zone) => switch (zone) {

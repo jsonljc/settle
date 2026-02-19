@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
 /// Creates an [AnimationController] that respects reduced motion.
-/// When [T.reduceMotion](context) is true, duration is [Duration.zero].
+/// When [SettleAnimations.reduceMotion](context) is true, duration is [Duration.zero].
 AnimationController createSettleAnimation(
   TickerProvider vsync,
   BuildContext context, {
@@ -11,6 +11,6 @@ AnimationController createSettleAnimation(
 }) {
   return AnimationController(
     vsync: vsync,
-    duration: T.reduceMotion(context) ? Duration.zero : duration,
+    duration: SettleAnimations.reduceMotion(context) ? Duration.zero : duration,
   );
 }

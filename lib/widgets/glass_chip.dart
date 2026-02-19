@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/settle_design_system.dart';
-import '../theme/settle_tokens.dart';
 
 /// Domain for chip tint (general/child → sage, self → blush, sleep → dusk, tantrum → warmth).
 enum GlassChipDomain {
@@ -25,10 +24,6 @@ class GlassChip extends StatelessWidget {
 
   static const EdgeInsets _padding =
       EdgeInsets.symmetric(vertical: 4, horizontal: 12);
-
-  /// Inter 11px, weight 500
-  static TextStyle _labelStyle(Color color) =>
-      T.type.overline.copyWith(fontWeight: FontWeight.w500, color: color);
 
   (Color fill, Color border, Color text) _resolveColors() {
     final (Color base, Color text600) = _domainColors();
@@ -68,7 +63,10 @@ class GlassChip extends StatelessWidget {
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: _labelStyle(textColor),
+        style: SettleTypography.overline.copyWith(
+          fontWeight: FontWeight.w500,
+          color: textColor,
+        ),
       ),
     );
   }

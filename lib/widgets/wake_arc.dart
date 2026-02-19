@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
 /// Wake window arc — 164×164 CustomPainter, 6px rounded stroke.
 ///
@@ -44,7 +44,7 @@ class _WakeArcState extends State<WakeArc> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(duration: T.anim.slow, vsync: this);
+    _controller = AnimationController(duration: SettleAnimations.slow, vsync: this);
     _progressAnim = Tween<double>(
       begin: widget.progress,
       end: widget.progress,
@@ -58,9 +58,9 @@ class _WakeArcState extends State<WakeArc> with SingleTickerProviderStateMixin {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller.duration = T.reduceMotion(context)
+    _controller.duration = SettleAnimations.reduceMotion(context)
         ? Duration.zero
-        : T.anim.slow;
+        : SettleAnimations.slow;
   }
 
   @override
@@ -118,6 +118,9 @@ class _WakeArcPainter extends CustomPainter {
   static const _strokeWidth = 6.0;
   static const _startAngle = -pi / 2; // 12 o'clock
 
+  /// Background arc border color (white ~4%).
+  static const _bgArcColor = Color(0x0AFFFFFF);
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
@@ -126,7 +129,7 @@ class _WakeArcPainter extends CustomPainter {
 
     // --- Background arc: white 4%, full circle ---
     final bgPaint = Paint()
-      ..color = T.glass.border
+      ..color = _bgArcColor
       ..strokeWidth = _strokeWidth
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;

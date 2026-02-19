@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import 'settle_tokens.dart';
+import 'settle_design_system.dart';
 
 /// Extension that conditionally applies a flutter_animate entry animation.
 /// When reduce-motion is on, the widget is returned unchanged (instant).
@@ -13,10 +13,10 @@ extension ReduceMotionAnimate on Widget {
     Duration delay = Duration.zero,
     double moveY = 12,
   }) {
-    if (T.reduceMotion(context)) return this;
+    if (SettleAnimations.reduceMotion(context)) return this;
     return animate(
       delay: delay,
-    ).fadeIn(duration: duration ?? T.anim.normal).moveY(begin: moveY, end: 0);
+    ).fadeIn(duration: duration ?? SettleAnimations.normal).moveY(begin: moveY, end: 0);
   }
 
   /// Fade-in + moveX entry animation, skipped when reduce-motion is active.
@@ -26,7 +26,7 @@ extension ReduceMotionAnimate on Widget {
     Duration delay = Duration.zero,
     double moveX = 16,
   }) {
-    if (T.reduceMotion(context)) return this;
+    if (SettleAnimations.reduceMotion(context)) return this;
     return animate(delay: delay)
         .fadeIn(duration: duration ?? 300.ms)
         .moveX(begin: moveX, end: 0, duration: duration ?? 300.ms);
@@ -39,7 +39,7 @@ extension ReduceMotionAnimate on Widget {
     Duration delay = Duration.zero,
     double scaleBegin = 0.95,
   }) {
-    if (T.reduceMotion(context)) return this;
+    if (SettleAnimations.reduceMotion(context)) return this;
     return animate(delay: delay)
         .fadeIn(duration: duration ?? 300.ms)
         .scale(
@@ -55,7 +55,7 @@ extension ReduceMotionAnimate on Widget {
     Duration? duration,
     Duration delay = Duration.zero,
   }) {
-    if (T.reduceMotion(context)) return this;
+    if (SettleAnimations.reduceMotion(context)) return this;
     return animate(delay: delay).fadeIn(duration: duration ?? 300.ms);
   }
 }

@@ -8,7 +8,6 @@ import '../../tantrum/services/tantrum_registry_service.dart';
 import '../../theme/glass_components.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
-import '../../theme/settle_tokens.dart';
 import '../../widgets/option_button.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/tantrum_sub_nav.dart';
@@ -228,7 +227,9 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: T.type.overline.copyWith(color: T.pal.textTertiary),
+      style: SettleTypography.overline.copyWith(
+        color: SettleSemanticColors.muted(context),
+      ),
     );
   }
 }

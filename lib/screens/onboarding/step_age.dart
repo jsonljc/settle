@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../models/approach.dart';
 import '../../theme/reduce_motion.dart';
-import '../../theme/settle_tokens.dart';
+import '../../theme/settle_design_system.dart';
 import '../../widgets/option_button.dart';
 
 /// Step 1: Age. Combined infant + toddler + preschool brackets.
@@ -20,7 +20,10 @@ class StepAge extends StatelessWidget {
       children: [
         Text(
           'How old is\nyour child?',
-          style: T.type.h1,
+          style: SettleTypography.heading.copyWith(
+            fontSize: 26,
+            color: SettleSemanticColors.headline(context),
+          ),
         ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 24),
         ...AgeBracket.values.asMap().entries.map((entry) {

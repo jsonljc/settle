@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
 /// Sub-navigation for Tantrum tab: CAPTURE | DECK | INSIGHTS.
 /// Use on capture/deck/insights surfaces.
@@ -60,19 +60,30 @@ class _Segment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accentColor = SettleSemanticColors.accent(context);
+    final fill = active
+        ? accentColor.withValues(alpha: 0.10)
+        : (isDark ? SettleGlassDark.background : SettleGlassLight.backgroundSubtle);
+    final borderColor = active
+        ? accentColor
+        : (isDark ? SettleGlassDark.border : SettleGlassLight.border);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? T.glass.fillAccent : T.glass.fill,
-          borderRadius: BorderRadius.circular(T.radius.pill),
-          border: Border.all(color: active ? T.pal.accent : T.glass.border),
+          color: fill,
+          borderRadius: BorderRadius.circular(SettleRadii.pill),
+          border: Border.all(color: borderColor),
         ),
         child: Text(
           label,
-          style: T.type.caption.copyWith(
-            color: active ? T.pal.accent : T.pal.textSecondary,
+          style: SettleTypography.caption.copyWith(
+            color: active
+                ? accentColor
+                : SettleSemanticColors.supporting(context),
             fontWeight: active ? FontWeight.w600 : FontWeight.normal,
           ),
         ),

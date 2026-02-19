@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/glass_components.dart';
-import '../theme/settle_tokens.dart';
+import '../theme/settle_design_system.dart';
 
 /// Sunday evening banner prompting a gentle weekly reflection.
 /// Shown when [DateTime.now()] is Sunday and hour >= [startHour] (default 17).
@@ -34,12 +34,14 @@ class WeeklyReflectionBanner extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.auto_stories_rounded, size: 20, color: T.pal.teal),
+              Icon(Icons.auto_stories_rounded, size: 20, color: SettleColors.sage400),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Reflect on your week',
-                  style: T.type.h3.copyWith(color: T.pal.textPrimary),
+                  style: SettleTypography.subheading.copyWith(
+                    color: SettleSemanticColors.headline(context),
+                  ),
                 ),
               ),
               if (onDismiss != null)
@@ -48,7 +50,7 @@ class WeeklyReflectionBanner extends StatelessWidget {
                   child: Icon(
                     Icons.close_rounded,
                     size: 20,
-                    color: T.pal.textTertiary,
+                    color: SettleSemanticColors.muted(context),
                   ),
                 ),
             ],
@@ -56,7 +58,9 @@ class WeeklyReflectionBanner extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'A quiet moment to notice what helped and what you\'d do again.',
-            style: T.type.body.copyWith(color: T.pal.textSecondary),
+            style: SettleTypography.body.copyWith(
+              color: SettleSemanticColors.supporting(context),
+            ),
           ),
           const SizedBox(height: 12),
           GlassCta(
