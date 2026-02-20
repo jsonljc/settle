@@ -4,30 +4,6 @@ import '../../../models/approach.dart';
 import '../../../theme/settle_design_system.dart';
 import '../../../widgets/option_button.dart';
 
-class _SptT {
-  _SptT._();
-
-  static final type = _SptTypeTokens();
-  static const pal = _SptPaletteTokens();
-}
-
-class _SptTypeTokens {
-  TextStyle get h1 => SettleTypography.heading.copyWith(
-    fontSize: 26,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _SptPaletteTokens {
-  const _SptPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
-
 class StepParentType extends StatelessWidget {
   const StepParentType({
     super.key,
@@ -76,11 +52,11 @@ class StepParentType extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Who is parenting day to day?', style: _SptT.type.h1),
+        Text('Who is parenting day to day?', style: SettleTypography.heading.copyWith(fontSize: 26, fontWeight: FontWeight.w700)),
         const SizedBox(height: 10),
         Text(
           'This sets family and invite surfaces in the app.',
-          style: _SptT.type.caption.copyWith(color: _SptT.pal.textSecondary),
+          style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightSoft),
         ),
         const SizedBox(height: 20),
         ..._options.map((option) {

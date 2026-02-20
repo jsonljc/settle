@@ -1,11 +1,10 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/settle_design_system.dart';
 
-/// A soft colored circle that floats behind glass (center color → transparent).
+/// A soft colored circle that floats behind content.
+/// Deprecated — kept for backward compatibility during migration.
 class AmbientBlob {
   const AmbientBlob({
     required this.color,
@@ -17,11 +16,8 @@ class AmbientBlob {
   final Color color;
   final double size;
   final Alignment position;
-
-  /// Gaussian blur sigma. Higher = dreamier, more diffuse. Default 50.
   final double blur;
 
-  /// FractionalOffset is normalized (0,0) to (1,1); we convert to Alignment.
   factory AmbientBlob.withFractionalOffset({
     required Color color,
     required double size,
@@ -37,7 +33,7 @@ class AmbientBlob {
   }
 }
 
-/// Living gradient + optional ambient blobs that show through all glass elements.
+/// Deprecated — kept for backward compatibility. Renders solid color only.
 class GradientBackground extends StatelessWidget {
   const GradientBackground({
     super.key,
@@ -52,44 +48,16 @@ class GradientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        // 1. Base gradient
-        Container(decoration: BoxDecoration(gradient: gradient)),
-        // 2. Ambient blobs (soft circles)
-        if (ambientBlobs != null && ambientBlobs!.isNotEmpty)
-          ...ambientBlobs!.map((blob) => _buildBlob(blob)),
-        // 3. Content on top
-        child,
-      ],
-    );
-  }
-
-  Widget _buildBlob(AmbientBlob blob) {
-    final blobWidget = Container(
-      width: blob.size,
-      height: blob.size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [blob.color, blob.color.withValues(alpha: 0)],
-          stops: const [0.0, 1.0],
-        ),
-      ),
-    );
-    final blurred = ImageFiltered(
-      imageFilter: ImageFilter.blur(sigmaX: blob.blur, sigmaY: blob.blur),
-      child: blobWidget,
-    );
-    return Positioned.fill(
-      child: Align(alignment: blob.position, child: blurred),
-    );
+    // Solid background: use the first color of the gradient (ignoring blobs).
+    final color = gradient.colors.isNotEmpty
+        ? gradient.colors.first
+        : SettleColors.stone50;
+    return Container(color: color, child: child);
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Route-based presets: gradient + blobs per path (for shell or per-screen use)
+// Route-based presets — now solid colors only
 // ─────────────────────────────────────────────────────────────────────────────
 
 class GradientBackgroundPresets {
@@ -99,105 +67,25 @@ class GradientBackgroundPresets {
     String path, {
     Map<String, String>? queryParameters,
   }) {
-    final p = path.toLowerCase();
-    final contextQuery =
-        queryParameters?['context']?.toLowerCase().trim() ?? '';
-    final isTantrumJustHappened =
-        p.contains('/plan/reset') && contextQuery == 'tantrum';
-
-    if (p.contains('/plan/moment')) {
-      return (gradient: SettleGradients.moment, blobs: _momentBlobs);
-    }
-    if (isTantrumJustHappened) {
-      return (gradient: SettleGradients.resetDark, blobs: _tantrumBlobs);
-    }
-    if (p.contains('/plan/reset')) {
-      return (gradient: SettleGradients.resetDark, blobs: _resetBlobs);
-    }
-    if (p.contains('/sleep/tonight') || p == '/sleep/tonight') {
-      return (gradient: SettleGradients.sleep, blobs: _sleepBlobs);
-    }
-    if (p.contains('/library/saved') ||
-        p.contains('saved') && p.contains('/library')) {
-      return (gradient: SettleGradients.playbook, blobs: _playbookBlobs);
-    }
-    if (p.contains('/library') || p.startsWith('/plan') || p == '/plan') {
-      return (gradient: SettleGradients.home, blobs: _homeBlobs);
-    }
-    if (p.contains('/family')) {
-      return (gradient: SettleGradients.home, blobs: _homeBlobs);
-    }
-    return (gradient: SettleGradients.home, blobs: _homeBlobs);
+    // All presets now return empty blobs and solid-color gradients.
+    return (gradient: SettleGradients.home, blobs: const <AmbientBlob>[]);
   }
-
-  static final List<AmbientBlob> _homeBlobs = [
-    AmbientBlob(
-      color: SettleColors.sage100,
-      size: 260,
-      position: Alignment.topRight,
-      blur: 50.0,
-    ),
-    AmbientBlob(
-      color: SettleColors.dusk100,
-      size: 220,
-      position: Alignment.bottomLeft,
-      blur: 50.0,
-    ),
-  ];
-
-  static final List<AmbientBlob> _momentBlobs = [
-    AmbientBlob(
-      color: Colors.white.withValues(alpha: 0.35),
-      size: 280,
-      position: Alignment.centerLeft,
-      blur: 60.0,
-    ),
-  ];
-
-  static final List<AmbientBlob> _resetBlobs = [
-    AmbientBlob(
-      color: SettleColors.nightAccent.withValues(alpha: 0.2),
-      size: 200,
-      position: Alignment.topLeft,
-      blur: 40.0,
-    ),
-  ];
-
-  /// Tantrum Just Happened: same gradient as Reset, warmth tint for subtle distinction.
-  static final List<AmbientBlob> _tantrumBlobs = [
-    AmbientBlob(
-      color: SettleColors.warmth400.withValues(alpha: 0.25),
-      size: 200,
-      position: Alignment.topLeft,
-      blur: 40.0,
-    ),
-  ];
-
-  static final List<AmbientBlob> _sleepBlobs = [
-    AmbientBlob(
-      color: SettleColors.dusk400.withValues(alpha: 0.3),
-      size: 220,
-      position: Alignment.topCenter,
-      blur: 50.0,
-    ),
-  ];
-
-  static final List<AmbientBlob> _playbookBlobs = [
-    AmbientBlob(
-      color: SettleColors.warmth100,
-      size: 210,
-      position: Alignment.topRight,
-      blur: 45.0,
-    ),
-  ];
 }
 
-/// Wraps [child] in [GradientBackground] using gradient + blobs for the current
-/// route. Use in AppShell so the background updates when the route changes.
+/// Solid background by route. Dark for crisis flows, stone50/night900 otherwise.
 class GradientBackgroundFromRoute extends StatelessWidget {
   const GradientBackgroundFromRoute({super.key, required this.child});
 
   final Widget child;
+
+  static bool _isDarkFlow(String path) {
+    final p = path.toLowerCase();
+    return p.contains('/plan/reset') ||
+        p.contains('/plan/moment') ||
+        p.contains('/plan/regulate') ||
+        p.contains('/sleep/tonight') ||
+        p == '/breathe';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,13 +100,17 @@ class GradientBackgroundFromRoute extends StatelessWidget {
       }
     }
     final pathStr = uri.path.isEmpty ? '/plan' : uri.path;
-    final presets = GradientBackgroundPresets.forPath(
-      pathStr,
-      queryParameters: uri.queryParameters,
-    );
-    return GradientBackground(
-      gradient: presets.gradient,
-      ambientBlobs: presets.blobs,
+    final darkFlow = _isDarkFlow(pathStr);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (darkFlow || isDark) {
+      return Container(
+        color: SettleColors.night900,
+        child: child,
+      );
+    }
+    return Container(
+      color: SettleColors.stone50,
       child: child,
     );
   }

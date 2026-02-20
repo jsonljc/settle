@@ -7,61 +7,17 @@ import '../models/approach.dart';
 import '../models/sleep_session.dart';
 import '../providers/profile_provider.dart';
 import '../providers/session_provider.dart';
-import '../theme/glass_components.dart';
-import '../theme/reduce_motion.dart';
+import '../widgets/solid_card.dart';
+import '../widgets/settle_cta.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
+import '../widgets/settle_gap.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
+import '../widgets/settle_tappable.dart';
 
-class _TodayT {
-  _TodayT._();
-
-  static final type = _TodayTypeTokens();
-  static const pal = _TodayPaletteTokens();
-  static const glass = _TodayGlassTokens();
-  static const radius = _TodayRadiusTokens();
-}
-
-class _TodayTypeTokens {
-  TextStyle get h3 => SettleTypography.heading;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption;
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-  TextStyle get body => SettleTypography.body;
-}
-
-class _TodayPaletteTokens {
-  const _TodayPaletteTokens();
-
-  Color get textPrimary => SettleColors.nightText;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get accent => SettleColors.nightAccent;
-  Color get teal => SettleColors.sage400;
-}
-
-class _TodayGlassTokens {
-  const _TodayGlassTokens();
-
-  Color get fill => SettleGlassDark.backgroundStrong;
-  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
-  Color get fillTeal => SettleColors.sage600.withValues(alpha: 0.16);
-  Color get border => SettleGlassDark.borderStrong;
-}
-
-class _TodayRadiusTokens {
-  const _TodayRadiusTokens();
-
-  double get pill => SettleRadii.pill;
-}
 
 final _sleepHistoryProvider = FutureProvider<List<SleepSession>>((ref) async {
   ref.watch(sessionProvider);
@@ -114,9 +70,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
                   title: 'Logs',
                   subtitle: 'Day and week logs in one place.',
                 ),
-                const SizedBox(height: 20),
-                _GlassTabBar(controller: _tabController),
-                const SizedBox(height: 20),
+                const SettleGap.lg(),
+                _LogsTabBar(controller: _tabController),
+                const SettleGap.lg(),
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
@@ -128,34 +84,38 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
                   ),
                 ),
                 const SizedBox(height: 12),
-                GlassCardAccent(
+                SolidCard(
+                  color: SettleSurfaces.tintDusk,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Next step', style: _TodayT.type.h3),
-                      const SizedBox(height: 8),
+                      Text('Next step', style: SettleTypography.heading),
+                      const SettleGap.sm(),
                       Text(
                         'Adjust this week\'s plan or review why it works.',
-                        style: _TodayT.type.caption.copyWith(
-                          color: _TodayT.pal.textSecondary,
+                        style: SettleTypography.caption.copyWith(
+                          color: SettleColors.nightSoft,
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      GlassCta(
+                      SizedBox(height: SettleSpacing.cardGap),
+                      SettleCta(
                         label: isPlanTab ? 'Open Plan Focus' : 'Open Learn Q&A',
                         onTap: () =>
                             context.push(isPlanTab ? planRoute : learnRoute),
                       ),
-                      const SizedBox(height: 8),
-                      GestureDetector(
+                      const SettleGap.sm(),
+                      SettleTappable(
+                        semanticLabel: isPlanTab
+                            ? 'Open Learn Q&A'
+                            : 'Open Plan Focus',
                         onTap: () =>
                             context.push(isPlanTab ? learnRoute : planRoute),
                         child: Text(
                           isPlanTab ? 'Open Learn Q&A' : 'Open Plan Focus',
-                          style: _TodayT.type.caption.copyWith(
-                            color: _TodayT.pal.textTertiary,
+                          style: SettleTypography.caption.copyWith(
+                            color: SettleColors.nightMuted,
                             decoration: TextDecoration.underline,
-                            decorationColor: _TodayT.pal.textTertiary,
+                            decorationColor: SettleColors.nightMuted,
                           ),
                         ),
                       ),
@@ -172,8 +132,8 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
   }
 }
 
-class _GlassTabBar extends StatelessWidget {
-  const _GlassTabBar({required this.controller});
+class _LogsTabBar extends StatelessWidget {
+  const _LogsTabBar({required this.controller});
   final TabController controller;
 
   @override
@@ -181,21 +141,21 @@ class _GlassTabBar extends StatelessWidget {
     return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: _TodayT.glass.fill,
-        borderRadius: BorderRadius.circular(_TodayT.radius.pill),
+        color: SettleSurfaces.cardDark,
+        borderRadius: BorderRadius.circular(SettleRadii.pill),
       ),
       child: TabBar(
         controller: controller,
         indicator: BoxDecoration(
-          color: _TodayT.glass.fillAccent,
-          borderRadius: BorderRadius.circular(_TodayT.radius.pill),
-          border: Border.all(color: _TodayT.pal.accent.withValues(alpha: 0.3)),
+          color: SettleColors.dusk600.withValues(alpha: 0.16),
+          borderRadius: BorderRadius.circular(SettleRadii.pill),
+          border: Border.all(color: SettleColors.nightAccent.withValues(alpha: 0.3)),
         ),
         dividerColor: Colors.transparent,
-        labelColor: _TodayT.pal.textPrimary,
-        unselectedLabelColor: _TodayT.pal.textTertiary,
+        labelColor: SettleColors.nightText,
+        unselectedLabelColor: SettleColors.nightMuted,
         labelStyle: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
-        unselectedLabelStyle: _TodayT.type.caption,
+        unselectedLabelStyle: SettleTypography.caption,
         indicatorSize: TabBarIndicatorSize.tab,
         tabs: const [
           Tab(text: 'Plan'),
@@ -246,22 +206,22 @@ class _PlanTab extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              GlassCard(
-                padding: const EdgeInsets.all(16),
+              SolidCard(
+                padding: EdgeInsets.all(SettleSpacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'TARGET',
-                      style: _TodayT.type.overline.copyWith(
-                        color: _TodayT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: SettleSpacing.cardGap),
                     Row(
                       children: [
                         _StatBlock(value: '${bracket.naps}', label: 'naps'),
-                        const SizedBox(width: 24),
+                        SizedBox(width: SettleSpacing.xl),
                         _StatBlock(
                           value:
                               '${lo ~/ 60}h${lo % 60 > 0 ? ' ${lo % 60}m' : ''}–${hi ~/ 60}h${hi % 60 > 0 ? ' ${hi % 60}m' : ''}',
@@ -269,53 +229,53 @@ class _PlanTab extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: SettleSpacing.cardGap),
                     Text(
                       bracket.label,
-                      style: _TodayT.type.caption.copyWith(
-                        color: _TodayT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                   ],
                 ),
               ).entryFadeIn(context, delay: const Duration(milliseconds: 150)),
-              const SizedBox(height: 16),
-              GlassCard(
-                padding: const EdgeInsets.all(16),
+              const SettleGap.md(),
+              SolidCard(
+                padding: EdgeInsets.all(SettleSpacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'TODAY SO FAR',
-                      style: _TodayT.type.overline.copyWith(
-                        color: _TodayT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: SettleSpacing.cardGap),
                     Text(
                       '${todaySessions.length} sleep sessions logged',
-                      style: _TodayT.type.h3,
+                      style: SettleTypography.heading,
                     ),
-                    const SizedBox(height: 4),
+                    const SettleGap.xs(),
                     Text(
                       _formatDuration(totalToday),
-                      style: _TodayT.type.body.copyWith(
-                        color: _TodayT.pal.textSecondary,
+                      style: SettleTypography.body.copyWith(
+                        color: SettleColors.nightSoft,
                       ),
                     ),
                   ],
                 ),
               ).entryFadeIn(context, delay: const Duration(milliseconds: 190)),
-              const SizedBox(height: 16),
-              GlassCard(
-                padding: const EdgeInsets.all(16),
+              const SettleGap.md(),
+              SolidCard(
+                padding: EdgeInsets.all(SettleSpacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'TIMELINE',
-                      style: _TodayT.type.overline.copyWith(
-                        color: _TodayT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -335,7 +295,7 @@ class _PlanTab extends StatelessWidget {
                   ],
                 ),
               ).entryFadeIn(context, delay: const Duration(milliseconds: 230)),
-              const SizedBox(height: 24),
+              const SettleGap.xl(),
             ],
           ),
         );
@@ -377,7 +337,8 @@ class _WeekTab extends StatelessWidget {
             children: [
               if (hasData)
                 (trendingUp
-                        ? GlassCardTeal(
+                        ? SolidCard(
+                            color: SettleSurfaces.tintSage,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 18,
                               vertical: 14,
@@ -387,20 +348,20 @@ class _WeekTab extends StatelessWidget {
                                 Icon(
                                   Icons.trending_up_rounded,
                                   size: 20,
-                                  color: _TodayT.pal.teal,
+                                  color: SettleColors.sage400,
                                 ),
-                                const SizedBox(width: 10),
+                                SizedBox(width: SettleSpacing.cardGap),
                                 Text(
                                   'Sleep trending upward this week',
                                   style: SettleTypography.body.copyWith(
-                                    color: _TodayT.pal.teal,
+                                    color: SettleColors.sage400,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
                           )
-                        : GlassCard(
+                        : SolidCard(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 18,
                                   vertical: 14,
@@ -410,13 +371,13 @@ class _WeekTab extends StatelessWidget {
                                     Icon(
                                       Icons.trending_flat_rounded,
                                       size: 20,
-                                      color: _TodayT.pal.textSecondary,
+                                      color: SettleColors.nightSoft,
                                     ),
-                                    const SizedBox(width: 10),
+                                    SizedBox(width: SettleSpacing.cardGap),
                                     Text(
                                       'Building consistency this week',
                                       style: SettleTypography.body.copyWith(
-                                        color: _TodayT.pal.textSecondary,
+                                        color: SettleColors.nightSoft,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -429,7 +390,7 @@ class _WeekTab extends StatelessWidget {
                       delay: const Duration(milliseconds: 150),
                     )
               else
-                GlassCard(
+                SolidCard(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 18,
                     vertical: 14,
@@ -441,43 +402,43 @@ class _WeekTab extends StatelessWidget {
                     onAction: () => context.push('/sleep'),
                   ),
                 ),
-              const SizedBox(height: 16),
-              GlassCard(
-                padding: const EdgeInsets.all(16),
+              const SettleGap.md(),
+              SolidCard(
+                padding: EdgeInsets.all(SettleSpacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'WEEKLY SUMMARY',
-                      style: _TodayT.type.overline.copyWith(
-                        color: _TodayT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: SettleSpacing.cardGap),
                     Text(
                       '${avgHours.toStringAsFixed(1)}h average/day',
-                      style: _TodayT.type.h3,
+                      style: SettleTypography.heading,
                     ),
-                    const SizedBox(height: 4),
+                    const SettleGap.xs(),
                     Text(
                       '${weekData.fold<int>(0, (sum, d) => sum + d.sessions)} sessions in 7 days',
-                      style: _TodayT.type.body.copyWith(
-                        color: _TodayT.pal.textSecondary,
+                      style: SettleTypography.body.copyWith(
+                        color: SettleColors.nightSoft,
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
-              GlassCard(
-                padding: const EdgeInsets.all(16),
+              SolidCard(
+                padding: EdgeInsets.all(SettleSpacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'SLEEP HOURS (LAST 7 DAYS)',
-                      style: _TodayT.type.overline.copyWith(
-                        color: _TodayT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -489,14 +450,14 @@ class _WeekTab extends StatelessWidget {
                         todayIdx: 6,
                         maxY: 12,
                         suffix: 'h',
-                        barColor: _TodayT.pal.accent,
+                        barColor: SettleColors.nightAccent,
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
-              GlassCard(
+              SolidCard(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
@@ -505,11 +466,11 @@ class _WeekTab extends StatelessWidget {
                   title: 'More weekly details (optional)',
                   subtitle: 'Session count chart.',
                   children: [
-                    const SizedBox(height: 8),
+                    const SettleGap.sm(),
                     Text(
                       'SESSION COUNT (LAST 7 DAYS)',
-                      style: _TodayT.type.overline.copyWith(
-                        color: _TodayT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -523,14 +484,14 @@ class _WeekTab extends StatelessWidget {
                         todayIdx: 6,
                         maxY: 6,
                         suffix: '',
-                        barColor: _TodayT.pal.textSecondary,
+                        barColor: SettleColors.nightSoft,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SettleGap.xs(),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SettleGap.xl(),
             ],
           ),
         );
@@ -563,12 +524,12 @@ class _SessionRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$start → $end', style: _TodayT.type.label),
+              Text('$start → $end', style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 2),
               Text(
                 _formatDuration(session.duration),
-                style: _TodayT.type.caption.copyWith(
-                  color: _TodayT.pal.textSecondary,
+                style: SettleTypography.caption.copyWith(
+                  color: SettleColors.nightSoft,
                 ),
               ),
             ],
@@ -578,14 +539,14 @@ class _SessionRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: session.isNight
-                ? _TodayT.glass.fillTeal
-                : _TodayT.glass.fillAccent,
-            borderRadius: BorderRadius.circular(_TodayT.radius.pill),
+                ? SettleColors.sage600.withValues(alpha: 0.16)
+                : SettleColors.dusk600.withValues(alpha: 0.16),
+            borderRadius: BorderRadius.circular(SettleRadii.pill),
           ),
           child: Text(
             session.isNight ? 'Night' : 'Nap',
-            style: _TodayT.type.caption.copyWith(
-              color: session.isNight ? _TodayT.pal.teal : _TodayT.pal.accent,
+            style: SettleTypography.caption.copyWith(
+              color: session.isNight ? SettleColors.sage400 : SettleColors.nightAccent,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -605,12 +566,12 @@ class _StatBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: _TodayT.type.h3),
+        Text(value, style: SettleTypography.heading),
         const SizedBox(height: 2),
         Text(
           label,
-          style: _TodayT.type.caption.copyWith(
-            color: _TodayT.pal.textSecondary,
+          style: SettleTypography.caption.copyWith(
+            color: SettleColors.nightSoft,
           ),
         ),
       ],
@@ -625,10 +586,10 @@ class _ErrorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: GlassCard(
+      child: SolidCard(
         child: Text(
           message,
-          style: _TodayT.type.body.copyWith(color: _TodayT.pal.textSecondary),
+          style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
           textAlign: TextAlign.center,
         ),
       ),
@@ -663,7 +624,7 @@ class _BarChart extends StatelessWidget {
           drawVerticalLine: false,
           horizontalInterval: maxY / 3,
           getDrawingHorizontalLine: (value) {
-            return FlLine(color: _TodayT.glass.border, strokeWidth: 0.5);
+            return FlLine(color: SettleSurfaces.cardBorderDark, strokeWidth: 0.5);
           },
         ),
         borderData: FlBorderData(show: false),
@@ -682,8 +643,8 @@ class _BarChart extends StatelessWidget {
                 if (value == 0) return const SizedBox.shrink();
                 return Text(
                   '${value.toInt()}$suffix',
-                  style: _TodayT.type.overline.copyWith(
-                    color: _TodayT.pal.textTertiary,
+                  style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                    color: SettleColors.nightMuted,
                   ),
                 );
               },
@@ -697,10 +658,10 @@ class _BarChart extends StatelessWidget {
                 if (i < 0 || i >= labels.length) return const SizedBox.shrink();
                 return Text(
                   labels[i],
-                  style: _TodayT.type.overline.copyWith(
+                  style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
                     color: i == todayIdx
-                        ? _TodayT.pal.textPrimary
-                        : _TodayT.pal.textTertiary,
+                        ? SettleColors.nightText
+                        : SettleColors.nightMuted,
                     fontWeight: i == todayIdx
                         ? FontWeight.w700
                         : FontWeight.w400,

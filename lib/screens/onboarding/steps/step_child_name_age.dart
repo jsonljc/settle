@@ -2,42 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../theme/settle_design_system.dart';
 
-class _ScnT {
-  _ScnT._();
-
-  static final type = _ScnTypeTokens();
-  static const pal = _ScnPaletteTokens();
-}
-
-class _ScnTypeTokens {
-  TextStyle get h1 => SettleTypography.heading.copyWith(
-    fontSize: 26,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _ScnPaletteTokens {
-  const _ScnPaletteTokens();
-
-  Color get textPrimary => SettleColors.nightText;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get accent => SettleColors.nightAccent;
-}
-
 class StepChildNameAge extends StatelessWidget {
   const StepChildNameAge({
     super.key,
@@ -55,29 +19,29 @@ class StepChildNameAge extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Tell us about your child', style: _ScnT.type.h1),
+        Text('Tell us about your child', style: SettleTypography.heading.copyWith(fontSize: 26, fontWeight: FontWeight.w700)),
         const SizedBox(height: 10),
         Text(
           'Name is optional. We\'ll personalize scripts either way.',
-          style: _ScnT.type.caption.copyWith(color: _ScnT.pal.textSecondary),
+          style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightSoft),
         ),
         const SizedBox(height: 20),
         TextField(
           controller: nameController,
           textInputAction: TextInputAction.next,
-          style: _ScnT.type.h3.copyWith(color: _ScnT.pal.textPrimary),
-          cursorColor: _ScnT.pal.accent,
+          style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700, color: SettleColors.nightText),
+          cursorColor: SettleColors.nightAccent,
           decoration: InputDecoration(
             hintText: 'Child name (optional)',
-            hintStyle: _ScnT.type.h3.copyWith(color: _ScnT.pal.textTertiary),
+            hintStyle: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700, color: SettleColors.nightMuted),
             border: InputBorder.none,
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                color: _ScnT.pal.textTertiary.withValues(alpha: 0.35),
+                color: SettleColors.nightMuted.withValues(alpha: 0.35),
               ),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: _ScnT.pal.accent, width: 2),
+              borderSide: BorderSide(color: SettleColors.nightAccent, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(vertical: 12),
           ),
@@ -85,30 +49,32 @@ class StepChildNameAge extends StatelessWidget {
         const SizedBox(height: 28),
         Text(
           'Age',
-          style: _ScnT.type.overline.copyWith(color: _ScnT.pal.textTertiary),
+          style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8, color: SettleColors.nightMuted),
         ),
         const SizedBox(height: 8),
         Row(
           children: [
             Text(
               _ageLabel(ageMonths),
-              style: _ScnT.type.h3.copyWith(color: _ScnT.pal.textPrimary),
+              style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700, color: SettleColors.nightText),
             ),
             const Spacer(),
             Text(
               '$ageMonths months',
-              style: _ScnT.type.caption.copyWith(
-                color: _ScnT.pal.textSecondary,
+              style: SettleTypography.caption.copyWith(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: SettleColors.nightSoft,
               ),
             ),
           ],
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: _ScnT.pal.accent,
-            inactiveTrackColor: _ScnT.pal.textTertiary.withValues(alpha: 0.25),
-            thumbColor: _ScnT.pal.accent,
-            overlayColor: _ScnT.pal.accent.withValues(alpha: 0.16),
+            activeTrackColor: SettleColors.nightAccent,
+            inactiveTrackColor: SettleColors.nightMuted.withValues(alpha: 0.25),
+            thumbColor: SettleColors.nightAccent,
+            overlayColor: SettleColors.nightAccent.withValues(alpha: 0.16),
             trackHeight: 4,
           ),
           child: Slider(

@@ -1,31 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
-
-class _TuT {
-  _TuT._();
-
-  static final type = _TuTypeTokens();
-  static const pal = _TuPaletteTokens();
-}
-
-class _TuTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-}
-
-class _TuPaletteTokens {
-  const _TuPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
 
 // Deprecated in IA cleanup PR6. This fallback exists only for deprecated
 // tantrum screens that are no longer reachable from production routes.
@@ -54,21 +34,21 @@ class TantrumUnavailableView extends StatelessWidget {
                     children: [
                       Text(
                         'Tantrum support is not active',
-                        style: _TuT.type.h3,
+                        style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         message ??
                             'Enable tantrum support from onboarding or settings to open this screen.',
-                        style: _TuT.type.body.copyWith(
-                          color: _TuT.pal.textSecondary,
+                        style: SettleTypography.body.copyWith(
+                          color: SettleColors.nightSoft,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 14),
-                GlassCta(
+                SettleCta(
                   label: 'Back to home',
                   onTap: () => context.go('/now'),
                 ),

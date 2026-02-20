@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme/glass_components.dart';
+import 'glass_card.dart';
+import 'settle_cta.dart';
+import 'settle_tappable.dart';
 import '../theme/settle_design_system.dart';
 
 /// Sunday evening banner prompting a gentle weekly reflection.
@@ -45,7 +47,8 @@ class WeeklyReflectionBanner extends StatelessWidget {
                 ),
               ),
               if (onDismiss != null)
-                GestureDetector(
+                SettleTappable(
+                  semanticLabel: 'Dismiss',
                   onTap: onDismiss,
                   child: Icon(
                     Icons.close_rounded,

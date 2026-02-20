@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/settle_design_system.dart';
 import 'settle_chip.dart';
 
-/// A single-select group of options rendered as chips in a shared glass container.
+/// A single-select group of options rendered as chips in a shared container.
 /// Replaces _SegmentedChoice and _SegmentedString. Only one option can be
 /// selected at a time. Uses [SettleChip] with [SettleChipVariant.frequency].
 class SettleSegmentedChoice<TOption> extends StatelessWidget {
@@ -34,9 +34,9 @@ class SettleSegmentedChoice<TOption> extends StatelessWidget {
           vertical: SettleSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: SettleGlassDark.background,
-          borderRadius: BorderRadius.circular(SettleRadii.glass),
-          border: Border.all(color: SettleGlassDark.borderStrong),
+          color: SettleSurfaces.cardDark,
+          borderRadius: BorderRadius.circular(SettleRadii.surface),
+          border: Border.all(color: SettleSurfaces.cardBorderDark),
         ),
         child: Wrap(
           spacing: SettleSpacing.sm,

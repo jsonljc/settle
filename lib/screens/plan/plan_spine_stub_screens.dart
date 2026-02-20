@@ -4,23 +4,6 @@ import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 
-class _PssT {
-  _PssT._();
-
-  static final type = _PssTypeTokens();
-  static const pal = _PssPaletteTokens();
-}
-
-class _PssTypeTokens {
-  TextStyle get body => SettleTypography.body;
-}
-
-class _PssPaletteTokens {
-  const _PssPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
-
 /// Stub for Reset entry point. Reaches correct screen and can exit cleanly (back/close).
 class ResetStubScreen extends StatelessWidget {
   const ResetStubScreen({super.key});
@@ -41,8 +24,8 @@ class ResetStubScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 Text(
                   'Open the full Reset flow from Plan.',
-                  style: _PssT.type.body.copyWith(
-                    color: _PssT.pal.textSecondary,
+                  style: SettleTypography.body.copyWith(
+                    color: SettleColors.nightSoft,
                   ),
                 ),
               ],
@@ -74,8 +57,8 @@ class MomentStubScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 Text(
                   'Open the full Moment flow from Plan.',
-                  style: _PssT.type.body.copyWith(
-                    color: _PssT.pal.textSecondary,
+                  style: SettleTypography.body.copyWith(
+                    color: SettleColors.nightSoft,
                   ),
                 ),
               ],

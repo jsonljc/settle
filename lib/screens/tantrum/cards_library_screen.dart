@@ -5,33 +5,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../tantrum/models/tantrum_card.dart';
 import '../../tantrum/providers/tantrum_module_providers.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/settle_gap.dart';
 import '../../widgets/tantrum_sub_nav.dart';
-
-class _ClT {
-  _ClT._();
-
-  static final type = _ClTypeTokens();
-  static const pal = _ClPaletteTokens();
-}
-
-class _ClTypeTokens {
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption;
-  TextStyle get body => SettleTypography.body;
-}
-
-class _ClPaletteTokens {
-  const _ClPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get accent => SettleColors.nightAccent;
-}
 
 /// DECK: saved cards, pinned cards, favorites, and purchased packs.
 /// Canonical route is `/tantrum/deck`.
@@ -224,14 +205,14 @@ class CardsLibraryScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 'Something went wrong.',
-                                style: _ClT.type.body.copyWith(
+                                style: SettleTypography.body.copyWith(
                                   fontSize: 14,
-                                  color: _ClT.pal.textSecondary,
+                                  color: SettleColors.nightSoft,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
                               SettleGap.lg(),
-                              GlassCta(
+                              SettleCta(
                                 label: 'Back to Incident',
                                 onTap: () => context.go('/tantrum'),
                               ),
@@ -322,11 +303,11 @@ class _SectionHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: _ClT.type.label),
+        Text(title, style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 2),
         Text(
           subtitle,
-          style: _ClT.type.caption.copyWith(color: _ClT.pal.textSecondary),
+          style: SettleTypography.caption.copyWith(color: SettleColors.nightSoft),
         ),
       ],
     );
@@ -344,9 +325,9 @@ class _EmptyCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Text(
         message,
-        style: _ClT.type.body.copyWith(
+        style: SettleTypography.body.copyWith(
           fontSize: 14,
-          color: _ClT.pal.textSecondary,
+          color: SettleColors.nightSoft,
         ),
         textAlign: TextAlign.center,
       ),
@@ -385,14 +366,14 @@ class _PinnedTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(card.title, style: _ClT.type.label),
+                  Text(card.title, style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
                   Text(
                     card.remember,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: _ClT.type.caption.copyWith(
-                      color: _ClT.pal.textSecondary,
+                    style: SettleTypography.caption.copyWith(
+                      color: SettleColors.nightSoft,
                     ),
                   ),
                 ],
@@ -401,17 +382,17 @@ class _PinnedTile extends StatelessWidget {
             IconButton(
               onPressed: canMoveUp ? onMoveUp : null,
               icon: const Icon(Icons.keyboard_arrow_up_rounded),
-              color: _ClT.pal.textSecondary,
+              color: SettleColors.nightSoft,
             ),
             IconButton(
               onPressed: canMoveDown ? onMoveDown : null,
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
-              color: _ClT.pal.textSecondary,
+              color: SettleColors.nightSoft,
             ),
             IconButton(
               onPressed: onUnpin,
               icon: const Icon(Icons.push_pin_outlined),
-              color: _ClT.pal.accent,
+              color: SettleColors.nightAccent,
             ),
           ],
         ),
@@ -454,16 +435,16 @@ class _SavedCardTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                Expanded(child: Text(card.title, style: _ClT.type.label)),
+                Expanded(child: Text(card.title, style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600))),
                 if (isPinned)
                   Icon(
                     Icons.push_pin_rounded,
                     size: 16,
-                    color: _ClT.pal.accent,
+                    color: SettleColors.nightAccent,
                   ),
                 const SizedBox(width: 6),
                 if (isFavorite)
-                  Icon(Icons.star_rounded, size: 16, color: _ClT.pal.accent),
+                  Icon(Icons.star_rounded, size: 16, color: SettleColors.nightAccent),
               ],
             ),
             const SizedBox(height: 4),
@@ -471,7 +452,7 @@ class _SavedCardTile extends StatelessWidget {
               card.say,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: _ClT.type.caption.copyWith(color: _ClT.pal.textSecondary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightSoft),
             ),
             const SizedBox(height: 8),
             Row(
@@ -534,12 +515,12 @@ class _PackTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(pack.title, style: _ClT.type.label),
+                Text(pack.title, style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
                 Text(
                   '${pack.cardCount} cards',
-                  style: _ClT.type.caption.copyWith(
-                    color: _ClT.pal.textSecondary,
+                  style: SettleTypography.caption.copyWith(
+                    color: SettleColors.nightSoft,
                   ),
                 ),
               ],
@@ -578,14 +559,14 @@ class _DiscoverTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(card.title, style: _ClT.type.label),
+                  Text(card.title, style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
                   Text(
                     card.remember,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: _ClT.type.caption.copyWith(
-                      color: _ClT.pal.textSecondary,
+                    style: SettleTypography.caption.copyWith(
+                      color: SettleColors.nightSoft,
                     ),
                   ),
                 ],

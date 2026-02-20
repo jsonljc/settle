@@ -14,12 +14,13 @@ import '../services/nudge_scheduler.dart';
 import '../services/notification_service.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/settle_gap.dart';
 import '../widgets/gradient_background.dart';
-import '../theme/reduce_motion.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/option_button.dart';
 import '../widgets/settle_chip.dart';
 import '../widgets/settle_disclosure.dart';
+import '../widgets/settle_tappable.dart';
 
 /// Settings — profile card, toggle groups, approach switcher.
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -63,7 +64,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 child: const ScreenHeader(title: 'Settings'),
               ),
-              const SizedBox(height: 20),
+              const SettleGap.lg(),
 
               Expanded(
                 child: ListView(
@@ -75,7 +76,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     // ── Profile card ──
                     GlassCard(
                       variant: cardVariant,
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(SettleSpacing.md),
                       child: Row(
                         children: [
                           // Avatar circle
@@ -100,7 +101,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   ),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          SizedBox(width: SettleSpacing.md),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,15 +140,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       context,
                       delay: const Duration(milliseconds: 150),
                     ),
-                    const SizedBox(height: 20),
+                    const SettleGap.lg(),
 
                     _SectionHeader(title: 'Feature focus'),
-                    const SizedBox(height: 10),
+                    SizedBox(height: SettleSpacing.cardGap),
                     ...allowedModes.map((mode) {
                       final isSelected =
                           (profile?.focusMode ?? FocusMode.sleepOnly) == mode;
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: SettleSpacing.sm),
                         child: OptionButton(
                           label: mode.label,
                           selected: isSelected,
@@ -158,10 +159,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       );
                     }),
                     if (profile?.tantrumProfile != null) ...[
-                      const SizedBox(height: 8),
+                      const SettleGap.sm(),
                       GlassCard(
                         variant: cardVariant,
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(SettleSpacing.md),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -172,7 +173,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     SettleSemanticColors.muted(context),
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SettleGap.sm(),
                             Text(
                               'Type: ${profile!.tantrumProfile!.tantrumType.label}',
                               style: SettleTypography.caption.copyWith(
@@ -181,7 +182,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SettleGap.xs(),
                             Text(
                               'Triggers: ${profile.tantrumProfile!.commonTriggers.map((t) => t.label).join(', ')}',
                               style: SettleTypography.caption.copyWith(
@@ -190,7 +191,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SettleGap.xs(),
                             Text(
                               'Priority: ${profile.tantrumProfile!.responsePriority.label}',
                               style: SettleTypography.caption.copyWith(
@@ -203,22 +204,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 20),
+                    const SettleGap.lg(),
 
                     _SectionHeader(title: 'Recommended'),
-                    const SizedBox(height: 10),
+                    SizedBox(height: SettleSpacing.cardGap),
                     _ToggleCard(
                       label: 'Wake window nudges',
                       value: _wakeNudges,
                       onChanged: (v) => setState(() => _wakeNudges = v),
                     ),
-                    const SizedBox(height: 8),
+                    const SettleGap.sm(),
                     _ToggleCard(
                       label: 'Wellbeing check-ins',
                       value: _wellbeingCheckins,
                       onChanged: (v) => setState(() => _wellbeingCheckins = v),
                     ),
-                    const SizedBox(height: 8),
+                    const SettleGap.sm(),
                     _ToggleCard(
                       label: 'Disruption mode',
                       subtitle:
@@ -227,14 +228,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onChanged: (v) =>
                           ref.read(disruptionProvider.notifier).set(v),
                     ),
-                    const SizedBox(height: 20),
+                    const SettleGap.lg(),
                     _SectionHeader(title: 'Plan nudges'),
-                    const SizedBox(height: 10),
+                    SizedBox(height: SettleSpacing.cardGap),
                     _NudgeSettingsSection(),
-                    const SizedBox(height: 20),
+                    const SettleGap.lg(),
                     _SectionHeader(title: 'Shared Scripts'),
-                    const SizedBox(height: 10),
-                    GestureDetector(
+                    SizedBox(height: SettleSpacing.cardGap),
+                    SettleTappable(
+                      semanticLabel: 'Keep caregivers on the same page',
                       onTap: () => context.push('/rules'),
                       child: const _InlineActionRow(
                         icon: Icons.people_outline_rounded,
@@ -242,21 +244,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         trailing: Icons.chevron_right_rounded,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SettleGap.lg(),
                     GlassCard(
                       variant: cardVariant,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: SettleSpacing.md,
+                        vertical: SettleSpacing.sm,
                       ),
                       child: SettleDisclosure(
                         title: 'More settings',
                         subtitle:
                             'Accessibility, sharing, and advanced preferences.',
                         children: [
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           _SectionHeader(title: 'Alerts'),
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           _ToggleCard(
                             label: 'Auto nighttime support',
                             value: _autoNight,
@@ -265,7 +267,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           ),
                           const SizedBox(height: 12),
                           _SectionHeader(title: 'Accessibility'),
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           _ToggleCard(
                             label: 'Simplified mode',
                             value: _simplifiedMode,
@@ -273,14 +275,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             onChanged: (v) =>
                                 setState(() => _simplifiedMode = v),
                           ),
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           _ToggleCard(
                             label: 'One-handed mode',
                             value: _oneHanded,
                             embedded: true,
                             onChanged: (v) => setState(() => _oneHanded = v),
                           ),
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           _ToggleCard(
                             label: 'Grief-aware language',
                             value: _griefAware,
@@ -289,7 +291,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           ),
                           const SizedBox(height: 12),
                           _SectionHeader(title: 'Sleep details'),
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           _ToggleCard(
                             label: 'Nap transition',
                             subtitle: 'Adjusting nap count',
@@ -300,14 +302,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           ),
                           const SizedBox(height: 12),
                           _SectionHeader(title: 'Sharing'),
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           _ToggleCard(
                             label: 'Partner sync',
                             value: _partnerSync,
                             embedded: true,
                             onChanged: (v) => setState(() => _partnerSync = v),
                           ),
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           Opacity(
                             opacity: 0.55,
                             child: _InlineActionRow(
@@ -318,7 +320,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           ),
                           const SizedBox(height: 12),
                           _SectionHeader(title: 'Approach'),
-                          const SizedBox(height: 8),
+                          const SettleGap.sm(),
                           if (profile != null)
                             OptionButton(
                               label: profile.approach.label,
@@ -337,8 +339,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           if (showInternalTools) ...[
                             const SizedBox(height: 12),
                             _SectionHeader(title: 'Internal tools'),
-                            const SizedBox(height: 8),
-                            GestureDetector(
+                            const SettleGap.sm(),
+                            SettleTappable(
+                              semanticLabel: 'Open release checks',
                               onTap: () => context.push('/release-ops'),
                               child: const _InlineActionRow(
                                 icon: Icons.tune_rounded,
@@ -349,8 +352,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           ],
                           const SizedBox(height: 12),
                           _SectionHeader(title: 'App'),
-                          const SizedBox(height: 8),
-                          GestureDetector(
+                          const SettleGap.sm(),
+                          SettleTappable(
+                            semanticLabel: 'Restart from onboarding',
                             onTap: () async {
                               await ref.read(profileProvider.notifier).clear();
                               if (context.mounted) context.go('/');
@@ -424,8 +428,8 @@ class _ToggleCard extends StatelessWidget {
     final standardVariant =
         isDark ? GlassCardVariant.dark : GlassCardVariant.light;
     final inactiveTrack = isDark
-        ? SettleGlassDark.backgroundStrong
-        : SettleGlassLight.backgroundStrong;
+        ? SettleSurfaces.cardDark
+        : SettleSurfaces.cardLight;
 
     final content = Row(
       children: [
@@ -467,14 +471,20 @@ class _ToggleCard extends StatelessWidget {
 
     if (embedded) {
       return GlassCard(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: SettleSpacing.cardGap,
+      ),
         variant: strongVariant,
         child: content,
       );
     }
 
     return GlassCard(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: SettleSpacing.md,
+        vertical: 12,
+      ),
       variant: standardVariant,
       child: content,
     );
@@ -508,7 +518,7 @@ class _NudgeSettingsSection extends ConsumerWidget {
 
     return GlassCard(
       variant: cardVariant,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(SettleSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -529,7 +539,7 @@ class _NudgeSettingsSection extends ConsumerWidget {
               await _refreshScheduler(ref);
             },
           ),
-          const SizedBox(height: 8),
+          const SettleGap.sm(),
           _ToggleCard(
             label: 'Pattern-based (from your usage)',
             value: settings.patternEnabled,
@@ -540,7 +550,7 @@ class _NudgeSettingsSection extends ConsumerWidget {
               await _refreshScheduler(ref);
             },
           ),
-          const SizedBox(height: 8),
+          const SettleGap.sm(),
           _ToggleCard(
             label: 'Content (age-based tips)',
             value: settings.contentEnabled,
@@ -551,7 +561,7 @@ class _NudgeSettingsSection extends ConsumerWidget {
               await _refreshScheduler(ref);
             },
           ),
-          const SizedBox(height: 8),
+          const SettleGap.sm(),
           _ToggleCard(
             label: 'Evening check-in (1h before bedtime)',
             value: settings.eveningCheckInEnabled,
@@ -569,14 +579,14 @@ class _NudgeSettingsSection extends ConsumerWidget {
               color: SettleSemanticColors.muted(context),
             ),
           ),
-          const SizedBox(height: 8),
+          const SettleGap.sm(),
           Text(
             'Frequency: ${_frequencyLabel(settings.frequency)}',
             style: SettleTypography.caption.copyWith(
               color: SettleSemanticColors.muted(context),
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: SettleSpacing.cardGap),
           Wrap(
             spacing: 8,
             runSpacing: 8,

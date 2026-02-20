@@ -3,36 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/pattern_insight.dart';
 import '../../providers/patterns_provider.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
-
-class _PsT {
-  _PsT._();
-
-  static final type = _PsTypeTokens();
-  static const pal = _PsPaletteTokens();
-}
-
-class _PsTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _PsPaletteTokens {
-  const _PsPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
 
 class PatternsScreen extends ConsumerWidget {
   const PatternsScreen({super.key});
@@ -92,18 +66,18 @@ class _PatternCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_typeLabel(pattern), style: _PsT.type.h3),
+          Text(_typeLabel(pattern), style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
-          Text(pattern.insight, style: _PsT.type.body),
+          Text(pattern.insight, style: SettleTypography.body),
           const SizedBox(height: 10),
           Text(
             '${confidencePercent.toStringAsFixed(0)}% confidence · ${pattern.basedOnEvents} events',
-            style: _PsT.type.caption.copyWith(color: _PsT.pal.textSecondary),
+            style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightSoft),
           ),
           const SizedBox(height: 3),
           Text(
             'Generated ${_formatDate(pattern.createdAt)}',
-            style: _PsT.type.caption.copyWith(color: _PsT.pal.textTertiary),
+            style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightMuted),
           ),
         ],
       ),
@@ -132,9 +106,9 @@ class _EmptyPatternsState extends StatelessWidget {
     return Center(
       child: Text(
         'Pattern insights will appear here after more usage.',
-        style: _PsT.type.body.copyWith(
+        style: SettleTypography.body.copyWith(
           fontSize: 14,
-          color: _PsT.pal.textSecondary,
+          color: SettleColors.nightSoft,
         ),
         textAlign: TextAlign.center,
       ),

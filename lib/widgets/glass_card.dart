@@ -1,11 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../theme/settle_design_system.dart';
 
-/// Variant of the glass card (light/dark, standard/strong).
+/// Variant of the card (light/dark, standard/strong).
 enum GlassCardVariant {
   light,
   lightStrong,
@@ -13,9 +11,10 @@ enum GlassCardVariant {
   darkStrong,
 }
 
-/// Apple Liquid Glass–style card: heavy backdrop blur, specular highlight,
-/// inner depth, and outer shadow. Pixel-perfect for the glass effect.
-/// When [onTap] is set, press feedback: opacity 0.85 (ease-out).
+/// Solid surface card with subtle shadow and optional border.
+/// When [onTap] is set, press feedback: opacity 0.85 + scale 0.985 (ease-out).
+///
+/// Name kept as `GlassCard` for backward compatibility across 63+ importers.
 class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,
@@ -25,6 +24,8 @@ class GlassCard extends StatelessWidget {
     this.borderRadius,
     this.margin,
     this.onTap,
+    this.fill,
+    this.border,
   });
 
   final Widget child;
@@ -33,92 +34,38 @@ class GlassCard extends StatelessWidget {
   final double? borderRadius;
   final EdgeInsetsGeometry? margin;
   final VoidCallback? onTap;
-
-  static const double _blurSigma = 40;
-  static const double _specularHeight = 0.5;
-  static const double _innerHighlightHeight = 2;
+  final Color? fill;
+  final bool? border;
 
   @override
   Widget build(BuildContext context) {
-    final br = borderRadius ?? SettleRadii.glass;
+    final br = borderRadius ?? SettleRadii.card;
     final radius = BorderRadius.circular(br);
     final resolvedPadding =
-        padding ?? EdgeInsets.all(SettleSpacing.cardPadding);
-    final isLight = variant == GlassCardVariant.light ||
-        variant == GlassCardVariant.lightStrong;
+        padding ?? const EdgeInsets.all(SettleSpacing.cardPadding);
+    final isDark = variant == GlassCardVariant.dark ||
+        variant == GlassCardVariant.darkStrong;
 
-    final (Color bg, Color borderColor) = _resolveFillAndBorder();
-    final List<BoxShadow> outerShadow = _outerShadow();
+    final Color bg = fill ?? (isDark ? SettleSurfaces.cardDark : SettleSurfaces.cardLight);
+    final showBorder = border ?? isDark;
 
-    Widget card = ClipRRect(
-      borderRadius: radius,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: _blurSigma, sigmaY: _blurSigma),
-        child: Container(
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: radius,
-            border: Border.all(
-              color: borderColor,
-              width: 0.5,
-            ),
-            boxShadow: outerShadow,
-          ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              // 1. Content (bottom layer)
-              Padding(
-                padding: resolvedPadding,
-                child: child,
-              ),
-              // 2. Inner shadow (depth) — 2px top highlight, white 10% → transparent
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: _innerHighlightHeight,
-                child: IgnorePointer(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(br),
-                      topRight: Radius.circular(br),
-                    ),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: _innerHighlightGradient,
-                      ),
-                      child: const SizedBox.expand(),
-                    ),
-                  ),
-                ),
-              ),
-              // 3. Specular highlight — 0.5px at top (left→right gradient), on top
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: _specularHeight,
-                child: IgnorePointer(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(br),
-                      topRight: Radius.circular(br),
-                    ),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: isLight
-                            ? _specularGradientLight
-                            : _specularGradientDark,
-                      ),
-                      child: const SizedBox.expand(),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+    Widget card = Container(
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: radius,
+        border: showBorder
+            ? Border.all(
+                color: isDark
+                    ? SettleSurfaces.cardBorderDark
+                    : SettleColors.ink300.withValues(alpha: 0.12),
+                width: 0.5,
+              )
+            : null,
+        boxShadow: _shadow(isDark),
+      ),
+      child: Padding(
+        padding: resolvedPadding,
+        child: child,
       ),
     );
 
@@ -131,89 +78,24 @@ class GlassCard extends StatelessWidget {
     return card;
   }
 
-  (Color, Color) _resolveFillAndBorder() {
-    switch (variant) {
-      case GlassCardVariant.light:
-        return (SettleGlassLight.background, SettleGlassLight.border);
-      case GlassCardVariant.lightStrong:
-        return (SettleGlassLight.backgroundStrong, SettleGlassLight.borderStrong);
-      case GlassCardVariant.dark:
-        return (SettleGlassDark.background, SettleGlassDark.border);
-      case GlassCardVariant.darkStrong:
-        return (SettleGlassDark.backgroundStrong, SettleGlassDark.borderStrong);
+  static List<BoxShadow> _shadow(bool isDark) {
+    if (isDark) {
+      return [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.08),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ];
     }
+    return [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.03),
+        blurRadius: 8,
+        offset: const Offset(0, 2),
+      ),
+    ];
   }
-
-  List<BoxShadow> _outerShadow() {
-    switch (variant) {
-      case GlassCardVariant.light:
-      case GlassCardVariant.lightStrong:
-        return [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 3,
-            offset: Offset.zero,
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: Offset.zero,
-          ),
-        ];
-      case GlassCardVariant.dark:
-      case GlassCardVariant.darkStrong:
-        return [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 3,
-            offset: Offset.zero,
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 16,
-            offset: Offset.zero,
-          ),
-        ];
-    }
-  }
-
-  /// Light: transparent → white 55% → white 80% → white 55% → transparent
-  static const LinearGradient _specularGradientLight = LinearGradient(
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    colors: [
-      Color(0x00FFFFFF),
-      Color(0x8CFFFFFF), // 55%
-      Color(0xCCFFFFFF), // 80%
-      Color(0x8CFFFFFF), // 55%
-      Color(0x00FFFFFF),
-    ],
-    stops: [0.0, 0.35, 0.5, 0.65, 1.0],
-  );
-
-  /// Dark: transparent → white 7% → white 14% → white 7% → transparent
-  static const LinearGradient _specularGradientDark = LinearGradient(
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    colors: [
-      Color(0x00FFFFFF),
-      Color(0x12FFFFFF), // 7%
-      Color(0x24FFFFFF), // 14%
-      Color(0x12FFFFFF), // 7%
-      Color(0x00FFFFFF),
-    ],
-    stops: [0.0, 0.35, 0.5, 0.65, 1.0],
-  );
-
-  /// 2px top inner highlight: white 10% → transparent
-  static const LinearGradient _innerHighlightGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [
-      Color(0x1AFFFFFF), // 10%
-      Color(0x00FFFFFF),
-    ],
-  );
 }
 
 /// Applies opacity 0.85 + scale 0.985 on press, with haptic feedback.
@@ -264,76 +146,97 @@ class _GlassCardTapWrapperState extends State<_GlassCardTapWrapper> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Preview for manual QA (optional: use in a test route or debug screen)
+// Convenience card variants
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Full-screen preview of all GlassCard variants on light and dark gradients.
-/// Navigate to this screen and take screenshots for pixel-perfect QA.
-class GlassCardPreview extends StatelessWidget {
-  const GlassCardPreview({super.key});
+/// Accent-tinted card (dusk). Used for highlighted blocks.
+class GlassCardAccent extends StatelessWidget {
+  const GlassCardAccent({
+    super.key,
+    required this.child,
+    this.padding,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(SettleSpacing.screenPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text('Light background', style: TextStyle(fontSize: 12)),
-              const SizedBox(height: SettleSpacing.sm),
-              Container(
-                height: 200,
-                decoration: const BoxDecoration(
-                  gradient: SettleGradients.home,
-                  borderRadius: BorderRadius.all(Radius.circular(SettleRadii.glass)),
-                ),
-                padding: const EdgeInsets.all(SettleSpacing.lg),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GlassCard(
-                      variant: GlassCardVariant.light,
-                      child: Text('Light variant'),
-                    ),
-                    SizedBox(height: SettleSpacing.cardGap),
-                    GlassCard(
-                      variant: GlassCardVariant.lightStrong,
-                      child: Text('Light strong variant'),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: SettleSpacing.sectionGap),
-              const Text('Dark background', style: TextStyle(fontSize: 12, color: Colors.white)),
-              const SizedBox(height: SettleSpacing.sm),
-              Container(
-                height: 200,
-                decoration: const BoxDecoration(
-                  gradient: SettleGradients.sleep,
-                  borderRadius: BorderRadius.all(Radius.circular(SettleRadii.glass)),
-                ),
-                padding: const EdgeInsets.all(SettleSpacing.lg),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GlassCard(
-                      variant: GlassCardVariant.dark,
-                      child: Text('Dark variant', style: TextStyle(color: Colors.white70)),
-                    ),
-                    SizedBox(height: SettleSpacing.cardGap),
-                    GlassCard(
-                      variant: GlassCardVariant.darkStrong,
-                      child: Text('Dark strong variant', style: TextStyle(color: Colors.white70)),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+    return GlassCard(
+      variant: GlassCardVariant.darkStrong,
+      fill: SettleSurfaces.tintDusk,
+      padding: padding ?? const EdgeInsets.all(SettleSpacing.cardPadding),
+      child: child,
+    );
+  }
+}
+
+/// Dark card (e.g. for flashcard mode).
+class GlassCardDark extends StatelessWidget {
+  const GlassCardDark({
+    super.key,
+    required this.child,
+    this.padding,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassCard(
+      variant: GlassCardVariant.darkStrong,
+      padding: padding ?? const EdgeInsets.all(SettleSpacing.cardPadding),
+      child: child,
+    );
+  }
+}
+
+/// Rose/blush tinted card for soft error or caution blocks.
+class GlassCardRose extends StatelessWidget {
+  const GlassCardRose({
+    super.key,
+    required this.child,
+    this.padding,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassCard(
+      variant: GlassCardVariant.lightStrong,
+      fill: SettleSurfaces.tintBlush,
+      padding: padding ?? const EdgeInsets.all(SettleSpacing.cardPadding),
+      child: DefaultTextStyle(
+        style: DefaultTextStyle.of(context).style.copyWith(
+              color: SettleColors.ink800,
+            ),
+        child: child,
       ),
+    );
+  }
+}
+
+/// Sage tinted card for reflection or positive blocks.
+class GlassCardTeal extends StatelessWidget {
+  const GlassCardTeal({
+    super.key,
+    required this.child,
+    this.padding,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassCard(
+      variant: GlassCardVariant.lightStrong,
+      fill: SettleSurfaces.tintSage,
+      padding: padding ?? const EdgeInsets.all(SettleSpacing.cardPadding),
+      child: child,
     );
   }
 }

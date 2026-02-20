@@ -1,11 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../theme/settle_design_system.dart';
 
-/// Variant of the glass pill button (light/dark, primary/secondary).
+/// Variant of the pill button (light/dark, primary/secondary).
 enum GlassPillVariant {
   primaryLight,
   secondaryLight,
@@ -13,25 +11,37 @@ enum GlassPillVariant {
   secondaryDark,
 }
 
-/// Pill-shaped glass button with optional icon, variants, and press animation.
+/// Solid pill-shaped button with optional icon, variants, and press animation.
 ///
 /// - Min height 48px (Settle tap target), pill radius, 11px vertical / 22px horizontal padding.
-/// - All variants: 0.5px specular top highlight, ink ripple, scale-down (0.97) on press (100ms).
+/// - All variants: scale-down (0.97) on press (100ms), haptic feedback.
+///
+/// Name kept as `GlassPill` for backward compatibility across 48+ importers.
 class GlassPill extends StatefulWidget {
   const GlassPill({
     super.key,
     required this.label,
     required this.onTap,
-    required this.variant,
+    this.variant,
     this.icon,
+    this.iconData,
     this.expanded = false,
+    this.fill,
+    this.textColor,
+    this.border,
+    this.enabled = true,
   });
 
   final String label;
   final VoidCallback onTap;
-  final GlassPillVariant variant;
+  final GlassPillVariant? variant;
   final Widget? icon;
+  final IconData? iconData;
   final bool expanded;
+  final Color? fill;
+  final Color? textColor;
+  final Color? border;
+  final bool enabled;
 
   @override
   State<GlassPill> createState() => _GlassPillState();
@@ -48,19 +58,10 @@ class _GlassPillState extends State<GlassPill> {
   static const Duration _pressDuration = Duration(milliseconds: 100);
   static const double _pressedScale = 0.97;
 
-  /// Inter 14, weight 500, letterSpacing -0.01
   static TextStyle _labelStyle(Color color) => SettleTypography.body.copyWith(
     fontWeight: FontWeight.w500,
     letterSpacing: -0.01,
     color: color,
-  );
-
-  /// 0.5px specular highlight gradient (top edge)
-  static const LinearGradient _specularGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0x0DFFFFFF), Color(0x00FFFFFF)],
-    stops: [0.0, 1.0],
   );
 
   void _setPressed(bool value) {
@@ -70,18 +71,24 @@ class _GlassPillState extends State<GlassPill> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveVariant =
+        widget.variant ?? GlassPillVariant.primaryLight;
     final isLight =
-        widget.variant == GlassPillVariant.primaryLight ||
-        widget.variant == GlassPillVariant.secondaryLight;
-    final (Color fill, Color border, Color textColor, double blur) =
-        _resolveVariant(isLight);
+        effectiveVariant == GlassPillVariant.primaryLight ||
+        effectiveVariant == GlassPillVariant.secondaryLight;
+    var (Color fill, Color borderColor, Color textColor) =
+        _resolveVariant(effectiveVariant);
+    if (widget.fill != null) fill = widget.fill!;
+    if (widget.textColor != null) textColor = widget.textColor!;
+    if (widget.border != null) borderColor = widget.border!;
 
     final radius = BorderRadius.circular(SettleRadii.pill);
 
     return Semantics(
       button: true,
-      child: ClipRRect(
-        borderRadius: radius,
+      enabled: widget.enabled,
+      child: Opacity(
+        opacity: widget.enabled ? 1 : 0.5,
         child: AnimatedScale(
           duration: _pressDuration,
           curve: Curves.easeOutCubic,
@@ -93,65 +100,50 @@ class _GlassPillState extends State<GlassPill> {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  widget.onTap();
-                },
+                onTap: widget.enabled
+                    ? () {
+                        HapticFeedback.lightImpact();
+                        widget.onTap();
+                      }
+                    : null,
                 splashColor: _splashColor(isLight),
                 highlightColor: _highlightColor(isLight),
                 borderRadius: radius,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-                  child: Container(
-                    constraints: const BoxConstraints(minHeight: _minHeight),
-                    width: widget.expanded ? double.infinity : null,
-                    padding: _padding,
-                    decoration: BoxDecoration(
-                      color: fill,
-                      borderRadius: radius,
-                      border: Border.all(color: border, width: 0.5),
-                      boxShadow: _innerGlow(widget.variant),
-                    ),
-                    child: Stack(
-                      children: [
-                        // 0.5px specular highlight on top (same technique as GlassCard)
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          height: 1,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: _specularGradient,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(SettleRadii.pill),
-                                topRight: Radius.circular(SettleRadii.pill),
-                              ),
-                            ),
-                          ),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: _minHeight),
+                  width: widget.expanded ? double.infinity : null,
+                  padding: _padding,
+                  decoration: BoxDecoration(
+                    color: fill,
+                    borderRadius: radius,
+                    border: Border.all(color: borderColor, width: 0.5),
+                  ),
+                  child: Row(
+                    mainAxisSize: widget.expanded
+                        ? MainAxisSize.max
+                        : MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (widget.icon != null) ...[
+                        widget.icon!,
+                        const SizedBox(width: SettleSpacing.sm),
+                      ] else if (widget.iconData != null) ...[
+                        Icon(
+                          widget.iconData,
+                          size: 20,
+                          color: textColor,
                         ),
-                        Row(
-                          mainAxisSize: widget.expanded
-                              ? MainAxisSize.max
-                              : MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (widget.icon != null) ...[
-                              widget.icon!,
-                              const SizedBox(width: SettleSpacing.sm),
-                            ],
-                            Flexible(
-                              child: Text(
-                                widget.label,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: _labelStyle(textColor),
-                              ),
-                            ),
-                          ],
-                        ),
+                        const SizedBox(width: SettleSpacing.sm),
                       ],
-                    ),
+                      Flexible(
+                        child: Text(
+                          widget.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: _labelStyle(textColor),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -162,51 +154,33 @@ class _GlassPillState extends State<GlassPill> {
     );
   }
 
-  (Color, Color, Color, double) _resolveVariant(bool isLight) {
-    switch (widget.variant) {
+  (Color, Color, Color) _resolveVariant(GlassPillVariant v) {
+    switch (v) {
       case GlassPillVariant.primaryLight:
         return (
-          Colors.white.withValues(alpha: 0.70),
-          SettleColors.ink400.withValues(alpha: 0.26),
+          SettleColors.stone100,
+          SettleColors.ink300.withValues(alpha: 0.20),
           SettleColors.ink800,
-          24,
         );
       case GlassPillVariant.secondaryLight:
         return (
-          Colors.white.withValues(alpha: 0.54),
-          SettleColors.ink400.withValues(alpha: 0.20),
+          SettleColors.stone50,
+          SettleColors.ink300.withValues(alpha: 0.12),
           SettleColors.ink700,
-          24,
         );
       case GlassPillVariant.primaryDark:
         return (
-          Colors.white.withValues(alpha: 0.16),
-          Colors.white.withValues(alpha: 0.20),
+          SettleColors.night700,
+          Colors.white.withValues(alpha: 0.12),
           SettleColors.nightText,
-          20,
         );
       case GlassPillVariant.secondaryDark:
         return (
+          SettleColors.night800,
           Colors.white.withValues(alpha: 0.08),
-          Colors.white.withValues(alpha: 0.14),
           SettleColors.nightSoft,
-          20,
         );
     }
-  }
-
-  List<BoxShadow>? _innerGlow(GlassPillVariant variant) {
-    if (variant == GlassPillVariant.primaryLight ||
-        variant == GlassPillVariant.secondaryLight) {
-      return [
-        BoxShadow(
-          color: Colors.white.withValues(alpha: 0.10),
-          blurRadius: 10,
-          spreadRadius: -3,
-        ),
-      ];
-    }
-    return null;
   }
 
   Color _splashColor(bool isLight) {

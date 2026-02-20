@@ -3,48 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/v2_enums.dart';
 import '../../providers/usage_events_provider.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
-
-class _PalT {
-  _PalT._();
-
-  static final type = _PalTypeTokens();
-  static const pal = _PalPaletteTokens();
-  static const glass = _PalGlassTokens();
-  static const radius = _PalRadiusTokens();
-}
-
-class _PalTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-}
-
-class _PalPaletteTokens {
-  const _PalPaletteTokens();
-
-  Color get accent => SettleColors.nightAccent;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
-
-class _PalGlassTokens {
-  const _PalGlassTokens();
-
-  Color get fill => SettleGlassDark.backgroundStrong;
-  Color get border => SettleGlassDark.borderStrong;
-}
-
-class _PalRadiusTokens {
-  const _PalRadiusTokens();
-
-  double get md => 18;
-}
 
 /// Quick log after Pocket use: outcome, optional context, regulationUsed → [UsageEvent].
 class PocketAfterLog extends ConsumerStatefulWidget {
@@ -108,29 +70,29 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Quick log', style: _PalT.type.h3),
+          Text('Quick log', style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
           const SettleGap.xs(),
           Text(
             _outcomeLabel(widget.outcome),
-            style: _PalT.type.body.copyWith(color: _PalT.pal.textSecondary),
+            style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
           ),
           const SettleGap.lg(),
           TextField(
             controller: _contextController,
             decoration: InputDecoration(
               hintText: 'What happened? (optional)',
-              hintStyle: _PalT.type.body.copyWith(
-                color: _PalT.pal.textTertiary,
+              hintStyle: SettleTypography.body.copyWith(
+                color: SettleColors.nightMuted,
               ),
               filled: true,
-              fillColor: _PalT.glass.fill,
+              fillColor: SettleSurfaces.cardDark,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(_PalT.radius.md),
-                borderSide: BorderSide(color: _PalT.glass.border),
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide(color: SettleSurfaces.cardBorderDark),
               ),
             ),
             maxLines: 2,
-            style: _PalT.type.body,
+            style: SettleTypography.body,
           ),
           const SettleGap.lg(),
           Row(
@@ -143,9 +105,9 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
                   onChanged: (v) =>
                       setState(() => _regulationUsed = v ?? false),
                   fillColor: WidgetStateProperty.resolveWith(
-                    (_) => _PalT.glass.fill,
+                    (_) => SettleSurfaces.cardDark,
                   ),
-                  checkColor: _PalT.pal.accent,
+                  checkColor: SettleColors.nightAccent,
                 ),
               ),
               const SizedBox(width: SettleSpacing.sm),
@@ -156,8 +118,8 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
                   semanticLabel: 'Toggle breathing reset used',
                   child: Text(
                     'I used the breathing reset',
-                    style: _PalT.type.body.copyWith(
-                      color: _PalT.pal.textSecondary,
+                    style: SettleTypography.body.copyWith(
+                      color: SettleColors.nightSoft,
                     ),
                   ),
                 ),
@@ -165,7 +127,7 @@ class _PocketAfterLogState extends ConsumerState<PocketAfterLog> {
             ],
           ),
           SizedBox(height: SettleSpacing.lg + SettleSpacing.sm),
-          GlassCta(
+          SettleCta(
             label: _submitting ? 'Saving…' : 'Done',
             onTap: _submitting ? () {} : _submit,
           ),

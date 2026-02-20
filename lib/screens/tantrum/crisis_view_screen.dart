@@ -5,53 +5,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../tantrum/models/tantrum_card.dart';
 import '../../tantrum/providers/tantrum_module_providers.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
-
-class _CvT {
-  _CvT._();
-
-  static final type = _CvTypeTokens();
-  static const pal = _CvPaletteTokens();
-  static const glass = _CvGlassTokens();
-}
-
-class _CvTypeTokens {
-  TextStyle get h2 => SettleTypography.heading.copyWith(
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _CvPaletteTokens {
-  const _CvPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get accent => SettleColors.nightAccent;
-}
-
-class _CvGlassTokens {
-  const _CvGlassTokens();
-
-  Color get fill => SettleGlassDark.backgroundStrong;
-}
 
 /// Crisis View: big SAY line, DO, IF ESCALATES, Audio button (stub), Repeat line mode.
 /// Shown after 2 taps from NOW (e.g. pick card or Use protocol).
@@ -104,12 +63,12 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
                       const SizedBox(height: 24),
                       Text(
                         'No card selected. Add and pin cards from Deck first.',
-                        style: _CvT.type.body.copyWith(
-                          color: _CvT.pal.textSecondary,
+                        style: SettleTypography.body.copyWith(
+                          color: SettleColors.nightSoft,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      GlassCta(
+                      SettleCta(
                         label: 'Back to Now',
                         onTap: () => context.go('/tantrum/capture'),
                       ),
@@ -141,14 +100,14 @@ class _CrisisViewScreenState extends ConsumerState<CrisisViewScreen> {
                       children: [
                         Text(
                           'Something went wrong.',
-                          style: _CvT.type.body.copyWith(
+                          style: SettleTypography.body.copyWith(
                             fontSize: 14,
-                            color: _CvT.pal.textSecondary,
+                            color: SettleColors.nightSoft,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
-                        GlassCta(
+                        SettleCta(
                           label: 'Back to Now',
                           onTap: () => context.go('/tantrum/capture'),
                         ),
@@ -211,18 +170,18 @@ class _CrisisContent extends StatelessWidget {
         if (step == 0 || repeatLineMode) ...[
           Text(
             'Say this',
-            style: _CvT.type.overline.copyWith(color: _CvT.pal.textTertiary),
+            style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(color: SettleColors.nightMuted),
           ),
           const SizedBox(height: 8),
           GlassCardAccent(
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Expanded(child: Text(sayLine, style: _CvT.type.h2)),
+                Expanded(child: Text(sayLine, style: SettleTypography.heading.copyWith(fontSize: 22, fontWeight: FontWeight.w700))),
                 IconButton(
                   onPressed: onAudioStub,
                   icon: const Icon(Icons.volume_up_rounded),
-                  color: _CvT.pal.accent,
+                  color: SettleColors.nightAccent,
                 ),
               ],
             ),
@@ -239,35 +198,35 @@ class _CrisisContent extends StatelessWidget {
         if (step == 1) ...[
           Text(
             'Do this',
-            style: _CvT.type.overline.copyWith(color: _CvT.pal.textTertiary),
+            style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(color: SettleColors.nightMuted),
           ),
           const SizedBox(height: 8),
           GlassCard(
             padding: const EdgeInsets.all(20),
-            child: Text(card.doStep, style: _CvT.type.h3),
+            child: Text(card.doStep, style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
           ),
           const SizedBox(height: 20),
         ],
         if (step == 2) ...[
           Text(
             'If it escalates',
-            style: _CvT.type.overline.copyWith(color: _CvT.pal.textTertiary),
+            style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(color: SettleColors.nightMuted),
           ),
           const SizedBox(height: 8),
           GlassCard(
             padding: const EdgeInsets.all(20),
-            child: Text(card.ifEscalates, style: _CvT.type.h3),
+            child: Text(card.ifEscalates, style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
           ),
           const SizedBox(height: 20),
         ],
         const Spacer(),
         if (step < 2)
-          GlassCta(
+          SettleCta(
             label: step == 0 ? 'I said it →' : 'Done →',
             onTap: () => onStepChange(step + 1),
           )
         else
-          GlassCta(label: 'Done', onTap: () => context.go('/tantrum/capture')),
+          SettleCta(label: 'Done', onTap: () => context.go('/tantrum/capture')),
       ],
     );
   }
@@ -295,17 +254,17 @@ class _StepDot extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: active
-                ? _CvT.pal.accent
+                ? SettleColors.nightAccent
                 : done
-                ? _CvT.pal.accent.withValues(alpha: 0.5)
-                : _CvT.glass.fill,
+                ? SettleColors.nightAccent.withValues(alpha: 0.5)
+                : SettleSurfaces.cardDark,
           ),
         ),
         const SizedBox(width: 6),
         Text(
           label,
-          style: _CvT.type.caption.copyWith(
-            color: active ? _CvT.pal.accent : _CvT.pal.textTertiary,
+          style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400).copyWith(
+            color: active ? SettleColors.nightAccent : SettleColors.nightMuted,
             fontWeight: active ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
@@ -333,7 +292,7 @@ class _AudioStubButton extends ConsumerWidget {
       icon: Icon(
         Icons.volume_up_outlined,
         size: 22,
-        color: _CvT.pal.textSecondary,
+        color: SettleColors.nightSoft,
       ),
     );
   }

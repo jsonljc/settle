@@ -101,49 +101,50 @@ class SettleChip extends StatelessWidget {
         case SettleChipVariant.tag:
           fill = selected
               ? SettleColors.dusk600.withValues(alpha: 0.18)
-              : SettleGlassDark.backgroundStrong;
+              : SettleSurfaces.cardDark;
           borderColor = selected
               ? SettleColors.dusk400.withValues(alpha: 0.50)
-              : SettleGlassDark.borderStrong;
+              : SettleSurfaces.cardBorderDark;
           textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
         case SettleChipVariant.action:
           fill = selected
               ? SettleColors.dusk600.withValues(alpha: 0.16)
-              : SettleGlassDark.background;
-          borderColor = SettleGlassDark.borderStrong;
+              : SettleSurfaces.cardDark;
+          borderColor = SettleSurfaces.cardBorderDark;
           textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
         case SettleChipVariant.frequency:
           fill = selected
               ? SettleColors.dusk600.withValues(alpha: 0.16)
-              : SettleGlassDark.background;
+              : SettleSurfaces.cardDark;
           borderColor = selected
               ? SettleColors.dusk400.withValues(alpha: 0.45)
-              : SettleGlassDark.borderStrong;
+              : SettleSurfaces.cardBorderDark;
           textColor = selected ? SettleColors.nightText : SettleColors.nightSoft;
       }
     } else {
+      final lightBorder = SettleColors.ink300.withValues(alpha: 0.12);
       switch (variant) {
         case SettleChipVariant.tag:
           fill = selected
               ? SettleColors.sage600.withValues(alpha: 0.14)
-              : SettleGlassLight.backgroundSubtle;
+              : SettleColors.stone50;
           borderColor = selected
               ? SettleColors.sage400.withValues(alpha: 0.50)
-              : SettleGlassLight.border;
+              : lightBorder;
           textColor = selected ? SettleColors.ink900 : SettleColors.ink700;
         case SettleChipVariant.action:
           fill = selected
               ? SettleColors.sage600.withValues(alpha: 0.12)
-              : SettleGlassLight.backgroundSubtle;
-          borderColor = SettleGlassLight.border;
+              : SettleColors.stone50;
+          borderColor = lightBorder;
           textColor = selected ? SettleColors.ink900 : SettleColors.ink700;
         case SettleChipVariant.frequency:
           fill = selected
               ? SettleColors.sage600.withValues(alpha: 0.12)
-              : SettleGlassLight.backgroundSubtle;
+              : SettleColors.stone50;
           borderColor = selected
               ? SettleColors.sage400.withValues(alpha: 0.45)
-              : SettleGlassLight.border;
+              : lightBorder;
           textColor = selected ? SettleColors.ink900 : SettleColors.ink700;
       }
     }

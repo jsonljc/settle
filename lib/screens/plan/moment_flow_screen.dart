@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,33 +11,7 @@ import '../../theme/settle_design_system.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/settle_tappable.dart';
 
-class _MfT {
-  _MfT._();
-
-  static final type = _MfTypeTokens();
-  static const glass = _MfGlassTokens();
-}
-
-class _MfTypeTokens {
-  TextStyle get h1 => SettleTypography.heading.copyWith(
-    fontSize: 26,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get h2 => SettleTypography.heading.copyWith(
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _MfGlassTokens {
-  const _MfGlassTokens();
-
-  Color get fillDay => const Color(0x2AFFFFFF);
-}
+// Local tokens removed — using SettleTypography directly.
 
 /// Moment — the fastest screen in the app.
 ///
@@ -196,7 +169,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         Text(
           'Place one hand on your chest',
           textAlign: TextAlign.center,
-          style: _MfT.type.h1.copyWith(
+          style: SettleTypography.display.copyWith(
             fontWeight: FontWeight.w400,
             color: SettleColors.ink900,
           ),
@@ -205,7 +178,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
         Text(
           "You're here now. That's enough.",
           textAlign: TextAlign.center,
-          style: _MfT.type.caption.copyWith(
+          style: SettleTypography.caption.copyWith(
             color: SettleColors.ink500.withValues(alpha: 0.6),
           ),
         ),
@@ -267,6 +240,10 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
   }
 
   Widget _buildFooter() {
+    final linkStyle = SettleTypography.caption.copyWith(
+      color: SettleColors.ink400.withValues(alpha: 0.6),
+      decoration: TextDecoration.underline,
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         SettleSpacing.screenPadding,
@@ -287,26 +264,26 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
               ),
             ),
           ),
-          Text(
-            ' · ',
-            style: SettleTypography.caption.copyWith(
-              color: SettleColors.ink400.withValues(alpha: 0.6),
-            ),
-          ),
+          Text(' · ', style: linkStyle.copyWith(decoration: TextDecoration.none)),
           SettleTappable(
             semanticLabel: 'Need more? Open Reset',
             onTap: _openReset,
-            child: Text(
-              'Need more? Reset →',
-              style: SettleTypography.caption.copyWith(
-                color: SettleColors.ink400.withValues(alpha: 0.6),
-                decoration: TextDecoration.underline,
-              ),
-            ),
+            child: Text('Need more? Reset →', style: linkStyle),
+          ),
+          Text(' · ', style: linkStyle.copyWith(decoration: TextDecoration.none)),
+          SettleTappable(
+            semanticLabel: 'Open full Regulate flow',
+            onTap: _openRegulate,
+            child: Text('Regulate →', style: linkStyle),
           ),
         ],
       ),
     );
+  }
+
+  void _openRegulate() {
+    if (context.canPop()) context.pop();
+    context.push('/plan/regulate');
   }
 
   Widget _buildScriptStep() {
@@ -323,7 +300,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
           child: Text(
             script.lines.join(' '),
             textAlign: TextAlign.center,
-            style: _MfT.type.h2.copyWith(
+            style: SettleTypography.heading.copyWith(
               fontWeight: FontWeight.w600,
               height: 1.35,
               color: SettleColors.ink900,
@@ -354,8 +331,8 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
             semanticLabel: 'Need more? Open Reset flow',
             onTap: _openReset,
             child: Text(
-              'Need more? → Reset (15s)',
-              style: _MfT.type.caption.copyWith(
+              'Need more? Reset · 15s',
+              style: SettleTypography.caption.copyWith(
                 color: SettleColors.ink500,
                 decoration: TextDecoration.underline,
               ),
@@ -367,7 +344,7 @@ class _MomentFlowScreenState extends ConsumerState<MomentFlowScreen> {
   }
 }
 
-/// Breath ring: 120px glass sphere, specular arc, inner shadows, 32px circle icon, pulse animation.
+/// Breath ring: 120px solid circle with 2px stroke, pulse animation.
 class _MomentBreathRing extends StatefulWidget {
   @override
   State<_MomentBreathRing> createState() => _MomentBreathRingState();
@@ -376,7 +353,6 @@ class _MomentBreathRing extends StatefulWidget {
 class _MomentBreathRingState extends State<_MomentBreathRing>
     with SingleTickerProviderStateMixin {
   static const double _size = 120;
-  static const double _blurSigma = 32;
   static const Duration _pulseDuration = Duration(milliseconds: 4500);
 
   late AnimationController _controller;
@@ -402,7 +378,7 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.of(context).disableAnimations;
-    final ring = _buildRingContent();
+    final ring = _buildRingContent(context);
 
     if (reduceMotion) {
       return ring;
@@ -416,73 +392,35 @@ class _MomentBreathRingState extends State<_MomentBreathRing>
     );
   }
 
-  Widget _buildRingContent() {
+  Widget _buildRingContent(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final fillColor = isDark
+        ? SettleColors.nightAccent.withValues(alpha: 0.08)
+        : SettleColors.sage400.withValues(alpha: 0.08);
+    final strokeColor = isDark
+        ? SettleColors.nightAccent.withValues(alpha: 0.3)
+        : SettleColors.sage400.withValues(alpha: 0.3);
+    final innerStrokeColor = isDark
+        ? SettleColors.nightAccent
+        : SettleColors.ink700;
+
     return SizedBox(
       width: _size,
       height: _size,
-      child: ClipOval(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: _blurSigma, sigmaY: _blurSigma),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Base: glass fill, border
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _MfT.glass.fillDay,
-                  border: Border.all(
-                    color: SettleGlassLight.border,
-                    width: 0.5,
-                  ),
-                ),
-              ),
-              // Inner shadow overlay: top highlight, bottom depth
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      SettleGlassLight.border,
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.03),
-                    ],
-                    stops: const [0.0, 0.5, 1.0],
-                  ),
-                ),
-              ),
-              // Specular arc: top 45% of circle
-              Align(
-                alignment: Alignment.topCenter,
-                child: Container(
-                  height: _size * 0.45,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        SettleGlassLight.backgroundSubtle,
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              // Circle icon inside: 32px stroke ink700
-              Center(
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.transparent,
-                    border: Border.all(color: SettleColors.ink700, width: 2),
-                  ),
-                ),
-              ),
-            ],
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: fillColor,
+          border: Border.all(color: strokeColor, width: 2),
+        ),
+        child: Center(
+          child: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: innerStrokeColor, width: 2),
+            ),
           ),
         ),
       ),

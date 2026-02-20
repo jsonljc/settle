@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +10,7 @@ import '../../services/nudge_scheduler.dart';
 import '../../services/card_content_service.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/calm_loading.dart';
-import '../../widgets/glass_card.dart';
+import '../../widgets/solid_card.dart';
 import '../../widgets/output_card.dart';
 import '../../widgets/settle_tappable.dart';
 import '../../widgets/release_surfaces.dart';
@@ -49,143 +47,108 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
 
     ref.watch(patternEngineRefreshProvider);
 
-    final isNightContext = _isNightContext();
-    final primaryAction = isNightContext
-        ? const _NowAction(
-            icon: Icons.nightlight_round,
-            title: 'Night wake right now',
-            subtitle: 'Get one immediate sleep step.',
-            eta: '~10s',
-            route: '/sleep/tonight?scenario=night_wakes',
-          )
-        : const _NowAction(
-            icon: Icons.crisis_alert_rounded,
-            title: 'Tantrum happening now',
-            subtitle: 'Open reset guidance with the first line to use.',
-            eta: '~10s',
-            route: '/plan/reset?context=tantrum',
-          );
-    final secondaryActions = isNightContext
-        ? const [
-            _NowAction(
-              icon: Icons.bedtime_rounded,
-              title: 'Bedtime protest',
-              subtitle: "Won't settle at bedtime",
-              eta: '~15s',
-              route: '/sleep/tonight?scenario=bedtime_protest',
-            ),
-            _NowAction(
-              icon: Icons.self_improvement_rounded,
-              title: 'I need to regulate',
-              subtitle: 'Start a short reset before re-engaging',
-              eta: '~10s',
-              route: '/plan/moment?context=general',
-            ),
-          ]
-        : const [
-            _NowAction(
-              icon: Icons.nightlight_round,
-              title: 'Night wake',
-              subtitle: 'Open sleep guidance for tonight',
-              eta: '~15s',
-              route: '/sleep/tonight?scenario=night_wakes',
-            ),
-            _NowAction(
-              icon: Icons.self_improvement_rounded,
-              title: 'I need to regulate',
-              subtitle: 'Start a short reset before re-engaging',
-              eta: '~10s',
-              route: '/plan/moment?context=general',
-            ),
-          ];
+    final hero = _heroTileForContext();
+    final secondary = _secondaryTiles();
 
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          children: [
-            const Positioned(
-              top: -80,
-              right: -30,
-              child: _AmbientOrb(
-                tint: SettleColors.dusk400,
-                size: SettleSpacing.xxl * 8,
-              ),
-            ),
-            const Positioned(
-              bottom: 40,
-              left: -70,
-              child: _AmbientOrb(
-                tint: SettleColors.sage400,
-                size: SettleSpacing.xxl * 7,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: SettleSpacing.screenPadding,
-              ),
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: SettleSpacing.screenPadding,
+          ),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const ScreenHeader(
+                  title: 'Now',
+                  subtitle: 'I need help right now.',
+                  fallbackRoute: '/plan',
+                  showBackButton: false,
+                ),
+                const SettleGap.xl(),
+                // V2: one hero tile (context-aware), full width
+                _NowHeroCard(
+                  title: hero.title,
+                  subtitle: hero.subtitle,
+                  onTap: () => context.push(hero.route),
+                ),
+                const SettleGap.lg(),
+                // V2: two secondary tiles, half-width each
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const ScreenHeader(
-                      title: 'Now',
-                      subtitle: 'Choose what is happening right now.',
-                      fallbackRoute: '/plan',
-                      showBackButton: false,
-                    ),
-                    if (isNightContext) ...[
-                      const SettleGap.sm(),
-                      _NowContextHint(
-                        icon: Icons.nightlight_round,
-                        text: 'Nighttime handoff active: sleep options first.',
+                    Expanded(
+                      child: _NowSecondaryCard(
+                        title: secondary.left.title,
+                        onTap: () =>
+                            context.push(secondary.left.route),
                       ),
-                    ],
-                    const SettleGap.lg(),
-                    const _NowSectionHeader(label: 'START HERE'),
-                    const SettleGap.sm(),
-                    _NowPrimaryCard(
-                      action: primaryAction,
-                      onTap: () => context.push(primaryAction.route),
                     ),
                     const SettleGap.md(),
-                    const _NowSectionHeader(label: 'OTHER FAST PATHS'),
-                    const SettleGap.sm(),
-                    ...secondaryActions.map(
-                      (action) => Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: SettleSpacing.sm,
-                        ),
-                        child: _NowActionCard(
-                          action: action,
-                          onTap: () => context.push(action.route),
-                        ),
+                    Expanded(
+                      child: _NowSecondaryCard(
+                        title: secondary.right.title,
+                        onTap: () =>
+                            context.push(secondary.right.route),
                       ),
                     ),
-                    const SettleGap.sm(),
-                    Center(
-                      child: SettleTappable(
-                        semanticLabel: 'Open Sleep Tonight',
-                        onTap: () => context.push('/sleep/tonight'),
-                        child: Text(
-                          'Need bedtime or early wake? Open Sleep Tonight',
-                          style: SettleTypography.caption.copyWith(
-                            color: SettleSemanticColors.supporting(context),
-                            decoration: TextDecoration.underline,
-                            decorationColor: SettleSemanticColors.supporting(
-                              context,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SettleGap.xxl(),
                   ],
                 ),
-              ),
+                const SettleGap.xxl(),
+                // V2: "I just need words" — fast path to two-script view
+                Center(
+                  child: SettleTappable(
+                    semanticLabel: 'I just need words',
+                    onTap: () => context.push('/plan/moment?fast_path=1'),
+                    child: Text(
+                      'I just need words',
+                      style: SettleTypography.caption.copyWith(
+                        color: SettleSemanticColors.supporting(context),
+                        decoration: TextDecoration.underline,
+                        decorationColor:
+                            SettleSemanticColors.supporting(context),
+                      ),
+                    ),
+                  ),
+                ),
+                const SettleGap.xxl(),
+              ],
             ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  /// V2: context-aware hero. Default "I lost my cool"; night → "Bedtime isn't working"; etc.
+  ({String title, String subtitle, String route}) _heroTileForContext() {
+    final isNight = _isNightContext();
+    if (isNight) {
+      return (
+        title: 'Bedtime isn\'t working',
+        subtitle: 'Get one immediate step for tonight.',
+        route: '/sleep/tonight?scenario=night_wakes',
+      );
+    }
+    return (
+      title: 'I lost my cool',
+      subtitle: 'Get the words to say right now.',
+      route: '/plan/reset',
+    );
+  }
+
+  /// V2: secondary tiles — "Meltdown just happened" and "I need to calm down".
+  ({_NowSecondaryTile left, _NowSecondaryTile right}) _secondaryTiles() {
+    return (
+      left: const _NowSecondaryTile(
+        title: 'Meltdown just happened',
+        route: '/plan/reset?context=tantrum',
+      ),
+      right: const _NowSecondaryTile(
+        title: 'I need to calm down',
+        route: '/plan/moment?context=general',
       ),
     );
   }
@@ -196,149 +159,43 @@ class _PlanHomeScreenState extends ConsumerState<PlanHomeScreen> {
   }
 }
 
-class _NowSectionHeader extends StatelessWidget {
-  const _NowSectionHeader({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: SettleSpacing.xs),
-      child: Text(
-        label,
-        style: SettleTypography.overline.copyWith(
-          color: SettleSemanticColors.muted(context),
-        ),
-      ),
-    );
-  }
-}
-
-class _NowContextHint extends StatelessWidget {
-  const _NowContextHint({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = SettleSemanticColors.accent(context);
-    final supporting = SettleSemanticColors.supporting(context);
-
-    return GlassCard(
-      variant: Theme.of(context).brightness == Brightness.dark
-          ? GlassCardVariant.dark
-          : GlassCardVariant.light,
-      padding: const EdgeInsets.symmetric(
-        horizontal: SettleSpacing.md,
-        vertical: SettleSpacing.sm,
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: SettleSpacing.md, color: accent),
-          const SettleGap.sm(),
-          Expanded(
-            child: Text(
-              text,
-              style: SettleTypography.caption.copyWith(color: supporting),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NowAction {
-  const _NowAction({
-    required this.icon,
+/// V2: Hero tile — largest, full-width, single primary action.
+class _NowHeroCard extends StatelessWidget {
+  const _NowHeroCard({
     required this.title,
     required this.subtitle,
-    required this.eta,
-    required this.route,
+    required this.onTap,
   });
 
-  final IconData icon;
   final String title;
   final String subtitle;
-  final String eta;
-  final String route;
-}
-
-class _NowPrimaryCard extends StatelessWidget {
-  const _NowPrimaryCard({required this.action, required this.onTap});
-
-  final _NowAction action;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final headlineColor = SettleSemanticColors.headline(context);
     final supportingColor = SettleSemanticColors.supporting(context);
 
-    return GlassCard(
-      variant: isDark
-          ? GlassCardVariant.darkStrong
-          : GlassCardVariant.lightStrong,
+    return SolidCard(
       onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(
+        SettleSpacing.cardPadding,
+        SettleSpacing.xxl,
+        SettleSpacing.cardPadding,
+        SettleSpacing.xxl,
+      ),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: SettleSemanticColors.accent(
-                context,
-              ).withValues(alpha: 0.16),
-            ),
-            child: Icon(
-              action.icon,
-              color: SettleSemanticColors.accent(context),
-            ),
-          ),
-          const SettleGap.md(),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Start here',
-                  style: SettleTypography.overline.copyWith(
-                    color: SettleSemanticColors.muted(context),
-                  ),
-                ),
-                const SettleGap.xs(),
-                Text(
-                  action.title,
-                  style: SettleTypography.heading.copyWith(
-                    color: headlineColor,
-                  ),
-                ),
-                const SettleGap.xs(),
-                Text(
-                  action.subtitle,
-                  style: SettleTypography.body.copyWith(color: supportingColor),
-                ),
-                const SettleGap.sm(),
-                Text(
-                  action.eta,
-                  style: SettleTypography.caption.copyWith(
-                    color: SettleSemanticColors.muted(context),
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            title,
+            style: SettleTypography.heading.copyWith(color: headlineColor),
           ),
           const SettleGap.sm(),
-          Icon(
-            Icons.arrow_forward_rounded,
-            size: SettleSpacing.lg,
-            color: SettleSemanticColors.muted(context),
+          Text(
+            subtitle,
+            style: SettleTypography.body.copyWith(color: supportingColor),
           ),
         ],
       ),
@@ -346,104 +203,42 @@ class _NowPrimaryCard extends StatelessWidget {
   }
 }
 
-class _AmbientOrb extends StatelessWidget {
-  const _AmbientOrb({required this.tint, required this.size});
+class _NowSecondaryTile {
+  const _NowSecondaryTile({
+    required this.title,
+    required this.route,
+  });
 
-  final Color tint;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                tint.withValues(alpha: 0.28),
-                tint.withValues(alpha: 0.0),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  final String title;
+  final String route;
 }
 
-/// Secondary crisis action rows.
-class _NowActionCard extends StatelessWidget {
-  const _NowActionCard({required this.action, required this.onTap});
+/// V2: Secondary tile — half-width, label only, calm.
+class _NowSecondaryCard extends StatelessWidget {
+  const _NowSecondaryCard({
+    required this.title,
+    required this.onTap,
+  });
 
-  final _NowAction action;
+  final String title;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = SettleSemanticColors.supporting(context);
-    final titleColor = SettleSemanticColors.headline(context);
-    final subtitleColor = SettleSemanticColors.supporting(context);
-    final mutedColor = SettleSemanticColors.muted(context);
+    final headlineColor = SettleSemanticColors.headline(context);
 
-    return SettleTappable(
-      onTap: onTap,
-      semanticLabel: '${action.title}. ${action.subtitle}',
-      child: GlassCard(
-        variant: isDark
-            ? GlassCardVariant.darkStrong
-            : GlassCardVariant.lightStrong,
+    return Semantics(
+      button: true,
+      label: title,
+      child: SolidCard(
+        onTap: onTap,
         padding: const EdgeInsets.symmetric(
           vertical: SettleSpacing.lg,
           horizontal: SettleSpacing.md,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: SettleSpacing.xl + SettleSpacing.lg,
-                  height: SettleSpacing.xl + SettleSpacing.lg,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: iconColor.withValues(alpha: 0.14),
-                  ),
-                  child: Icon(
-                    action.icon,
-                    size: SettleSpacing.lg,
-                    color: iconColor,
-                  ),
-                ),
-                const Spacer(),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  size: SettleSpacing.lg,
-                  color: mutedColor,
-                ),
-              ],
-            ),
-            const SettleGap.sm(),
-            Text(
-              action.title,
-              style: SettleTypography.label.copyWith(color: titleColor),
-            ),
-            const SettleGap.xs(),
-            Text(
-              action.subtitle,
-              style: SettleTypography.caption.copyWith(color: subtitleColor),
-            ),
-            const SettleGap.xs(),
-            Text(
-              action.eta,
-              style: SettleTypography.caption.copyWith(color: mutedColor),
-            ),
-          ],
+        child: Text(
+          title,
+          style: SettleTypography.subheading.copyWith(color: headlineColor),
         ),
       ),
     );

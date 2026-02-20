@@ -7,54 +7,15 @@ import '../../providers/plan_ordering_provider.dart';
 import '../../providers/usage_events_provider.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../services/card_content_service.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/calm_loading.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
-
-class _PslT {
-  _PslT._();
-
-  static final type = _PslTypeTokens();
-  static const pal = _PslPaletteTokens();
-  static const glass = _PslGlassTokens();
-  static const radius = _PslRadiusTokens();
-}
-
-class _PslTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _PslPaletteTokens {
-  const _PslPaletteTokens();
-
-  Color get textPrimary => SettleColors.nightText;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get accent => SettleColors.nightAccent;
-}
-
-class _PslGlassTokens {
-  const _PslGlassTokens();
-
-  Color get fillAccent => SettleColors.nightAccent.withValues(alpha: 0.10);
-}
-
-class _PslRadiusTokens {
-  const _PslRadiusTokens();
-
-  double get md => 18;
-}
+import '../../widgets/settle_tappable.dart';
 
 class PlanScriptLogScreen extends ConsumerStatefulWidget {
   const PlanScriptLogScreen({super.key, required this.cardId});
@@ -167,17 +128,17 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Scenario', style: _PslT.type.caption),
+                                  Text('Scenario', style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400)),
                                   const SizedBox(height: 4),
                                   Text(
                                     _triggerLabel(card.triggerType),
-                                    style: _PslT.type.h3,
+                                    style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     card.say,
-                                    style: _PslT.type.body.copyWith(
-                                      color: _PslT.pal.textSecondary,
+                                    style: SettleTypography.body.copyWith(
+                                      color: SettleColors.nightSoft,
                                     ),
                                   ),
                                 ],
@@ -188,7 +149,7 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Outcome', style: _PslT.type.h3),
+                                  Text('Outcome', style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
                                   const SizedBox(height: 10),
                                   Wrap(
                                     spacing: 8,
@@ -198,11 +159,11 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                                       return GlassPill(
                                         label: _outcomeLabel(value),
                                         fill: selected
-                                            ? _PslT.glass.fillAccent
+                                            ? SettleColors.nightAccent.withValues(alpha: 0.10)
                                             : null,
                                         textColor: selected
-                                            ? _PslT.pal.accent
-                                            : _PslT.pal.textPrimary,
+                                            ? SettleColors.nightAccent
+                                            : SettleColors.nightText,
                                         onTap: () =>
                                             setState(() => _outcome = value),
                                       );
@@ -212,15 +173,15 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                                   TextField(
                                     controller: _contextController,
                                     maxLines: 2,
-                                    style: _PslT.type.body,
+                                    style: SettleTypography.body,
                                     decoration: InputDecoration(
                                       hintText: 'What happened? (optional)',
-                                      hintStyle: _PslT.type.body.copyWith(
-                                        color: _PslT.pal.textTertiary,
+                                      hintStyle: SettleTypography.body.copyWith(
+                                        color: SettleColors.nightMuted,
                                       ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(
-                                          _PslT.radius.md,
+                                          18,
                                         ),
                                       ),
                                     ),
@@ -236,15 +197,17 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                                         ),
                                       ),
                                       Expanded(
-                                        child: GestureDetector(
+                                        child: SettleTappable(
+                                          semanticLabel:
+                                              'I used regulate support first',
                                           onTap: () => setState(
                                             () => _regulationUsed =
                                                 !_regulationUsed,
                                           ),
                                           child: Text(
                                             'I used regulate support first',
-                                            style: _PslT.type.body.copyWith(
-                                              color: _PslT.pal.textSecondary,
+                                            style: SettleTypography.body.copyWith(
+                                              color: SettleColors.nightSoft,
                                             ),
                                           ),
                                         ),
@@ -255,7 +218,7 @@ class _PlanScriptLogScreenState extends ConsumerState<PlanScriptLogScreen> {
                               ),
                             ),
                             const SizedBox(height: 18),
-                            GlassCta(
+                            SettleCta(
                               label: _saving ? 'Saving...' : 'Save outcome',
                               onTap: _saving ? () {} : _saveLog,
                             ),

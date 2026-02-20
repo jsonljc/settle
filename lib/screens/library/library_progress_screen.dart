@@ -12,6 +12,7 @@ import '../../widgets/glass_pill.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 
+// UXV2-007: Progress needs min data before showing trend (supportive framing)
 const int _minTrendDataPoints = 3;
 
 class LibraryProgressScreen extends ConsumerWidget {
@@ -296,8 +297,8 @@ class _DayBar extends StatelessWidget {
         ? SettleColors.warmth400
         : SettleColors.warmth600;
     final railColor = brightness == Brightness.dark
-        ? SettleGlassDark.backgroundStrong
-        : SettleGlassLight.backgroundStrong;
+        ? SettleSurfaces.cardDark
+        : SettleSurfaces.cardLight;
     final workedHeight = maxDayTotal == 0
         ? 0.0
         : _barHeight * (worked / maxDayTotal);

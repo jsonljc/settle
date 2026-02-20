@@ -2,38 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../theme/glass_components.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
-
-class _PbT {
-  _PbT._();
-
-  static final type = _PbTypeTokens();
-  static const pal = _PbPaletteTokens();
-
-  static bool reduceMotion(BuildContext context) =>
-      MediaQuery.of(context).disableAnimations;
-}
-
-class _PbTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _PbPaletteTokens {
-  const _PbPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get accent => SettleColors.nightAccent;
-}
 
 const int _vagalCycleSeconds = 10; // 4 in + 6 out
 const int _vagalCycles = 3;
@@ -93,11 +63,11 @@ class _PocketInlineBreatheState extends State<PocketInlineBreathe> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Quick reset', style: _PbT.type.h3),
+          Text('Quick reset', style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           Text(
             'Inhale 4, exhale 6. Tap "Back to script" when ready.',
-            style: _PbT.type.caption.copyWith(color: _PbT.pal.textSecondary),
+            style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightSoft),
           ),
           const SizedBox(height: 20),
           Center(child: _PocketVagalCircles(scale: _vagalScale(_cycleT))),
@@ -110,17 +80,17 @@ class _PocketInlineBreatheState extends State<PocketInlineBreathe> {
                     ? Icons.arrow_upward_rounded
                     : Icons.arrow_downward_rounded,
                 size: 20,
-                color: _PbT.pal.accent,
+                color: SettleColors.nightAccent,
               ),
               const SizedBox(width: 6),
               Text(
                 _isInhale ? 'Breathe in' : 'Breathe out',
-                style: _PbT.type.label.copyWith(color: _PbT.pal.accent),
+                style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600, color: SettleColors.nightAccent),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          GlassCta(
+          SettleCta(
             label: 'Back to script',
             onTap: () {
               _cycleTimer?.cancel();
@@ -148,24 +118,24 @@ class _PocketVagalCircles extends StatelessWidget {
           _PocketScaledCircle(
             size: 180,
             scale: scale,
-            color: _PbT.pal.accent.withValues(alpha: 0.08),
+            color: SettleColors.nightAccent.withValues(alpha: 0.08),
           ),
           _PocketScaledCircle(
             size: 130,
             scale: scale,
-            color: _PbT.pal.accent.withValues(alpha: 0.12),
+            color: SettleColors.nightAccent.withValues(alpha: 0.12),
           ),
           _PocketScaledCircle(
             size: 80,
             scale: scale,
-            color: _PbT.pal.accent.withValues(alpha: 0.18),
+            color: SettleColors.nightAccent.withValues(alpha: 0.18),
           ),
           Container(
             width: 10,
             height: 10,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _PbT.pal.accent,
+              color: SettleColors.nightAccent,
             ),
           ),
         ],
@@ -187,7 +157,7 @@ class _PocketScaledCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = _PbT.reduceMotion(context) ? 1.0 : scale;
+    final s = MediaQuery.of(context).disableAnimations ? 1.0 : scale;
     return Transform.scale(
       scale: s,
       child: Container(

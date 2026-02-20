@@ -3,41 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../providers/tantrum_providers.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
-
-class _ThT {
-  _ThT._();
-
-  static final type = _ThTypeTokens();
-  static const pal = _ThPaletteTokens();
-}
-
-class _ThTypeTokens {
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _ThPaletteTokens {
-  const _ThPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get accent => SettleColors.nightAccent;
-}
 
 // Deprecated in IA cleanup PR6. This legacy tantrum surface is no longer
 // reachable from production routes and is retained only for internal reference.
@@ -106,8 +76,8 @@ class TantrumHubScreen extends ConsumerWidget {
                     const SizedBox(height: 18),
                     Text(
                       'Current prevention playbook',
-                      style: _ThT.type.overline.copyWith(
-                        color: _ThT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -115,8 +85,8 @@ class TantrumHubScreen extends ConsumerWidget {
                       GlassCard(
                         child: Text(
                           'Log a few events to unlock trigger-aware prevention tips.',
-                          style: _ThT.type.caption.copyWith(
-                            color: _ThT.pal.textSecondary,
+                          style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400).copyWith(
+                            color: SettleColors.nightSoft,
                           ),
                         ),
                       )
@@ -131,8 +101,8 @@ class TantrumHubScreen extends ConsumerWidget {
                             ),
                             child: Text(
                               item,
-                              style: _ThT.type.body.copyWith(
-                                color: _ThT.pal.textSecondary,
+                              style: SettleTypography.body.copyWith(
+                                color: SettleColors.nightSoft,
                               ),
                             ),
                           ),
@@ -170,24 +140,24 @@ class _HubNavCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: _ThT.pal.accent),
+            Icon(icon, size: 20, color: SettleColors.nightAccent),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: _ThT.type.label),
+                  Text(title, style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: _ThT.type.caption.copyWith(
-                      color: _ThT.pal.textSecondary,
+                    style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400).copyWith(
+                      color: SettleColors.nightSoft,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: _ThT.pal.textTertiary),
+            Icon(Icons.chevron_right_rounded, color: SettleColors.nightMuted),
           ],
         ),
       ),

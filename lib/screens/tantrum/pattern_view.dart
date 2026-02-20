@@ -4,46 +4,11 @@ import '../../models/tantrum_profile.dart';
 import '../../providers/profile_provider.dart';
 import '../../providers/tantrum_providers.dart';
 import '../../services/tantrum_engine.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
-
-class _PvT {
-  _PvT._();
-
-  static final type = _PvTypeTokens();
-  static const pal = _PvPaletteTokens();
-  static const glass = _PvGlassTokens();
-}
-
-class _PvTypeTokens {
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-  TextStyle get h3 => SettleTypography.heading;
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption;
-}
-
-class _PvPaletteTokens {
-  const _PvPaletteTokens();
-
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textPrimary => SettleColors.nightText;
-  Color get accent => SettleColors.nightAccent;
-}
-
-class _PvGlassTokens {
-  const _PvGlassTokens();
-
-  Color get fill => SettleGlassDark.backgroundStrong;
-  Color get border => SettleGlassDark.borderStrong;
-}
 
 // Deprecated in IA cleanup PR6. This legacy tantrum surface is no longer
 // reachable from production routes and is retained only for internal reference.
@@ -85,14 +50,14 @@ class PatternViewScreen extends ConsumerWidget {
                         children: [
                           Text(
                             'LAST 7 DAYS',
-                            style: _PvT.type.overline.copyWith(
-                              color: _PvT.pal.textTertiary,
+                            style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                              color: SettleColors.nightMuted,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             '${pattern?.totalEvents ?? 0} hard moments logged',
-                            style: _PvT.type.h3,
+                            style: SettleTypography.heading,
                           ),
                           const SizedBox(height: 12),
                           _SevenDayDots(events: events),
@@ -104,12 +69,12 @@ class PatternViewScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('NORMALIZATION', style: _PvT.type.overline),
+                          Text('NORMALIZATION', style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8)),
                           const SizedBox(height: 8),
                           Text(
                             pattern?.normalizationStatus.title ??
                                 'Not enough data yet',
-                            style: _PvT.type.h3,
+                            style: SettleTypography.heading,
                           ),
                           const SizedBox(height: 6),
                           Text(
@@ -119,8 +84,8 @@ class PatternViewScreen extends ConsumerWidget {
                                     pattern.normalizationStatus,
                                     profile.ageBracket,
                                   ),
-                            style: _PvT.type.body.copyWith(
-                              color: _PvT.pal.textSecondary,
+                            style: SettleTypography.body.copyWith(
+                              color: SettleColors.nightSoft,
                             ),
                           ),
                         ],
@@ -133,16 +98,16 @@ class PatternViewScreen extends ConsumerWidget {
                         children: [
                           Text(
                             'TOP HELPERS',
-                            style: _PvT.type.overline.copyWith(
-                              color: _PvT.pal.textTertiary,
+                            style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                              color: SettleColors.nightMuted,
                             ),
                           ),
                           const SizedBox(height: 8),
                           if (pattern == null || pattern.topHelpers.isEmpty)
                             Text(
                               'Log what helped to see trends for this child.',
-                              style: _PvT.type.body.copyWith(
-                                color: _PvT.pal.textSecondary,
+                              style: SettleTypography.body.copyWith(
+                                color: SettleColors.nightSoft,
                               ),
                             )
                           else
@@ -151,8 +116,8 @@ class PatternViewScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.only(bottom: 6),
                                 child: Text(
                                   '${entry.key + 1}. ${entry.value}',
-                                  style: _PvT.type.body.copyWith(
-                                    color: _PvT.pal.textSecondary,
+                                  style: SettleTypography.body.copyWith(
+                                    color: SettleColors.nightSoft,
                                   ),
                                 ),
                               ),
@@ -167,12 +132,12 @@ class PatternViewScreen extends ConsumerWidget {
                         children: [
                           Text(
                             'MOST COMMON TRIGGER',
-                            style: _PvT.type.overline.copyWith(
-                              color: _PvT.pal.textTertiary,
+                            style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                              color: SettleColors.nightMuted,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(_topTrigger(pattern), style: _PvT.type.h3),
+                          Text(_topTrigger(pattern), style: SettleTypography.heading),
                         ],
                       ),
                     ),
@@ -238,20 +203,20 @@ class _SevenDayDots extends StatelessWidget {
                     height: 30,
                     decoration: BoxDecoration(
                       color: value == 0
-                          ? _PvT.glass.fill
-                          : _PvT.pal.accent.withValues(
+                          ? SettleSurfaces.cardDark
+                          : SettleColors.nightAccent.withValues(
                               alpha: (0.2 + (value * 0.12)).clamp(0.2, 0.8),
                             ),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: _PvT.glass.border),
+                      border: Border.all(color: SettleSurfaces.cardBorderDark),
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       '$value',
-                      style: _PvT.type.caption.copyWith(
+                      style: SettleTypography.caption.copyWith(
                         color: value == 0
-                            ? _PvT.pal.textTertiary
-                            : _PvT.pal.textPrimary,
+                            ? SettleColors.nightMuted
+                            : SettleColors.nightText,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -267,31 +232,31 @@ class _SevenDayDots extends StatelessWidget {
           children: [
             Text(
               '6d',
-              style: _PvT.type.caption.copyWith(color: _PvT.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
             ),
             Text(
               '5d',
-              style: _PvT.type.caption.copyWith(color: _PvT.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
             ),
             Text(
               '4d',
-              style: _PvT.type.caption.copyWith(color: _PvT.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
             ),
             Text(
               '3d',
-              style: _PvT.type.caption.copyWith(color: _PvT.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
             ),
             Text(
               '2d',
-              style: _PvT.type.caption.copyWith(color: _PvT.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
             ),
             Text(
               '1d',
-              style: _PvT.type.caption.copyWith(color: _PvT.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
             ),
             Text(
               'Today',
-              style: _PvT.type.caption.copyWith(color: _PvT.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
             ),
           ],
         ),

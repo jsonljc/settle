@@ -81,6 +81,7 @@ Future<void> main() async {
     Hive.openBox<dynamic>('release_rollout_v1'),
     Hive.openBox<dynamic>('weekly_reflection_meta'),
     Hive.openBox<dynamic>('spine_store'),
+    Hive.openBox<dynamic>('close_moment_suppress'),
   ];
   for (final f in boxes) {
     try {

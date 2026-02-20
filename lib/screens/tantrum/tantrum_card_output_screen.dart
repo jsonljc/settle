@@ -4,30 +4,14 @@ import 'package:share_plus/share_plus.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../tantrum/providers/tantrum_module_providers.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../utils/share_text.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/output_card.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/script_card.dart';
-
-class _TcoT {
-  _TcoT._();
-
-  static final type = _TcoTypeTokens();
-  static const pal = _TcoPaletteTokens();
-}
-
-class _TcoTypeTokens {
-  TextStyle get body => SettleTypography.body;
-}
-
-class _TcoPaletteTokens {
-  const _TcoPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
 
 /// Immediate post-capture payoff: one calm card for the logged event.
 class TantrumCardOutputScreen extends ConsumerWidget {
@@ -59,12 +43,12 @@ class TantrumCardOutputScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
                       Text(
                         'No card available right now.',
-                        style: _TcoT.type.body.copyWith(
-                          color: _TcoT.pal.textSecondary,
+                        style: SettleTypography.body.copyWith(
+                          color: SettleColors.nightSoft,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      GlassCta(
+                      SettleCta(
                         label: 'Back to Capture',
                         onTap: () => context.go('/tantrum/capture'),
                       ),
@@ -135,14 +119,14 @@ class TantrumCardOutputScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Something went wrong.',
-                          style: _TcoT.type.body.copyWith(
+                          style: SettleTypography.body.copyWith(
                             fontSize: 14,
-                            color: _TcoT.pal.textSecondary,
+                            color: SettleColors.nightSoft,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
-                        GlassCta(
+                        SettleCta(
                           label: 'Back to Capture',
                           onTap: () => context.go('/tantrum/capture'),
                         ),

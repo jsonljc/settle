@@ -5,43 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
 import '../services/release_ops_service.dart';
-import '../theme/glass_components.dart';
+import '../widgets/glass_card.dart';
+import '../widgets/glass_pill.dart';
+import '../widgets/settle_cta.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
-
-class _RocT {
-  _RocT._();
-
-  static final type = _RocTypeTokens();
-  static const pal = _RocPaletteTokens();
-  static const glass = _RocGlassTokens();
-}
-
-class _RocTypeTokens {
-  TextStyle get h3 => SettleTypography.heading;
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption;
-}
-
-class _RocPaletteTokens {
-  const _RocPaletteTokens();
-
-  Color get textPrimary => SettleColors.nightText;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get accent => SettleColors.nightAccent;
-  Color get teal => SettleColors.sage400;
-}
-
-class _RocGlassTokens {
-  const _RocGlassTokens();
-
-  Color get border => SettleGlassDark.borderStrong;
-}
+import '../widgets/settle_tappable.dart';
 
 class ReleaseOpsChecklistScreen extends ConsumerStatefulWidget {
   const ReleaseOpsChecklistScreen({
@@ -118,12 +89,13 @@ class _ReleaseOpsChecklistScreenState
               children: [
                 ScreenHeader(
                   title: 'Release Ops',
-                  trailing: GestureDetector(
+                  trailing: SettleTappable(
+                    semanticLabel: 'Refresh',
                     onTap: () => setState(_reload),
                     child: Icon(
                       Icons.refresh_rounded,
                       size: 20,
-                      color: _RocT.pal.textTertiary,
+                      color: SettleColors.nightMuted,
                     ),
                   ),
                 ),
@@ -144,8 +116,8 @@ class _ReleaseOpsChecklistScreenState
                           child: GlassCard(
                             child: Text(
                               'Unable to load release checklist.',
-                              style: _RocT.type.body.copyWith(
-                                color: _RocT.pal.textSecondary,
+                              style: SettleTypography.body.copyWith(
+                                color: SettleColors.nightSoft,
                               ),
                             ),
                           ),
@@ -171,13 +143,13 @@ class _ReleaseOpsChecklistScreenState
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Quick controls', style: _RocT.type.h3),
+                                Text('Quick controls', style: SettleTypography.heading),
                                 const SizedBox(height: 8),
                                 if (_isUpdatingRollout) ...[
                                   Text(
                                     'Updating rollout flags…',
-                                    style: _RocT.type.caption.copyWith(
-                                      color: _RocT.pal.textSecondary,
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -223,9 +195,9 @@ class _ReleaseOpsChecklistScreenState
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Divider(color: _RocT.glass.border),
+                                Divider(color: SettleSurfaces.cardBorderDark),
                                 const SizedBox(height: 6),
-                                Text('Phase 1 controls', style: _RocT.type.h3),
+                                Text('Phase 1 controls', style: SettleTypography.heading),
                                 const SizedBox(height: 8),
                                 _RolloutSwitchRow(
                                   label: 'Plan tab',
@@ -282,9 +254,9 @@ class _ReleaseOpsChecklistScreenState
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Divider(color: _RocT.glass.border),
+                                Divider(color: SettleSurfaces.cardBorderDark),
                                 const SizedBox(height: 6),
-                                Text('Foundation flags', style: _RocT.type.h3),
+                                Text('Foundation flags', style: SettleTypography.heading),
                                 const SizedBox(height: 8),
                                 _RolloutSwitchRow(
                                   label: 'Sleep bounded AI copy',
@@ -389,7 +361,7 @@ class _HeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ready = data.rolloutReady;
-    final color = ready ? _RocT.pal.teal : SettleColors.blush400;
+    final color = ready ? SettleColors.sage400 : SettleColors.blush400;
 
     return GlassCardAccent(
       child: Column(
@@ -397,17 +369,17 @@ class _HeaderCard extends StatelessWidget {
         children: [
           Text(
             ready ? 'Ready to expand rollout' : 'Hold rollout',
-            style: _RocT.type.h3.copyWith(color: _RocT.pal.accent),
+            style: SettleTypography.heading.copyWith(color: SettleColors.nightAccent),
           ),
           const SizedBox(height: 8),
           Text(
             'Required: ${data.requiredPassCount}/${data.requiredTotal} · Advisory: ${data.advisoryPassCount}/${data.advisoryTotal}',
-            style: _RocT.type.body.copyWith(color: _RocT.pal.textSecondary),
+            style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
           ),
           const SizedBox(height: 4),
           Text(
             'Status: ${ready ? 'green' : 'needs attention'}',
-            style: _RocT.type.caption.copyWith(
+            style: SettleTypography.caption.copyWith(
               color: color,
               fontWeight: FontWeight.w700,
             ),
@@ -430,10 +402,10 @@ class _GateSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: _RocT.type.h3),
+          Text(title, style: SettleTypography.heading),
           const SizedBox(height: 8),
           ...gates.map((gate) {
-            final color = gate.passed ? _RocT.pal.teal : SettleColors.blush400;
+            final color = gate.passed ? SettleColors.sage400 : SettleColors.blush400;
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
@@ -454,12 +426,12 @@ class _GateSection extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(gate.title, style: _RocT.type.label),
+                        Text(gate.title, style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                         const SizedBox(height: 2),
                         Text(
                           gate.detail,
-                          style: _RocT.type.caption.copyWith(
-                            color: _RocT.pal.textSecondary,
+                          style: SettleTypography.caption.copyWith(
+                            color: SettleColors.nightSoft,
                           ),
                         ),
                       ],
@@ -503,18 +475,18 @@ class _RolloutSwitchRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: _RocT.type.caption.copyWith(
+                style: SettleTypography.caption.copyWith(
                   color: enabled
-                      ? _RocT.pal.textPrimary
-                      : _RocT.pal.textTertiary,
+                      ? SettleColors.nightText
+                      : SettleColors.nightMuted,
                 ),
               ),
               if (caption != null) ...[
                 const SizedBox(height: 2),
                 Text(
                   caption!,
-                  style: _RocT.type.caption.copyWith(
-                    color: _RocT.pal.textTertiary,
+                  style: SettleTypography.caption.copyWith(
+                    color: SettleColors.nightMuted,
                   ),
                 ),
               ],
@@ -526,7 +498,7 @@ class _RolloutSwitchRow extends StatelessWidget {
           key: switchKey,
           value: value,
           onChanged: enabled ? onChanged : null,
-          activeColor: _RocT.pal.accent,
+          activeColor: SettleColors.nightAccent,
         ),
       ],
     );

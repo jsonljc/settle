@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/tantrum_providers.dart';
 import '../../tantrum/providers/tantrum_entitlement_provider.dart';
 import '../../tantrum/services/tantrum_registry_service.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/option_button.dart';
@@ -196,7 +196,7 @@ class _TantrumNowScreenState extends ConsumerState<TantrumNowScreen> {
                             }),
                           ),
                           const Spacer(),
-                          GlassCta(
+                          SettleCta(
                             label: _submitting
                                 ? 'Logging...'
                                 : 'Log & Get Card',

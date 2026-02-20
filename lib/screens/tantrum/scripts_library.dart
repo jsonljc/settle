@@ -1,34 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/tantrum_providers.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
-
-class _SlT {
-  _SlT._();
-
-  static final type = _SlTypeTokens();
-  static const pal = _SlPaletteTokens();
-}
-
-class _SlTypeTokens {
-  TextStyle get body => SettleTypography.body;
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _SlPaletteTokens {
-  const _SlPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
 
 // Deprecated in IA cleanup PR6. This legacy tantrum surface is no longer
 // reachable from production routes and is retained only for internal reference.
@@ -126,7 +103,7 @@ class _Section extends StatelessWidget {
         children: [
           Text(
             title,
-            style: _SlT.type.overline.copyWith(color: _SlT.pal.textTertiary),
+            style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(color: SettleColors.nightMuted),
           ),
           const SizedBox(height: 8),
           ...lines.asMap().entries.map(
@@ -136,7 +113,7 @@ class _Section extends StatelessWidget {
               ),
               child: Text(
                 entry.value,
-                style: _SlT.type.body.copyWith(color: _SlT.pal.textSecondary),
+                style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
               ),
             ),
           ),

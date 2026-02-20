@@ -118,11 +118,13 @@ GoRouter buildRouter({required bool regulateEnabled}) {
         },
         pageBuilder: (context, state) => _slide(state, const SosScreen()),
       ),
+      // UXV2-009: Settings only via shell Menu (or deep link); overlay, no tab
       GoRoute(
         path: '/settings',
         pageBuilder: (context, state) =>
             _overlaySheet(state, const SettingsScreen()),
       ),
+      // UXV2-008: Family only via shell Menu (or deep link); overlay, no tab; sub-routes in overlay
       GoRoute(
         path: '/family',
         pageBuilder: (context, state) =>
@@ -518,7 +520,7 @@ CustomTransitionPage<void> _fade(
   );
 }
 
-/// Modal overlay page used by Family and Settings.
+/// Modal overlay page for Family and Settings (UXV2-008, UXV2-009). Back pops to previous route; barrier tap dismisses.
 CustomTransitionPage<void> _overlaySheet(GoRouterState state, Widget child) {
   const duration = Duration(milliseconds: 220);
   return CustomTransitionPage<void>(

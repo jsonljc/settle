@@ -2,33 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../models/tantrum_profile.dart';
-import '../../theme/reduce_motion.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/option_button.dart';
-
-class _RasT {
-  _RasT._();
-
-  static final type = _RasTypeTokens();
-  static const pal = _RasPaletteTokens();
-}
-
-class _RasTypeTokens {
-  TextStyle get h1 => SettleTypography.heading.copyWith(
-    fontSize: 26,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _RasPaletteTokens {
-  const _RasPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
 
 class ResponseApproachStep extends StatelessWidget {
   const ResponseApproachStep({
@@ -57,12 +32,12 @@ class ResponseApproachStep extends StatelessWidget {
       children: [
         Text(
           'Response focus',
-          style: _RasT.type.h1,
+          style: SettleTypography.heading.copyWith(fontSize: 26, fontWeight: FontWeight.w700),
         ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 8),
         Text(
           'Pick your priority for guidance weighting.',
-          style: _RasT.type.caption.copyWith(color: _RasT.pal.textSecondary),
+          style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightSoft),
         ).entryFadeOnly(context, delay: 120.ms),
         const SizedBox(height: 24),
         ...ResponsePriority.values.asMap().entries.map((entry) {

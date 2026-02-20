@@ -1,69 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SETTLE DESIGN SYSTEM — CANONICAL
-// Single source of truth for colors, glass, typography, spacing, radii,
-// gradients, and theme. All new UI code MUST use this file only.
-// Do not import settle_tokens.dart (T.*) in new code.
+// SETTLE DESIGN SYSTEM — "The Quiet Hand"
+// Solid surfaces, typography-forward, minimal chrome.
+// The words are the interface.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─────────────────────────────────────────────────────────────────────────────
-// COLORS
+// COLORS — Strong contrast, WCAG-friendly
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SettleColors {
   SettleColors._();
 
-  // Light mode backgrounds
-  static const Color cream = Color(0xFFFAFAF8);
-  static const Color stone50 = Color(0xFFF5F4F2);
-  static const Color stone100 = Color(0xFFECEAE6);
-  static const Color stone200 = Color(0xFFDDDAD4);
+  // Light backgrounds — warm off-white
+  static const Color cream = Color(0xFFFFFBF7);
+  static const Color stone50 = Color(0xFFF5F3F0);
+  static const Color stone100 = Color(0xFFEBE8E4);
+  static const Color stone200 = Color(0xFFDDD9D4);
 
-  // Dark mode backgrounds
-  static const Color night950 = Color(0xFF0A0D12);
-  static const Color night900 = Color(0xFF0F1318);
-  static const Color night800 = Color(0xFF161C24);
-  static const Color night700 = Color(0xFF1E2630);
+  // Dark backgrounds
+  static const Color night950 = Color(0xFF0C0E12);
+  static const Color night900 = Color(0xFF12161C);
+  static const Color night800 = Color(0xFF1A1F28);
+  static const Color night700 = Color(0xFF242B36);
 
-  // Text colors (light)
-  static const Color ink900 = Color(0xFF1A1A1C);
-  static const Color ink800 = Color(0xFF2C2C2E);
-  static const Color ink700 = Color(0xFF3A3A3C);
-  static const Color ink500 = Color(0xFF636366);
-  static const Color ink400 = Color(0xFF8E8E93);
-  static const Color ink300 = Color(0xFFAEAEB2);
+  // Light mode text — dark for readability
+  static const Color ink900 = Color(0xFF0F1114);
+  static const Color ink800 = Color(0xFF1C1E22);
+  static const Color ink700 = Color(0xFF2D3036);
+  static const Color ink600 = Color(0xFF45494F);
+  static const Color ink500 = Color(0xFF5C6066);
+  static const Color ink400 = Color(0xFF73787F);
+  static const Color ink300 = Color(0xFF8E9299);
 
-  // Text colors (dark)
-  static const Color nightText = Color(0xFFECEFF4);
-  static const Color nightSoft = Color(0xFFB0B8C8);
-  static const Color nightMuted = Color(0xFF6B7280);
-  static const Color nightAccent = Color(0xFF88AACC);
+  // Dark mode text
+  static const Color nightText = Color(0xFFF0F2F5);
+  static const Color nightSoft = Color(0xFFC2C8D0);
+  static const Color nightMuted = Color(0xFF88909C);
+  static const Color nightAccent = Color(0xFF7BA3C7);
 
-  // Domain tints (desaturated — subtle)
-  static const Color sage400 = Color(0xFF8BB89E);
-  static const Color sage600 = Color(0xFF5A8A6E);
-  static const Color sage100 = Color(0xFFE4EDE2);
-  static const Color blush400 = Color(0xFFBE8B8B);
-  static const Color blush600 = Color(0xFF946060);
-  static const Color blush100 = Color(0xFFF0E4E4);
-  static const Color dusk400 = Color(0xFF7B8FBE);
-  static const Color dusk600 = Color(0xFF4A5F94);
-  static const Color dusk100 = Color(0xFFE0E4F0);
-  static const Color warmth400 = Color(0xFFBEA070);
-  static const Color warmth600 = Color(0xFF8A7048);
+  // Primary accent (one clear CTA color)
+  static const Color sage400 = Color(0xFF5B9B7A);
+  static const Color sage600 = Color(0xFF3D7A5A);
+  static const Color sage100 = Color(0xFFE2EDE6);
+  static const Color blush400 = Color(0xFFC07878);
+  static const Color blush600 = Color(0xFFA05A5A);
+  static const Color blush100 = Color(0xFFF2E6E6);
+  static const Color dusk400 = Color(0xFF6B8AB8);
+  static const Color dusk600 = Color(0xFF4A6A96);
+  static const Color dusk100 = Color(0xFFE2E8F2);
+  static const Color warmth400 = Color(0xFFB8926A);
+  static const Color warmth600 = Color(0xFF96704A);
   static const Color warmth100 = Color(0xFFF0E8DC);
 
-  // Wake-window arc colors
-  static const Color arcOk = Color(0xFF86C3A8);
-  static const Color arcWatch = Color(0xFFD6B476);
-  static const Color arcSoon = Color(0xFFC99563);
-  static const Color arcNow = Color(0xFFAF7E5A);
-  static const Color arcCritical = Color(0xFFC06F6F);
+  // Arcs
+  static const Color arcOk = Color(0xFF6BA881);
+  static const Color arcWatch = Color(0xFFC9A055);
+  static const Color arcSoon = Color(0xFFB87D4A);
+  static const Color arcNow = Color(0xFFA66B4A);
+  static const Color arcCritical = Color(0xFFB85A5A);
 
-  /// Returns the arc color for a given progress value (0.0–1.0).
   static Color arcForProgress(double p) {
     if (p < 0.55) return arcOk;
     if (p < 0.75) return arcWatch;
@@ -73,121 +73,96 @@ class SettleColors {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GLASS MATERIALS
+// SURFACES — Solid card fills, borders, tints
 // ─────────────────────────────────────────────────────────────────────────────
 
-class SettleGlass {
-  SettleGlass._();
+class SettleSurfaces {
+  SettleSurfaces._();
 
-  static const SettleGlassLight light = SettleGlassLight();
-  static const SettleGlassDark dark = SettleGlassDark();
-}
+  // Card fills
+  static const Color cardLight = Color(0xFFFFFFFF);
+  static const Color cardDark = Color(0xFF242B36); // night700
 
-class SettleGlassLight {
-  const SettleGlassLight();
+  // Card borders (dark only — light cards have no border)
+  static const Color cardBorderDark = Color(0x14FFFFFF); // white 8%
 
-  static const Color background = Color(0x7AFFFFFF); // white 48%
-  static const Color backgroundStrong = Color(0x9EFFFFFF); // white 62%
-  static const Color backgroundSubtle = Color(0x52FFFFFF); // white 32%
-  static const Color border = Color(0x80FFFFFF); // white 50%
-  static const Color borderStrong = Color(0xADFFFFFF); // white 68%
-  static const double blur = 40.0;
-  /// For shader if available; otherwise annotation only.
-  static const double saturation = 1.8;
-
-  // Domain-tinted glass fills (light)
-  static const Color backgroundSage = Color(0x1A8BB89E);
-  static const Color backgroundBlush = Color(0x1ABE8B8B);
-  static const Color backgroundWarmth = Color(0x1ABEA070);
-  static const Color backgroundDusk = Color(0x1A7B8FBE);
-}
-
-class SettleGlassDark {
-  const SettleGlassDark();
-
-  static const Color background = Color(0x0EFFFFFF); // white 5.5%
-  static const Color backgroundStrong = Color(0x17FFFFFF); // white 9%
-  static const Color border = Color(0x14FFFFFF); // white 8%
-  static const Color borderStrong = Color(0x21FFFFFF); // white 13%
-  static const double blur = 40.0;
-
-  // Domain-tinted glass fills (dark)
-  static const Color backgroundSage = Color(0x1A5A8A6E);
-  static const Color backgroundBlush = Color(0x1A946060);
-  static const Color backgroundWarmth = Color(0x1A8A7048);
-  static const Color backgroundDusk = Color(0x1A4A5F94);
+  // Semantic tints (~6% over white/dark)
+  static const Color tintSage = Color(0x0F5B9B7A);
+  static const Color tintBlush = Color(0x0FC07878);
+  static const Color tintDusk = Color(0x0F6B8AB8);
+  static const Color tintWarmth = Color(0x0FB8926A);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TYPOGRAPHY — Fraunces (display/emotional), Inter (UI/body)
+// TYPOGRAPHY — Inter only, clear hierarchy, readable sizes
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SettleTypography {
   SettleTypography._();
 
-  static const double displayLargeSize = 34;
-  static const double displaySize = 28;
+  static const double displayLargeSize = 32;
+  static const double displaySize = 26;
   static const double headingSize = 20;
   static const double subheadingSize = 17;
-  static const double bodySize = 14;
-  static const double captionSize = 11.5;
+  static const double bodySize = 16;
+  static const double captionSize = 14;
   static const double overlineSize = 11;
 
-  /// Hero stats / large numbers — Fraunces, weight 700, letterSpacing -1.0
-  static TextStyle get displayLarge => GoogleFonts.fraunces(
-        fontSize: displayLargeSize,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -1.0,
-      );
+  static TextStyle get displayLarge => GoogleFonts.inter(
+    fontSize: displayLargeSize,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.5,
+    height: 1.2,
+  );
 
-  /// Moment / Reset / greetings — Fraunces, weight 400, letterSpacing -1.5
-  static TextStyle get display => GoogleFonts.fraunces(
-        fontSize: displaySize,
-        fontWeight: FontWeight.w400,
-        letterSpacing: -1.5,
-      );
+  static TextStyle get display => GoogleFonts.inter(
+    fontSize: displaySize,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.4,
+    height: 1.22,
+  );
 
-  /// Headings — Inter, weight 600, letterSpacing -0.3
   static TextStyle get heading => GoogleFonts.inter(
-        fontSize: headingSize,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.3,
-      );
+    fontSize: headingSize,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.2,
+    height: 1.28,
+  );
 
-  /// Card titles / h3-level — Inter, weight 700, letterSpacing -0.2
   static TextStyle get subheading => GoogleFonts.inter(
-        fontSize: subheadingSize,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.2,
-      );
+    fontSize: subheadingSize,
+    fontWeight: FontWeight.w500,
+    letterSpacing: -0.1,
+    height: 1.32,
+  );
 
-  /// Body — Inter, weight 400, letterSpacing -0.1
   static TextStyle get body => GoogleFonts.inter(
-        fontSize: bodySize,
-        fontWeight: FontWeight.w400,
-        letterSpacing: -0.1,
-      );
+    fontSize: bodySize,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0,
+    height: 1.5,
+  );
 
-  /// Bold body / toggle labels — Inter, weight 600, letterSpacing -0.1
   static TextStyle get label => GoogleFonts.inter(
-        fontSize: bodySize,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.1,
-      );
+    fontSize: bodySize,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0,
+    height: 1.35,
+  );
 
-  /// Caption — Inter, weight 500, letterSpacing 0.2
   static TextStyle get caption => GoogleFonts.inter(
-        fontSize: captionSize,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.2,
-      );
+    fontSize: captionSize,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.05,
+    height: 1.4,
+  );
 
-  /// Section headers — Inter, weight 600, letterSpacing 0.8
   static TextStyle get overline => GoogleFonts.inter(
-        fontSize: overlineSize,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.8,
-      );
+    fontSize: overlineSize,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.5,
+    height: 1.25,
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -199,14 +174,14 @@ class SettleSpacing {
 
   static const double xs = 4;
   static const double sm = 8;
-  static const double md = 12;
-  static const double lg = 16;
-  static const double xl = 20;
-  static const double xxl = 28;
+  static const double md = 16;
+  static const double lg = 20;
+  static const double xl = 24;
+  static const double xxl = 32;
   static const double cardPadding = 20;
-  static const double screenPadding = 18;
-  static const double cardGap = 8;
-  static const double sectionGap = 20;
+  static const double screenPadding = 20;
+  static const double cardGap = 10;
+  static const double sectionGap = 24;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -216,14 +191,17 @@ class SettleSpacing {
 class SettleRadii {
   SettleRadii._();
 
-  static const double glass = 20;
-  static const double pill = 100;
-  static const double sm = 14;
-  static const double card = 26;
+  static const double surface = 16;
+  /// Alias for [surface]. Kept for backward compatibility.
+  static const double glass = surface;
+  static const double pill = 999;
+  static const double sm = 12;
+  static const double card = 20;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GRADIENTS — backgrounds that show through glass
+// LEGACY GRADIENTS — Kept for backward compatibility. All now resolve to solid.
+// TODO: Remove once all direct references are migrated.
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SettleGradients {
@@ -232,62 +210,19 @@ class SettleGradients {
   static const Alignment begin = Alignment.topCenter;
   static const Alignment end = Alignment.bottomCenter;
 
-  static const LinearGradient home = LinearGradient(
-    begin: begin,
-    end: end,
-    colors: [
-      Color(0xFFC8D8E8),
-      Color(0xFFE0D8CC),
-      Color(0xFFD4DED0),
-      Color(0xFFE4DED6),
-    ],
-  );
+  static final LinearGradient home = _solid(SettleColors.stone50);
+  static final LinearGradient moment = _solid(SettleColors.night900);
+  static final LinearGradient sleep = _solid(SettleColors.night900);
+  static final LinearGradient resetDark = _solid(SettleColors.night900);
+  static final LinearGradient playbook = _solid(SettleColors.stone50);
+  static final LinearGradient library = _solid(SettleColors.stone50);
 
-  static const LinearGradient moment = LinearGradient(
-    begin: begin,
-    end: end,
-    colors: [
-      Color(0xFF90B8A4),
-      Color(0xFFA8D0B8),
-      Color(0xFFC4DED0),
-      Color(0xFFE4F0E8),
-    ],
-  );
-
-  static const LinearGradient sleep = LinearGradient(
-    begin: begin,
-    end: end,
-    colors: [
-      Color(0xFF1A2544),
-      Color(0xFF253660),
-      Color(0xFF344880),
-      Color(0xFF4A6090),
-    ],
-  );
-
-  static const LinearGradient resetDark = LinearGradient(
-    begin: begin,
-    end: end,
-    colors: [
-      Color(0xFF0A0D12),
-      Color(0xFF0F1318),
-      Color(0xFF161C24),
-    ],
-  );
-
-  static const LinearGradient playbook = LinearGradient(
-    begin: begin,
-    end: end,
-    colors: [
-      Color(0xFFE6E2DC),
-      Color(0xFFEDEBE6),
-      Color(0xFFE8E4DE),
-    ],
-  );
+  static LinearGradient _solid(Color c) =>
+      LinearGradient(colors: [c, c]);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// THEME — light / dark ThemeData, system brightness
+// THEME
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SettleTheme {
@@ -297,10 +232,8 @@ class SettleTheme {
   static ThemeData get dark => _buildDark();
 
   static ThemeData _buildLight() {
-    final base = ThemeData.light(useMaterial3: true);
-    final textTheme = _buildLightTextTheme(base.textTheme);
-
-    return base.copyWith(
+    final textTheme = _buildLightTextTheme(ThemeData.light().textTheme);
+    return ThemeData.light(useMaterial3: true).copyWith(
       scaffoldBackgroundColor: Colors.transparent,
       canvasColor: SettleColors.stone50,
       colorScheme: ColorScheme.light(
@@ -326,14 +259,9 @@ class SettleTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: SettleColors.sage600,
           foregroundColor: SettleColors.cream,
-          textStyle: SettleTypography.body,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SettleRadii.pill),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: SettleSpacing.xxl,
-            vertical: SettleSpacing.lg,
-          ),
+          textStyle: SettleTypography.label,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SettleRadii.pill)),
+          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.xxl, vertical: SettleSpacing.lg),
           elevation: 0,
         ),
       ),
@@ -341,17 +269,14 @@ class SettleTheme {
         style: TextButton.styleFrom(
           foregroundColor: SettleColors.ink700,
           textStyle: SettleTypography.body,
-          padding: const EdgeInsets.symmetric(
-            horizontal: SettleSpacing.lg,
-            vertical: SettleSpacing.sm,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.lg, vertical: SettleSpacing.sm),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(foregroundColor: SettleColors.ink700),
       ),
       dividerTheme: DividerThemeData(
-        color: SettleColors.ink400.withValues(alpha: 0.3),
+        color: SettleColors.ink400.withValues(alpha: 0.35),
         thickness: 0.5,
       ),
       pageTransitionsTheme: PageTransitionsTheme(
@@ -360,16 +285,14 @@ class SettleTheme {
           TargetPlatform.android: const _SettlePageTransitionsBuilder(),
         },
       ),
-      splashColor: SettleColors.sage400.withValues(alpha: 0.12),
-      highlightColor: SettleColors.sage400.withValues(alpha: 0.06),
+      splashColor: SettleColors.sage400.withValues(alpha: 0.15),
+      highlightColor: SettleColors.sage400.withValues(alpha: 0.08),
     );
   }
 
   static ThemeData _buildDark() {
-    final base = ThemeData.dark(useMaterial3: true);
-    final textTheme = _buildDarkTextTheme(base.textTheme);
-
-    return base.copyWith(
+    final textTheme = _buildDarkTextTheme(ThemeData.dark().textTheme);
+    return ThemeData.dark(useMaterial3: true).copyWith(
       scaffoldBackgroundColor: Colors.transparent,
       canvasColor: SettleColors.night900,
       colorScheme: ColorScheme.dark(
@@ -395,14 +318,9 @@ class SettleTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: SettleColors.nightAccent,
           foregroundColor: SettleColors.night950,
-          textStyle: SettleTypography.body,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(SettleRadii.pill),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: SettleSpacing.xxl,
-            vertical: SettleSpacing.lg,
-          ),
+          textStyle: SettleTypography.label,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SettleRadii.pill)),
+          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.xxl, vertical: SettleSpacing.lg),
           elevation: 0,
         ),
       ),
@@ -410,17 +328,14 @@ class SettleTheme {
         style: TextButton.styleFrom(
           foregroundColor: SettleColors.nightSoft,
           textStyle: SettleTypography.body,
-          padding: const EdgeInsets.symmetric(
-            horizontal: SettleSpacing.lg,
-            vertical: SettleSpacing.sm,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: SettleSpacing.lg, vertical: SettleSpacing.sm),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(foregroundColor: SettleColors.nightSoft),
       ),
       dividerTheme: DividerThemeData(
-        color: SettleColors.nightMuted.withValues(alpha: 0.4),
+        color: SettleColors.nightMuted.withValues(alpha: 0.5),
         thickness: 0.5,
       ),
       pageTransitionsTheme: PageTransitionsTheme(
@@ -429,46 +344,46 @@ class SettleTheme {
           TargetPlatform.android: const _SettlePageTransitionsBuilder(),
         },
       ),
-      splashColor: SettleColors.nightAccent.withValues(alpha: 0.12),
-      highlightColor: SettleColors.nightAccent.withValues(alpha: 0.06),
+      splashColor: SettleColors.nightAccent.withValues(alpha: 0.15),
+      highlightColor: SettleColors.nightAccent.withValues(alpha: 0.08),
     );
   }
 
   static TextTheme _buildLightTextTheme(TextTheme base) {
     return TextTheme(
-      displayLarge: SettleTypography.display.copyWith(color: SettleColors.ink900),
+      displayLarge: SettleTypography.displayLarge.copyWith(color: SettleColors.ink900),
       displayMedium: SettleTypography.display.copyWith(color: SettleColors.ink900),
       displaySmall: SettleTypography.display.copyWith(color: SettleColors.ink900),
       headlineLarge: SettleTypography.heading.copyWith(color: SettleColors.ink900),
       headlineMedium: SettleTypography.heading.copyWith(color: SettleColors.ink900),
-      headlineSmall: SettleTypography.heading.copyWith(color: SettleColors.ink900),
-      titleLarge: SettleTypography.heading.copyWith(color: SettleColors.ink800),
-      titleMedium: SettleTypography.body.copyWith(color: SettleColors.ink800),
+      headlineSmall: SettleTypography.subheading.copyWith(color: SettleColors.ink900),
+      titleLarge: SettleTypography.subheading.copyWith(color: SettleColors.ink800),
+      titleMedium: SettleTypography.label.copyWith(color: SettleColors.ink800),
       titleSmall: SettleTypography.body.copyWith(color: SettleColors.ink700),
       bodyLarge: SettleTypography.body.copyWith(color: SettleColors.ink800),
       bodyMedium: SettleTypography.body.copyWith(color: SettleColors.ink700),
-      bodySmall: SettleTypography.caption.copyWith(color: SettleColors.ink500),
-      labelLarge: SettleTypography.body.copyWith(color: SettleColors.ink700),
-      labelMedium: SettleTypography.caption.copyWith(color: SettleColors.ink500),
-      labelSmall: SettleTypography.caption.copyWith(color: SettleColors.ink400),
+      bodySmall: SettleTypography.caption.copyWith(color: SettleColors.ink600),
+      labelLarge: SettleTypography.label.copyWith(color: SettleColors.ink700),
+      labelMedium: SettleTypography.caption.copyWith(color: SettleColors.ink600),
+      labelSmall: SettleTypography.caption.copyWith(color: SettleColors.ink500),
     );
   }
 
   static TextTheme _buildDarkTextTheme(TextTheme base) {
     return TextTheme(
-      displayLarge: SettleTypography.display.copyWith(color: SettleColors.nightText),
+      displayLarge: SettleTypography.displayLarge.copyWith(color: SettleColors.nightText),
       displayMedium: SettleTypography.display.copyWith(color: SettleColors.nightText),
       displaySmall: SettleTypography.display.copyWith(color: SettleColors.nightText),
       headlineLarge: SettleTypography.heading.copyWith(color: SettleColors.nightText),
       headlineMedium: SettleTypography.heading.copyWith(color: SettleColors.nightText),
-      headlineSmall: SettleTypography.heading.copyWith(color: SettleColors.nightText),
-      titleLarge: SettleTypography.heading.copyWith(color: SettleColors.nightText),
-      titleMedium: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
+      headlineSmall: SettleTypography.subheading.copyWith(color: SettleColors.nightText),
+      titleLarge: SettleTypography.subheading.copyWith(color: SettleColors.nightText),
+      titleMedium: SettleTypography.label.copyWith(color: SettleColors.nightSoft),
       titleSmall: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
       bodyLarge: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
       bodyMedium: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
       bodySmall: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
-      labelLarge: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
+      labelLarge: SettleTypography.label.copyWith(color: SettleColors.nightSoft),
       labelMedium: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
       labelSmall: SettleTypography.caption.copyWith(color: SettleColors.nightMuted),
     );
@@ -476,7 +391,7 @@ class SettleTheme {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ANIMATIONS — durations, curves, reduce-motion helper
+// ANIMATIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SettleAnimations {
@@ -485,44 +400,45 @@ class SettleAnimations {
   static const Duration fast = Duration(milliseconds: 150);
   static const Duration normal = Duration(milliseconds: 250);
   static const Duration slow = Duration(milliseconds: 400);
-  static const Duration modeSwitch = Duration(milliseconds: 800);
-  static const Duration breathe = Duration(milliseconds: 5500);
-  static const Duration sosBreathe = Duration(milliseconds: 8000);
+  static const Duration modeSwitch = Duration(milliseconds: 600);
+  static const Duration breathe = Duration(milliseconds: 5000);
+  static const Duration sosBreathe = Duration(milliseconds: 7000);
 
   static const Curve entryIn = Curves.easeOutCubic;
   static const Curve entryOut = Curves.easeInCubic;
 
-  /// True when the platform requests reduced motion.
   static bool reduceMotion(BuildContext context) =>
       MediaQuery.of(context).disableAnimations;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SEMANTIC COLORS — brightness-aware color resolvers
+// SEMANTIC COLORS — Brightness-aware
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SettleSemanticColors {
   SettleSemanticColors._();
 
   static Color headline(BuildContext context) =>
-      _isDark(context) ? SettleColors.nightText : SettleColors.ink900;
+      _dark(context) ? SettleColors.nightText : SettleColors.ink900;
   static Color body(BuildContext context) =>
-      _isDark(context) ? SettleColors.nightSoft : SettleColors.ink700;
+      _dark(context) ? SettleColors.nightSoft : SettleColors.ink700;
   static Color supporting(BuildContext context) =>
-      _isDark(context) ? SettleColors.nightSoft : SettleColors.ink500;
+      _dark(context) ? SettleColors.nightSoft : SettleColors.ink600;
   static Color muted(BuildContext context) =>
-      _isDark(context) ? SettleColors.nightMuted : SettleColors.ink400;
+      _dark(context) ? SettleColors.nightMuted : SettleColors.ink600;
   static Color accent(BuildContext context) =>
-      _isDark(context) ? SettleColors.nightAccent : SettleColors.sage600;
-  static Color onGlass(BuildContext context) =>
-      _isDark(context) ? SettleColors.nightText : SettleColors.ink800;
+      _dark(context) ? SettleColors.nightAccent : SettleColors.sage600;
+  static Color onSurface(BuildContext context) =>
+      _dark(context) ? SettleColors.nightText : SettleColors.ink800;
+  /// Alias for [onSurface]. Kept for backward compatibility.
+  static Color onGlass(BuildContext context) => onSurface(context);
 
-  static bool _isDark(BuildContext context) =>
+  static bool _dark(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PAGE TRANSITION — gentle fade + upward slide (replaces FadeUpwards)
+// PAGE TRANSITION
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _SettlePageTransitionsBuilder extends PageTransitionsBuilder {
@@ -536,52 +452,70 @@ class _SettlePageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    return _SettlePageTransition(
-      animation: animation,
-      secondaryAnimation: secondaryAnimation,
-      child: child,
+    return FadeTransition(
+      opacity: CurveTween(curve: Curves.easeOut).animate(animation),
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.03),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)).animate(animation),
+        child: child,
+      ),
     );
   }
 }
 
-class _SettlePageTransition extends StatelessWidget {
-  const _SettlePageTransition({
-    required this.animation,
-    required this.secondaryAnimation,
-    required this.child,
-  });
+// ─────────────────────────────────────────────────────────────────────────────
+// REDUCE-MOTION ENTRY ANIMATIONS
+// ─────────────────────────────────────────────────────────────────────────────
 
-  final Animation<double> animation;
-  final Animation<double> secondaryAnimation;
-  final Widget child;
+extension ReduceMotionAnimate on Widget {
+  Widget entryFadeIn(
+    BuildContext context, {
+    Duration? duration,
+    Duration delay = Duration.zero,
+    double moveY = 12,
+  }) {
+    if (SettleAnimations.reduceMotion(context)) return this;
+    return animate(delay: delay)
+        .fadeIn(duration: duration ?? SettleAnimations.normal)
+        .moveY(begin: moveY, end: 0);
+  }
 
-  static final _fadeIn = CurveTween(curve: const Interval(0.0, 0.6, curve: Curves.easeOut));
-  static final _slideIn = Tween<Offset>(
-    begin: const Offset(0, 0.04),
-    end: Offset.zero,
-  ).chain(CurveTween(curve: Curves.easeOutCubic));
+  Widget entrySlideIn(
+    BuildContext context, {
+    Duration? duration,
+    Duration delay = Duration.zero,
+    double moveX = 16,
+  }) {
+    if (SettleAnimations.reduceMotion(context)) return this;
+    return animate(delay: delay)
+        .fadeIn(duration: duration ?? 300.ms)
+        .moveX(begin: moveX, end: 0, duration: duration ?? 300.ms);
+  }
 
-  // Outgoing page fades slightly and scales down just a touch
-  static final _fadeOut = CurveTween(curve: const Interval(0.0, 0.3, curve: Curves.easeIn));
-  static final _scaleOut = Tween<double>(begin: 1.0, end: 0.97)
-      .chain(CurveTween(curve: Curves.easeIn));
+  Widget entryScaleIn(
+    BuildContext context, {
+    Duration? duration,
+    Duration delay = Duration.zero,
+    double scaleBegin = 0.95,
+  }) {
+    if (SettleAnimations.reduceMotion(context)) return this;
+    return animate(delay: delay)
+        .fadeIn(duration: duration ?? 300.ms)
+        .scale(
+          begin: Offset(scaleBegin, scaleBegin),
+          end: const Offset(1, 1),
+          duration: duration ?? 300.ms,
+        );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeIn.animate(animation),
-      child: SlideTransition(
-        position: _slideIn.animate(animation),
-        child: ScaleTransition(
-          scale: _scaleOut.animate(secondaryAnimation),
-          child: FadeTransition(
-            opacity: Tween<double>(begin: 1.0, end: 0.8)
-                .chain(_fadeOut)
-                .animate(secondaryAnimation),
-            child: child,
-          ),
-        ),
-      ),
-    );
+  Widget entryFadeOnly(
+    BuildContext context, {
+    Duration? duration,
+    Duration delay = Duration.zero,
+  }) {
+    if (SettleAnimations.reduceMotion(context)) return this;
+    return animate(delay: delay).fadeIn(duration: duration ?? 300.ms);
   }
 }

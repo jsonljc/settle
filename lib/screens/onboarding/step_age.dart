@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../models/approach.dart';
-import '../../theme/reduce_motion.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/option_button.dart';
 

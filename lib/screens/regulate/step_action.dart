@@ -1,39 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../services/card_content_service.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/calm_loading.dart';
-
-class _RsaT {
-  _RsaT._();
-
-  static final type = _RsaTypeTokens();
-  static const pal = _RsaPaletteTokens();
-}
-
-class _RsaTypeTokens {
-  TextStyle get h2 => SettleTypography.heading.copyWith(
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _RsaPaletteTokens {
-  const _RsaPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
 
 /// Step 4: Actionable next step — context-aware Say/Do script from [CardContentService].
 /// Uses "overwhelmed" trigger for parent-focused script.
@@ -68,16 +39,16 @@ class RegulateStepAction extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('One thing you can do', style: _RsaT.type.h2),
+                Text('One thing you can do', style: SettleTypography.heading.copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 12),
                 Text(
                   'Take one calm breath. Then name what you see: "You\'re having a hard time. I\'m here."',
-                  style: _RsaT.type.body.copyWith(
-                    color: _RsaT.pal.textSecondary,
+                  style: SettleTypography.body.copyWith(
+                    color: SettleColors.nightSoft,
                   ),
                 ),
                 const SizedBox(height: 24),
-                GlassCta(label: 'Done', onTap: onNext),
+                SettleCta(label: 'Done', onTap: onNext),
               ],
             ),
           );
@@ -89,7 +60,7 @@ class RegulateStepAction extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('One thing you can do', style: _RsaT.type.h2),
+              Text('One thing you can do', style: SettleTypography.heading.copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
               const SizedBox(height: 12),
               GlassCard(
                 child: Column(
@@ -97,31 +68,35 @@ class RegulateStepAction extends StatelessWidget {
                   children: [
                     Text(
                       'Say',
-                      style: _RsaT.type.caption.copyWith(
-                        color: _RsaT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(card.say, style: _RsaT.type.h3),
+                    Text(card.say, style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 12),
                     Text(
                       'Do',
-                      style: _RsaT.type.caption.copyWith(
-                        color: _RsaT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       card.doStep,
-                      style: _RsaT.type.body.copyWith(
-                        color: _RsaT.pal.textSecondary,
+                      style: SettleTypography.body.copyWith(
+                        color: SettleColors.nightSoft,
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
-              GlassCta(label: 'Done', onTap: onNext),
+              SettleCta(label: 'Done', onTap: onNext),
             ],
           ),
         );

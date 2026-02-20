@@ -2,39 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../models/approach.dart';
-import '../../theme/reduce_motion.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/option_button.dart';
-
-class _SfaT {
-  _SfaT._();
-
-  static final type = _SfaTypeTokens();
-  static const pal = _SfaPaletteTokens();
-}
-
-class _SfaTypeTokens {
-  TextStyle get h1 => SettleTypography.heading.copyWith(
-    fontSize: 26,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _SfaPaletteTokens {
-  const _SfaPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
 
 class StepFamily extends StatelessWidget {
   const StepFamily({
@@ -62,17 +31,17 @@ class StepFamily extends StatelessWidget {
       children: [
         Text(
           'Your setup',
-          style: _SfaT.type.h1,
+          style: SettleTypography.heading.copyWith(fontSize: 26, fontWeight: FontWeight.w700),
         ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 10),
         Text(
           'Who is typically in the daily caregiving loop?',
-          style: _SfaT.type.caption.copyWith(color: _SfaT.pal.textSecondary),
+          style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightSoft),
         ).entryFadeOnly(context, delay: 120.ms),
         const SizedBox(height: 22),
         Text(
           'Family structure',
-          style: _SfaT.type.overline.copyWith(color: _SfaT.pal.textTertiary),
+          style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8, color: SettleColors.nightMuted),
         ).entryFadeOnly(context, delay: 180.ms, duration: 250.ms),
         const SizedBox(height: 12),
         GridView.count(

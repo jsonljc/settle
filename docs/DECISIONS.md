@@ -80,11 +80,18 @@
 | 2025-02 | Evening check-in timed to 1hr before configured bedtime (or 6pm default) | Context-aware timing; not arbitrary | `PRODUCT_ARCHITECTURE_v1_3.md` §8, Settings ST3 |
 | 2025-02 | No daily nudges, no streak pressure, no "we miss you" — ever | Parents are overloaded; the app must not become another demand | `PRODUCT_ARCHITECTURE_v1_3.md` §8 |
 
+## Content
+
+| Date | Decision | Why | Impacted files |
+|------|----------|-----|----------------|
+| 2026-02 | Repair card body capped at 3 sentences (enforced at load via `_bodyMaxSentences`) | Reduce cognitive load for stressed parents; 9/15 seed cards exceeded limit before cap | `lib/models/repair_card.dart`, `assets/guidance/repair_cards_seed.json` |
+| 2026-02 | `sleep x self` context needs at least 2 repair cards (currently 0) | Coverage gap: no self-focused cards for sleep context | `assets/guidance/repair_cards_seed.json` |
+| 2026-02 | Moment script assets are capped to two short sentences per variant | Keep in-moment reading load minimal and deterministic | `assets/guidance/moment_scripts.json` |
+
 ## Technical
 
 | Date | Decision | Why | Impacted files |
 |------|----------|-----|----------------|
-| 2026-02 | Moment script assets are capped to two short sentences per variant | Keep in-moment reading load minimal and deterministic | `assets/guidance/moment_scripts.json` |
 | 2025-02 | v1 is fully local — no server, no analytics SDK | Simplicity, privacy, speed; server features are v2 | `PRODUCT_ARCHITECTURE_v1_3.md` §13 |
 | 2025-02 | Events stored locally only (timestamp + category + card_id) | Powers personalization without server dependency | `wireframes/WIREFRAMES.md` §L |
 | 2025-02 | If storage fails, app falls back to universal content | Graceful degradation; never crash, never block | `PRODUCT_ARCHITECTURE_v1_3.md` §13 |

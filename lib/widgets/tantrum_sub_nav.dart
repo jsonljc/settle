@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/settle_design_system.dart';
+import 'settle_tappable.dart';
 
 /// Sub-navigation for Tantrum tab: CAPTURE | DECK | INSIGHTS.
 /// Use on capture/deck/insights surfaces.
@@ -64,12 +65,13 @@ class _Segment extends StatelessWidget {
     final accentColor = SettleSemanticColors.accent(context);
     final fill = active
         ? accentColor.withValues(alpha: 0.10)
-        : (isDark ? SettleGlassDark.background : SettleGlassLight.backgroundSubtle);
+        : (isDark ? SettleSurfaces.cardDark : SettleColors.stone50);
     final borderColor = active
         ? accentColor
-        : (isDark ? SettleGlassDark.border : SettleGlassLight.border);
+        : (isDark ? SettleSurfaces.cardBorderDark : SettleColors.ink300.withValues(alpha: 0.12));
 
-    return GestureDetector(
+    return SettleTappable(
+      semanticLabel: label,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),

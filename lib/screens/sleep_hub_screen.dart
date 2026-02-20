@@ -8,37 +8,15 @@ import '../providers/profile_provider.dart';
 import '../providers/rhythm_provider.dart';
 import '../providers/sleep_tonight_provider.dart';
 import '../services/spec_policy.dart';
-import '../theme/glass_components.dart';
+import '../widgets/glass_card.dart';
+import '../widgets/glass_pill.dart';
+import '../widgets/settle_cta.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 
-class _ShT {
-  _ShT._();
-
-  static final type = _ShTypeTokens();
-  static const pal = _ShPaletteTokens();
-}
-
-class _ShTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _ShPaletteTokens {
-  const _ShPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
+// Local tokens removed — using SettleTypography + SettleSemanticColors directly.
 
 class SleepHubScreen extends ConsumerStatefulWidget {
   const SleepHubScreen({super.key});
@@ -178,7 +156,7 @@ class _SleepHubScreenState extends ConsumerState<SleepHubScreen> {
                           ctaLabel: 'View today',
                           onTap: () => context.push('/sleep/rhythm'),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: SettleSpacing.cardGap),
                         _HubCard(
                           title: 'Tonight',
                           subtitle: isNight
@@ -189,14 +167,14 @@ class _SleepHubScreenState extends ConsumerState<SleepHubScreen> {
                           footer:
                               '${activeApproach.label} • Night $commitmentNight/$commitmentTotal',
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: SettleSpacing.cardGap),
                         _HubCard(
                           title: 'Update Rhythm',
                           subtitle: 'Adjust wake/nap/bed in under a minute',
                           ctaLabel: 'Update',
                           onTap: () => context.push('/sleep/update'),
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: SettleSpacing.md),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: GlassPill(
@@ -204,7 +182,7 @@ class _SleepHubScreenState extends ConsumerState<SleepHubScreen> {
                             onTap: () => context.push('/progress/logs'),
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: SettleSpacing.sm),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: GlassPill(
@@ -213,7 +191,7 @@ class _SleepHubScreenState extends ConsumerState<SleepHubScreen> {
                                 context.push('/sleep/tonight?open_setup=1'),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: SettleSpacing.xl),
                       ],
                     ),
                   ),
@@ -248,21 +226,31 @@ class _HubCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: _ShT.type.h3),
-          const SizedBox(height: 6),
+          Text(
+            title,
+            style: SettleTypography.subheading.copyWith(
+              fontWeight: FontWeight.w700,
+              color: SettleSemanticColors.headline(context),
+            ),
+          ),
+          const SizedBox(height: SettleSpacing.sm),
           Text(
             subtitle,
-            style: _ShT.type.body.copyWith(color: _ShT.pal.textSecondary),
+            style: SettleTypography.body.copyWith(
+              color: SettleSemanticColors.body(context),
+            ),
           ),
           if (footer != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: SettleSpacing.sm),
             Text(
               footer!,
-              style: _ShT.type.caption.copyWith(color: _ShT.pal.textTertiary),
+              style: SettleTypography.caption.copyWith(
+                color: SettleSemanticColors.muted(context),
+              ),
             ),
           ],
-          const SizedBox(height: 12),
-          GlassCta(label: ctaLabel, onTap: onTap, compact: true),
+          const SizedBox(height: SettleSpacing.md),
+          SettleCta(label: ctaLabel, onTap: onTap, compact: true),
         ],
       ),
     );

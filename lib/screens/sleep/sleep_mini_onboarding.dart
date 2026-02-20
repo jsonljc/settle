@@ -4,33 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../models/approach.dart';
 import '../../providers/profile_provider.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/option_button.dart';
 import '../../widgets/release_surfaces.dart';
 import '../../widgets/screen_header.dart';
 import '../sleep_tonight.dart';
-
-class _SmoT {
-  _SmoT._();
-
-  static final type = _SmoTypeTokens();
-  static const anim = _SmoAnimTokens();
-}
-
-class _SmoTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-}
-
-class _SmoAnimTokens {
-  const _SmoAnimTokens();
-
-  Duration get fast => const Duration(milliseconds: 150);
-}
 
 /// Gate: profile required, sleep setup required. When complete, lands on
 /// Sleep Tonight (situation picker) as the Sleep tab default.
@@ -122,7 +102,7 @@ class _SleepMiniOnboardingScreenState
                       children: [
                         Text(
                           'Which approach fits your family?',
-                          style: _SmoT.type.h3,
+                          style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 10),
                         ...Approach.values.map((approach) {
@@ -137,7 +117,7 @@ class _SleepMiniOnboardingScreenState
                           );
                         }),
                         const SizedBox(height: 10),
-                        Text('Feeding mode', style: _SmoT.type.h3),
+                        Text('Feeding mode', style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
                         const SizedBox(height: 10),
                         Wrap(
                           spacing: 10,
@@ -158,14 +138,14 @@ class _SleepMiniOnboardingScreenState
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: AnimatedOpacity(
-                    duration: _SmoT.anim.fast,
+                    duration: const Duration(milliseconds: 150),
                     opacity: _approach != null && _feeding != null && !_saving
                         ? 1
                         : 0.45,
                     child: IgnorePointer(
                       ignoring:
                           _approach == null || _feeding == null || _saving,
-                      child: GlassCta(
+                      child: SettleCta(
                         label: _saving ? 'Saving...' : 'Continue to Sleep',
                         onTap: _save,
                       ),

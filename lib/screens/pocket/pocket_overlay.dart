@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../models/user_card.dart';
 import '../../models/v2_enums.dart';
 import '../../services/card_content_service.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_pill.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/micro_celebration.dart';
 import '../../widgets/output_card.dart';
@@ -13,30 +14,6 @@ import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
 import 'pocket_after_log.dart';
 import 'pocket_inline_breathe.dart';
-
-class _PoT {
-  _PoT._();
-
-  static final type = _PoTypeTokens();
-  static const pal = _PoPaletteTokens();
-}
-
-class _PoTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-}
-
-class _PoPaletteTokens {
-  const _PoPaletteTokens();
-
-  Color get accent => SettleColors.nightAccent;
-  Color get textSecondary => SettleColors.nightSoft;
-}
 
 /// Modal content for Pocket: top pinned script (OutputCard), CTAs, optional "regulate first" and after-log.
 class PocketOverlay extends StatelessWidget {
@@ -90,13 +67,13 @@ class PocketOverlay extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Pocket', style: _PoT.type.h3),
+              Text('Pocket', style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
               SettleTappable(
                 onTap: onClose,
                 semanticLabel: 'Close Pocket overlay',
                 child: Text(
                   'Done',
-                  style: _PoT.type.label.copyWith(color: _PoT.pal.accent),
+                  style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600, color: SettleColors.nightAccent),
                 ),
               ),
             ],
@@ -112,7 +89,7 @@ class PocketOverlay extends StatelessWidget {
             onPrimary: () => onThisHelped(card.cardId),
           ),
           const SettleGap.lg(),
-          GlassCta(
+          SettleCta(
             label: 'This helped',
             onTap: () => onThisHelped(card.cardId),
           ),
@@ -158,13 +135,13 @@ class _EmptyPocketContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Pocket', style: _PoT.type.h3),
+              Text('Pocket', style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
               SettleTappable(
                 onTap: onClose,
                 semanticLabel: 'Close Pocket overlay',
                 child: Text(
                   'Done',
-                  style: _PoT.type.label.copyWith(color: _PoT.pal.accent),
+                  style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600, color: SettleColors.nightAccent),
                 ),
               ),
             ],
@@ -172,10 +149,10 @@ class _EmptyPocketContent extends StatelessWidget {
           SizedBox(height: SettleSpacing.lg + SettleSpacing.sm),
           Text(
             'Pin a script from Plan or Library to see it here in the moment.',
-            style: _PoT.type.body.copyWith(color: _PoT.pal.textSecondary),
+            style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
           ),
           SizedBox(height: SettleSpacing.lg + SettleSpacing.sm),
-          GlassCta(label: 'Done', onTap: onClose),
+          SettleCta(label: 'Done', onTap: onClose),
         ],
       ),
     );

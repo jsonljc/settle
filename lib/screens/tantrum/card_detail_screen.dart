@@ -4,44 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../tantrum/providers/tantrum_module_providers.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
-
-class _CdT {
-  _CdT._();
-
-  static final type = _CdTypeTokens();
-  static const pal = _CdPaletteTokens();
-}
-
-class _CdTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _CdPaletteTokens {
-  const _CdPaletteTokens();
-
-  Color get textPrimary => SettleColors.nightText;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
 
 /// Deck card detail with save/favorite/pin/share controls.
 class CardDetailScreen extends ConsumerWidget {
@@ -75,12 +43,12 @@ class CardDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
                       Text(
                         'Card not found.',
-                        style: _CdT.type.body.copyWith(
-                          color: _CdT.pal.textSecondary,
+                        style: SettleTypography.body.copyWith(
+                          color: SettleColors.nightSoft,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      GlassCta(
+                      SettleCta(
                         label: 'Back to Deck',
                         onTap: () => context.go('/tantrum/deck'),
                       ),
@@ -123,20 +91,20 @@ class CardDetailScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 'This card is in a premium pack',
-                                style: _CdT.type.label,
+                                style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
                               ),
                               const SizedBox(height: 6),
                               Text(
                                 'Unlock this pack to save, pin, and use this card in your deck.',
-                                style: _CdT.type.body.copyWith(
-                                  color: _CdT.pal.textSecondary,
+                                style: SettleTypography.body.copyWith(
+                                  color: SettleColors.nightSoft,
                                 ),
                               ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 12),
-                        GlassCta(
+                        SettleCta(
                           label: 'Unlock pack',
                           onTap: () =>
                               notifier.togglePackPurchased(card.packId),
@@ -196,13 +164,13 @@ class CardDetailScreen extends ConsumerWidget {
                           const SizedBox(height: 8),
                           Text(
                             'Pinned deck is full (max $maxPinnedCards). Unpin one card first.',
-                            style: _CdT.type.caption.copyWith(
-                              color: _CdT.pal.textSecondary,
+                            style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400).copyWith(
+                              color: SettleColors.nightSoft,
                             ),
                           ),
                         ],
                         const SizedBox(height: 14),
-                        GlassCta(
+                        SettleCta(
                           label: 'Use this card now',
                           onTap: () => context.push(
                             '/tantrum/card?cardId=${Uri.encodeComponent(cardId)}',
@@ -229,14 +197,14 @@ class CardDetailScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Something went wrong.',
-                          style: _CdT.type.body.copyWith(
+                          style: SettleTypography.body.copyWith(
                             fontSize: 14,
-                            color: _CdT.pal.textSecondary,
+                            color: SettleColors.nightSoft,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
-                        GlassCta(
+                        SettleCta(
                           label: 'Back to Deck',
                           onTap: () => context.go('/tantrum/deck'),
                         ),
@@ -289,13 +257,13 @@ class _Section extends StatelessWidget {
       children: [
         Text(
           title,
-          style: _CdT.type.overline.copyWith(color: _CdT.pal.textTertiary),
+          style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(color: SettleColors.nightMuted),
         ),
         const SizedBox(height: 8),
         Text(
           body,
-          style: (accent ? _CdT.type.h3 : _CdT.type.body).copyWith(
-            color: _CdT.pal.textPrimary,
+          style: (accent ? SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700) : SettleTypography.body).copyWith(
+            color: SettleColors.nightText,
           ),
         ),
       ],

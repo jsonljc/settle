@@ -69,9 +69,9 @@ void main() {
       await tester.pumpWidget(MaterialApp.router(routerConfig: router));
       await tester.pumpAndSettle();
 
-      expect(find.bySemanticsLabel('Open quick actions'), findsOneWidget);
+      expect(find.text('Menu'), findsOneWidget);
 
-      await tester.tap(find.bySemanticsLabel('Open quick actions'));
+      await tester.tap(find.text('Menu'));
       await tester.pumpAndSettle();
 
       expect(find.text('Quick actions'), findsOneWidget);
@@ -90,14 +90,14 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     await tester.pumpAndSettle();
 
-    expect(find.bySemanticsLabel('Open quick actions'), findsNothing);
+    expect(find.text('Menu'), findsNothing);
 
     router.go('/sleep');
     await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel('Open quick actions'), findsOneWidget);
+    expect(find.text('Menu'), findsOneWidget);
 
     router.go('/sleep/tonight');
     await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel('Open quick actions'), findsNothing);
+    expect(find.text('Menu'), findsNothing);
   });
 }

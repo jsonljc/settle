@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,7 +32,11 @@ class AppShell extends StatelessWidget {
     List<SettleBottomNavItem> items,
   ) {
     return items
-        .map((e) => GlassNavBarItem(icon: e.icon, label: e.label))
+        .map((e) => GlassNavBarItem(
+              icon: e.icon,
+              activeIcon: e.activeIcon,
+              label: e.label,
+            ))
         .toList();
   }
 
@@ -94,6 +96,7 @@ class _ShellOverlayActions extends StatelessWidget {
   final bool dark;
   final bool visible;
 
+  /// UXV2-008 / UXV2-009: Family and Settings only via this Menu (or deep link); no tab.
   Future<void> _openQuickActions(BuildContext context) async {
     final selected = await showSettleSheet<_ShellQuickAction>(
       context,
@@ -124,7 +127,7 @@ class _ShellOverlayActions extends StatelessWidget {
             right: SettleSpacing.sm,
           ),
           child: _ShellOverlayActionButton(
-            icon: Icons.more_horiz_rounded,
+            label: 'Menu',
             semanticLabel: 'Open quick actions',
             dark: dark,
             onTap: () => _openQuickActions(context),
@@ -149,14 +152,12 @@ class _ShellQuickActionsSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _ShellQuickActionTile(
-            icon: Icons.group_outlined,
             title: 'Family',
             subtitle: 'Shared rhythm, scripts, and activity.',
             onTap: () => Navigator.of(context).pop(_ShellQuickAction.family),
           ),
           const SettleGap.sm(),
           _ShellQuickActionTile(
-            icon: Icons.tune_rounded,
             title: 'Settings',
             subtitle: 'Child profile, methods, and notifications.',
             onTap: () => Navigator.of(context).pop(_ShellQuickAction.settings),
@@ -169,13 +170,11 @@ class _ShellQuickActionsSheet extends StatelessWidget {
 
 class _ShellQuickActionTile extends StatelessWidget {
   const _ShellQuickActionTile({
-    required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
 
-  final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
@@ -186,43 +185,28 @@ class _ShellQuickActionTile extends StatelessWidget {
       button: true,
       label: 'Open $title',
       child: Material(
-        color: SettleGlassLight.backgroundStrong,
+        color: SettleSurfaces.cardLight,
         borderRadius: BorderRadius.circular(SettleRadii.sm),
         child: InkWell(
           borderRadius: BorderRadius.circular(SettleRadii.sm),
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(SettleSpacing.md),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, color: SettleColors.ink700),
-                const SettleGap.md(),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: SettleTypography.label.copyWith(
-                          color: SettleColors.ink900,
-                        ),
-                      ),
-                      const SettleGap.xs(),
-                      Text(
-                        subtitle,
-                        style: SettleTypography.body.copyWith(
-                          color: SettleColors.ink500,
-                        ),
-                      ),
-                    ],
+                Text(
+                  title,
+                  style: SettleTypography.subheading.copyWith(
+                    color: SettleColors.ink900,
                   ),
                 ),
-                const SettleGap.sm(),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 16,
-                  color: SettleColors.ink400,
+                const SettleGap.xs(),
+                Text(
+                  subtitle,
+                  style: SettleTypography.body.copyWith(
+                    color: SettleColors.ink500,
+                  ),
                 ),
               ],
             ),
@@ -235,48 +219,47 @@ class _ShellQuickActionTile extends StatelessWidget {
 
 class _ShellOverlayActionButton extends StatelessWidget {
   const _ShellOverlayActionButton({
-    required this.icon,
+    required this.label,
     required this.semanticLabel,
     required this.onTap,
     required this.dark,
   });
 
-  final IconData icon;
+  final String label;
   final String semanticLabel;
   final VoidCallback onTap;
   final bool dark;
 
-  static const double _size = 44;
-
   @override
   Widget build(BuildContext context) {
-    final fill = dark
-        ? SettleGlassDark.backgroundStrong
-        : SettleGlassLight.backgroundStrong;
-    final border = dark
-        ? SettleGlassDark.borderStrong
-        : SettleGlassLight.border;
+    final fill = dark ? SettleSurfaces.cardDark : SettleSurfaces.cardLight;
+    final borderColor = dark
+        ? SettleSurfaces.cardBorderDark
+        : SettleColors.ink300.withValues(alpha: 0.15);
     final iconColor = dark ? SettleColors.nightText : SettleColors.ink700;
 
     return Semantics(
       button: true,
       label: semanticLabel,
-      child: ClipOval(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Material(
-            color: fill,
-            child: InkWell(
-              onTap: onTap,
-              child: Container(
-                width: _size,
-                height: _size,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: border, width: 0.8),
-                ),
-                child: Icon(icon, size: 20, color: iconColor),
-              ),
+      child: Material(
+        color: fill,
+        borderRadius: BorderRadius.circular(SettleRadii.pill),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(SettleRadii.pill),
+          child: Container(
+            height: 44,
+            padding: const EdgeInsets.symmetric(
+              horizontal: SettleSpacing.md,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(SettleRadii.pill),
+              border: Border.all(color: borderColor, width: 0.5),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              label,
+              style: SettleTypography.label.copyWith(color: iconColor),
             ),
           ),
         ),

@@ -5,42 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../models/v2_enums.dart';
 import '../../providers/usage_events_provider.dart';
 import '../../services/card_content_service.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
-
-class _AfT {
-  _AfT._();
-
-  static final type = _AfTypeTokens();
-  static const pal = _AfPaletteTokens();
-}
-
-class _AfTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _AfPaletteTokens {
-  const _AfPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get accent => SettleColors.nightAccent;
-  Color get teal => SettleColors.sage400;
-}
 
 /// Local activity feed: recent [UsageEvent]s (card uses). MVP, no backend.
 class ActivityFeedScreen extends ConsumerWidget {
@@ -71,8 +42,8 @@ class ActivityFeedScreen extends ConsumerWidget {
                       ? Center(
                           child: Text(
                             'When you use scripts from Plan or Pocket, they\'ll show here.',
-                            style: _AfT.type.body.copyWith(
-                              color: _AfT.pal.textSecondary,
+                            style: SettleTypography.body.copyWith(
+                              color: SettleColors.nightSoft,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -103,12 +74,14 @@ class ActivityFeedScreen extends ConsumerWidget {
                                           ),
                                       title: Text(
                                         _triggerDisplayName(triggerLabel),
-                                        style: _AfT.type.label,
+                                        style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
                                       ),
                                       subtitle: Text(
                                         '${_outcomeLabel(event.outcome)} · ${_formatTime(event.timestamp)}',
-                                        style: _AfT.type.caption.copyWith(
-                                          color: _AfT.pal.textTertiary,
+                                        style: SettleTypography.caption.copyWith(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                          color: SettleColors.nightMuted,
                                         ),
                                       ),
                                       trailing:
@@ -116,7 +89,7 @@ class ActivityFeedScreen extends ConsumerWidget {
                                           ? Icon(
                                               Icons.thumb_up_rounded,
                                               size: 18,
-                                              color: _AfT.pal.teal,
+                                              color: SettleColors.sage400,
                                             )
                                           : null,
                                       onTap: () => context.push(
@@ -184,14 +157,14 @@ class ActivityFeedPreview extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Activity', style: _AfT.type.h3),
+              Text('Activity', style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
               if (events.isNotEmpty)
                 SettleTappable(
                   onTap: () => context.push('/family/activity'),
                   semanticLabel: 'Open all family activity',
                   child: Text(
                     'See all',
-                    style: _AfT.type.label.copyWith(color: _AfT.pal.accent),
+                    style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600, color: SettleColors.nightAccent),
                   ),
                 ),
             ],
@@ -200,7 +173,7 @@ class ActivityFeedPreview extends ConsumerWidget {
           if (recent.isEmpty)
             Text(
               'Recent script use will appear here.',
-              style: _AfT.type.body.copyWith(color: _AfT.pal.textSecondary),
+              style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
             )
           else
             ...recent.map(
@@ -213,14 +186,16 @@ class ActivityFeedPreview extends ConsumerWidget {
                           ? Icons.thumb_up_rounded
                           : Icons.description_outlined,
                       size: 16,
-                      color: _AfT.pal.textTertiary,
+                      color: SettleColors.nightMuted,
                     ),
                     const SizedBox(width: SettleSpacing.sm),
                     Expanded(
                       child: Text(
                         e.cardId,
-                        style: _AfT.type.caption.copyWith(
-                          color: _AfT.pal.textSecondary,
+                        style: SettleTypography.caption.copyWith(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: SettleColors.nightSoft,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

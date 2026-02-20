@@ -4,54 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../models/tantrum_profile.dart';
 import '../providers/profile_provider.dart';
-import '../theme/glass_components.dart';
+import '../widgets/glass_card.dart';
+import '../widgets/glass_pill.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/screen_header.dart';
-
-class _LrnT {
-  _LrnT._();
-
-  static final type = _LrnTypeTokens();
-  static const pal = _LrnPaletteTokens();
-  static const glass = _LrnGlassTokens();
-  static const anim = _LrnAnimTokens();
-}
-
-class _LrnTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _LrnPaletteTokens {
-  const _LrnPaletteTokens();
-
-  Color get accent => SettleColors.nightAccent;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
-
-class _LrnGlassTokens {
-  const _LrnGlassTokens();
-
-  Color get fillAccent => SettleColors.nightAccent.withValues(alpha: 0.10);
-}
-
-class _LrnAnimTokens {
-  const _LrnAnimTokens();
-
-  Duration get fast => const Duration(milliseconds: 150);
-  Duration get normal => const Duration(milliseconds: 250);
-}
+import '../widgets/settle_tappable.dart';
 
 /// Learn Screen — Q&A format. Questions parents actually ask.
 /// Written in first-person parent voice.
@@ -252,12 +210,12 @@ class _LearnNextActionsCard extends StatelessWidget {
         children: [
           Text(
             'Next step',
-            style: _LrnT.type.h3.copyWith(color: _LrnT.pal.accent),
+            style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700, color: SettleColors.nightAccent),
           ),
           const SizedBox(height: 8),
           Text(
             'Apply one change now, then check logs for proof.',
-            style: _LrnT.type.caption.copyWith(color: _LrnT.pal.textSecondary),
+            style: SettleTypography.caption.copyWith(fontSize: 13, color: SettleColors.nightSoft),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -304,7 +262,9 @@ class _QuestionCardState extends State<_QuestionCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return SettleTappable(
+      semanticLabel: widget.qa.question,
+      semanticHint: _expanded ? 'Collapse answer' : 'Expand answer',
       onTap: () => setState(() => _expanded = !_expanded),
       child: GlassCard(
         padding: const EdgeInsets.all(16),
@@ -317,17 +277,17 @@ class _QuestionCardState extends State<_QuestionCard> {
                 Expanded(
                   child: Text(
                     widget.qa.question,
-                    style: _LrnT.type.label.copyWith(height: 1.35),
+                    style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600, height: 1.35),
                   ),
                 ),
                 const SizedBox(width: 12),
                 AnimatedRotation(
                   turns: _expanded ? 0.5 : 0,
-                  duration: _LrnT.anim.fast,
+                  duration: const Duration(milliseconds: 150),
                   child: Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 22,
-                    color: _LrnT.pal.textTertiary,
+                    color: SettleColors.nightMuted,
                   ),
                 ),
               ],
@@ -341,28 +301,29 @@ class _QuestionCardState extends State<_QuestionCard> {
                   children: [
                     Text(
                       widget.qa.answer,
-                      style: _LrnT.type.body.copyWith(
-                        color: _LrnT.pal.textSecondary,
+                      style: SettleTypography.body.copyWith(
+                        color: SettleColors.nightSoft,
                       ),
                     ),
                     const SizedBox(height: 12),
                     GlassCard(
                       padding: const EdgeInsets.all(12),
-                      fill: _LrnT.glass.fillAccent,
+                      fill: SettleColors.nightAccent.withValues(alpha: 0.10),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(
                             Icons.menu_book_rounded,
                             size: 14,
-                            color: _LrnT.pal.accent,
+                            color: SettleColors.nightAccent,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               widget.qa.citation,
-                              style: _LrnT.type.caption.copyWith(
-                                color: _LrnT.pal.accent,
+                              style: SettleTypography.caption.copyWith(
+                                fontSize: 13,
+                                color: SettleColors.nightAccent,
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
@@ -376,7 +337,7 @@ class _QuestionCardState extends State<_QuestionCard> {
               crossFadeState: _expanded
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
-              duration: _LrnT.anim.normal,
+              duration: const Duration(milliseconds: 250),
               sizeCurve: Curves.easeInOut,
             ),
           ],

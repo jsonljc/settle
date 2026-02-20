@@ -3,38 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../providers/tantrum_providers.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import 'tantrum_unavailable.dart';
-
-class _PmT {
-  _PmT._();
-
-  static final type = _PmTypeTokens();
-  static const pal = _PmPaletteTokens();
-}
-
-class _PmTypeTokens {
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _PmPaletteTokens {
-  const _PmPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
 
 // Deprecated in IA cleanup PR6. This legacy tantrum surface is no longer
 // reachable from production routes and is retained only for internal reference.
@@ -78,8 +53,8 @@ class _PracticeModeScreenState extends ConsumerState<PracticeModeScreen> {
                       ? GlassCard(
                           child: Text(
                             'Complete tantrum onboarding first to unlock practice scenarios.',
-                            style: _PmT.type.body.copyWith(
-                              color: _PmT.pal.textSecondary,
+                            style: SettleTypography.body.copyWith(
+                              color: SettleColors.nightSoft,
                             ),
                           ),
                         )
@@ -140,7 +115,7 @@ class _ScenarioDeck extends StatelessWidget {
       children: [
         Text(
           '${index + 1} / ${cards.length}',
-          style: _PmT.type.caption.copyWith(color: _PmT.pal.textSecondary),
+          style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400).copyWith(color: SettleColors.nightSoft),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
@@ -151,14 +126,14 @@ class _ScenarioDeck extends StatelessWidget {
               children: [
                 Text(
                   current.title.toUpperCase(),
-                  style: _PmT.type.overline.copyWith(
-                    color: _PmT.pal.textTertiary,
+                  style: SettleTypography.caption.copyWith(fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+                    color: SettleColors.nightMuted,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   current.body,
-                  style: _PmT.type.body.copyWith(color: _PmT.pal.textSecondary),
+                  style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
                 ),
               ],
             ),
@@ -176,7 +151,7 @@ class _ScenarioDeck extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: GlassCta(
+              child: SettleCta(
                 label: isLast ? 'Done' : 'Next',
                 onTap: isLast
                     ? () => context.pop()

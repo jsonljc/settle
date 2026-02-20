@@ -1,149 +1,69 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../theme/settle_design_system.dart';
-import '../../widgets/glass_card.dart';
+import '../../widgets/solid_card.dart';
 import '../../widgets/screen_header.dart';
-import '../../widgets/settle_disclosure.dart';
 import '../../widgets/settle_gap.dart';
+import '../../widgets/settle_tappable.dart';
 
 class LibraryHomeScreen extends StatelessWidget {
   const LibraryHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Ambient orbs for visual warmth
-            Positioned(
-              top: -60,
-              right: -40,
-              child: _AmbientOrb(tint: SettleColors.sage400, size: 240),
-            ),
-            Positioned(
-              bottom: 60,
-              left: -50,
-              child: _AmbientOrb(tint: SettleColors.warmth400, size: 200),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: SettleSpacing.screenPadding,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: SettleSpacing.screenPadding,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ScreenHeader(
+                title: 'Library',
+                subtitle: 'Show me what\'s working. Help me make it better.',
+                fallbackRoute: '/library',
+                showBackButton: false,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const ScreenHeader(
-                    title: 'Library',
-                    subtitle: 'Review what worked and choose your next step.',
-                    fallbackRoute: '/library',
-                    showBackButton: false,
+              const SettleGap.xxl(),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _SectionHeader(label: 'This week\'s focus'),
+                      const SettleGap.md(),
+                      _FocusCard(
+                        title: 'One thing to try',
+                        description:
+                            'Same words at lights-out, every night. Repetition builds the cue.',
+                        route: '/library/progress',
+                      ),
+                      const SettleGap.xxl(),
+                      _SectionHeader(label: 'How it\'s going'),
+                      const SettleGap.md(),
+                      _ReflectionCard(
+                        line: 'You\'ve had a few tough moments this week. That\'s normal.',
+                        seeMoreRoute: '/library/progress',
+                      ),
+                      const SettleGap.xxl(),
+                      _SectionHeader(label: 'Your words'),
+                      const SettleGap.md(),
+                      _YourWordsCard(fallbackRoute: '/library/saved'),
+                      const SettleGap.xxl(),
+                      _SectionHeader(label: 'Learn more'),
+                      const SettleGap.md(),
+                      const _LearnMoreRow(),
+                      const SettleGap.xxl(),
+                    ],
                   ),
-                  const SettleGap.lg(),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _HeroDestinationCard(
-                          title: 'Progress',
-                          description:
-                              'See if this week is getting easier and what is working most often.',
-                          route: '/library/progress',
-                          icon: Icons.show_chart_rounded,
-                          accentColor: isDark
-                              ? SettleColors.sage400
-                              : SettleColors.sage600,
-                          tintColor: isDark
-                              ? SettleGlassDark.backgroundSage
-                              : SettleGlassLight.backgroundSage,
-                        ),
-                        const SettleGap.lg(),
-                        _SectionHeader(label: 'REVIEW'),
-                        const SettleGap.sm(),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _CompactDestinationCard(
-                                title: 'Logs',
-                                icon: Icons.timeline_rounded,
-                                route: '/library/logs',
-                                accentColor: isDark
-                                    ? SettleColors.dusk400
-                                    : SettleColors.dusk600,
-                              ),
-                            ),
-                            const SettleGap.sm(),
-                            Expanded(
-                              child: _CompactDestinationCard(
-                                title: 'Learn',
-                                icon: Icons.menu_book_rounded,
-                                route: '/library/learn',
-                                accentColor: isDark
-                                    ? SettleColors.warmth400
-                                    : SettleColors.warmth600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SettleGap.lg(),
-                        GlassCard(
-                          child: SettleDisclosure(
-                            title: 'More tools',
-                            subtitle: 'Saved cards and pattern trends',
-                            children: [
-                              const SettleGap.sm(),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _CompactDestinationCard(
-                                      title: 'Saved',
-                                      icon: Icons.bookmark_outline_rounded,
-                                      route: '/library/saved',
-                                      accentColor: isDark
-                                          ? SettleColors.blush400
-                                          : SettleColors.blush600,
-                                    ),
-                                  ),
-                                  const SettleGap.sm(),
-                                  Expanded(
-                                    child: _CompactDestinationCard(
-                                      title: 'Patterns',
-                                      icon: Icons.insights_rounded,
-                                      route: '/library/patterns',
-                                      accentColor: isDark
-                                          ? SettleColors.dusk400
-                                          : SettleColors.dusk600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SettleGap.sm(),
-                        _LibraryDestinationCard(
-                          title: 'Monthly',
-                          description:
-                              'Step back for a bigger-picture reflection and gentle plan tuning.',
-                          route: '/library/insights',
-                          icon: Icons.calendar_month_rounded,
-                          accentColor: isDark
-                              ? SettleColors.sage400
-                              : SettleColors.sage600,
-                        ),
-                        const SettleGap.md(),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -151,7 +71,7 @@ class LibraryHomeScreen extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Section header
+// Section header — V2 sentence case, calm weight
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
@@ -167,6 +87,7 @@ class _SectionHeader extends StatelessWidget {
         label,
         style: SettleTypography.overline.copyWith(
           color: SettleSemanticColors.muted(context),
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -174,206 +95,46 @@ class _SectionHeader extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Hero card — Progress (larger, tinted icon circle)
+// V2: This week's focus — one proactive play
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _HeroDestinationCard extends StatelessWidget {
-  const _HeroDestinationCard({
+class _FocusCard extends StatelessWidget {
+  const _FocusCard({
     required this.title,
     required this.description,
     required this.route,
-    required this.icon,
-    required this.accentColor,
-    required this.tintColor,
   });
 
   final String title;
   final String description;
   final String route;
-  final IconData icon;
-  final Color accentColor;
-  final Color tintColor;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Semantics(
       button: true,
-      label: 'Open $title',
-      child: GlassCard(
+      label: 'Open this week\'s focus',
+      child: SolidCard(
         onTap: () => context.push(route),
-        variant: isDark
-            ? GlassCardVariant.darkStrong
-            : GlassCardVariant.lightStrong,
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 22),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: tintColor,
-              ),
-              child: Icon(icon, size: 22, color: accentColor),
-            ),
-            const SettleGap.md(),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: SettleTypography.heading.copyWith(
-                      color: SettleSemanticColors.headline(context),
-                    ),
-                  ),
-                  const SettleGap.xs(),
-                  Text(
-                    description,
-                    style: SettleTypography.body.copyWith(
-                      color: SettleSemanticColors.supporting(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SettleGap.sm(),
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 14,
-                color: SettleSemanticColors.muted(context),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Standard destination card — full width
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _LibraryDestinationCard extends StatelessWidget {
-  const _LibraryDestinationCard({
-    required this.title,
-    required this.description,
-    required this.route,
-    required this.icon,
-    required this.accentColor,
-  });
-
-  final String title;
-  final String description;
-  final String route;
-  final IconData icon;
-  final Color accentColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Semantics(
-      button: true,
-      label: 'Open $title',
-      child: GlassCard(
-        onTap: () => context.push(route),
-        variant: isDark
-            ? GlassCardVariant.darkStrong
-            : GlassCardVariant.lightStrong,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, size: 20, color: accentColor),
-            const SettleGap.sm(),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: SettleTypography.heading.copyWith(
-                      color: SettleSemanticColors.headline(context),
-                    ),
-                  ),
-                  const SettleGap.xs(),
-                  Text(
-                    description,
-                    style: SettleTypography.body.copyWith(
-                      color: SettleSemanticColors.supporting(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SettleGap.sm(),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 14,
-              color: SettleSemanticColors.muted(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Compact card — 2-column grid items for secondary destinations
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _CompactDestinationCard extends StatelessWidget {
-  const _CompactDestinationCard({
-    required this.title,
-    required this.icon,
-    required this.route,
-    required this.accentColor,
-  });
-
-  final String title;
-  final IconData icon;
-  final String route;
-  final Color accentColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Semantics(
-      button: true,
-      label: 'Open $title',
-      child: GlassCard(
-        onTap: () => context.push(route),
-        variant: isDark ? GlassCardVariant.dark : GlassCardVariant.light,
         padding: const EdgeInsets.symmetric(
-          vertical: SettleSpacing.lg,
-          horizontal: SettleSpacing.md,
+          horizontal: SettleSpacing.cardPadding,
+          vertical: SettleSpacing.xl,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: accentColor.withValues(alpha: 0.12),
+            Text(
+              title,
+              style: SettleTypography.heading.copyWith(
+                color: SettleSemanticColors.headline(context),
               ),
-              child: Icon(icon, size: 18, color: accentColor),
             ),
             const SettleGap.sm(),
             Text(
-              title,
-              style: SettleTypography.label.copyWith(
-                color: SettleSemanticColors.headline(context),
+              description,
+              style: SettleTypography.body.copyWith(
+                color: SettleSemanticColors.body(context),
               ),
             ),
           ],
@@ -384,30 +145,168 @@ class _CompactDestinationCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Ambient orb — soft diffuse colored glow
+// V2: How it's going — one reflective sentence + See more
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _AmbientOrb extends StatelessWidget {
-  const _AmbientOrb({required this.tint, required this.size});
+class _ReflectionCard extends StatelessWidget {
+  const _ReflectionCard({
+    required this.line,
+    required this.seeMoreRoute,
+  });
 
-  final Color tint;
-  final double size;
+  final String line;
+  final String seeMoreRoute;
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                tint.withValues(alpha: 0.24),
-                tint.withValues(alpha: 0.0),
-              ],
+    final bodyColor = SettleSemanticColors.body(context);
+    final mutedColor = SettleSemanticColors.muted(context);
+
+    return SolidCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: SettleSpacing.cardPadding,
+        vertical: SettleSpacing.lg,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            line,
+            style: SettleTypography.body.copyWith(color: bodyColor),
+          ),
+          const SettleGap.sm(),
+          SettleTappable(
+            semanticLabel: 'See more',
+            onTap: () => context.push(seeMoreRoute),
+            child: Text(
+              'See more',
+              style: SettleTypography.caption.copyWith(
+                color: mutedColor,
+                decoration: TextDecoration.underline,
+                decorationColor: mutedColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2: Your words — saved cards; tap opens saved playbook
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _YourWordsCard extends StatelessWidget {
+  const _YourWordsCard({required this.fallbackRoute});
+
+  final String fallbackRoute;
+
+  @override
+  Widget build(BuildContext context) {
+    final bodyColor = SettleSemanticColors.body(context);
+
+    return Semantics(
+      button: true,
+      label: 'Open your saved words',
+      child: SolidCard(
+        onTap: () => context.push(fallbackRoute),
+        padding: const EdgeInsets.symmetric(
+          horizontal: SettleSpacing.cardPadding,
+          vertical: SettleSpacing.xl,
+        ),
+        child: Text(
+          'Words you keep will live here. Try a Reset to get your first ones.',
+          style: SettleTypography.body.copyWith(color: bodyColor),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// V2: Learn more — compact links to Learn, Patterns, Insights, Logs
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _LearnMoreRow extends StatelessWidget {
+  const _LearnMoreRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _CompactDestinationCard(
+                title: 'Learn',
+                route: '/library/learn',
+              ),
+            ),
+            const SettleGap.md(),
+            Expanded(
+              child: _CompactDestinationCard(
+                title: 'Patterns',
+                route: '/library/patterns',
+              ),
+            ),
+          ],
+        ),
+        const SettleGap.md(),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _CompactDestinationCard(
+                title: 'Insights',
+                route: '/library/insights',
+              ),
+            ),
+            const SettleGap.md(),
+            Expanded(
+              child: _CompactDestinationCard(
+                title: 'Logs',
+                route: '/library/logs',
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _CompactDestinationCard extends StatelessWidget {
+  const _CompactDestinationCard({required this.title, required this.route});
+
+  final String title;
+  final String route;
+
+  static const double _minHeight = 88;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Open $title',
+      child: SolidCard(
+        onTap: () => context.push(route),
+        padding: const EdgeInsets.symmetric(
+          horizontal: SettleSpacing.lg,
+          vertical: SettleSpacing.lg,
+        ),
+        child: SizedBox(
+          height: _minHeight,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              title,
+              style: SettleTypography.subheading.copyWith(
+                color: SettleSemanticColors.headline(context),
+              ),
             ),
           ),
         ),
@@ -415,3 +314,4 @@ class _AmbientOrb extends StatelessWidget {
     );
   }
 }
+

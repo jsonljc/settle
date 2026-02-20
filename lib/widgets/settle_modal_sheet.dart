@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
-import '../theme/glass_components.dart';
 import '../theme/settle_design_system.dart';
 import 'settle_gap.dart';
 
-/// Standard bottom sheet content: glass surface, handle bar, optional title and
+/// Standard bottom sheet content: solid surface, handle bar, optional title and
 /// actions. Use with [showSettleSheet].
 class SettleModalSheet extends StatelessWidget {
   const SettleModalSheet({
@@ -84,7 +83,20 @@ class SettleModalSheet extends StatelessWidget {
       ],
     );
 
-    Widget content = GlassCard(padding: EdgeInsets.zero, child: sheetBody);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Widget content = Container(
+      decoration: BoxDecoration(
+        color: isDark ? SettleColors.night800 : Colors.white,
+        borderRadius: BorderRadius.circular(SettleRadii.card),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 16,
+          ),
+        ],
+      ),
+      child: sheetBody,
+    );
 
     if (title != null && title!.isNotEmpty) {
       content = _AnnounceOnOpen(message: title!, child: content);
@@ -121,7 +133,7 @@ class _AnnounceOnOpenState extends State<_AnnounceOnOpen> {
 }
 
 /// Shows a bottom sheet with standard Settle styling (transparent background,
-/// scroll-controlled). Wrap content in [SettleModalSheet] for handle, glass
+/// scroll-controlled). Wrap content in [SettleModalSheet] for handle, solid
 /// surface, and padding.
 Future<TResult?> showSettleSheet<TResult>(
   BuildContext context, {

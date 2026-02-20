@@ -1,68 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../models/approach.dart';
-import '../../theme/reduce_motion.dart';
 import '../../theme/settle_design_system.dart';
-
-class _SaT {
-  _SaT._();
-
-  static final type = _SaTypeTokens();
-  static const pal = _SaPaletteTokens();
-  static const glass = _SaGlassTokens();
-  static const radius = _SaRadiusTokens();
-  static const anim = _SaAnimTokens();
-}
-
-class _SaTypeTokens {
-  TextStyle get h1 => SettleTypography.display.copyWith(
-    fontSize: 26,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.5,
-    height: 1.2,
-  );
-  TextStyle get h3 => SettleTypography.heading.copyWith(fontSize: 17);
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption.copyWith(fontSize: 13);
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _SaPaletteTokens {
-  const _SaPaletteTokens();
-
-  Color get accent => SettleColors.nightAccent;
-  Color get textPrimary => SettleColors.nightText;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
-
-class _SaGlassTokens {
-  const _SaGlassTokens();
-
-  Color get fill => SettleGlassDark.backgroundStrong;
-  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
-  Color get border => SettleGlassDark.borderStrong;
-  double get sigma => 12;
-}
-
-class _SaRadiusTokens {
-  const _SaRadiusTokens();
-
-  double get xl => 26;
-}
-
-class _SaAnimTokens {
-  const _SaAnimTokens();
-
-  Duration get normal => const Duration(milliseconds: 250);
-}
 
 /// Step 4: Approach selection. NOT a slider. Four discrete cards.
 /// Tapping one expands it to show how it works + cited research.
@@ -131,12 +71,12 @@ class _StepApproachState extends State<StepApproach> {
       children: [
         Text(
           'Choose your\napproach',
-          style: _SaT.type.h1,
+          style: SettleTypography.display.copyWith(fontSize: 26, fontWeight: FontWeight.w700, letterSpacing: -0.5, height: 1.2),
         ).entryFadeIn(context, duration: 400.ms, moveY: 10),
         const SizedBox(height: 8),
         Text(
           'These are not points on a spectrum.\nEach is a valid, researched method.',
-          style: _SaT.type.caption.copyWith(color: _SaT.pal.textSecondary),
+          style: SettleTypography.caption.copyWith(fontSize: 13, color: SettleColors.nightSoft),
         ).entryFadeOnly(context, delay: 150.ms, duration: 400.ms),
         const SizedBox(height: 24),
         ...Approach.values.asMap().entries.map((entry) {
@@ -195,29 +135,22 @@ class _ApproachCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fill = isSelected ? _SaT.glass.fillAccent : _SaT.glass.fill;
+    final fill = isSelected ? SettleSurfaces.tintDusk : SettleSurfaces.cardDark;
     final borderColor = isSelected
-        ? _SaT.pal.accent.withValues(alpha: 0.4)
-        : _SaT.glass.border;
+        ? SettleColors.nightAccent.withValues(alpha: 0.4)
+        : SettleSurfaces.cardBorderDark;
 
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(_SaT.radius.xl),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: _SaT.glass.sigma,
-            sigmaY: _SaT.glass.sigma,
-          ),
-          child: AnimatedContainer(
-            duration: _SaT.anim.normal,
-            curve: Curves.easeInOut,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(_SaT.radius.xl),
-              border: Border.all(color: borderColor, width: 1),
-            ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(color: borderColor, width: 1),
+        ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -228,17 +161,18 @@ class _ApproachCard extends StatelessWidget {
                       icon,
                       size: 22,
                       color: isSelected
-                          ? _SaT.pal.accent
-                          : _SaT.pal.textSecondary,
+                          ? SettleColors.nightAccent
+                          : SettleColors.nightSoft,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         approach.label,
-                        style: _SaT.type.h3.copyWith(
+                        style: SettleTypography.heading.copyWith(
+                          fontSize: 17,
                           color: isSelected
-                              ? _SaT.pal.textPrimary
-                              : _SaT.pal.textSecondary,
+                              ? SettleColors.nightText
+                              : SettleColors.nightSoft,
                         ),
                       ),
                     ),
@@ -246,7 +180,7 @@ class _ApproachCard extends StatelessWidget {
                       Icon(
                         Icons.check_circle,
                         size: 20,
-                        color: _SaT.pal.accent,
+                        color: SettleColors.nightAccent,
                       ),
                   ],
                 ),
@@ -254,8 +188,9 @@ class _ApproachCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   approach.description,
-                  style: _SaT.type.caption.copyWith(
-                    color: _SaT.pal.textTertiary,
+                  style: SettleTypography.caption.copyWith(
+                    fontSize: 13,
+                    color: SettleColors.nightMuted,
                   ),
                 ),
                 // Expanded detail
@@ -268,29 +203,36 @@ class _ApproachCard extends StatelessWidget {
                       children: [
                         Text(
                           'HOW IT WORKS',
-                          style: _SaT.type.overline.copyWith(
-                            color: _SaT.pal.textTertiary,
+                          style: SettleTypography.caption.copyWith(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.8,
+                            color: SettleColors.nightMuted,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           howItWorks,
-                          style: _SaT.type.body.copyWith(
-                            color: _SaT.pal.textSecondary,
+                          style: SettleTypography.body.copyWith(
+                            color: SettleColors.nightSoft,
                           ),
                         ),
                         const SizedBox(height: 14),
                         Text(
                           'RESEARCH',
-                          style: _SaT.type.overline.copyWith(
-                            color: _SaT.pal.textTertiary,
+                          style: SettleTypography.caption.copyWith(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.8,
+                            color: SettleColors.nightMuted,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           research,
-                          style: _SaT.type.caption.copyWith(
-                            color: _SaT.pal.textTertiary,
+                          style: SettleTypography.caption.copyWith(
+                            fontSize: 13,
+                            color: SettleColors.nightMuted,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -300,13 +242,11 @@ class _ApproachCard extends StatelessWidget {
                   crossFadeState: isExpanded
                       ? CrossFadeState.showSecond
                       : CrossFadeState.showFirst,
-                  duration: _SaT.anim.normal,
+                  duration: const Duration(milliseconds: 250),
                   sizeCurve: Curves.easeInOut,
                 ),
               ],
             ),
-          ),
-        ),
       ),
     );
   }

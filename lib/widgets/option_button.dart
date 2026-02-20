@@ -1,11 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../theme/settle_design_system.dart';
 
 /// A selectable option tile used throughout onboarding.
-/// Renders as a glass card that lights up with accent tint when selected.
+/// Renders as a solid card that lights up with accent tint when selected.
 class OptionButton extends StatelessWidget {
   const OptionButton({
     super.key,
@@ -25,76 +23,67 @@ class OptionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fill = selected
-        ? SettleColors.dusk600.withValues(alpha: 0.16)
-        : SettleGlassDark.backgroundStrong;
+        ? SettleSurfaces.tintDusk
+        : SettleSurfaces.cardDark;
     final borderColor = selected
         ? SettleColors.dusk400.withValues(alpha: 0.45)
-        : SettleGlassDark.borderStrong;
+        : SettleSurfaces.cardBorderDark;
 
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(SettleRadii.glass),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: SettleGlassDark.blur,
-            sigmaY: SettleGlassDark.blur,
-          ),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(SettleRadii.glass),
-              border: Border.all(color: borderColor, width: 1),
-            ),
-            child: Row(
-              children: [
-                if (icon != null) ...[
-                  Icon(
-                    icon,
-                    size: 20,
-                    color: selected
-                        ? SettleColors.nightText
-                        : SettleColors.nightSoft,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(SettleRadii.surface),
+          border: Border.all(color: borderColor, width: 1),
+        ),
+        child: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 20,
+                color: selected
+                    ? SettleColors.nightText
+                    : SettleColors.nightSoft,
+              ),
+              const SizedBox(width: 12),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: SettleTypography.body.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: selected
+                          ? SettleColors.nightText
+                          : SettleColors.nightSoft,
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        label,
-                        style: SettleTypography.body.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: selected
-                              ? SettleColors.nightText
-                              : SettleColors.nightSoft,
-                        ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle!,
+                      style: SettleTypography.caption.copyWith(
+                        color: SettleColors.nightMuted,
                       ),
-                      if (subtitle != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          subtitle!,
-                          style: SettleTypography.caption.copyWith(
-                            color: SettleColors.nightMuted,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                if (selected)
-                  const Icon(
-                    Icons.check_circle,
-                    size: 20,
-                    color: SettleColors.nightText,
-                  ),
-              ],
+                    ),
+                  ],
+                ],
+              ),
             ),
-          ),
+            if (selected)
+              const Icon(
+                Icons.check_circle,
+                size: 20,
+                color: SettleColors.nightText,
+              ),
+          ],
         ),
       ),
     );
@@ -121,67 +110,58 @@ class OptionButtonCompact extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fill = selected
-        ? SettleColors.dusk600.withValues(alpha: 0.16)
-        : SettleGlassDark.backgroundStrong;
+        ? SettleSurfaces.tintDusk
+        : SettleSurfaces.cardDark;
     final borderColor = selected
         ? SettleColors.dusk400.withValues(alpha: 0.45)
-        : SettleGlassDark.borderStrong;
+        : SettleSurfaces.cardBorderDark;
 
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(SettleRadii.sm),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: SettleGlassDark.blur,
-            sigmaY: SettleGlassDark.blur,
-          ),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: EdgeInsets.symmetric(
-              horizontal: dense ? 10 : 14,
-              vertical: dense ? 8 : 12,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: EdgeInsets.symmetric(
+          horizontal: dense ? 10 : 14,
+          vertical: dense ? 8 : 12,
+        ),
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(SettleRadii.sm),
+          border: Border.all(color: borderColor, width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: dense ? 16 : 18,
+                color: selected
+                    ? SettleColors.nightText
+                    : SettleColors.nightSoft,
+              ),
+              SizedBox(width: dense ? 6 : 8),
+            ],
+            Flexible(
+              child: Text(
+                label,
+                style:
+                    (dense
+                            ? SettleTypography.caption
+                            : SettleTypography.body)
+                        .copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: selected
+                              ? SettleColors.nightText
+                              : SettleColors.nightSoft,
+                        ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(SettleRadii.sm),
-              border: Border.all(color: borderColor, width: 1),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null) ...[
-                  Icon(
-                    icon,
-                    size: dense ? 16 : 18,
-                    color: selected
-                        ? SettleColors.nightText
-                        : SettleColors.nightSoft,
-                  ),
-                  SizedBox(width: dense ? 6 : 8),
-                ],
-                Flexible(
-                  child: Text(
-                    label,
-                    style:
-                        (dense
-                                ? SettleTypography.caption
-                                : SettleTypography.body)
-                            .copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: selected
-                                  ? SettleColors.nightText
-                                  : SettleColors.nightSoft,
-                            ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );

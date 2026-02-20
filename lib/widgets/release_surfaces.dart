@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme/glass_components.dart';
+import 'glass_card.dart';
+import 'settle_cta.dart';
+import 'settle_tappable.dart';
 import '../theme/settle_design_system.dart';
 import 'gradient_background.dart';
 
@@ -52,7 +54,8 @@ class FeaturePausedView extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    GestureDetector(
+                    SettleTappable(
+                      semanticLabel: 'Back',
                       onTap: () =>
                           context.canPop() ? context.pop() : context.go('/now'),
                       child: Icon(
@@ -139,7 +142,8 @@ class ProfileRequiredView extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    GestureDetector(
+                    SettleTappable(
+                      semanticLabel: 'Back',
                       onTap: () => context.canPop()
                           ? context.pop()
                           : context.go('/onboard'),
@@ -214,7 +218,8 @@ class RouteUnavailableView extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    GestureDetector(
+                    SettleTappable(
+                      semanticLabel: 'Back',
                       onTap: () => context.go('/now'),
                       child: Icon(
                         Icons.arrow_back_ios_rounded,

@@ -9,7 +9,9 @@ import '../services/help_now_age_band_mapper.dart';
 import '../services/event_bus_service.dart';
 import '../services/help_now_guidance_service.dart';
 import '../services/spec_policy.dart';
-import '../theme/glass_components.dart';
+import '../widgets/glass_card.dart';
+import '../widgets/glass_pill.dart';
+import '../widgets/settle_cta.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
@@ -17,69 +19,6 @@ import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
 import '../widgets/settle_gap.dart';
 
-class _HnTokens {
-  _HnTokens._();
-
-  static const type = _HnTypeTokens();
-  static const pal = _HnPaletteTokens();
-  static const glass = _HnGlassTokens();
-  static const radius = _HnRadiusTokens();
-  static const space = _HnSpaceTokens();
-  static const anim = _HnAnimTokens();
-
-  static bool reduceMotion(BuildContext context) =>
-      MediaQuery.of(context).disableAnimations;
-}
-
-class _HnTypeTokens {
-  const _HnTypeTokens();
-
-  TextStyle get h2 => SettleTypography.heading.copyWith(fontSize: 22);
-  TextStyle get h3 => SettleTypography.heading;
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption;
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _HnPaletteTokens {
-  const _HnPaletteTokens();
-
-  Color get accent => SettleColors.ink700;
-  Color get teal => SettleColors.sage600;
-  Color get textSecondary => SettleColors.ink500;
-  Color get textTertiary => SettleColors.ink400;
-}
-
-class _HnGlassTokens {
-  const _HnGlassTokens();
-
-  Color get fill => Colors.white.withValues(alpha: 0.36);
-  Color get fillAccent => Colors.white.withValues(alpha: 0.56);
-}
-
-class _HnRadiusTokens {
-  const _HnRadiusTokens();
-
-  double get pill => SettleRadii.pill;
-}
-
-class _HnSpaceTokens {
-  const _HnSpaceTokens();
-
-  double get md => SettleSpacing.md;
-}
-
-class _HnAnimTokens {
-  const _HnAnimTokens();
-
-  Duration get fast => const Duration(milliseconds: 160);
-  Duration get normal => const Duration(milliseconds: 200);
-}
 
 class HelpNowScreen extends ConsumerStatefulWidget {
   const HelpNowScreen({super.key, this.now});
@@ -186,7 +125,7 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
           child: Padding(
             padding: EdgeInsets.fromLTRB(
               SettleSpacing.screenPadding,
-              _HnTokens.space.md,
+              SettleSpacing.md,
               SettleSpacing.screenPadding,
               SettleSpacing.screenPadding,
             ),
@@ -195,12 +134,12 @@ class _HelpNowScreenState extends ConsumerState<HelpNowScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('It\'s nighttime', style: _HnTokens.type.h3),
+                  Text('It\'s nighttime', style: SettleTypography.heading),
                   SettleGap.sm(),
                   Text(
                     'What do you need right now?',
-                    style: _HnTokens.type.caption.copyWith(
-                      color: _HnTokens.pal.textSecondary,
+                    style: SettleTypography.caption.copyWith(
+                      color: SettleColors.ink500,
                     ),
                   ),
                   SettleGap.lg(),
@@ -507,7 +446,7 @@ class _GuidedBeatsState extends State<_GuidedBeats>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_HnTokens.reduceMotion(context)) {
+    if (MediaQuery.of(context).disableAnimations) {
       _pulseController.stop();
       _pulseController.value = 0.0;
     } else if (!_pulseController.isAnimating) {
@@ -545,7 +484,7 @@ class _GuidedBeatsState extends State<_GuidedBeats>
         SettleGap.lg(),
         // Current beat content
         AnimatedSwitcher(
-          duration: reduceMotion ? Duration.zero : _HnTokens.anim.normal,
+          duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 200),
           child: _buildBeat(),
         ),
         SettleGap.lg(),
@@ -614,16 +553,16 @@ class _BeatDots extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: AnimatedContainer(
-            duration: _HnTokens.anim.fast,
+            duration: const Duration(milliseconds: 160),
             width: isCurrent ? 20 : 8,
             height: 8,
             decoration: BoxDecoration(
               color: isCurrent
-                  ? _HnTokens.pal.accent
+                  ? SettleColors.ink700
                   : isDone
-                  ? _HnTokens.pal.accent.withValues(alpha: 0.40)
-                  : _HnTokens.glass.fill,
-              borderRadius: BorderRadius.circular(_HnTokens.radius.pill),
+                  ? SettleColors.ink700.withValues(alpha: 0.40)
+                  : SettleColors.stone100,
+              borderRadius: BorderRadius.circular(SettleRadii.pill),
             ),
           ),
         );
@@ -645,14 +584,14 @@ class _BeatSay extends StatelessWidget {
       children: [
         Text(
           'Say this',
-          style: _HnTokens.type.overline.copyWith(
-            color: _HnTokens.pal.textTertiary,
+          style: SettleTypography.caption.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+            color: SettleColors.ink400,
           ),
         ),
         SettleGap.sm(),
         GlassCardAccent(
           padding: const EdgeInsets.all(20),
-          child: Text(text, style: _HnTokens.type.h2),
+          child: Text(text, style: SettleTypography.heading.copyWith(fontSize: 22)),
         ),
         SettleGap.md(),
         GlassCta(label: 'I said it →', onTap: onNext),
@@ -674,14 +613,14 @@ class _BeatDo extends StatelessWidget {
       children: [
         Text(
           'Do this',
-          style: _HnTokens.type.overline.copyWith(
-            color: _HnTokens.pal.textTertiary,
+          style: SettleTypography.caption.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+            color: SettleColors.ink400,
           ),
         ),
         SettleGap.sm(),
         GlassCard(
           padding: const EdgeInsets.all(20),
-          child: Text(text, style: _HnTokens.type.h3),
+          child: Text(text, style: SettleTypography.heading),
         ),
         SettleGap.md(),
         GlassCta(label: 'Done →', onTap: onNext),
@@ -709,8 +648,8 @@ class _BeatWait extends StatelessWidget {
       children: [
         Text(
           'Wait with them',
-          style: _HnTokens.type.overline.copyWith(
-            color: _HnTokens.pal.textTertiary,
+          style: SettleTypography.caption.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+            color: SettleColors.ink400,
           ),
         ),
         SettleGap.sm(),
@@ -728,7 +667,7 @@ class _BeatWait extends StatelessWidget {
                       width: 16,
                       height: 16,
                       decoration: BoxDecoration(
-                        color: _HnTokens.pal.accent.withValues(alpha: 0.6),
+                        color: SettleColors.ink700.withValues(alpha: 0.6),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -739,8 +678,8 @@ class _BeatWait extends StatelessWidget {
               Text(
                 'Stay close. Breathe.\nThis will pass.',
                 textAlign: TextAlign.center,
-                style: _HnTokens.type.h3.copyWith(
-                  color: _HnTokens.pal.textSecondary,
+                style: SettleTypography.heading.copyWith(
+                  color: SettleColors.ink500,
                 ),
               ),
             ],
@@ -785,12 +724,12 @@ class _BeatDone extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('You handled it.', style: _HnTokens.type.h2),
+              Text('You handled it.', style: SettleTypography.heading.copyWith(fontSize: 22)),
               SettleGap.xs(),
               Text(
                 'Close when you\'re ready.',
-                style: _HnTokens.type.body.copyWith(
-                  color: _HnTokens.pal.textSecondary,
+                style: SettleTypography.body.copyWith(
+                  color: SettleColors.ink500,
                 ),
               ),
             ],
@@ -814,8 +753,8 @@ class _BeatDone extends StatelessWidget {
                     SettleGap.xs(),
                     Text(
                       'What was going on?',
-                      style: _HnTokens.type.caption.copyWith(
-                        color: _HnTokens.pal.textSecondary,
+                      style: SettleTypography.caption.copyWith(
+                        color: SettleColors.ink500,
                       ),
                     ),
                     SettleGap.sm(),
@@ -834,8 +773,8 @@ class _BeatDone extends StatelessWidget {
                     SettleGap.lg(),
                     Text(
                       'How did it end?',
-                      style: _HnTokens.type.caption.copyWith(
-                        color: _HnTokens.pal.textSecondary,
+                      style: SettleTypography.caption.copyWith(
+                        color: SettleColors.ink500,
                       ),
                     ),
                     SettleGap.sm(),
@@ -854,8 +793,8 @@ class _BeatDone extends StatelessWidget {
                       SettleGap.md(),
                       Text(
                         'Noted. You can close anytime.',
-                        style: _HnTokens.type.caption.copyWith(
-                          color: _HnTokens.pal.teal,
+                        style: SettleTypography.caption.copyWith(
+                          color: SettleColors.sage600,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -893,14 +832,14 @@ class _BeatEscalate extends StatelessWidget {
       children: [
         Text(
           'If things get harder',
-          style: _HnTokens.type.overline.copyWith(
-            color: _HnTokens.pal.textTertiary,
+          style: SettleTypography.caption.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.8).copyWith(
+            color: SettleColors.ink400,
           ),
         ),
         SettleGap.sm(),
         GlassCard(
           padding: const EdgeInsets.all(20),
-          child: Text(text, style: _HnTokens.type.h3),
+          child: Text(text, style: SettleTypography.heading),
         ),
         SettleGap.md(),
         GlassCta(label: 'Got it →', onTap: onGotIt),
@@ -1022,7 +961,7 @@ class _IncidentGrid extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(option.icon, size: 24, color: _HnTokens.pal.textSecondary),
+                Icon(option.icon, size: 24, color: SettleColors.ink500),
                 SettleGap.sm(),
                 Text(
                   option.label,
@@ -1073,12 +1012,12 @@ class _AgeBandPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Child age', style: _HnTokens.type.h3),
+        Text('Child age', style: SettleTypography.heading),
         SettleGap.xs(),
         Text(
           'Choose your child\'s age to tailor wording.',
-          style: _HnTokens.type.caption.copyWith(
-            color: _HnTokens.pal.textSecondary,
+          style: SettleTypography.caption.copyWith(
+            color: SettleColors.ink500,
           ),
         ),
         SettleGap.md(),
@@ -1183,10 +1122,10 @@ class _SubtleActionLink extends StatelessWidget {
       onTap: onTap,
       child: Text(
         label,
-        style: _HnTokens.type.caption.copyWith(
-          color: _HnTokens.pal.textTertiary,
+        style: SettleTypography.caption.copyWith(
+          color: SettleColors.ink400,
           decoration: TextDecoration.underline,
-          decorationColor: _HnTokens.pal.textTertiary,
+          decorationColor: SettleColors.ink400,
         ),
       ),
     );
@@ -1210,15 +1149,15 @@ class _SmallChip extends StatelessWidget {
       onTap: onTap,
       child: GlassCard(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        fill: selected ? _HnTokens.glass.fillAccent : _HnTokens.glass.fill,
-        borderRadius: _HnTokens.radius.pill,
+        fill: selected ? SettleSurfaces.cardLight : SettleColors.stone100,
+        borderRadius: SettleRadii.pill,
         border: true,
         child: Text(
           label,
-          style: _HnTokens.type.caption.copyWith(
+          style: SettleTypography.caption.copyWith(
             color: selected
-                ? _HnTokens.pal.accent
-                : _HnTokens.pal.textSecondary,
+                ? SettleColors.ink700
+                : SettleColors.ink500,
             fontWeight: FontWeight.w600,
           ),
         ),

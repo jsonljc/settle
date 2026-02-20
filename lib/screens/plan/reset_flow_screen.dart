@@ -1,5 +1,5 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
@@ -13,19 +13,7 @@ import '../../widgets/glass_card.dart';
 import '../../widgets/glass_pill.dart';
 import '../../widgets/settle_tappable.dart';
 
-class _RfT {
-  _RfT._();
-
-  static final type = _RfTypeTokens();
-}
-
-class _RfTypeTokens {
-  TextStyle get h2 => SettleTypography.heading.copyWith(
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-}
+// Local tokens removed — using SettleTypography directly.
 
 /// Reset flow: choose state (self/child) → repair card → Keep / Another (max 3) / Close.
 /// Dark-mode reskin: 2 AM screen. Override to dark theme when night (9pm–5am).
@@ -50,6 +38,8 @@ class ResetFlowScreen extends ConsumerStatefulWidget {
 }
 
 class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
+  bool _showRegulationOffer = false;
+
   @override
   void initState() {
     super.initState();
@@ -78,9 +68,11 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     Widget body = Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: state.phase == ResetFlowPhase.chooseState
-            ? _buildStatePicker(context, notifier)
-            : _buildCardView(context, state, notifier),
+        child: _showRegulationOffer
+            ? _buildRegulationOffer(context)
+            : state.phase == ResetFlowPhase.chooseState
+                ? _buildStatePicker(context, notifier)
+                : _buildCardView(context, state, notifier),
       ),
     );
 
@@ -101,16 +93,16 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
           _ResetCharacterBlob(tantrumContext: _isTantrumContext),
           const SizedBox(height: 20),
           Text(
-            'Who needs the reset?',
+            'Who needs help right now?',
             textAlign: TextAlign.center,
-            style: _RfT.type.body.copyWith(
+            style: SettleTypography.body.copyWith(
               fontWeight: FontWeight.w600,
               color: SettleColors.nightText,
             ),
           ),
           const SizedBox(height: 20),
           SettleTappable(
-            semanticLabel: 'For you',
+            semanticLabel: 'Me',
             onTap: () => notifier.selectState(RepairCardState.self),
             child: GlassCard(
               variant: GlassCardVariant.darkStrong,
@@ -119,8 +111,8 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'For you',
-                    style: _RfT.type.h2.copyWith(
+                    'Me',
+                    style: SettleTypography.display.copyWith(
                       fontWeight: FontWeight.w400,
                       color: SettleColors.nightText,
                     ),
@@ -131,7 +123,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
           ),
           const SizedBox(height: SettleSpacing.sm),
           SettleTappable(
-            semanticLabel: 'For them',
+            semanticLabel: 'My kid',
             onTap: () => notifier.selectState(RepairCardState.child),
             child: GlassCard(
               variant: GlassCardVariant.darkStrong,
@@ -140,8 +132,8 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'For them',
-                    style: _RfT.type.h2.copyWith(
+                    'My kid',
+                    style: SettleTypography.display.copyWith(
                       fontWeight: FontWeight.w400,
                       color: SettleColors.nightText,
                     ),
@@ -198,11 +190,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
       );
     }
 
-    final stateLabel = chosenState == RepairCardState.self
-        ? 'For you'
-        : 'For them';
-    final counterText = '${state.cardIdsSeen.length} of 3';
-
+    // V2: Card = Acknowledgment (muted) + Words to say (large) + optional One thing to do
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(
         horizontal: SettleSpacing.screenPadding,
@@ -211,23 +199,6 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
         children: [
           const SizedBox(height: 24),
           _ResetCharacterBlob(tantrumContext: _isTantrumContext),
-          const SizedBox(height: 16),
-          Text(
-            stateLabel,
-            textAlign: TextAlign.center,
-            style: _RfT.type.h2.copyWith(
-              fontWeight: FontWeight.w400,
-              color: SettleColors.nightText,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            counterText,
-            textAlign: TextAlign.center,
-            style: SettleTypography.caption.copyWith(
-              color: SettleColors.nightMuted,
-            ),
-          ),
           const SizedBox(height: 20),
           GlassCard(
             variant: GlassCardVariant.darkStrong,
@@ -237,88 +208,129 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
               children: [
                 Text(
                   card.title,
-                  style: _RfT.type.body.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: SettleColors.nightText,
+                  style: SettleTypography.caption.copyWith(
+                    color: SettleColors.nightMuted,
+                    height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 Text(
                   _maxSentences(card.body),
-                  style: SettleTypography.body.copyWith(
-                    color: SettleColors.nightSoft,
-                    height: 1.7,
+                  style: SettleTypography.display.copyWith(
+                    color: SettleColors.nightText,
+                    height: 1.35,
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
+          GlassPill(
+            label: 'Keep',
+            onTap: () => _keep(notifier, card.id),
+            variant: GlassPillVariant.primaryDark,
+            expanded: true,
+          ),
+          const SizedBox(height: 12),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                child: GlassPill(
-                  label: 'Keep',
-                  onTap: () => _keep(notifier, card.id),
-                  variant: GlassPillVariant.primaryDark,
-                  expanded: true,
-                ),
-              ),
-              const SizedBox(width: SettleSpacing.sm),
-              Expanded(
-                child: Opacity(
-                  opacity: state.canShowAnother ? 1 : 0.5,
-                  child: GlassPill(
-                    label: 'Another',
-                    onTap: state.canShowAnother
-                        ? () => notifier.drawAnother()
-                        : () {},
-                    variant: GlassPillVariant.secondaryDark,
-                    expanded: true,
-                  ),
-                ),
-              ),
+              _textLink('Copy', () => _copyCard(card)),
+              Text(' · ', style: _linkStyle()),
+              _textLink('Send', () => _share(card)),
+              Text(' · ', style: _linkStyle()),
+              if (state.canShowAnother)
+                _textLink('Another', () => notifier.drawAnother())
+              else
+                Text('That\'s the set for now.', style: _linkStyle()),
+              Text(' · ', style: _linkStyle()),
+              _textLink('Done', () => _done(notifier, null)),
             ],
           ),
-          _buildCloseAndShareLinks(notifier, null, card),
+        ],
+      ),
+    );
+  }
+
+  TextStyle _linkStyle() =>
+      SettleTypography.caption.copyWith(
+        color: SettleColors.nightMuted.withValues(alpha: 0.8),
+      );
+
+  Widget _textLink(String label, VoidCallback onTap) {
+    return SettleTappable(
+      semanticLabel: label,
+      onTap: onTap,
+      child: Text(label, style: _linkStyle()),
+    );
+  }
+
+  void _copyCard(RepairCard card) {
+    Clipboard.setData(ClipboardData(text: '${card.title}\n\n${card.body}'));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Copied to clipboard'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
+
+  Future<void> _done(ResetFlowNotifier notifier, String? cardIdKept) async {
+    await notifier.close(cardIdKept: cardIdKept);
+    if (!mounted) return;
+    setState(() => _showRegulationOffer = true);
+  }
+
+  Widget _buildRegulationOffer(BuildContext context) {
+    final isSleepContext =
+        ResetFlowScreen.contextFromQuery(widget.contextQuery) ==
+            RepairCardContext.sleep;
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: SettleSpacing.screenPadding,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Need a minute for yourself?',
+            textAlign: TextAlign.center,
+            style: SettleTypography.display.copyWith(
+              fontWeight: FontWeight.w400,
+              color: SettleColors.nightText,
+            ),
+          ),
+          const SizedBox(height: 28),
+          GlassPill(
+            label: 'Breathe · 10s',
+            onTap: () {
+              context.push('/plan/moment');
+              _exitFlow();
+            },
+            variant: GlassPillVariant.primaryDark,
+            expanded: true,
+          ),
+          const SizedBox(height: 14),
+          SettleTappable(
+            semanticLabel: isSleepContext ? 'Back to sleep stuff' : 'I\'m good',
+            onTap: _exitFlow,
+            child: Text(
+              isSleepContext ? 'Back to sleep stuff' : 'I\'m good',
+              style: SettleTypography.body.copyWith(
+                color: SettleColors.nightMuted,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildCloseLink(ResetFlowNotifier notifier, String? cardIdKept) {
-    return _buildCloseAndShareLinks(notifier, cardIdKept, null);
-  }
-
-  Widget _buildCloseAndShareLinks(
-    ResetFlowNotifier notifier,
-    String? cardIdKept,
-    RepairCard? card,
-  ) {
-    final linkStyle = SettleTypography.caption.copyWith(
-      color: SettleColors.nightMuted.withValues(alpha: 0.45),
-    );
     return Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 16),
       child: Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SettleTappable(
-              semanticLabel: 'Close',
-              onTap: () => _close(notifier, cardIdKept),
-              child: Text('Close', style: linkStyle),
-            ),
-            if (card != null) ...[
-              Text(' · ', style: linkStyle),
-              SettleTappable(
-                semanticLabel: 'Share',
-                onTap: () => _share(card),
-                child: Text('Share', style: linkStyle),
-              ),
-            ],
-          ],
-        ),
+        child: _textLink('Done', () => _done(notifier, cardIdKept)),
       ),
     );
   }
@@ -327,13 +339,7 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
     await notifier.keep();
     await notifier.close(cardIdKept: cardIdKept);
     if (!mounted) return;
-    _exitFlow();
-  }
-
-  Future<void> _close(ResetFlowNotifier notifier, String? cardIdKept) async {
-    await notifier.close(cardIdKept: cardIdKept);
-    if (!mounted) return;
-    _exitFlow();
+    setState(() => _showRegulationOffer = true);
   }
 
   void _exitFlow() {
@@ -362,14 +368,13 @@ class _ResetFlowScreenState extends ConsumerState<ResetFlowScreen> {
   }
 }
 
-/// 88px glass circle: nightAccent (or warmth for tantrum) 15%, blur 24, specular, face inside.
+/// 88px solid circle with simple face: nightAccent (or warmth for tantrum).
 class _ResetCharacterBlob extends StatelessWidget {
   const _ResetCharacterBlob({this.tantrumContext = false});
 
   final bool tantrumContext;
 
   static const double _size = 88;
-  static const double _blurSigma = 24;
 
   Color get _tint =>
       tantrumContext ? SettleColors.warmth400 : SettleColors.nightAccent;
@@ -379,46 +384,19 @@ class _ResetCharacterBlob extends StatelessWidget {
     return SizedBox(
       width: _size,
       height: _size,
-      child: ClipOval(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: _blurSigma, sigmaY: _blurSigma),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _tint.withValues(alpha: 0.15),
-                  border: Border.all(
-                    color: _tint.withValues(alpha: 0.10),
-                    width: 0.5,
-                  ),
-                ),
-              ),
-              // Specular arc: top 35%, white 6% → transparent
-              Align(
-                alignment: Alignment.topCenter,
-                child: Container(
-                  height: _size * 0.35,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withValues(alpha: 0.06),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Center(
-                child: CustomPaint(
-                  size: const Size(48, 48),
-                  painter: _ResetFacePainter(tint: _tint),
-                ),
-              ),
-            ],
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: _tint.withValues(alpha: 0.12),
+          border: Border.all(
+            color: _tint.withValues(alpha: 0.18),
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: CustomPaint(
+            size: const Size(48, 48),
+            painter: _ResetFacePainter(tint: _tint),
           ),
         ),
       ),

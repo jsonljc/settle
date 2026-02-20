@@ -3,42 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
 import '../services/release_metrics_service.dart';
-import '../theme/glass_components.dart';
+import '../widgets/glass_card.dart';
+import '../widgets/settle_cta.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
-
-class _RmT {
-  _RmT._();
-
-  static final type = _RmTypeTokens();
-  static const pal = _RmPaletteTokens();
-}
-
-class _RmTypeTokens {
-  TextStyle get h2 => SettleTypography.heading.copyWith(
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption.copyWith(
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-  );
-}
-
-class _RmPaletteTokens {
-  const _RmPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-  Color get teal => SettleColors.sage400;
-}
+import '../widgets/settle_tappable.dart';
 
 class ReleaseMetricsScreen extends ConsumerStatefulWidget {
   const ReleaseMetricsScreen({super.key});
@@ -94,20 +65,23 @@ class _ReleaseMetricsScreenState extends ConsumerState<ReleaseMetricsScreen> {
               children: [
                 ScreenHeader(
                   title: 'Release Metrics',
-                  trailing: GestureDetector(
+                  trailing: SettleTappable(
+                    semanticLabel: 'Refresh',
                     onTap: () => setState(_reload),
                     child: Icon(
                       Icons.refresh_rounded,
                       size: 20,
-                      color: _RmT.pal.textTertiary,
+                      color: SettleColors.nightMuted,
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '$childName · 14-day operational window',
-                  style: _RmT.type.caption.copyWith(
-                    color: _RmT.pal.textSecondary,
+                  style: SettleTypography.caption.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: SettleColors.nightSoft,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -127,8 +101,8 @@ class _ReleaseMetricsScreenState extends ConsumerState<ReleaseMetricsScreen> {
                           child: GlassCard(
                             child: Text(
                               'Unable to load release metrics.',
-                              style: _RmT.type.body.copyWith(
-                                color: _RmT.pal.textSecondary,
+                              style: SettleTypography.body.copyWith(
+                                color: SettleColors.nightSoft,
                               ),
                             ),
                           ),
@@ -269,9 +243,9 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = switch (pass) {
-      true => _RmT.pal.teal,
+      true => SettleColors.sage400,
       false => SettleColors.blush400,
-      null => _RmT.pal.textTertiary,
+      null => SettleColors.nightMuted,
     };
     final statusLabel = switch (pass) {
       true => 'On target',
@@ -283,17 +257,18 @@ class _MetricCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: _RmT.type.h3),
+          Text(title, style: SettleTypography.heading.copyWith(fontSize: 17, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           Row(
             children: [
-              Text(value, style: _RmT.type.h2.copyWith(fontSize: 26)),
+              Text(value, style: SettleTypography.heading.copyWith(fontSize: 26, fontWeight: FontWeight.w700)),
               const SizedBox(width: 10),
               Text(
                 statusLabel,
-                style: _RmT.type.caption.copyWith(
-                  color: statusColor,
+                style: SettleTypography.caption.copyWith(
+                  fontSize: 13,
                   fontWeight: FontWeight.w700,
+                  color: statusColor,
                 ),
               ),
             ],
@@ -301,12 +276,12 @@ class _MetricCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'Target: $target',
-            style: _RmT.type.caption.copyWith(color: _RmT.pal.textSecondary),
+            style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightSoft),
           ),
           const SizedBox(height: 2),
           Text(
             detail,
-            style: _RmT.type.caption.copyWith(color: _RmT.pal.textTertiary),
+            style: SettleTypography.caption.copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: SettleColors.nightMuted),
           ),
         ],
       ),

@@ -3,29 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../models/pattern_insight.dart';
 import '../../models/v2_enums.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/glass_pill.dart';
 import '../../theme/settle_design_system.dart';
-
-class _PnsT {
-  _PnsT._();
-
-  static final type = _PnsTypeTokens();
-  static const pal = _PnsPaletteTokens();
-}
-
-class _PnsTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-}
-
-class _PnsPaletteTokens {
-  const _PnsPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
 
 class PrepNudgeSection extends StatelessWidget {
   const PrepNudgeSection({super.key, this.patterns = const []});
@@ -45,13 +25,13 @@ class PrepNudgeSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('When you\'re ready', style: _PnsT.type.h3),
+          Text('When you\'re ready', style: SettleTypography.heading),
           const SizedBox(height: 6),
           Text(
             approaching
                 ? '${timePattern.insight} Preview a script when you\'re ready.'
                 : 'Preview a script for bedtime when you\'re ready.',
-            style: _PnsT.type.body.copyWith(color: _PnsT.pal.textSecondary),
+            style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
           ),
           if (approaching) ...[
             const SizedBox(height: 12),

@@ -8,13 +8,14 @@ import '../../providers/usage_events_provider.dart';
 import '../../providers/user_cards_provider.dart';
 import '../../services/card_content_service.dart';
 import '../../services/spec_policy.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/pocket_fab.dart';
 import 'pocket_overlay.dart';
 
 /// FAB + modal overlay for Pocket. When [pocketEnabled], shell passes this as overlay.
 /// Shows top pinned script; "This helped" / "Didn't work"; optional regulate first and after-log.
+/// UXV2-006: Contextual ordering via path + time (_orderPocketCandidates); a11y: FAB ≥44px + semantics, overlay dismiss semantics.
 class PocketFABAndOverlay extends ConsumerStatefulWidget {
   const PocketFABAndOverlay({super.key});
 

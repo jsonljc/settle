@@ -32,7 +32,7 @@ class ScreenHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final secondaryColor = isDark ? SettleColors.nightSoft : SettleColors.ink500;
+    final secondaryColor = isDark ? SettleColors.nightSoft : SettleColors.ink700;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -58,7 +58,11 @@ class ScreenHeader extends StatelessWidget {
                 header: true,
                 child: Text(
                   title,
-                  style: SettleTypography.heading,
+                  style: SettleTypography.display.copyWith(
+                    color: isDark
+                        ? SettleColors.nightText
+                        : SettleColors.ink900,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -70,7 +74,10 @@ class ScreenHeader extends StatelessWidget {
           SizedBox(height: SettleSpacing.sm),
           Text(
             subtitle!,
-            style: SettleTypography.caption.copyWith(color: secondaryColor),
+            style: SettleTypography.body.copyWith(
+              color: secondaryColor,
+              fontSize: 15,
+            ),
           ),
         ],
       ],

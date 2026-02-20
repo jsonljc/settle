@@ -4,59 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme/glass_components.dart';
+import '../widgets/glass_card.dart';
 import '../widgets/settle_disclosure.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
-
-class _SosT {
-  _SosT._();
-
-  static final type = _SosTypeTokens();
-  static const pal = _SosPaletteTokens();
-  static const glass = _SosGlassTokens();
-  static const radius = _SosRadiusTokens();
-  static const anim = _SosAnimTokens();
-
-  static bool reduceMotion(BuildContext context) =>
-      MediaQuery.of(context).disableAnimations;
-}
-
-class _SosTypeTokens {
-  TextStyle get h2 => SettleTypography.heading.copyWith(fontSize: 22);
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption;
-}
-
-class _SosPaletteTokens {
-  const _SosPaletteTokens();
-
-  Color get accent => SettleColors.nightAccent;
-  Color get textPrimary => SettleColors.nightText;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
-
-class _SosGlassTokens {
-  const _SosGlassTokens();
-
-  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
-}
-
-class _SosRadiusTokens {
-  const _SosRadiusTokens();
-
-  double get pill => SettleRadii.pill;
-}
-
-class _SosAnimTokens {
-  const _SosAnimTokens();
-
-  Duration get normal => const Duration(milliseconds: 250);
-  Duration get sosBreathe => const Duration(milliseconds: 8000);
-}
+import '../widgets/settle_tappable.dart';
 
 /// SOS Screen — ZERO interaction required. Auto-cycles everything.
 ///
@@ -118,13 +70,14 @@ class _SosScreenState extends State<SosScreen> {
                 ),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: GestureDetector(
+                  child: SettleTappable(
+                    semanticLabel: 'Back',
                     onTap: () =>
                         context.canPop() ? context.pop() : context.go('/now'),
                     child: Text(
                       'back',
-                      style: _SosT.type.caption.copyWith(
-                        color: _SosT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                   ),
@@ -136,7 +89,7 @@ class _SosScreenState extends State<SosScreen> {
                   horizontal: SettleSpacing.screenPadding + 8,
                 ),
                 child: Column(
-                  children: [Text('Take a Breath', style: _SosT.type.h2)],
+                  children: [Text('Take a Breath', style: SettleTypography.heading.copyWith(fontSize: 22))],
                 ),
               ),
               const SizedBox(height: 20),
@@ -160,13 +113,13 @@ class _SosScreenState extends State<SosScreen> {
                   horizontal: SettleSpacing.screenPadding + 8,
                 ),
                 child: AnimatedSwitcher(
-                  duration: _SosT.anim.normal,
+                  duration: const Duration(milliseconds: 250),
                   child: Text(
                     _selfRegScripts[_scriptIndex],
                     key: ValueKey(_scriptIndex),
                     textAlign: TextAlign.center,
-                    style: _SosT.type.caption.copyWith(
-                      color: _SosT.pal.textSecondary,
+                    style: SettleTypography.caption.copyWith(
+                      color: SettleColors.nightSoft,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -183,8 +136,8 @@ class _SosScreenState extends State<SosScreen> {
                   'If you need a pause, it is okay to place baby in a safe crib '
                   'and step away for a few minutes.',
                   textAlign: TextAlign.center,
-                  style: _SosT.type.body.copyWith(
-                    color: _SosT.pal.textPrimary,
+                  style: SettleTypography.body.copyWith(
+                    color: SettleColors.nightText,
                     fontWeight: FontWeight.w600,
                     height: 1.5,
                   ),
@@ -253,19 +206,19 @@ class _BreathingCircles extends StatelessWidget {
           _PulsingCircle(
             size: 220,
             delay: 0,
-            color: _SosT.pal.accent.withValues(alpha: 0.08),
+            color: SettleColors.nightAccent.withValues(alpha: 0.08),
           ),
           // Middle circle
           _PulsingCircle(
             size: 160,
             delay: 1500,
-            color: _SosT.pal.accent.withValues(alpha: 0.12),
+            color: SettleColors.nightAccent.withValues(alpha: 0.12),
           ),
           // Inner circle
           _PulsingCircle(
             size: 100,
             delay: 3000,
-            color: _SosT.pal.accent.withValues(alpha: 0.18),
+            color: SettleColors.nightAccent.withValues(alpha: 0.18),
           ),
           // Center dot
           Container(
@@ -273,7 +226,7 @@ class _BreathingCircles extends StatelessWidget {
             height: 12,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _SosT.pal.accent,
+              color: SettleColors.nightAccent,
             ),
           ),
         ],
@@ -300,7 +253,7 @@ class _PulsingCircle extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
-    if (_SosT.reduceMotion(context)) return circle;
+    if (MediaQuery.of(context).disableAnimations) return circle;
     return circle
         .animate(
           onPlay: (controller) => controller.repeat(reverse: true),
@@ -309,7 +262,7 @@ class _PulsingCircle extends StatelessWidget {
         .scale(
           begin: const Offset(0.85, 0.85),
           end: const Offset(1.0, 1.0),
-          duration: _SosT.anim.sosBreathe,
+          duration: const Duration(milliseconds: 8000),
           curve: Curves.easeInOut,
         );
   }
@@ -338,7 +291,7 @@ class _BreathingLabels extends StatelessWidget {
       children: List.generate(4, (i) {
         final isActive = i == phase;
         return AnimatedOpacity(
-          duration: _SosT.anim.normal,
+          duration: const Duration(milliseconds: 250),
           opacity: isActive ? 1.0 : 0.25,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -347,16 +300,16 @@ class _BreathingLabels extends StatelessWidget {
                 _icons[i],
                 size: 20,
                 color: isActive
-                    ? _SosT.pal.textPrimary
-                    : _SosT.pal.textTertiary,
+                    ? SettleColors.nightText
+                    : SettleColors.nightMuted,
               ),
               const SizedBox(height: 4),
               Text(
                 _labels[i],
-                style: _SosT.type.caption.copyWith(
+                style: SettleTypography.caption.copyWith(
                   color: isActive
-                      ? _SosT.pal.textPrimary
-                      : _SosT.pal.textTertiary,
+                      ? SettleColors.nightText
+                      : SettleColors.nightMuted,
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),
@@ -395,15 +348,16 @@ class _CrisisResource extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: _SosT.type.label.copyWith(
-                    color: _SosT.pal.textPrimary,
+                  style: SettleTypography.body.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: SettleColors.nightText,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   note,
-                  style: _SosT.type.caption.copyWith(
-                    color: _SosT.pal.textTertiary,
+                  style: SettleTypography.caption.copyWith(
+                    color: SettleColors.nightMuted,
                   ),
                 ),
               ],
@@ -413,13 +367,13 @@ class _CrisisResource extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _SosT.glass.fillAccent,
-              borderRadius: BorderRadius.circular(_SosT.radius.pill),
+              color: SettleColors.dusk600.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(SettleRadii.pill),
             ),
             child: Text(
               number,
               style: SettleTypography.body.copyWith(
-                color: _SosT.pal.accent,
+                color: SettleColors.nightAccent,
                 fontWeight: FontWeight.w600,
               ),
             ),

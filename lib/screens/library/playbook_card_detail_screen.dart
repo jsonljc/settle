@@ -7,46 +7,14 @@ import '../../models/repair_card.dart';
 import '../../providers/card_repository_provider.dart';
 import '../../utils/share_text.dart';
 import '../../providers/user_cards_provider.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/calm_loading.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/screen_header.dart';
 import '../../widgets/settle_gap.dart';
 import '../../widgets/settle_tappable.dart';
-
-class _PcdT {
-  _PcdT._();
-
-  static final type = _PcdTypeTokens();
-  static const pal = _PcdPaletteTokens();
-  static const space = _PcdSpaceTokens();
-}
-
-class _PcdTypeTokens {
-  TextStyle get h3 => SettleTypography.heading.copyWith(
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-}
-
-class _PcdPaletteTokens {
-  const _PcdPaletteTokens();
-
-  Color get textPrimary => SettleColors.nightText;
-  Color get textSecondary => SettleColors.nightSoft;
-}
-
-class _PcdSpaceTokens {
-  const _PcdSpaceTokens();
-
-  double get sm => 8;
-  double get lg => 16;
-  double get xxl => 24;
-}
 
 /// View a single playbook (repair) card — same display as Reset card view.
 /// Send (text-only) and Remove (single tap, no modal).
@@ -87,12 +55,12 @@ class PlaybookCardDetailScreen extends ConsumerWidget {
                       SettleGap.xl(),
                       Text(
                         'This card is no longer available.',
-                        style: _PcdT.type.body.copyWith(
-                          color: _PcdT.pal.textSecondary,
+                        style: SettleTypography.body.copyWith(
+                          color: SettleColors.nightSoft,
                         ),
                       ),
                       SettleGap.lg(),
-                      GlassCta(
+                      SettleCta(
                         label: 'Back to Playbook',
                         onTap: () => context.go('/library/saved'),
                       ),
@@ -137,9 +105,9 @@ class _Content extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         GlassCard(
-                          padding: EdgeInsets.symmetric(
-                            vertical: _PcdT.space.xxl,
-                            horizontal: _PcdT.space.lg,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 24,
+                            horizontal: 16,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,16 +116,18 @@ class _Content extends ConsumerWidget {
                                 header: true,
                                 child: Text(
                                   card.title,
-                                  style: _PcdT.type.h3.copyWith(
-                                    color: _PcdT.pal.textPrimary,
+                                  style: SettleTypography.heading.copyWith(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700,
+                                    color: SettleColors.nightText,
                                   ),
                                 ),
                               ),
                               SettleGap.xl(),
                               Text(
                                 card.body,
-                                style: _PcdT.type.body.copyWith(
-                                  color: _PcdT.pal.textSecondary,
+                                style: SettleTypography.body.copyWith(
+                                  color: SettleColors.nightSoft,
                                   height: 1.6,
                                 ),
                               ),
@@ -165,20 +135,21 @@ class _Content extends ConsumerWidget {
                           ),
                         ),
                         SettleGap.xxl(),
-                        GlassCta(label: 'Send', onTap: () => _share(context)),
+                        SettleCta(label: 'Send', onTap: () => _share(context)),
                         SettleGap.lg(),
                         Center(
                           child: SettleTappable(
                             semanticLabel: 'Remove from playbook',
                             onTap: () => _remove(context, ref),
                             child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: _PcdT.space.sm,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8,
                               ),
                               child: Text(
                                 'Remove',
-                                style: _PcdT.type.label.copyWith(
-                                  color: _PcdT.pal.textSecondary,
+                                style: SettleTypography.body.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: SettleColors.nightSoft,
                                 ),
                               ),
                             ),

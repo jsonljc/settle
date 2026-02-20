@@ -9,32 +9,15 @@ import '../providers/release_rollout_provider.dart';
 import '../providers/rhythm_provider.dart';
 import '../services/event_bus_service.dart';
 import '../services/rhythm_engine_service.dart';
-import '../theme/glass_components.dart';
+import '../widgets/solid_card.dart';
+import '../widgets/settle_cta.dart';
+import '../widgets/settle_tappable.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_segmented_choice.dart';
-
-class _UrT {
-  _UrT._();
-
-  static final type = _UrTypeTokens();
-  static const pal = _UrPaletteTokens();
-}
-
-class _UrTypeTokens {
-  TextStyle get h3 => SettleTypography.heading;
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption;
-}
-
-class _UrPaletteTokens {
-  const _UrPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
 
 class UpdateRhythmScreen extends ConsumerStatefulWidget {
   const UpdateRhythmScreen({super.key});
@@ -300,10 +283,10 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                     title: 'Update Rhythm',
                     subtitle: 'Replan only when rhythm has shifted.',
                   ),
-                  GlassCard(
+                  SolidCard(
                     child: Text(
                       'No rhythm loaded yet. Open Current Rhythm first.',
-                      style: _UrT.type.body,
+                      style: SettleTypography.body,
                     ),
                   ),
                 ],
@@ -334,29 +317,30 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GlassCard(
+                        SolidCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'Step ${_step + 1} of 4',
-                                style: _UrT.type.caption,
+                                style: SettleTypography.caption,
                               ),
                               const SizedBox(height: 8),
                               if (_step == 0) ...[
-                                Text('Wake time', style: _UrT.type.h3),
+                                Text('Wake time', style: SettleTypography.heading),
                                 const SizedBox(height: 8),
-                                GlassPill(
-                                  label: _wakeTime == null
-                                      ? 'Pick wake time'
-                                      : 'Wake at ${_wakeTime!.format(context)}',
+                                _TimeSlotRow(
+                                  label: 'Wake time',
+                                  value: _wakeTime == null
+                                      ? 'Pick time'
+                                      : _wakeTime!.format(context),
                                   onTap: () => _pickWakeTime(context),
                                 ),
                                 SwitchListTile.adaptive(
                                   contentPadding: EdgeInsets.zero,
                                   title: Text(
                                     'Use a ±15 min range',
-                                    style: _UrT.type.caption,
+                                    style: SettleTypography.caption,
                                   ),
                                   value: _wakeAsRange,
                                   onChanged: (v) =>
@@ -364,7 +348,7 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                 ),
                               ],
                               if (_step == 1) ...[
-                                Text('Nap today?', style: _UrT.type.h3),
+                                Text('Nap today?', style: SettleTypography.heading),
                                 const SizedBox(height: 8),
                                 SettleSegmentedChoice<String>(
                                   options: const ['yes', 'no', 'not_sure'],
@@ -381,7 +365,7 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                   contentPadding: EdgeInsets.zero,
                                   title: Text(
                                     'Daycare mode',
-                                    style: _UrT.type.caption,
+                                    style: SettleTypography.caption,
                                   ),
                                   value: _daycareMode,
                                   onChanged: (v) =>
@@ -389,10 +373,11 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                 ),
                                 if (_napToday == 'yes') ...[
                                   const SizedBox(height: 8),
-                                  GlassPill(
-                                    label: _napStart == null
-                                        ? 'Nap start (optional)'
-                                        : 'Nap start ${_napStart!.format(context)}',
+                                  _TimeSlotRow(
+                                    label: 'Nap start',
+                                    value: _napStart == null
+                                        ? 'Optional'
+                                        : _napStart!.format(context),
                                     onTap: () => _pickTime(
                                       context,
                                       current: _napStart,
@@ -401,10 +386,11 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 6),
-                                  GlassPill(
-                                    label: _napEnd == null
-                                        ? 'Nap end (optional)'
-                                        : 'Nap end ${_napEnd!.format(context)}',
+                                  _TimeSlotRow(
+                                    label: 'Nap end',
+                                    value: _napEnd == null
+                                        ? 'Optional'
+                                        : _napEnd!.format(context),
                                     onTap: () => _pickTime(
                                       context,
                                       current: _napEnd,
@@ -413,10 +399,11 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 6),
-                                  GlassPill(
-                                    label: _typicalNap == null
-                                        ? 'Typical nap time'
-                                        : 'Typical ${_typicalNap!.format(context)}',
+                                  _TimeSlotRow(
+                                    label: 'Typical nap',
+                                    value: _typicalNap == null
+                                        ? 'Pick time'
+                                        : _typicalNap!.format(context),
                                     onTap: () => _pickTime(
                                       context,
                                       current: _typicalNap,
@@ -427,7 +414,7 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                 ],
                               ],
                               if (_step == 2) ...[
-                                Text('Bedtime target', style: _UrT.type.h3),
+                                Text('Bedtime target', style: SettleTypography.heading),
                                 const SizedBox(height: 8),
                                 SettleSegmentedChoice<String>(
                                   options: const ['earlier', 'same', 'later'],
@@ -442,11 +429,11 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                 ),
                               ],
                               if (_step == 3) ...[
-                                Text('Review', style: _UrT.type.h3),
+                                Text('Review', style: SettleTypography.heading),
                                 const SizedBox(height: 8),
                                 Text(
                                   'Wake ${_wakeTime?.format(context) ?? '--'}${_wakeAsRange ? ' (±15m)' : ''}',
-                                  style: _UrT.type.body,
+                                  style: SettleTypography.body,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -455,45 +442,45 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                       : _napToday == 'no'
                                       ? 'No'
                                       : 'Not sure'}',
-                                  style: _UrT.type.body,
+                                  style: SettleTypography.body,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Bedtime target: ${_bedtimeTarget[0].toUpperCase()}${_bedtimeTarget.substring(1)}',
-                                  style: _UrT.type.body,
+                                  style: SettleTypography.body,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Daycare mode: ${_daycareMode ? 'On' : 'Off'}',
-                                  style: _UrT.type.body,
+                                  style: SettleTypography.body,
                                 ),
                                 if (_napDurationHintMinutes() != null) ...[
                                   const SizedBox(height: 4),
                                   Text(
                                     'Nap duration hint: ${_napDurationHintMinutes()} min',
-                                    style: _UrT.type.body,
+                                    style: SettleTypography.body,
                                   ),
                                 ],
                                 if (previewPlan != null) ...[
                                   const SizedBox(height: 10),
                                   Text(
                                     'Confidence: ${previewPlan.confidence.label}',
-                                    style: _UrT.type.caption.copyWith(
-                                      color: _UrT.pal.textSecondary,
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     previewPlan.whyNow,
-                                    style: _UrT.type.caption.copyWith(
-                                      color: _UrT.pal.textSecondary,
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     previewPlan.anchorRecommendation,
-                                    style: _UrT.type.caption.copyWith(
-                                      color: _UrT.pal.textSecondary,
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
                                     ),
                                   ),
                                   if (previewPlan.changeSummary.isNotEmpty) ...[
@@ -501,8 +488,8 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                                     ...previewPlan.changeSummary.map(
                                       (line) => Text(
                                         '• $line',
-                                        style: _UrT.type.caption.copyWith(
-                                          color: _UrT.pal.textSecondary,
+                                        style: SettleTypography.caption.copyWith(
+                                          color: SettleColors.nightSoft,
                                         ),
                                       ),
                                     ),
@@ -513,12 +500,27 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                               Row(
                                 children: [
                                   if (_step > 0)
-                                    GlassPill(
-                                      label: 'Back',
+                                    SettleTappable(
+                                      semanticLabel: 'Back',
                                       onTap: () => setState(() => _step--),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 8,
+                                        ),
+                                        child: Text(
+                                          'Back',
+                                          style: SettleTypography.body.copyWith(
+                                            color: SettleSemanticColors.muted(
+                                              context,
+                                            ),
+                                            decoration: TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   const Spacer(),
-                                  GlassCta(
+                                  SettleCta(
                                     label: _step < 3
                                         ? 'Next'
                                         : _isSubmitting
@@ -545,25 +547,25 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
                         ),
                         if (updatePlan != null) ...[
                           const SizedBox(height: 10),
-                          GlassCard(
+                          SolidCard(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('New rhythm ready', style: _UrT.type.h3),
+                                Text('New rhythm ready', style: SettleTypography.heading),
                                 const SizedBox(height: 6),
                                 Text(
                                   'Recommended anchor: ${_formatTime(context, updatePlan.rhythm.bedtimeAnchorMinutes)} (lock for 7–14 days).',
-                                  style: _UrT.type.body,
+                                  style: SettleTypography.body,
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
                                   'Confidence: ${updatePlan.confidence.label}',
-                                  style: _UrT.type.caption.copyWith(
-                                    color: _UrT.pal.textSecondary,
+                                  style: SettleTypography.caption.copyWith(
+                                    color: SettleColors.nightSoft,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                GlassCta(
+                                SettleCta(
                                   label: 'Back to Current Rhythm',
                                   compact: true,
                                   onTap: () => context.go('/sleep/rhythm'),
@@ -580,6 +582,55 @@ class _UpdateRhythmScreenState extends ConsumerState<UpdateRhythmScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Schedule-style row: label on left, value on right, tappable. Used for time slots.
+class _TimeSlotRow extends StatelessWidget {
+  const _TimeSlotRow({
+    required this.label,
+    required this.value,
+    required this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettleTappable(
+      semanticLabel: '$label: $value',
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: SettleTypography.body.copyWith(
+                  color: SettleSemanticColors.supporting(context),
+                ),
+              ),
+            ),
+            Text(
+              value,
+              style: SettleTypography.body.copyWith(
+                fontWeight: FontWeight.w600,
+                color: SettleSemanticColors.headline(context),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: SettleSemanticColors.supporting(context),
+            ),
+          ],
         ),
       ),
     );

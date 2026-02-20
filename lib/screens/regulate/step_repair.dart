@@ -1,28 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/glass_components.dart';
+import '../../widgets/glass_card.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
-
-class _RsrT {
-  _RsrT._();
-
-  static final type = _RsrTypeTokens();
-  static const pal = _RsrPaletteTokens();
-}
-
-class _RsrTypeTokens {
-  TextStyle get h2 => SettleTypography.heading.copyWith(
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-}
-
-class _RsrPaletteTokens {
-  const _RsrPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
 
 /// Step 5: Repair — shown when trigger was [RegulationTrigger.alreadyYelled].
 /// Simple repair scripts for reconnecting after a rupture.
@@ -44,11 +24,11 @@ class RegulateStepRepair extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Repair when you\'re ready', style: _RsrT.type.h2),
+          Text('Repair when you\'re ready', style: SettleTypography.heading.copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           Text(
             'A short, genuine repair goes a long way. You don\'t have to be perfect.',
-            style: _RsrT.type.body.copyWith(color: _RsrT.pal.textSecondary),
+            style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
           ),
           const SizedBox(height: 20),
           ..._repairScripts.map(
@@ -62,14 +42,14 @@ class RegulateStepRepair extends StatelessWidget {
                   ),
                   child: Text(
                     script,
-                    style: _RsrT.type.body.copyWith(height: 1.45),
+                    style: SettleTypography.body.copyWith(height: 1.45),
                   ),
                 ),
               ),
             ),
           ),
           const SizedBox(height: 24),
-          GlassCta(label: 'Done', onTap: onDone),
+          SettleCta(label: 'Done', onTap: onDone),
         ],
       ),
     );

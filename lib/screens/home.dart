@@ -2,66 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../models/approach.dart';
 import '../models/baby_profile.dart';
 import '../providers/family_rules_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
+import '../providers/rhythm_provider.dart';
 import '../providers/sleep_tonight_provider.dart';
 import '../services/spec_policy.dart';
 import '../widgets/settle_disclosure.dart';
-import '../theme/glass_components.dart';
+import '../widgets/glass_card.dart';
+import '../widgets/glass_pill.dart';
+import '../widgets/settle_cta.dart';
+import '../widgets/today_rhythm_card.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/settle_gap.dart';
-
-class _HmT {
-  _HmT._();
-
-  static final type = _HmTypeTokens();
-  static const pal = _HmPaletteTokens();
-  static const glass = _HmGlassTokens();
-  static const radius = _HmRadiusTokens();
-}
-
-class _HmTypeTokens {
-  TextStyle get h1 => SettleTypography.display.copyWith(
-    fontSize: 26,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.5,
-    height: 1.2,
-  );
-  TextStyle get h3 => SettleTypography.heading;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get caption => SettleTypography.caption;
-  TextStyle get overline => SettleTypography.caption.copyWith(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.8,
-  );
-}
-
-class _HmPaletteTokens {
-  const _HmPaletteTokens();
-
-  Color get accent => SettleColors.nightAccent;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
-
-class _HmGlassTokens {
-  const _HmGlassTokens();
-
-  Color get fill => SettleGlassDark.backgroundStrong;
-  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
-}
-
-class _HmRadiusTokens {
-  const _HmRadiusTokens();
-
-  double get pill => SettleRadii.pill;
-}
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({
@@ -84,9 +41,42 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   String? _loadedChildId;
   bool _syncScheduled = false;
+  bool _rhythmLoadScheduled = false;
 
   bool get _isNight {
     return SpecPolicy.isNight(widget.now());
+  }
+
+  static int _ageMonthsFor(AgeBracket age) {
+    return switch (age) {
+      AgeBracket.newborn => 1,
+      AgeBracket.twoToThreeMonths => 2,
+      AgeBracket.fourToFiveMonths => 5,
+      AgeBracket.sixToEightMonths => 7,
+      AgeBracket.nineToTwelveMonths => 10,
+      AgeBracket.twelveToEighteenMonths => 15,
+      AgeBracket.nineteenToTwentyFourMonths => 21,
+      AgeBracket.twoToThreeYears => 30,
+      AgeBracket.threeToFourYears => 35,
+      AgeBracket.fourToFiveYears => 35,
+      AgeBracket.fiveToSixYears => 66,
+    };
+  }
+
+  void _syncRhythmIfNeeded() {
+    if (widget.profileOverride != null) return;
+    if (_rhythmLoadScheduled) return;
+    final profile = ref.read(profileProvider);
+    if (profile == null) return;
+    _rhythmLoadScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _rhythmLoadScheduled = false;
+      if (!mounted) return;
+      ref.read(rhythmProvider.notifier).load(
+        childId: profile.createdAt,
+        ageMonths: _ageMonthsFor(profile.ageBracket),
+      );
+    });
   }
 
   void _syncTonightPlan() {
@@ -112,6 +102,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     _syncTonightPlan();
+    _syncRhythmIfNeeded();
 
     final profile = widget.profileOverride ?? ref.watch(profileProvider);
     final SleepTonightState sleepState =
@@ -129,6 +120,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final sleepEnabled = !rolloutReady || rollout.sleepTonightEnabled;
     final planEnabled = !rolloutReady || rollout.planProgressEnabled;
     final rulesEnabled = !rolloutReady || rollout.familyRulesEnabled;
+    final rhythmState = ref.watch(rhythmProvider);
+    final ageMonths = profile.ageMonths ?? _ageMonthsFor(profile.ageBracket);
 
     return Scaffold(
       body: GradientBackgroundFromRoute(
@@ -146,12 +139,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Text(
                       'Home',
-                      style: _HmT.type.overline.copyWith(
-                        color: _HmT.pal.textTertiary,
+                      style: SettleTypography.caption.copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.8,
+                        color: SettleColors.nightMuted,
                       ),
                     ),
                     SettleGap.sm(),
-                    Text(profile.name, style: _HmT.type.h1),
+                    Text(profile.name, style: SettleTypography.display.copyWith(fontSize: 26, fontWeight: FontWeight.w700, letterSpacing: -0.5, height: 1.2)),
                   ],
                 ),
                 SettleGap.md(),
@@ -159,10 +155,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   _isNight
                       ? 'It\'s nighttime. You\'re here — that\'s the first step.'
                       : 'You\'re here. That\'s the first step.',
-                  style: _HmT.type.caption.copyWith(
-                    color: _HmT.pal.textSecondary,
+                  style: SettleTypography.caption.copyWith(
+                    color: SettleColors.nightSoft,
                   ),
                 ),
+                if (rolloutReady && sleepEnabled) ...[
+                  SettleGap.md(),
+                  TodayRhythmCard(
+                    schedule: rhythmState.todaySchedule,
+                    ageMonths: ageMonths,
+                    onSleepTonightTap: () => context.push(
+                      SpecPolicy.sleepTonightEntryUri(
+                        source: 'home_rhythm_card',
+                      ),
+                    ),
+                  ),
+                ],
                 if (rolloutReady &&
                     (!rollout.helpNowEnabled ||
                         !rollout.sleepTonightEnabled ||
@@ -171,8 +179,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   SettleGap.sm(),
                   Text(
                     'Some sections are taking a short break.',
-                    style: _HmT.type.caption.copyWith(
-                      color: _HmT.pal.textTertiary,
+                    style: SettleTypography.caption.copyWith(
+                      color: SettleColors.nightMuted,
                     ),
                   ),
                 ],
@@ -189,20 +197,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             children: [
                               Text(
                                 'Start here',
-                                style: _HmT.type.overline.copyWith(
-                                  color: _HmT.pal.textTertiary,
+                                style: SettleTypography.caption.copyWith(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.8,
+                                  color: SettleColors.nightMuted,
                                 ),
                               ),
                               SettleGap.sm(),
                               Text(
                                 'Help with what\'s happening',
-                                style: _HmT.type.h3,
+                                style: SettleTypography.heading,
                               ),
                               SettleGap.sm(),
                               Text(
                                 'We\'ll give you one thing to say and do.',
-                                style: _HmT.type.caption.copyWith(
-                                  color: _HmT.pal.textSecondary,
+                                style: SettleTypography.caption.copyWith(
+                                  color: SettleColors.nightSoft,
                                 ),
                               ),
                               SettleGap.md(),
@@ -259,8 +270,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 SettleGap.sm(),
                                 Text(
                                   'No plan yet. This opens Sleep Tonight.',
-                                  style: _HmT.type.caption.copyWith(
-                                    color: _HmT.pal.textTertiary,
+                                  style: SettleTypography.caption.copyWith(
+                                    color: SettleColors.nightMuted,
                                   ),
                                 ),
                               ],
@@ -328,19 +339,19 @@ class _MoreActionTile extends StatelessWidget {
         onTap: enabled ? onTap : null,
         child: GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          fill: _HmT.glass.fill,
+          fill: SettleSurfaces.cardDark,
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label, style: _HmT.type.label),
+                    Text(label, style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                     SettleGap.xs(),
                     Text(
                       subtitle,
-                      style: _HmT.type.caption.copyWith(
-                        color: _HmT.pal.textSecondary,
+                      style: SettleTypography.caption.copyWith(
+                        color: SettleColors.nightSoft,
                       ),
                     ),
                   ],
@@ -354,13 +365,13 @@ class _MoreActionTile extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _HmT.glass.fillAccent,
-                    borderRadius: BorderRadius.circular(_HmT.radius.pill),
+                    color: SettleColors.dusk600.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(SettleRadii.pill),
                   ),
                   child: Text(
                     '$badge',
-                    style: _HmT.type.caption.copyWith(
-                      color: _HmT.pal.accent,
+                    style: SettleTypography.caption.copyWith(
+                      color: SettleColors.nightAccent,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -368,7 +379,7 @@ class _MoreActionTile extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,
-                color: _HmT.pal.textTertiary,
+                color: SettleColors.nightMuted,
               ),
             ],
           ),

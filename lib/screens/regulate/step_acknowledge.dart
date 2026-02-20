@@ -1,30 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../models/v2_enums.dart';
-import '../../theme/glass_components.dart';
+import '../../widgets/settle_cta.dart';
 import '../../theme/settle_design_system.dart';
 import '../../widgets/option_button.dart';
-
-class _RsaT {
-  _RsaT._();
-
-  static final type = _RsaTypeTokens();
-  static const pal = _RsaPaletteTokens();
-}
-
-class _RsaTypeTokens {
-  TextStyle get h2 => SettleTypography.heading.copyWith(
-    fontSize: 22,
-    fontWeight: FontWeight.w700,
-  );
-  TextStyle get body => SettleTypography.body;
-}
-
-class _RsaPaletteTokens {
-  const _RsaPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-}
 
 /// Step 1: Acknowledge — "You're having a hard moment too." Select situation (maps to [RegulationTrigger]).
 class RegulateStepAcknowledge extends StatelessWidget {
@@ -65,11 +44,11 @@ class RegulateStepAcknowledge extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('You\'re having a hard moment too.', style: _RsaT.type.h2),
+          Text('You\'re having a hard moment too.', style: SettleTypography.heading.copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           Text(
             'Which fits best right now?',
-            style: _RsaT.type.body.copyWith(color: _RsaT.pal.textSecondary),
+            style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
           ),
           const SizedBox(height: 20),
           ..._options.map((option) {
@@ -85,7 +64,7 @@ class RegulateStepAcknowledge extends StatelessWidget {
             );
           }),
           const SizedBox(height: 24),
-          GlassCta(
+          SettleCta(
             label: 'Continue',
             onTap: selectedTrigger != null ? onNext : () {},
           ),

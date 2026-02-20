@@ -5,54 +5,16 @@ import '../providers/family_rules_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/release_rollout_provider.dart';
 import '../providers/sleep_tonight_provider.dart';
-import '../theme/glass_components.dart';
+import '../widgets/glass_card.dart';
+import '../widgets/glass_pill.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/calm_loading.dart';
 import '../widgets/release_surfaces.dart';
 import '../widgets/screen_header.dart';
 import '../widgets/settle_disclosure.dart';
+import '../widgets/settle_tappable.dart';
 import '../widgets/error_state.dart';
-
-class _FrT {
-  _FrT._();
-
-  static final type = _FrTypeTokens();
-  static const pal = _FrPaletteTokens();
-  static const glass = _FrGlassTokens();
-  static const radius = _FrRadiusTokens();
-}
-
-class _FrTypeTokens {
-  TextStyle get h3 => SettleTypography.heading;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption;
-}
-
-class _FrPaletteTokens {
-  const _FrPaletteTokens();
-
-  Color get accent => SettleColors.nightAccent;
-  Color get teal => SettleColors.sage400;
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
-
-class _FrGlassTokens {
-  const _FrGlassTokens();
-
-  Color get fill => SettleGlassDark.backgroundStrong;
-  Color get fillAccent => SettleColors.dusk600.withValues(alpha: 0.16);
-}
-
-class _FrRadiusTokens {
-  const _FrRadiusTokens();
-
-  double get pill => SettleRadii.pill;
-  double get md => 18;
-}
 
 String _ruleLabel(String ruleId) {
   return switch (ruleId) {
@@ -106,12 +68,12 @@ class FamilyRulesScreen extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _FrT.glass.fillAccent,
-                      borderRadius: BorderRadius.circular(_FrT.radius.pill),
+                      color: SettleSurfaces.tintDusk,
+                      borderRadius: BorderRadius.circular(SettleRadii.pill),
                     ),
                     child: Text(
                       'v${rulesState.rulesetVersion}',
-                      style: _FrT.type.caption.copyWith(color: _FrT.pal.accent),
+                      style: SettleTypography.caption.copyWith(color: SettleColors.nightAccent),
                     ),
                   ),
                 ),
@@ -155,7 +117,7 @@ class FamilyRulesScreen extends ConsumerWidget {
                               ),
                               child: SettleDisclosure(
                                 title: 'More details (optional)',
-                                titleStyle: _FrT.type.h3,
+                                titleStyle: SettleTypography.heading,
                                 subtitle:
                                     'Defaults, tonight context, and recent updates.',
                                 children: [
@@ -186,7 +148,7 @@ class FamilyRulesScreen extends ConsumerWidget {
                                   const SizedBox(height: 10),
                                   Text(
                                     'Tonight plan context',
-                                    style: _FrT.type.h3,
+                                    style: SettleTypography.heading,
                                   ),
                                   const SizedBox(height: 8),
                                   if (sleepPlan == null ||
@@ -194,33 +156,33 @@ class FamilyRulesScreen extends ConsumerWidget {
                                           false))
                                     Text(
                                       'No active sleep plan yet tonight.',
-                                      style: _FrT.type.caption.copyWith(
-                                        color: _FrT.pal.textSecondary,
+                                      style: SettleTypography.caption.copyWith(
+                                        color: SettleColors.nightSoft,
                                       ),
                                     )
                                   else ...[
                                     Text(
                                       'Scenario: ${sleepPlan['scenario']}',
-                                      style: _FrT.type.caption,
+                                      style: SettleTypography.caption,
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       sleepPlan['escalation_rule']
                                               ?.toString() ??
                                           '',
-                                      style: _FrT.type.body.copyWith(
-                                        color: _FrT.pal.textSecondary,
+                                      style: SettleTypography.body.copyWith(
+                                        color: SettleColors.nightSoft,
                                       ),
                                     ),
                                   ],
                                   const SizedBox(height: 12),
-                                  Text('Recent updates', style: _FrT.type.h3),
+                                  Text('Recent updates', style: SettleTypography.heading),
                                   const SizedBox(height: 8),
                                   if (rulesState.changeFeed.isEmpty)
                                     Text(
                                       'No updates yet.',
-                                      style: _FrT.type.caption.copyWith(
-                                        color: _FrT.pal.textSecondary,
+                                      style: SettleTypography.caption.copyWith(
+                                        color: SettleColors.nightSoft,
                                       ),
                                     )
                                   else
@@ -233,8 +195,8 @@ class FamilyRulesScreen extends ConsumerWidget {
                                             ),
                                             child: Text(
                                               '• ${item['message']} (${item['timestamp'].toString().split('T').first})',
-                                              style: _FrT.type.caption.copyWith(
-                                                color: _FrT.pal.textSecondary,
+                                              style: SettleTypography.caption.copyWith(
+                                                color: SettleColors.nightSoft,
                                               ),
                                             ),
                                           ),
@@ -320,7 +282,7 @@ class _RulesEditorState extends State<_RulesEditor> {
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.title, style: _FrT.type.h3),
+        Text(widget.title, style: SettleTypography.heading),
         const SizedBox(height: 8),
         ...widget.rules.keys.map((ruleId) {
           final controller = _controllers[ruleId]!;
@@ -331,14 +293,14 @@ class _RulesEditorState extends State<_RulesEditor> {
               children: [
                 TextField(
                   controller: controller,
-                  style: _FrT.type.caption,
+                  style: SettleTypography.caption,
                   decoration: InputDecoration(
                     labelText: _ruleLabel(ruleId),
-                    labelStyle: _FrT.type.caption.copyWith(
-                      color: _FrT.pal.textTertiary,
+                    labelStyle: SettleTypography.caption.copyWith(
+                      color: SettleColors.nightMuted,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(_FrT.radius.md),
+                      borderRadius: BorderRadius.circular(18),
                     ),
                   ),
                   onSubmitted: (_) => _saveRule(ruleId),
@@ -354,8 +316,8 @@ class _RulesEditorState extends State<_RulesEditor> {
                       const SizedBox(width: 8),
                       Text(
                         'Saved',
-                        style: _FrT.type.caption.copyWith(
-                          color: _FrT.pal.teal,
+                        style: SettleTypography.caption.copyWith(
+                          color: SettleColors.sage400,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -372,7 +334,7 @@ class _RulesEditorState extends State<_RulesEditor> {
     if (widget.embedded) {
       return GlassCard(
         padding: const EdgeInsets.all(16),
-        fill: _FrT.glass.fill,
+        fill: SettleSurfaces.cardDark,
         child: content,
       );
     }
@@ -399,12 +361,12 @@ class _PendingDiffs extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Pending updates', style: _FrT.type.h3),
+          Text('Pending updates', style: SettleTypography.heading),
           const SizedBox(height: 8),
           if (state.pendingDiffs.isEmpty)
             Text(
               'No updates waiting.',
-              style: _FrT.type.caption.copyWith(color: _FrT.pal.textSecondary),
+              style: SettleTypography.caption.copyWith(color: SettleColors.nightSoft),
             )
           else
             ...byRule.entries.map((entry) {
@@ -420,7 +382,7 @@ class _PendingDiffs extends ConsumerWidget {
                     children: [
                       Text(
                         'Choose one final version for ${_ruleLabel(ruleId)}.',
-                        style: _FrT.type.label,
+                        style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 6),
                       ...overlapConflicts.map((diff) {
@@ -438,15 +400,15 @@ class _PendingDiffs extends ConsumerWidget {
                               children: [
                                 Text(
                                   diff.newValue,
-                                  style: _FrT.type.caption.copyWith(
-                                    color: _FrT.pal.textSecondary,
+                                  style: SettleTypography.caption.copyWith(
+                                    color: SettleColors.nightSoft,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   'Updated by ${diff.author} on $dateLabel',
-                                  style: _FrT.type.caption.copyWith(
-                                    color: _FrT.pal.textTertiary,
+                                  style: SettleTypography.caption.copyWith(
+                                    color: SettleColors.nightMuted,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -485,19 +447,19 @@ class _PendingDiffs extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(_ruleLabel(ruleId), style: _FrT.type.label),
+                          Text(_ruleLabel(ruleId), style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                           const SizedBox(height: 8),
                           Text(
                             'Current: ${diff.oldValue}',
-                            style: _FrT.type.caption.copyWith(
-                              color: _FrT.pal.textTertiary,
+                            style: SettleTypography.caption.copyWith(
+                              color: SettleColors.nightMuted,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Suggested: ${diff.newValue}',
-                            style: _FrT.type.caption.copyWith(
-                              color: _FrT.pal.textSecondary,
+                            style: SettleTypography.caption.copyWith(
+                              color: SettleColors.nightSoft,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -532,14 +494,15 @@ class _RuleActionLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return SettleTappable(
+      semanticLabel: label,
       onTap: onTap,
       child: Text(
         label,
-        style: _FrT.type.caption.copyWith(
-          color: _FrT.pal.textTertiary,
+        style: SettleTypography.caption.copyWith(
+          color: SettleColors.nightMuted,
           decoration: TextDecoration.underline,
-          decorationColor: _FrT.pal.textTertiary,
+          decorationColor: SettleColors.nightMuted,
         ),
       ),
     );

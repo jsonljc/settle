@@ -9,7 +9,8 @@ import '../providers/release_rollout_provider.dart';
 import '../providers/rhythm_provider.dart';
 import '../services/notification_service.dart';
 import '../services/sleep_ai_explainer_service.dart';
-import '../theme/glass_components.dart';
+import '../widgets/solid_card.dart';
+import '../widgets/settle_cta.dart';
 import '../theme/settle_design_system.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/calm_loading.dart';
@@ -18,42 +19,6 @@ import '../widgets/screen_header.dart';
 import '../widgets/settle_chip.dart';
 import '../widgets/settle_disclosure.dart';
 import '../widgets/settle_gap.dart';
-
-class _CrT {
-  _CrT._();
-
-  static final type = _CrTypeTokens();
-  static const pal = _CrPaletteTokens();
-  static const radius = _CrRadiusTokens();
-  static const space = _CrSpaceTokens();
-}
-
-class _CrTypeTokens {
-  TextStyle get h3 => SettleTypography.heading;
-  TextStyle get label =>
-      SettleTypography.body.copyWith(fontWeight: FontWeight.w600);
-  TextStyle get body => SettleTypography.body;
-  TextStyle get caption => SettleTypography.caption;
-}
-
-class _CrPaletteTokens {
-  const _CrPaletteTokens();
-
-  Color get textSecondary => SettleColors.nightSoft;
-  Color get textTertiary => SettleColors.nightMuted;
-}
-
-class _CrRadiusTokens {
-  const _CrRadiusTokens();
-
-  double get md => 18;
-}
-
-class _CrSpaceTokens {
-  const _CrSpaceTokens();
-
-  double get md => SettleSpacing.md;
-}
 
 class CurrentRhythmScreen extends ConsumerStatefulWidget {
   const CurrentRhythmScreen({super.key});
@@ -158,18 +123,18 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   SettleSpacing.screenPadding,
-                  _CrT.space.md,
+                  SettleSpacing.md,
                   SettleSpacing.screenPadding,
                   SettleSpacing.screenPadding,
                 ),
-                child: GlassCard(
+                child: SolidCard(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Quick recap', style: _CrT.type.h3),
+                      Text('Quick recap', style: SettleTypography.heading),
                       const SettleGap.md(),
-                      Text('Outcome', style: _CrT.type.label),
+                      Text('Outcome', style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                       const SettleGap.sm(),
                       _ChoiceWrap(
                         options: const {
@@ -183,7 +148,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                         },
                       ),
                       const SettleGap.md(),
-                      Text('Time to settle (optional)', style: _CrT.type.label),
+                      Text('Time to settle (optional)', style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                       const SettleGap.sm(),
                       _ChoiceWrap(
                         options: const {
@@ -200,14 +165,14 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                       const SettleGap.md(),
                       TextField(
                         controller: noteController,
-                        style: _CrT.type.caption,
+                        style: SettleTypography.caption,
                         decoration: InputDecoration(
                           labelText: 'Note (optional)',
-                          labelStyle: _CrT.type.caption.copyWith(
-                            color: _CrT.pal.textTertiary,
+                          labelStyle: SettleTypography.caption.copyWith(
+                            color: SettleColors.nightMuted,
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(_CrT.radius.md),
+                            borderRadius: BorderRadius.circular(18),
                           ),
                         ),
                       ),
@@ -392,10 +357,10 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                     title: 'Current Rhythm',
                     subtitle: 'Repeatable routine for this week.',
                   ),
-                  GlassCard(
+                  SolidCard(
                     child: Text(
                       'We could not load a rhythm right now. Try recalculating in a moment.',
-                      style: _CrT.type.body,
+                      style: SettleTypography.body,
                     ),
                   ),
                 ],
@@ -461,8 +426,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const ScreenHeader(
-                  title: 'Current Rhythm',
-                  subtitle: 'Repeat this for the next 1–2 weeks.',
+                  title: 'Sleep',
+                  subtitle: 'Tonight is the hero. Rhythm is here when you need it.',
                 ),
                 Expanded(
                   child: SingleChildScrollView(
@@ -470,19 +435,28 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const _RhythmSectionHeader(label: 'TODAY'),
+                        const _RhythmSectionHeader(label: 'Tonight'),
+                        const SettleGap.sm(),
+                        _TonightHeroRow(
+                          needsSetup: needsSleepSetup,
+                          onSetup: () => context.push('/sleep/setup'),
+                          onTonight: (scenario) =>
+                              context.push('/sleep/tonight?scenario=$scenario'),
+                        ),
+                        const SettleGap.xxl(),
+                        const _RhythmSectionHeader(label: 'Today'),
                         const SettleGap.sm(),
                         if (needsSleepSetup) ...[
-                          GlassCard(
+                          SolidCard(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Finish sleep setup to personalize tonight guidance.',
-                                  style: _CrT.type.body,
+                                  style: SettleTypography.body,
                                 ),
                                 const SettleGap.sm(),
-                                GlassCta(
+                                SettleCta(
                                   label: 'Complete sleep setup',
                                   compact: true,
                                   onTap: () => context.push('/sleep/setup'),
@@ -492,16 +466,17 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                           ),
                           const SettleGap.md(),
                         ],
-                        GlassCardAccent(
+                        SolidCard(
+                          color: SettleSurfaces.tintDusk,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Today rhythm', style: _CrT.type.h3),
+                              Text('Today rhythm', style: SettleTypography.heading),
                               const SettleGap.xs(),
                               Text(
                                 'Built for $ageMonths months. Repeat this through the week.',
-                                style: _CrT.type.caption.copyWith(
-                                  color: _CrT.pal.textSecondary,
+                                style: SettleTypography.caption.copyWith(
+                                  color: SettleColors.nightSoft,
                                 ),
                               ),
                               const SettleGap.md(),
@@ -531,26 +506,26 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                               const SettleGap.md(),
                               Text(
                                 'Next up: ${_relaxedLabel(nextUp ?? bedtime)} around ${_formatClock(context, (nextUp ?? bedtime).centerlineMinutes)}',
-                                style: _CrT.type.caption.copyWith(
-                                  color: _CrT.pal.textSecondary,
+                                style: SettleTypography.caption.copyWith(
+                                  color: SettleColors.nightSoft,
                                 ),
                               ),
                               const SettleGap.sm(),
                               Text(
                                 'How sure are we? ${schedule.confidence.label}',
-                                style: _CrT.type.caption.copyWith(
-                                  color: _CrT.pal.textSecondary,
+                                style: SettleTypography.caption.copyWith(
+                                  color: SettleColors.nightSoft,
                                 ),
                               ),
                               const SettleGap.xs(),
                               Text(
                                 'Based on recent logging and pattern stability.',
-                                style: _CrT.type.caption.copyWith(
-                                  color: _CrT.pal.textSecondary,
+                                style: SettleTypography.caption.copyWith(
+                                  color: SettleColors.nightSoft,
                                 ),
                               ),
                               const SettleGap.md(),
-                              GlassCta(
+                              SettleCta(
                                 label: 'Sleep tonight guidance',
                                 compact: true,
                                 onTap: () => context.push(
@@ -564,16 +539,16 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                         if (rollout.rhythmShiftDetectorPromptsEnabled &&
                             shift.shouldSuggestUpdate) ...[
                           const SettleGap.md(),
-                          GlassCard(
+                          SolidCard(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Update Rhythm suggested',
-                                  style: _CrT.type.h3,
+                                  style: SettleTypography.heading,
                                 ),
                                 const SettleGap.xs(),
-                                Text(shift.explanation, style: _CrT.type.body),
+                                Text(shift.explanation, style: SettleTypography.body),
                                 const SettleGap.sm(),
                                 SettleChip(
                                   variant: SettleChipVariant.action,
@@ -587,28 +562,28 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                         ],
                         if (state.preciseView && aiSummary != null) ...[
                           const SettleGap.md(),
-                          GlassCard(
+                          SolidCard(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(aiSummary.headline, style: _CrT.type.h3),
+                                Text(aiSummary.headline, style: SettleTypography.heading),
                                 const SettleGap.xs(),
                                 Text(
                                   aiSummary.whatChanged,
-                                  style: _CrT.type.body,
+                                  style: SettleTypography.body,
                                 ),
                                 const SettleGap.xs(),
                                 Text(
                                   aiSummary.why,
-                                  style: _CrT.type.caption.copyWith(
-                                    color: _CrT.pal.textSecondary,
+                                  style: SettleTypography.caption.copyWith(
+                                    color: SettleColors.nightSoft,
                                   ),
                                 ),
                                 const SettleGap.xs(),
                                 Text(
                                   aiSummary.patternSummary,
-                                  style: _CrT.type.caption.copyWith(
-                                    color: _CrT.pal.textSecondary,
+                                  style: SettleTypography.caption.copyWith(
+                                    color: SettleColors.nightSoft,
                                   ),
                                 ),
                               ],
@@ -618,11 +593,11 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                         const SettleGap.md(),
                         const _RhythmSectionHeader(label: 'PLAN VIEW'),
                         const SettleGap.sm(),
-                        GlassCard(
+                        SolidCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('View mode', style: _CrT.type.label),
+                              Text('View mode', style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
                               const SettleGap.sm(),
                               Wrap(
                                 spacing: SettleSpacing.sm,
@@ -657,7 +632,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                                 state.preciseView
                                     ? 'Today timeline'
                                     : 'Today windows',
-                                style: _CrT.type.h3,
+                                style: SettleTypography.heading,
                               ),
                               const SettleGap.sm(),
                               ...blocks.map((block) {
@@ -686,8 +661,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                               const SettleGap.xs(),
                               Text(
                                 'Bedtime anchor: ${_formatClock(context, rhythm.bedtimeAnchorMinutes)}${rhythm.locks.bedtimeAnchorLocked ? ' (locked)' : ''}',
-                                style: _CrT.type.caption.copyWith(
-                                  color: _CrT.pal.textSecondary,
+                                style: SettleTypography.caption.copyWith(
+                                  color: SettleColors.nightSoft,
                                 ),
                               ),
                             ],
@@ -696,7 +671,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                         const SettleGap.md(),
                         const _RhythmSectionHeader(label: 'ADJUSTMENTS'),
                         const SettleGap.sm(),
-                        GlassCard(
+                        SolidCard(
                           child: SettleDisclosure(
                             title: 'Adjust today',
                             subtitle: 'Optional quick taps',
@@ -772,25 +747,29 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                           ),
                         ),
                         const SettleGap.md(),
-                        GlassCard(
+                        SolidCard(
                           child: SettleDisclosure(
                             title: 'Tools',
                             subtitle: 'Use if needed',
                             children: [
                               const SettleGap.sm(),
-                              GlassCta(
+                              SettleCta(
                                 label: 'Update rhythm',
                                 compact: true,
                                 onTap: () => context.push('/sleep/update'),
                               ),
                               const SettleGap.sm(),
-                              GlassPill(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Morning recap',
+                                selected: false,
                                 onTap: () => _openMorningRecapSheet(childId),
                               ),
                               const SettleGap.sm(),
-                              GlassPill(
+                              SettleChip(
+                                variant: SettleChipVariant.action,
                                 label: 'Recalculate schedule',
+                                selected: false,
                                 onTap: () => ref
                                     .read(rhythmProvider.notifier)
                                     .recalculate(childId: childId),
@@ -841,8 +820,8 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                           const SettleGap.sm(),
                           Text(
                             state.lastHint!,
-                            style: _CrT.type.caption.copyWith(
-                              color: _CrT.pal.textSecondary,
+                            style: SettleTypography.caption.copyWith(
+                              color: SettleColors.nightSoft,
                             ),
                           ),
                         ],
@@ -889,6 +868,143 @@ class _ChoiceWrap extends StatelessWidget {
   }
 }
 
+/// V2: Tonight hero (one large tile) + Other situations (two smaller tiles).
+class _TonightHeroRow extends StatelessWidget {
+  const _TonightHeroRow({
+    required this.needsSetup,
+    required this.onSetup,
+    required this.onTonight,
+  });
+
+  final bool needsSetup;
+  final VoidCallback onSetup;
+  final void Function(String scenario) onTonight;
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final hour = now.hour;
+    final isNight = hour >= 20 || hour < 6;
+    final isEarlyWake = isNight && (hour == 5 || (hour == 4 && now.minute >= 30));
+
+    String heroTitle;
+    String heroSubtitle;
+    VoidCallback heroOnTap;
+    List<({String title, String scenario})> other;
+
+    if (needsSetup) {
+      heroTitle = 'Set up your sleep rhythm';
+      heroSubtitle = 'About 30 seconds.';
+      heroOnTap = onSetup;
+      other = [
+        (title: 'Night wake', scenario: 'night_wakes'),
+        (title: 'Bedtime protest', scenario: 'bedtime_protest'),
+      ];
+    } else if (isEarlyWake) {
+      heroTitle = 'Early wake';
+      heroSubtitle = 'Get one step for before 5–6am.';
+      heroOnTap = () => onTonight('early_wakes');
+      other = [
+        (title: 'Night wake', scenario: 'night_wakes'),
+        (title: 'Bedtime protest', scenario: 'bedtime_protest'),
+      ];
+    } else if (isNight) {
+      heroTitle = 'Night wake';
+      heroSubtitle = 'Get one immediate step for tonight.';
+      heroOnTap = () => onTonight('night_wakes');
+      other = [
+        (title: 'Early wake', scenario: 'early_wakes'),
+        (title: 'Bedtime protest', scenario: 'bedtime_protest'),
+      ];
+    } else {
+      heroTitle = 'Bedtime';
+      heroSubtitle = 'Won\'t settle? Get tonight\'s steps.';
+      heroOnTap = () => onTonight('bedtime_protest');
+      other = [
+        (title: 'Night wake', scenario: 'night_wakes'),
+        (title: 'Early wake', scenario: 'early_wakes'),
+      ];
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SolidCard(
+          onTap: heroOnTap,
+          padding: const EdgeInsets.symmetric(
+            horizontal: SettleSpacing.cardPadding,
+            vertical: SettleSpacing.xxl,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                heroTitle,
+                style: SettleTypography.heading.copyWith(
+                  color: SettleSemanticColors.headline(context),
+                ),
+              ),
+              const SettleGap.sm(),
+              Text(
+                heroSubtitle,
+                style: SettleTypography.body.copyWith(
+                  color: SettleSemanticColors.body(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SettleGap.md(),
+        Text(
+          'Other situations',
+          style: SettleTypography.label.copyWith(
+            color: SettleSemanticColors.supporting(context),
+            fontSize: 14,
+          ),
+        ),
+        const SettleGap.sm(),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SolidCard(
+                onTap: () => onTonight(other[0].scenario),
+                padding: const EdgeInsets.symmetric(
+                  vertical: SettleSpacing.lg,
+                  horizontal: SettleSpacing.md,
+                ),
+                child: Text(
+                  other[0].title,
+                  style: SettleTypography.subheading.copyWith(
+                    color: SettleSemanticColors.headline(context),
+                  ),
+                ),
+              ),
+            ),
+            const SettleGap.md(),
+            Expanded(
+              child: SolidCard(
+                onTap: () => onTonight(other[1].scenario),
+                padding: const EdgeInsets.symmetric(
+                  vertical: SettleSpacing.lg,
+                  horizontal: SettleSpacing.md,
+                ),
+                child: Text(
+                  other[1].title,
+                  style: SettleTypography.subheading.copyWith(
+                    color: SettleSemanticColors.headline(context),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class _RhythmSectionHeader extends StatelessWidget {
   const _RhythmSectionHeader({required this.label});
 
@@ -900,8 +1016,9 @@ class _RhythmSectionHeader extends StatelessWidget {
       padding: const EdgeInsets.only(left: SettleSpacing.xs),
       child: Text(
         label,
-        style: SettleTypography.overline.copyWith(
-          color: SettleSemanticColors.muted(context),
+        style: SettleTypography.label.copyWith(
+          color: SettleSemanticColors.supporting(context),
+          fontSize: 14,
         ),
       ),
     );
@@ -922,14 +1039,14 @@ class _AnchorRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: _CrT.type.caption.copyWith(color: _CrT.pal.textSecondary),
+            style: SettleTypography.caption.copyWith(color: SettleColors.nightSoft),
           ),
         ),
         const SizedBox(width: SettleSpacing.sm),
         Flexible(
           child: Text(
             value,
-            style: _CrT.type.label,
+            style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
             textAlign: TextAlign.right,
           ),
         ),

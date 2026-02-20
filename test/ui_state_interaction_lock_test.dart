@@ -14,7 +14,8 @@ import 'package:settle/models/tantrum_profile.dart';
 import 'package:settle/providers/family_rules_provider.dart';
 import 'package:settle/providers/sleep_tonight_provider.dart';
 import 'package:settle/screens/home.dart';
-import 'package:settle/theme/glass_components.dart';
+import 'package:settle/widgets/settle_cta.dart';
+import 'package:settle/widgets/glass_pill.dart';
 import 'package:settle/widgets/release_surfaces.dart';
 
 void main() {

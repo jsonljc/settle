@@ -269,33 +269,6 @@ Settle's primary acquisition channel is **word-of-mouth from a crisis moment tha
 
 ---
 
-## Visual Direction
-
-Premium calm. "Liquid Glass inspired" but restrained.
-
-- Translucency only where it improves hierarchy.
-- Blur used sparingly (performance-safe, no jank on mid-range devices).
-- Typography + whitespace do most of the work.
-- No loud gradients, no cluttered dashboards, no gamification chrome.
-
-### Spacing grid
-
-Base unit: **8**. Common values: 8 / 16 / 24 / 32 / 48 / 64. Enforce via `SettleGap` widget — do not hardcode spacing values in screens.
-
-### Color strategy
-
-- Neutral background (light + true dark mode).
-- Single calm accent for primary CTA / highlights.
-- Soft status colors (no harsh alarms). No red/green for progress.
-- Focus-mode background token (`T.pal.focusBackground`) for SOS/Regulate flows.
-
-### Motion rules
-
-- Subtle only: `AnimatedSwitcher` for step transitions, `AnimatedOpacity` for hints.
-- 150–250ms durations.
-- Motion must never delay showing guidance.
-- Respect `reduceMotion` system setting via centralized `createSettleAnimation()` factory.
-
 ---
 
 ## Architecture Expectations
@@ -321,22 +294,15 @@ Screens must not import from `data/` or call services directly. All data access 
 
 ### Component standards
 
-- Use `SettleGap` for spacing (not hardcoded values).
 - Use `SettleChip` for selection controls (not local chip implementations).
 - Use `SettleTappable` for interactive elements (not bare `GestureDetector`).
 - Use `SettleModalSheet` for bottom sheets.
-- All new interactive elements must include `Semantics` labels.
+- All new interactive elements should include `Semantics` labels where applicable.
 
 ### Accessibility
 
-Target: WCAG AA compliance.
-
 - `Semantics(header: true)` on all `ScreenHeader` instances.
-- `MergeSemantics` on compound controls.
-- Tap targets ≥ 44px.
-- Glass component contrast verification: 4.5:1 for body text, 3:1 for large text.
-- Text scales without overflow at system large text settings.
-- `reduceMotion` respected everywhere.
+- `MergeSemantics` on compound controls where it improves screen reader order.
 
 ---
 
@@ -346,7 +312,6 @@ Target: WCAG AA compliance.
 - Avoid mega refactors unless explicitly planned and scoped.
 - If a task is "add Tantrums", treat Sleep logic/registry as **read-only by default** except for navigation entry points.
 - No screen may import directly from `lib/services/` — enforce via lint rule.
-- No hardcoded `Color(...)`, `TextStyle(...)`, or spacing literals in screen files — enforce via lint rule.
 
 ---
 
@@ -380,6 +345,5 @@ Target: WCAG AA compliance.
 | Progress | Trend + supportive framing | "Worked/Not quite" micro-check exists; no trend visualization | Build weekly trend view + plan context |
 | Content authorship | Specialist-reviewed, documented | No formal review process documented | Establish process before shipping new flows |
 | Folder structure | `ui/state/domain/data/` | `screens/widgets/providers/services/` | Migrate incrementally per feature |
-| Spacing | `SettleGap` enforced | Mixed hardcoded values (6/8/10/14) | Create `SettleGap`, add lint rule |
 | Offline | Bundled registry + local rhythm | Hive for persistence, no explicit bundle strategy | Confirm registry bundling in build pipeline |
 | Monetization | Free crisis + paid rhythm/progress/family | No entitlement gating in registry | Add tier field to flow definitions |
