@@ -19,6 +19,7 @@ import '../widgets/screen_header.dart';
 import '../widgets/settle_chip.dart';
 import '../widgets/settle_disclosure.dart';
 import '../widgets/settle_gap.dart';
+import '../widgets/settle_modal_sheet.dart';
 
 class CurrentRhythmScreen extends ConsumerStatefulWidget {
   const CurrentRhythmScreen({super.key});
@@ -33,6 +34,7 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
   bool _loadScheduled = false;
   String? _lastWindDownSignature;
   String? _lastDriftSignature;
+  bool _todayExpanded = false;
 
   int _ageMonthsFor(AgeBracket age) {
     return switch (age) {
@@ -306,6 +308,28 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
     }
   }
 
+  void _openPlanAndToolsSheet({
+    required BuildContext context,
+    required String childId,
+  }) {
+    showSettleSheet<void>(
+      context,
+      child: SettleModalSheet(
+        title: 'Plan & tools',
+        body: _PlanAndToolsSheetBody(
+          childId: childId,
+          formatClock: (int minutes) => _formatClock(context, minutes),
+          relaxedLabel: _relaxedLabel,
+          onPickWakeTime: () => _pickWakeTime(
+            childId,
+            ref.read(rhythmProvider).wakeTimeMinutes,
+          ),
+          onOpenMorningRecap: () => _openMorningRecapSheet(childId),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _scheduleLoadIfNeeded();
@@ -466,73 +490,134 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                           ),
                           const SettleGap.md(),
                         ],
+                        GestureDetector(
+                          onTap: () =>
+                              setState(() => _todayExpanded = !_todayExpanded),
+                          child: SolidCard(
+                            color: SettleSurfaces.tintDusk,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (!_todayExpanded) ...[
+                                  Text(
+                                    'Next up: ${_relaxedLabel(nextUp ?? bedtime)} around ${_formatClock(context, (nextUp ?? bedtime).centerlineMinutes)}',
+                                    style: SettleTypography.body.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SettleGap.xs(),
+                                  Text(
+                                    '${_formatClock(context, wake.centerlineMinutes)} · First nap ${_formatClock(context, firstNap.centerlineMinutes)} · Bed ${_formatClock(context, bedtime.centerlineMinutes)}',
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
+                                    ),
+                                  ),
+                                  const SettleGap.xs(),
+                                  Text(
+                                    'Tap to see full schedule',
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightMuted,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ] else ...[
+                                  Text(
+                                    'Today rhythm',
+                                    style: SettleTypography.heading,
+                                  ),
+                                  const SettleGap.xs(),
+                                  Text(
+                                    'Built for $ageMonths months. Repeat this through the week.',
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
+                                    ),
+                                  ),
+                                  const SettleGap.md(),
+                                  _AnchorRow(
+                                    label: 'Wake',
+                                    value: _formatClock(
+                                      context,
+                                      wake.centerlineMinutes,
+                                    ),
+                                  ),
+                                  const SettleGap.sm(),
+                                  _AnchorRow(
+                                    label: 'First nap',
+                                    value: _formatClock(
+                                      context,
+                                      firstNap.centerlineMinutes,
+                                    ),
+                                  ),
+                                  const SettleGap.sm(),
+                                  _AnchorRow(
+                                    label: 'Bedtime',
+                                    value: _formatClock(
+                                      context,
+                                      bedtime.centerlineMinutes,
+                                    ),
+                                  ),
+                                  const SettleGap.md(),
+                                  Text(
+                                    'Next up: ${_relaxedLabel(nextUp ?? bedtime)} around ${_formatClock(context, (nextUp ?? bedtime).centerlineMinutes)}',
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
+                                    ),
+                                  ),
+                                  const SettleGap.sm(),
+                                  Text(
+                                    'How sure are we? ${schedule.confidence.label}',
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
+                                    ),
+                                  ),
+                                  const SettleGap.xs(),
+                                  Text(
+                                    'Based on recent logging and pattern stability.',
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightSoft,
+                                    ),
+                                  ),
+                                  const SettleGap.sm(),
+                                  Text(
+                                    'Tap to collapse',
+                                    style: SettleTypography.caption.copyWith(
+                                      color: SettleColors.nightMuted,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SettleGap.md(),
                         SolidCard(
-                          color: SettleSurfaces.tintDusk,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Today rhythm', style: SettleTypography.heading),
-                              const SettleGap.xs(),
-                              Text(
-                                'Built for $ageMonths months. Repeat this through the week.',
-                                style: SettleTypography.caption.copyWith(
+                          onTap: () => _openPlanAndToolsSheet(
+                            context: context,
+                            childId: childId,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: SettleSpacing.md,
+                              horizontal: SettleSpacing.cardPadding,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Plan & tools',
+                                    style: SettleTypography.body.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.chevron_right,
+                                  size: 20,
                                   color: SettleColors.nightSoft,
                                 ),
-                              ),
-                              const SettleGap.md(),
-                              _AnchorRow(
-                                label: 'Wake',
-                                value: _formatClock(
-                                  context,
-                                  wake.centerlineMinutes,
-                                ),
-                              ),
-                              const SettleGap.sm(),
-                              _AnchorRow(
-                                label: 'First nap',
-                                value: _formatClock(
-                                  context,
-                                  firstNap.centerlineMinutes,
-                                ),
-                              ),
-                              const SettleGap.sm(),
-                              _AnchorRow(
-                                label: 'Bedtime',
-                                value: _formatClock(
-                                  context,
-                                  bedtime.centerlineMinutes,
-                                ),
-                              ),
-                              const SettleGap.md(),
-                              Text(
-                                'Next up: ${_relaxedLabel(nextUp ?? bedtime)} around ${_formatClock(context, (nextUp ?? bedtime).centerlineMinutes)}',
-                                style: SettleTypography.caption.copyWith(
-                                  color: SettleColors.nightSoft,
-                                ),
-                              ),
-                              const SettleGap.sm(),
-                              Text(
-                                'How sure are we? ${schedule.confidence.label}',
-                                style: SettleTypography.caption.copyWith(
-                                  color: SettleColors.nightSoft,
-                                ),
-                              ),
-                              const SettleGap.xs(),
-                              Text(
-                                'Based on recent logging and pattern stability.',
-                                style: SettleTypography.caption.copyWith(
-                                  color: SettleColors.nightSoft,
-                                ),
-                              ),
-                              const SettleGap.md(),
-                              SettleCta(
-                                label: 'Sleep tonight guidance',
-                                compact: true,
-                                onTap: () => context.push(
-                                  '/sleep/tonight?source=rhythm',
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         const SettleGap.md(),
@@ -590,232 +675,6 @@ class _CurrentRhythmScreenState extends ConsumerState<CurrentRhythmScreen> {
                             ),
                           ),
                         ],
-                        const SettleGap.md(),
-                        const _RhythmSectionHeader(label: 'PLAN VIEW'),
-                        const SettleGap.sm(),
-                        SolidCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('View mode', style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600)),
-                              const SettleGap.sm(),
-                              Wrap(
-                                spacing: SettleSpacing.sm,
-                                runSpacing: SettleSpacing.sm,
-                                children: [
-                                  SettleChip(
-                                    variant: SettleChipVariant.action,
-                                    label: 'Relaxed view',
-                                    selected: !state.preciseView,
-                                    onTap: () => ref
-                                        .read(rhythmProvider.notifier)
-                                        .setPreciseView(
-                                          childId: childId,
-                                          precise: false,
-                                        ),
-                                  ),
-                                  SettleChip(
-                                    variant: SettleChipVariant.action,
-                                    label: 'Precise view',
-                                    selected: state.preciseView,
-                                    onTap: () => ref
-                                        .read(rhythmProvider.notifier)
-                                        .setPreciseView(
-                                          childId: childId,
-                                          precise: true,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                              const SettleGap.md(),
-                              Text(
-                                state.preciseView
-                                    ? 'Today timeline'
-                                    : 'Today windows',
-                                style: SettleTypography.heading,
-                              ),
-                              const SettleGap.sm(),
-                              ...blocks.map((block) {
-                                final window = state.preciseView
-                                    ? '${_formatClock(context, block.windowStartMinutes)}–${_formatClock(context, block.windowEndMinutes)}'
-                                    : _formatClock(
-                                        context,
-                                        block.centerlineMinutes,
-                                      );
-                                final duration =
-                                    (block.expectedDurationMinMinutes != null &&
-                                        block.expectedDurationMaxMinutes !=
-                                            null)
-                                    ? ' · ${block.expectedDurationMinMinutes}-${block.expectedDurationMaxMinutes}m'
-                                    : '';
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: SettleSpacing.sm,
-                                  ),
-                                  child: _AnchorRow(
-                                    label: _relaxedLabel(block),
-                                    value: '$window$duration',
-                                  ),
-                                );
-                              }),
-                              const SettleGap.xs(),
-                              Text(
-                                'Bedtime anchor: ${_formatClock(context, rhythm.bedtimeAnchorMinutes)}${rhythm.locks.bedtimeAnchorLocked ? ' (locked)' : ''}',
-                                style: SettleTypography.caption.copyWith(
-                                  color: SettleColors.nightSoft,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SettleGap.md(),
-                        const _RhythmSectionHeader(label: 'ADJUSTMENTS'),
-                        const SettleGap.sm(),
-                        SolidCard(
-                          child: SettleDisclosure(
-                            title: 'Adjust today',
-                            subtitle: 'Optional quick taps',
-                            children: [
-                              const SettleGap.sm(),
-                              Wrap(
-                                spacing: SettleSpacing.sm,
-                                runSpacing: SettleSpacing.sm,
-                                children: [
-                                  SettleChip(
-                                    variant: SettleChipVariant.action,
-                                    label: 'Wake time was…',
-                                    selected: false,
-                                    onTap: () => _pickWakeTime(
-                                      childId,
-                                      state.wakeTimeMinutes,
-                                    ),
-                                  ),
-                                  SettleChip(
-                                    variant: SettleChipVariant.action,
-                                    label: 'Short nap',
-                                    selected: false,
-                                    onTap: () => ref
-                                        .read(rhythmProvider.notifier)
-                                        .markNapQualityTap(
-                                          childId: childId,
-                                          quality: NapQualityTap.short,
-                                        ),
-                                  ),
-                                  SettleChip(
-                                    variant: SettleChipVariant.action,
-                                    label: 'OK nap',
-                                    selected: false,
-                                    onTap: () => ref
-                                        .read(rhythmProvider.notifier)
-                                        .markNapQualityTap(
-                                          childId: childId,
-                                          quality: NapQualityTap.ok,
-                                        ),
-                                  ),
-                                  SettleChip(
-                                    variant: SettleChipVariant.action,
-                                    label: 'Long nap',
-                                    selected: false,
-                                    onTap: () => ref
-                                        .read(rhythmProvider.notifier)
-                                        .markNapQualityTap(
-                                          childId: childId,
-                                          quality: NapQualityTap.long,
-                                        ),
-                                  ),
-                                  SettleChip(
-                                    variant: SettleChipVariant.action,
-                                    label: 'Skipped nap',
-                                    selected: false,
-                                    onTap: () => ref
-                                        .read(rhythmProvider.notifier)
-                                        .markSkippedNap(childId: childId),
-                                  ),
-                                  SettleChip(
-                                    variant: SettleChipVariant.action,
-                                    label: 'Bedtime battle',
-                                    selected: false,
-                                    onTap: () => ref
-                                        .read(rhythmProvider.notifier)
-                                        .markBedtimeResistance(
-                                          childId: childId,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SettleGap.md(),
-                        SolidCard(
-                          child: SettleDisclosure(
-                            title: 'Tools',
-                            subtitle: 'Use if needed',
-                            children: [
-                              const SettleGap.sm(),
-                              SettleCta(
-                                label: 'Update rhythm',
-                                compact: true,
-                                onTap: () => context.push('/sleep/update'),
-                              ),
-                              const SettleGap.sm(),
-                              SettleChip(
-                                variant: SettleChipVariant.action,
-                                label: 'Morning recap',
-                                selected: false,
-                                onTap: () => _openMorningRecapSheet(childId),
-                              ),
-                              const SettleGap.sm(),
-                              SettleChip(
-                                variant: SettleChipVariant.action,
-                                label: 'Recalculate schedule',
-                                selected: false,
-                                onTap: () => ref
-                                    .read(rhythmProvider.notifier)
-                                    .recalculate(childId: childId),
-                              ),
-                              const SettleGap.sm(),
-                              SettleChip(
-                                variant: SettleChipVariant.action,
-                                label: state.advancedDayLogging
-                                    ? 'Advanced mode: On'
-                                    : 'Advanced mode: Off',
-                                selected: state.advancedDayLogging,
-                                onTap: () => ref
-                                    .read(rhythmProvider.notifier)
-                                    .setAdvancedDayLogging(
-                                      childId: childId,
-                                      enabled: !state.advancedDayLogging,
-                                    ),
-                              ),
-                              if (state.advancedDayLogging) ...[
-                                const SettleGap.sm(),
-                                Wrap(
-                                  spacing: SettleSpacing.sm,
-                                  runSpacing: SettleSpacing.sm,
-                                  children: [
-                                    SettleChip(
-                                      variant: SettleChipVariant.action,
-                                      label: 'Nap started',
-                                      selected: false,
-                                      onTap: () => ref
-                                          .read(rhythmProvider.notifier)
-                                          .markNapStarted(childId: childId),
-                                    ),
-                                    SettleChip(
-                                      variant: SettleChipVariant.action,
-                                      label: 'Nap ended',
-                                      selected: false,
-                                      onTap: () => ref
-                                          .read(rhythmProvider.notifier)
-                                          .markNapEnded(childId: childId),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
                         if (state.lastHint != null) ...[
                           const SettleGap.sm(),
                           Text(
@@ -1021,6 +880,229 @@ class _RhythmSectionHeader extends StatelessWidget {
           fontSize: 14,
         ),
       ),
+    );
+  }
+}
+
+class _PlanAndToolsSheetBody extends ConsumerWidget {
+  const _PlanAndToolsSheetBody({
+    required this.childId,
+    required this.formatClock,
+    required this.relaxedLabel,
+    required this.onPickWakeTime,
+    required this.onOpenMorningRecap,
+  });
+
+  final String childId;
+  final String Function(int minutes) formatClock;
+  final String Function(RhythmScheduleBlock block) relaxedLabel;
+  final VoidCallback onPickWakeTime;
+  final VoidCallback onOpenMorningRecap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(rhythmProvider);
+    final rhythm = state.rhythm;
+    if (rhythm == null || state.todaySchedule == null) {
+      return Text(
+        'Rhythm not loaded.',
+        style: SettleTypography.body.copyWith(color: SettleColors.nightSoft),
+      );
+    }
+    final blocks = state.todaySchedule!.blocks;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'View mode',
+          style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SettleGap.sm(),
+        Wrap(
+          spacing: SettleSpacing.sm,
+          runSpacing: SettleSpacing.sm,
+          children: [
+            SettleChip(
+              variant: SettleChipVariant.action,
+              label: 'Relaxed view',
+              selected: !state.preciseView,
+              onTap: () => ref
+                  .read(rhythmProvider.notifier)
+                  .setPreciseView(childId: childId, precise: false),
+            ),
+            SettleChip(
+              variant: SettleChipVariant.action,
+              label: 'Precise view',
+              selected: state.preciseView,
+              onTap: () => ref
+                  .read(rhythmProvider.notifier)
+                  .setPreciseView(childId: childId, precise: true),
+            ),
+          ],
+        ),
+        const SettleGap.md(),
+        Text(
+          state.preciseView ? 'Today timeline' : 'Today windows',
+          style: SettleTypography.heading,
+        ),
+        const SettleGap.sm(),
+        ...blocks.map((block) {
+          final window = state.preciseView
+              ? '${formatClock(block.windowStartMinutes)}–${formatClock(block.windowEndMinutes)}'
+              : formatClock(block.centerlineMinutes);
+          final duration =
+              (block.expectedDurationMinMinutes != null &&
+                      block.expectedDurationMaxMinutes != null)
+                  ? ' · ${block.expectedDurationMinMinutes}-${block.expectedDurationMaxMinutes}m'
+                  : '';
+          return Padding(
+            padding: const EdgeInsets.only(bottom: SettleSpacing.sm),
+            child: _AnchorRow(
+              label: relaxedLabel(block),
+              value: '$window$duration',
+            ),
+          );
+        }),
+        const SettleGap.xs(),
+        Text(
+          'Bedtime anchor: ${formatClock(rhythm.bedtimeAnchorMinutes)}${rhythm.locks.bedtimeAnchorLocked ? ' (locked)' : ''}',
+          style: SettleTypography.caption.copyWith(
+            color: SettleColors.nightSoft,
+          ),
+        ),
+        const SettleGap.lg(),
+        SettleDisclosure(
+          title: 'Adjust today',
+          subtitle: 'Optional quick taps',
+          children: [
+            const SettleGap.sm(),
+            Wrap(
+              spacing: SettleSpacing.sm,
+              runSpacing: SettleSpacing.sm,
+              children: [
+                SettleChip(
+                  variant: SettleChipVariant.action,
+                  label: 'Wake time was…',
+                  selected: false,
+                  onTap: onPickWakeTime,
+                ),
+                SettleChip(
+                  variant: SettleChipVariant.action,
+                  label: 'Short nap',
+                  selected: false,
+                  onTap: () => ref
+                      .read(rhythmProvider.notifier)
+                      .markNapQualityTap(
+                          childId: childId, quality: NapQualityTap.short),
+                ),
+                SettleChip(
+                  variant: SettleChipVariant.action,
+                  label: 'OK nap',
+                  selected: false,
+                  onTap: () => ref
+                      .read(rhythmProvider.notifier)
+                      .markNapQualityTap(
+                          childId: childId, quality: NapQualityTap.ok),
+                ),
+                SettleChip(
+                  variant: SettleChipVariant.action,
+                  label: 'Long nap',
+                  selected: false,
+                  onTap: () => ref
+                      .read(rhythmProvider.notifier)
+                      .markNapQualityTap(
+                          childId: childId, quality: NapQualityTap.long),
+                ),
+                SettleChip(
+                  variant: SettleChipVariant.action,
+                  label: 'Skipped nap',
+                  selected: false,
+                  onTap: () => ref
+                      .read(rhythmProvider.notifier)
+                      .markSkippedNap(childId: childId),
+                ),
+                SettleChip(
+                  variant: SettleChipVariant.action,
+                  label: 'Bedtime battle',
+                  selected: false,
+                  onTap: () => ref
+                      .read(rhythmProvider.notifier)
+                      .markBedtimeResistance(childId: childId),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SettleGap.lg(),
+        Text(
+          'Tools',
+          style: SettleTypography.body.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SettleGap.sm(),
+        SettleCta(
+          label: 'Update rhythm',
+          compact: true,
+          onTap: () {
+            Navigator.of(context).pop();
+            context.push('/sleep/update');
+          },
+        ),
+        const SettleGap.sm(),
+        SettleChip(
+          variant: SettleChipVariant.action,
+          label: 'Morning recap',
+          selected: false,
+          onTap: onOpenMorningRecap,
+        ),
+        const SettleGap.sm(),
+        SettleChip(
+          variant: SettleChipVariant.action,
+          label: 'Recalculate schedule',
+          selected: false,
+          onTap: () => ref
+              .read(rhythmProvider.notifier)
+              .recalculate(childId: childId),
+        ),
+        const SettleGap.sm(),
+        SettleChip(
+          variant: SettleChipVariant.action,
+          label: state.advancedDayLogging
+              ? 'Advanced mode: On'
+              : 'Advanced mode: Off',
+          selected: state.advancedDayLogging,
+          onTap: () => ref
+              .read(rhythmProvider.notifier)
+              .setAdvancedDayLogging(
+                  childId: childId, enabled: !state.advancedDayLogging),
+        ),
+        if (state.advancedDayLogging) ...[
+          const SettleGap.sm(),
+          Wrap(
+            spacing: SettleSpacing.sm,
+            runSpacing: SettleSpacing.sm,
+            children: [
+              SettleChip(
+                variant: SettleChipVariant.action,
+                label: 'Nap started',
+                selected: false,
+                onTap: () => ref
+                    .read(rhythmProvider.notifier)
+                    .markNapStarted(childId: childId),
+              ),
+              SettleChip(
+                variant: SettleChipVariant.action,
+                label: 'Nap ended',
+                selected: false,
+                onTap: () => ref
+                    .read(rhythmProvider.notifier)
+                    .markNapEnded(childId: childId),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }

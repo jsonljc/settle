@@ -41,7 +41,7 @@ class ActivityFeedScreen extends ConsumerWidget {
                   child: events.isEmpty
                       ? Center(
                           child: Text(
-                            'When you use scripts from Plan or Pocket, they\'ll show here.',
+                            'When you use scripts from Plan, they\'ll show here.',
                             style: SettleTypography.body.copyWith(
                               color: SettleColors.nightSoft,
                             ),

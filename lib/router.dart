@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'internal_tools_gate.dart';
-import 'providers/release_rollout_provider.dart';
 import 'screens/app_shell.dart';
 import 'screens/current_rhythm_screen.dart';
 import 'screens/family/activity_feed.dart';
@@ -29,7 +27,6 @@ import 'screens/release_compliance_checklist.dart';
 import 'screens/release_metrics.dart';
 import 'screens/release_ops_checklist.dart';
 import 'screens/settings.dart';
-import 'screens/pocket/pocket_fab_and_overlay.dart';
 import 'screens/sleep/sleep_mini_onboarding.dart';
 import 'screens/sleep_tonight.dart';
 import 'screens/sos.dart';
@@ -179,27 +176,18 @@ StatefulShellRoute _buildV2ShellRoute({required bool regulateEnabled}) {
 
   return StatefulShellRoute.indexedStack(
     builder: (context, state, navigationShell) {
-      return Consumer(
-        builder: (context, ref, _) {
-          final rollout = ref.watch(releaseRolloutProvider);
-          final overlay = rollout.pocketEnabled
-              ? const PocketFABAndOverlay()
-              : null;
-          return AppShell(
-            currentIndex: navigationShell.currentIndex,
-            navItems: _v2NavItems,
-            onTabTap: (index) {
-              final resetToBranchRoot =
-                  index == _v2TabSleep || index == navigationShell.currentIndex;
-              navigationShell.goBranch(
-                index,
-                initialLocation: resetToBranchRoot,
-              );
-            },
-            overlay: overlay,
-            child: navigationShell,
+      return AppShell(
+        currentIndex: navigationShell.currentIndex,
+        navItems: _v2NavItems,
+        onTabTap: (index) {
+          final resetToBranchRoot =
+              index == _v2TabSleep || index == navigationShell.currentIndex;
+          navigationShell.goBranch(
+            index,
+            initialLocation: resetToBranchRoot,
           );
         },
+        child: navigationShell,
       );
     },
     branches: [

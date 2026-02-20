@@ -8,7 +8,7 @@ import 'settle_disclosure.dart';
 import 'settle_gap.dart';
 import 'settle_modal_sheet.dart';
 
-enum ScriptCardContext { plan, pocket, onboarding, detail, crisis }
+enum ScriptCardContext { plan, onboarding, detail, crisis }
 
 enum ScriptCardStage { summary, action }
 
@@ -60,9 +60,7 @@ class ScriptCard extends StatefulWidget {
 class _ScriptCardState extends State<ScriptCard> {
   late ScriptCardStage _stage = widget.initialStage;
 
-  bool get _isCrisisLike =>
-      widget.context == ScriptCardContext.pocket ||
-      widget.context == ScriptCardContext.crisis;
+  bool get _isCrisisLike => widget.context == ScriptCardContext.crisis;
 
   bool get _hasOverflowActions =>
       widget.onSave != null ||
@@ -95,8 +93,6 @@ class _ScriptCardState extends State<ScriptCard> {
       ScriptCardContext.plan => 'Save to Playbook',
       ScriptCardContext.onboarding => 'Save to My Playbook',
       ScriptCardContext.detail => 'Done',
-      ScriptCardContext.pocket =>
-        _stage == ScriptCardStage.summary ? 'I said it →' : 'Done',
       ScriptCardContext.crisis =>
         _stage == ScriptCardStage.summary ? 'I said it →' : 'Done',
     };

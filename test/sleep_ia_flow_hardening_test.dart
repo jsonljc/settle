@@ -270,7 +270,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
 
-    expect(find.text('Current Rhythm (this week)'), findsOneWidget);
+    expect(find.text('Sleep'), findsOneWidget);
     expect(find.text('Update Rhythm suggested'), findsOneWidget);
 
     await tester.ensureVisible(find.text('Update Rhythm'));

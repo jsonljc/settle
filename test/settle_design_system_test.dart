@@ -60,7 +60,7 @@ void main() {
   });
 
   group('Settle typography source contract', () {
-    test('Inter is used from google_fonts', () {
+    test('DM Sans is used from google_fonts', () {
       final source = File(
         'lib/theme/settle_design_system.dart',
       ).readAsStringSync();
@@ -69,7 +69,7 @@ void main() {
         source,
         contains("import 'package:google_fonts/google_fonts.dart';"),
       );
-      expect(source, contains('GoogleFonts.inter('));
+      expect(source, contains('GoogleFonts.dmSans('));
     });
   });
 

@@ -127,7 +127,6 @@ class _ShellOverlayActions extends StatelessWidget {
             right: SettleSpacing.sm,
           ),
           child: _ShellOverlayActionButton(
-            label: 'Menu',
             semanticLabel: 'Open quick actions',
             dark: dark,
             onTap: () => _openQuickActions(context),
@@ -219,13 +218,11 @@ class _ShellQuickActionTile extends StatelessWidget {
 
 class _ShellOverlayActionButton extends StatelessWidget {
   const _ShellOverlayActionButton({
-    required this.label,
     required this.semanticLabel,
     required this.onTap,
     required this.dark,
   });
 
-  final String label;
   final String semanticLabel;
   final VoidCallback onTap;
   final bool dark;
@@ -243,23 +240,22 @@ class _ShellOverlayActionButton extends StatelessWidget {
       label: semanticLabel,
       child: Material(
         color: fill,
-        borderRadius: BorderRadius.circular(SettleRadii.pill),
+        borderRadius: BorderRadius.circular(SettleRadii.sm),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(SettleRadii.pill),
+          borderRadius: BorderRadius.circular(SettleRadii.sm),
           child: Container(
-            height: 44,
-            padding: const EdgeInsets.symmetric(
-              horizontal: SettleSpacing.md,
-            ),
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(SettleRadii.pill),
+              borderRadius: BorderRadius.circular(SettleRadii.sm),
               border: Border.all(color: borderColor, width: 0.5),
             ),
             alignment: Alignment.center,
-            child: Text(
-              label,
-              style: SettleTypography.label.copyWith(color: iconColor),
+            child: Icon(
+              Icons.menu_rounded,
+              size: 22,
+              color: iconColor,
             ),
           ),
         ),

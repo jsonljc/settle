@@ -94,13 +94,13 @@ class SettleSurfaces {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TYPOGRAPHY — Inter only, clear hierarchy, readable sizes
+// TYPOGRAPHY — DM Sans: warm, readable, calm. Clear hierarchy, generous line height.
 // ─────────────────────────────────────────────────────────────────────────────
 
 class SettleTypography {
   SettleTypography._();
 
-  static const double displayLargeSize = 32;
+  static const double displayLargeSize = 34;
   static const double displaySize = 26;
   static const double headingSize = 20;
   static const double subheadingSize = 17;
@@ -108,59 +108,59 @@ class SettleTypography {
   static const double captionSize = 14;
   static const double overlineSize = 11;
 
-  static TextStyle get displayLarge => GoogleFonts.inter(
+  static TextStyle get displayLarge => GoogleFonts.dmSans(
     fontSize: displayLargeSize,
     fontWeight: FontWeight.w600,
-    letterSpacing: -0.5,
-    height: 1.2,
+    letterSpacing: -0.6,
+    height: 1.18,
   );
 
-  static TextStyle get display => GoogleFonts.inter(
+  static TextStyle get display => GoogleFonts.dmSans(
     fontSize: displaySize,
     fontWeight: FontWeight.w600,
     letterSpacing: -0.4,
-    height: 1.22,
+    height: 1.24,
   );
 
-  static TextStyle get heading => GoogleFonts.inter(
+  static TextStyle get heading => GoogleFonts.dmSans(
     fontSize: headingSize,
     fontWeight: FontWeight.w600,
     letterSpacing: -0.2,
-    height: 1.28,
+    height: 1.3,
   );
 
-  static TextStyle get subheading => GoogleFonts.inter(
+  static TextStyle get subheading => GoogleFonts.dmSans(
     fontSize: subheadingSize,
     fontWeight: FontWeight.w500,
     letterSpacing: -0.1,
-    height: 1.32,
+    height: 1.35,
   );
 
-  static TextStyle get body => GoogleFonts.inter(
+  static TextStyle get body => GoogleFonts.dmSans(
     fontSize: bodySize,
     fontWeight: FontWeight.w400,
     letterSpacing: 0,
-    height: 1.5,
+    height: 1.55,
   );
 
-  static TextStyle get label => GoogleFonts.inter(
+  static TextStyle get label => GoogleFonts.dmSans(
     fontSize: bodySize,
     fontWeight: FontWeight.w600,
     letterSpacing: 0,
     height: 1.35,
   );
 
-  static TextStyle get caption => GoogleFonts.inter(
+  static TextStyle get caption => GoogleFonts.dmSans(
     fontSize: captionSize,
     fontWeight: FontWeight.w400,
-    letterSpacing: 0.05,
-    height: 1.4,
+    letterSpacing: 0.04,
+    height: 1.42,
   );
 
-  static TextStyle get overline => GoogleFonts.inter(
+  static TextStyle get overline => GoogleFonts.dmSans(
     fontSize: overlineSize,
     fontWeight: FontWeight.w600,
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
     height: 1.25,
   );
 }

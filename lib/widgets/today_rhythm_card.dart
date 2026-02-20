@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/rhythm_models.dart';
 import '../theme/settle_design_system.dart';
+import 'rhythm_day_circle.dart';
 import 'solid_card.dart';
 import 'settle_cta.dart';
 import 'settle_gap.dart';
@@ -87,6 +88,21 @@ class TodayRhythmCard extends StatelessWidget {
             'Built for $ageMonths months. Repeat this through the week.',
             style: SettleTypography.caption.copyWith(
               color: SettleColors.nightSoft,
+            ),
+          ),
+          const SettleGap.md(),
+          Center(
+            child: RhythmDayCircle(
+              wakeMinutes: wake.centerlineMinutes,
+              bedtimeMinutes: bedtime.centerlineMinutes,
+              napMinutesList: blocks
+                  .where((b) => b.id.startsWith('nap'))
+                  .map((b) => b.centerlineMinutes)
+                  .toList(),
+              nowMinutes: nowMinutes,
+              size: 200,
+              showLabels: true,
+              labelBuilder: (m) => _formatClock(context, m),
             ),
           ),
           const SettleGap.md(),

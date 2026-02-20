@@ -78,7 +78,7 @@ class MonthlyInsightScreen extends ConsumerWidget {
                             _SummaryCard(
                               title: 'Scripts used',
                               subtitle:
-                                  'Times you used a Pocket or Plan script this month.',
+                                  'Times you used a Plan script this month.',
                               value: '${monthUsage.length}',
                               icon: Icons.menu_book_rounded,
                             ),

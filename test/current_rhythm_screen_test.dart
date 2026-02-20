@@ -97,33 +97,35 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
 
+    // Main screen: Today strip (collapsed) and Plan & tools entry
+    expect(find.text('Plan & tools'), findsOneWidget);
+    expect(find.textContaining('Next up:'), findsOneWidget);
+
+    // Expand Today to see "Today rhythm"
+    await tester.ensureVisible(find.textContaining('Tap to see full schedule'));
+    await tester.tap(find.textContaining('Tap to see full schedule'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Today rhythm'), findsOneWidget);
+
+    // Open Plan & tools sheet for view mode, timeline, adjust, tools
+    await tester.ensureVisible(find.text('Plan & tools'));
+    await tester.tap(find.text('Plan & tools'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Precise view'), findsOneWidget);
     expect(find.text('Relaxed view'), findsOneWidget);
     expect(find.text('Late morning nap'), findsOneWidget);
-
-    await tester.ensureVisible(find.text('Relaxed view'));
-    await tester.tap(find.text('Relaxed view'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('Late morning nap'), findsOneWidget);
-
-    await tester.ensureVisible(find.text('Adjust today'));
-    await tester.tap(find.text('Adjust today'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('OK nap'), findsOneWidget);
-    expect(find.text('Long nap'), findsOneWidget);
-
-    await tester.ensureVisible(find.text('Tools'));
-    await tester.tap(find.text('Tools'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Adjust today'), findsOneWidget);
     expect(find.text('Recalculate schedule'), findsOneWidget);
     expect(find.text('Advanced mode: Off'), findsOneWidget);
 
     await tester.ensureVisible(find.text('Recalculate schedule'));
     await tester.tap(find.text('Recalculate schedule'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    // Dismiss sheet to see main screen hint
+    await tester.tapAt(const Offset(50, 100));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.textContaining('Still okay.'), findsOneWidget);
